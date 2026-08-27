@@ -23,11 +23,11 @@
 @font-face{font-family:"StyreneB";src:local("Styrene B"),local("StyreneB"),local("Styrene B Regular");font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:"StyreneB";src:local("Styrene B Medium"),local("StyreneB-Medium");font-weight:500;font-style:normal;font-display:swap}
 
-@font-face{font-family:"Newsreader";src:local("Newsreader"),url("assets/fonts/newsreader-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"Inter";src:local("Inter"),url("assets/fonts/inter-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"Inter";src:local("Inter Medium"),url("assets/fonts/inter-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
-@font-face{font-family:"JetBrains Mono";src:local("JetBrains Mono"),url("assets/fonts/jetbrains-mono-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"JetBrains Mono";src:local("JetBrains Mono Medium"),url("assets/fonts/jetbrains-mono-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Newsreader";src:local("Newsreader"),url("../../assets/fonts/newsreader-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Inter";src:local("Inter"),url("../../assets/fonts/inter-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Inter";src:local("Inter Medium"),url("../../assets/fonts/inter-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:local("JetBrains Mono"),url("../../assets/fonts/jetbrains-mono-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:local("JetBrains Mono Medium"),url("../../assets/fonts/jetbrains-mono-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
 
 
 :root{
