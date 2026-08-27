@@ -57,4 +57,4 @@ and diet planner.
 
 ## Licence
 
-Not yet chosen.
+Released under the MIT License — see [LICENSE](LICENSE).
