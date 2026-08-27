@@ -1,0 +1,83 @@
+/**
+ * profile.js — who the app is currently tracking.
+ *
+ * No personal figures are hardcoded anywhere in this repository. The defaults
+ * below are deliberately empty: real values arrive from the welcome screen at
+ * runtime and live only in the user's own browser. That keeps the repo public
+ * without publishing anyone's body measurements, and it is what lets the app
+ * serve someone other than its author.
+ */
+
+import { load, save } from "./storage.js";
+
+const RECORD = "profile";
+
+/**
+ * Note that age is NOT stored. A saved `17` quietly becomes wrong on the user's
+ * next birthday, so the app stores the fact (birth date) and derives the
+ * reading (age) whenever it needs it.
+ */
+export const DEFAULT_PROFILE = {
+  name: "",
+  birthDate: null,        // ISO "YYYY-MM-DD"
+  heightCm: null,
+  startWeightKg: null,
+  targetRateKgPerWeek: 0.3,  // plan default; the user can override
+  startDate: null,        // ISO date the plan began
+};
+
+export function loadProfile() {
+  return load(RECORD, { ...DEFAULT_PROFILE });
+}
+
+export function saveProfile(profile) {
+  return save(RECORD, profile);
+}
+
+/** A profile is complete once it has everything the engine needs to compute. */
+export function isComplete(profile) {
+  return (
+    profile.heightCm != null &&
+    profile.startWeightKg != null &&
+    profile.birthDate != null
+  );
+}
+
+/** Whole years since birthDate, or null if unknown. */
+export function ageYears(profile, today = new Date()) {
+  if (!profile.birthDate) return null;
+  const born = new Date(profile.birthDate);
+  if (Number.isNaN(born.getTime())) return null;
+
+  let age = today.getFullYear() - born.getFullYear();
+  const monthDelta = today.getMonth() - born.getMonth();
+  const beforeBirthday =
+    monthDelta < 0 || (monthDelta === 0 && today.getDate() < born.getDate());
+  if (beforeBirthday) age -= 1;
+  return age;
+}
+
+/**
+ * Validate a single field. Returns an error string, or null when valid.
+ * Bounds are loose sanity checks meant to catch typos (a height typed in
+ * metres, a weight off by a decimal place), not to police who may use the app.
+ */
+export function validate(field, value) {
+  switch (field) {
+    case "heightCm":
+      if (value == null || Number.isNaN(value)) return "Enter your height.";
+      return value >= 100 && value <= 250 ? null : "Height should be in cm, roughly 100–250.";
+    case "startWeightKg":
+      if (value == null || Number.isNaN(value)) return "Enter your weight.";
+      return value >= 25 && value <= 300 ? null : "Weight should be in kg, roughly 25–300.";
+    case "birthDate": {
+      if (!value) return "Enter your date of birth.";
+      const age = ageYears({ birthDate: value });
+      return age != null && age >= 5 && age <= 120 ? null : "That date looks wrong.";
+    }
+    case "targetRateKgPerWeek":
+      return value > 0 && value <= 1 ? null : "Pick a rate between 0 and 1 kg per week.";
+    default:
+      return null;
+  }
+}
