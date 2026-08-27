@@ -1,0 +1,212 @@
+/* ============================================================================
+   tokens.css — design foundation for the weight-gain tracker
+   ----------------------------------------------------------------------------
+   Source: the user's "Claude Design System" project on claude.ai/design, itself
+   based on claude.ai. Pulled from tokens/{colors,spacing,radii,elevation,
+   typography,fonts,motion,base}.css. Values below are verbatim from that system
+   except where marked APP LAYER.
+
+   TO REBRAND: edit the base palette block only. Everything downstream reads the
+   semantic aliases, so a new palette propagates without touching any screen.
+
+   OFFLINE: the source system @imports Google Fonts. That is removed here — this
+   app must work with no network, so faces are vendored in assets/fonts/.
+   ========================================================================== */
+
+
+/* ---------------------------------------------------------------- fonts ---
+   Copernicus and StyreneB are licensed Anthropic faces and are not vendored;
+   local() keeps them first for anyone who has them installed, and the public
+   substitutions below (per the source system's readme) carry everyone else.  */
+
+@font-face{font-family:"Copernicus";src:local("Copernicus"),local("Copernicus Book");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"StyreneB";src:local("Styrene B"),local("StyreneB"),local("Styrene B Regular");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"StyreneB";src:local("Styrene B Medium"),local("StyreneB-Medium");font-weight:500;font-style:normal;font-display:swap}
+
+@font-face{font-family:"Newsreader";src:local("Newsreader"),url("assets/fonts/newsreader-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Inter";src:local("Inter"),url("assets/fonts/inter-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Inter";src:local("Inter Medium"),url("assets/fonts/inter-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:local("JetBrains Mono"),url("assets/fonts/jetbrains-mono-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:local("JetBrains Mono Medium"),url("assets/fonts/jetbrains-mono-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+
+
+:root{
+
+/* ------------------------------------------------------- base palette ---
+   Edit THIS block to rebrand. Nothing else should hold a literal colour.   */
+
+/* coral — the brand voltage */
+--coral-500:#cc785c;--coral-700:#a9583e;--coral-200:#e6dfd8;
+/* warm ink */
+--ink-900:#141413;--ink-800:#252523;--ink-700:#3d3d3a;--ink-500:#6c6a64;--ink-400:#8e8b82;
+/* cream surfaces */
+--cream-50:#faf9f5;--cream-100:#f5f0e8;--cream-150:#ebe6df;--cream-200:#efe9de;--cream-250:#e6dfd8;--cream-300:#e8e0d2;
+/* night surfaces */
+--night-900:#181715;--night-800:#1f1e1b;--night-700:#252320;--night-fg:#faf9f5;--night-fg-soft:#a09d96;
+/* accents + status */
+--teal-500:#5db8a6;--amber-500:#e8a55a;--green-500:#5db872;--gold-500:#d4a017;--red-500:#c64545;
+--white:#ffffff;
+
+
+/* --------------------------------------------------- semantic aliases --- */
+
+--color-primary:var(--coral-500);
+--color-primary-active:var(--coral-700);
+--color-primary-disabled:var(--coral-200);
+
+--text-ink:var(--ink-900);
+--text-body-strong:var(--ink-800);
+--text-body:var(--ink-700);
+--text-muted:var(--ink-500);
+--text-muted-soft:var(--ink-400);
+--text-on-primary:var(--white);
+--text-on-dark:var(--night-fg);
+--text-on-dark-soft:var(--night-fg-soft);
+--text-link:var(--coral-500);
+
+--surface-canvas:var(--cream-50);
+--surface-soft:var(--cream-100);
+--surface-card:var(--cream-200);
+--surface-cream-strong:var(--cream-300);
+--surface-dark:var(--night-900);
+--surface-dark-soft:var(--night-800);
+--surface-dark-elevated:var(--night-700);
+
+--border-hairline:var(--cream-250);
+--border-hairline-soft:var(--cream-150);
+--border-on-dark:#302d29;
+
+--accent-teal:var(--teal-500);
+--accent-amber:var(--amber-500);
+--status-success:var(--green-500);
+--status-warning:var(--gold-500);
+--status-error:var(--red-500);
+
+/* focus ring — coral at 15% alpha, per the text-input-focused spec */
+--focus-ring:0 0 0 3px rgba(204,120,92,.15);
+
+
+/* ============================ APP LAYER ==================================
+   Additions specific to this app. Not from the source system.
+   ======================================================================== */
+
+/* --- intake status -------------------------------------------------------
+   DELIBERATE INVERSION. In a weight-GAIN context, under-eating is the failure,
+   so red means "well under target", not "over limit". These aliases exist so
+   that inversion is stated once, here, instead of being implied by every use of
+   --status-error. Do not "fix" this back. See docs/design-system.md.          */
+--intake-on-track:var(--status-success);   /* at or above the day's target */
+--intake-partial: var(--status-warning);   /* partway there */
+--intake-low:     var(--status-error);     /* well under — the failure state */
+
+
+/* ------------------------------------------------------------ spacing ---
+   base unit 4px                                                            */
+--space-xxs:4px;--space-xs:8px;--space-sm:12px;--space-md:16px;--space-lg:24px;
+--space-xl:32px;--space-xxl:48px;--space-section:96px;
+
+--pad-card:var(--space-xl);
+--pad-card-tight:var(--space-lg);
+--pad-callout:var(--space-xxl);
+--container-max:1200px;
+--control-height:40px;
+--icon-button-size:36px;
+
+/* APP LAYER — the source system is desktop/marketing and fixes controls at
+   40px, below the 44px iOS / 48px Android minimum. This app is used one-handed
+   in a kitchen, so tap rows get a real thumb target. Genuine form controls stay
+   at --control-height.                                                       */
+--touch-target:56px;
+--app-max-width:520px;   /* phone-first; centred gutter on desktop */
+
+
+/* -------------------------------------------------------------- radii --- */
+--radius-xs:4px;--radius-sm:6px;--radius-md:8px;--radius-lg:12px;--radius-xl:16px;
+--radius-pill:9999px;--radius-full:9999px;
+
+--radius-control:var(--radius-md);   /* buttons, inputs, tabs */
+--radius-card:var(--radius-lg);      /* content cards, block rows */
+
+
+/* ---------------------------------------------------------- elevation ---
+   Colour-block first, shadow rare.                                          */
+--shadow-none:none;
+--shadow-hover:0 1px 3px rgba(20,20,19,.08);
+--shadow-float:0 8px 24px rgba(20,20,19,.12);
+--border-width-hairline:1px;
+
+
+/* --------------------------------------------------------- typography --- */
+
+--font-serif-display:Copernicus,"Tiempos Headline",Newsreader,Georgia,"Times New Roman",serif;
+--font-sans:StyreneB,Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+
+--weight-regular:400;--weight-medium:500;
+
+/* display — serif, weight 400, negative tracking (non-negotiable) */
+--type-display-xl-size:64px;--type-display-xl-line:1.05;--type-display-xl-track:-1.5px;
+--type-display-lg-size:48px;--type-display-lg-line:1.1;--type-display-lg-track:-1px;
+--type-display-md-size:36px;--type-display-md-line:1.15;--type-display-md-track:-.5px;
+--type-display-sm-size:28px;--type-display-sm-line:1.2;--type-display-sm-track:-.3px;
+
+/* titles + body — sans */
+--type-title-lg-size:22px;--type-title-lg-line:1.3;
+--type-title-md-size:18px;--type-title-md-line:1.4;
+--type-title-sm-size:16px;--type-title-sm-line:1.4;
+--type-body-md-size:16px;--type-body-md-line:1.55;
+--type-body-sm-size:14px;--type-body-sm-line:1.55;
+--type-caption-size:13px;--type-caption-line:1.4;
+--type-caption-upper-size:12px;--type-caption-upper-line:1.4;--type-caption-upper-track:1.5px;
+--type-code-size:14px;--type-code-line:1.6;
+--type-button-size:14px;--type-button-line:1;
+--type-nav-size:14px;--type-nav-line:1.4;
+
+/* composite shorthands: font: <weight> <size>/<line> <family> */
+--text-display-xl:var(--weight-regular) var(--type-display-xl-size)/var(--type-display-xl-line) var(--font-serif-display);
+--text-display-lg:var(--weight-regular) var(--type-display-lg-size)/var(--type-display-lg-line) var(--font-serif-display);
+--text-display-md:var(--weight-regular) var(--type-display-md-size)/var(--type-display-md-line) var(--font-serif-display);
+--text-display-sm:var(--weight-regular) var(--type-display-sm-size)/var(--type-display-sm-line) var(--font-serif-display);
+--text-title-lg:var(--weight-medium) var(--type-title-lg-size)/var(--type-title-lg-line) var(--font-sans);
+--text-title-md:var(--weight-medium) var(--type-title-md-size)/var(--type-title-md-line) var(--font-sans);
+--text-title-sm:var(--weight-medium) var(--type-title-sm-size)/var(--type-title-sm-line) var(--font-sans);
+--text-body-md:var(--weight-regular) var(--type-body-md-size)/var(--type-body-md-line) var(--font-sans);
+--text-body-sm:var(--weight-regular) var(--type-body-sm-size)/var(--type-body-sm-line) var(--font-sans);
+--text-caption:var(--weight-medium) var(--type-caption-size)/var(--type-caption-line) var(--font-sans);
+--text-caption-upper:var(--weight-medium) var(--type-caption-upper-size)/var(--type-caption-upper-line) var(--font-sans);
+--text-code:var(--weight-regular) var(--type-code-size)/var(--type-code-line) var(--font-mono);
+--text-button:var(--weight-medium) var(--type-button-size)/var(--type-button-line) var(--font-sans);
+--text-nav:var(--weight-medium) var(--type-nav-size)/var(--type-nav-line) var(--font-sans);
+
+/* APP LAYER — numbers are the point of this app; mono, tabular, large. */
+--text-metric:var(--weight-medium) 40px/1.05 var(--font-mono);
+--text-metric-sm:var(--weight-medium) 20px/1.2 var(--font-mono);
+
+
+/* ------------------------------------------------------------- motion ---
+   The source spec documents default + active states only; motion is
+   intentionally minimal.                                                    */
+--ease-standard:cubic-bezier(.4,0,.2,1);
+--duration-fast:120ms;
+--duration-base:180ms;
+--transition-control:background-color var(--duration-fast) var(--ease-standard),border-color var(--duration-fast) var(--ease-standard),color var(--duration-fast) var(--ease-standard);
+}
+
+
+/* ---------------------------------------------------------------- base ---
+   Minimal document floor, from the source system's tokens/base.css.
+   Heading sizes are overridden by the app stylesheet — display-xl at 64px is a
+   marketing hero size, not a phone screen size.                              */
+
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{margin:0;background:var(--surface-canvas);color:var(--text-body);font:var(--text-body-md);text-wrap:pretty}
+h1,h2,h3{margin:0;color:var(--text-ink);font-family:var(--font-serif-display);font-weight:var(--weight-regular)}
+p{margin:0}
+a{color:var(--text-link);text-decoration:none}
+a:hover{color:var(--color-primary-active);text-decoration:underline}
+code,pre{font:var(--text-code);font-variant-numeric:tabular-nums}
+*,*::before,*::after{box-sizing:border-box}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}

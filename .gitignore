@@ -1,0 +1,24 @@
+# ---- Personal data -------------------------------------------------
+# The app is public; the author's real figures are not. Anything holding
+# a real profile, weight history, or the source plan documents stays local.
+profile.local.json
+data.local.json
+/private/
+
+# Source plan documents — contain personal health data
+*.docx
+*.xlsx
+
+# ---- Environment ---------------------------------------------------
+node_modules/
+.env
+.env.*
+__pycache__/
+*.pyc
+
+# ---- OS / editor ---------------------------------------------------
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
