@@ -13,7 +13,7 @@ import { load, save } from "./storage.js";
 const RECORD = "profile";
 
 /**
- * Note that age is NOT stored. A saved `17` quietly becomes wrong on the user's
+ * Note that age is NOT stored. A saved age quietly becomes wrong on the user’s
  * next birthday, so the app stores the fact (birth date) and derives the
  * reading (age) whenever it needs it.
  */
