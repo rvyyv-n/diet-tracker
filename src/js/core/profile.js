@@ -20,7 +20,8 @@ const RECORD = "profile";
 export const DEFAULT_PROFILE = {
   name: "",
   birthDate: null,        // ISO "YYYY-MM-DD"
-  heightCm: null,
+  heightCm: null,         // always stored in cm, whatever unit was typed
+  heightUnit: "cm",       // "cm" | "ftin" — how to show the field on re-edit
   startWeightKg: null,
   targetRateKgPerWeek: 0.3,  // plan default; the user can override
   startDate: null,        // ISO date the plan began

@@ -1,0 +1,312 @@
+/* ============================================================================
+   app.css — screen and component styles for the weight-gain tracker.
+   ----------------------------------------------------------------------------
+   Builds on tokens.css. The component patterns here (button variants, the text
+   field, press and focus states) are transcribed from the user's Claude Design
+   System — components/core/Button.jsx and components/forms/TextInput.jsx.
+
+   Note from that system: there is NO hover styling anywhere. Controls use press
+   states (:active) and a coral focus ring only. Do not add :hover rules.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------- shell ---
+   Phone-first single column, centred with a gutter on wider screens.        */
+
+.app-shell {
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: var(--space-xl) var(--space-lg) var(--space-section);
+}
+
+
+/* -------------------------------------------------------------- screen --- */
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.screen__title {
+  font: var(--text-display-sm);
+  letter-spacing: var(--type-display-sm-track);
+  color: var(--text-ink);
+}
+
+.screen__intro {
+  max-width: 46ch;
+  font: var(--text-body-md);
+  color: var(--text-muted);
+}
+
+
+/* ---------------------------------------------------------------- card --- */
+
+.card {
+  padding: var(--pad-card-tight);
+  background: var(--surface-card);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-card);
+}
+
+
+/* -------------------------------------------------------------- fields ---
+   .field__control is the bordered box; the bare <input> inside it carries no
+   border of its own. Focus and error styling live on the box.               */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+/* An explicit display on .field__control below beats the UA [hidden] rule, so
+   restore it for anything the JS hides (the cm / ft-in swap). */
+[hidden] {
+  display: none !important;
+}
+
+.field__label {
+  font: var(--text-caption-upper);
+  letter-spacing: var(--type-caption-upper-track);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Label with a control to its right — the height unit toggle. */
+.field__labelrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+/* Segmented toggle (cm / ft-in). Press + selected states only, no hover. */
+.seg {
+  display: inline-flex;
+  overflow: hidden;
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-control);
+}
+
+.seg__btn {
+  padding: 4px 10px;
+  font: var(--text-caption);
+  color: var(--text-muted);
+  background: var(--surface-canvas);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.seg__btn + .seg__btn {
+  border-left: var(--border-width-hairline) solid var(--border-hairline);
+}
+.seg__btn.is-on {
+  color: var(--text-ink);
+  background: var(--surface-cream-strong);
+}
+.seg__btn:active {
+  background: var(--surface-card);
+}
+
+/* Feet + inches: two controls plus their unit labels, on one row. */
+.height-ftin {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.height-ftin .field__control {
+  flex: 1;
+}
+.height-ftin__unit {
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+
+.field__control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  height: var(--control-height);
+  padding: 10px 14px;
+  background: var(--surface-canvas);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-control);
+  transition: var(--transition-control), box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.field__control:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+
+.field__control:has(.is-invalid) {
+  border-color: var(--status-error);
+}
+
+.field__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-ink);
+  font: var(--text-body-md);
+}
+
+.field__input::placeholder {
+  color: var(--text-muted-soft);
+}
+
+/* Native date input — kept native, aligned to the design system. Tighten the
+   segment separators, tone the calendar icon down, and mute the dd/mm/yyyy
+   placeholder so an empty field reads as empty rather than broken. */
+.field__control input[type="date"] {
+  color: var(--text-ink);
+  font: var(--text-body-md);
+}
+.field__control input[type="date"]:invalid::-webkit-datetime-edit {
+  color: var(--text-muted-soft);
+}
+.field__control input[type="date"]::-webkit-datetime-edit,
+.field__control input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+.field__control input[type="date"]::-webkit-datetime-edit-text {
+  padding: 0 2px;
+  color: var(--text-muted);
+}
+.field__control input[type="date"]::-webkit-calendar-picker-indicator {
+  margin-left: auto;
+  padding-left: var(--space-xs);
+  opacity: 0.45;
+  cursor: pointer;
+}
+
+.field__hint {
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+
+.field__hint:empty {
+  display: none;
+}
+
+.field__hint--error {
+  color: var(--status-error);
+}
+
+
+/* ------------------------------------------------------------- buttons ---
+   primary / secondary / text, from Button.jsx. Press states only.           */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  height: var(--control-height);
+  padding: 12px 20px;
+  font: var(--text-button);
+  white-space: nowrap;
+  border: var(--border-width-hairline) solid transparent;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+
+.btn--full {
+  display: flex;
+  width: 100%;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+}
+.btn--primary:active {
+  background: var(--color-primary-active);
+}
+.btn--primary:disabled {
+  background: var(--color-primary-disabled);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.btn--secondary {
+  background: var(--surface-canvas);
+  color: var(--text-ink);
+  border-color: var(--border-hairline);
+}
+.btn--secondary:active {
+  background: var(--surface-card);
+}
+.btn--secondary:disabled {
+  color: var(--text-muted-soft);
+  border-color: var(--border-hairline-soft);
+  cursor: default;
+}
+
+.btn--text {
+  padding: 12px 4px;
+  background: transparent;
+  color: var(--text-ink);
+}
+.btn--text:active {
+  color: var(--text-muted);
+}
+.btn--text:disabled {
+  color: var(--text-muted-soft);
+  cursor: default;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+
+/* ------------------------------------------------------------- summary ---
+   Key / value list used on the "you're set up" card. Numbers are mono.      */
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.summary__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.summary__key {
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+
+.summary__val {
+  font: var(--text-metric-sm);
+  color: var(--text-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ------------------------------------------------------- intake status ---
+   The deliberate weight-gain inversion (tokens.css / docs/design-system.md):
+   "low" is the failure state, so it is the one that turns red. These helpers
+   are here for the daily screen in the next pass.                           */
+
+.is-on-track { color: var(--intake-on-track); }
+.is-partial  { color: var(--intake-partial); }
+.is-low      { color: var(--intake-low); }
