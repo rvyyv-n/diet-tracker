@@ -1,0 +1,6 @@
+# Normalise line endings: text files are stored and checked out with LF on
+# every OS, so diffs stay clean when the repo moves between machines.
+* text=auto eol=lf
+
+# Fonts are binary — never touch them.
+*.woff2 binary

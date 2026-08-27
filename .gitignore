@@ -23,5 +23,15 @@ desktop.ini
 .vscode/
 .idea/
 
+# ---- Tooling -----------------------------------------------------
+# Per-machine Claude Code settings (permission grants etc.); the shared
+# .claude/settings.json, if one is ever added, stays tracked.
+.claude/settings.local.json
+
+# ---- Local scratch ----------------------------------------------
+# Loose screenshots / notes that land in the repo root but aren't part
+# of the project.
+/restore-instructions.png
+
 # Project brief — kept local for now
 CLAUDE.md
