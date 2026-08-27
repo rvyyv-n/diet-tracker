@@ -3,7 +3,7 @@
 **an in-progress diet and calorie tracker.** local-first, offline, no accounts.
 
 ```
-status: early development, pre-v1
+status: early development
 built:  design tokens, storage layer, plan spec
 next:   welcome screen, daily checklist
 ```
@@ -30,17 +30,6 @@ src/css/        design tokens — colour, type and spacing as named variables
 src/js/core/    storage and profile: the app's state layer
 src/js/data/    food and plan data, behind a swappable interface
 ```
-
-## running it
-
-plain html, css and javascript — no build step, no dependencies. it uses es
-modules, which browsers won't load over `file://`, so serve the folder:
-
-```bash
-python -m http.server 8000
-```
-
-then open <http://localhost:8000>
 
 ## roadmap
 
