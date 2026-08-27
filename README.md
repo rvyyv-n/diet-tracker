@@ -4,8 +4,8 @@
 
 ```
 status: early development
-built:  design tokens, storage layer, plan spec
-next:   welcome screen, daily checklist
+built:  design tokens, storage layer, plan spec, first-run profile screen
+next:   daily block checklist
 ```
 
 ## the idea
@@ -24,12 +24,25 @@ numbers appear without logging a single ingredient.
 ## structure
 
 ```
+index.html      the app shell — loads the stylesheet and entry script
 assets/fonts/   vendored typefaces, so the app runs with no connection
-docs/           design system and the plan spec the app is built from
+docs/           design system, plan spec, and the build roadmap
 src/css/        design tokens — colour, type and spacing as named variables
-src/js/core/    storage and profile: the app's state layer
-src/js/data/    food and plan data, behind a swappable interface
+src/js/         screens — currently the first-run profile screen
+src/js/core/    storage, profile, and the plan + day models
+src/js/data/    food data, behind a swappable interface
 ```
+
+## running it
+
+static files, no build step. serve the folder over http and open it —
+`file://` won't work, es modules need http:
+
+```
+python -m http.server 8000
+```
+
+then open <http://localhost:8000>.
 
 ## roadmap
 
