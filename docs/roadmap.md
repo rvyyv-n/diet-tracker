@@ -37,6 +37,9 @@ itself live in `plan-spec.md`; design tokens in `design-system.md`.
   the script `index.html` loads
 - backfill rule: yesterday stays editable for 24 h, then the day closes
   (`plan-spec.md`, "resolved behaviours")
+- replace the native date input and the month / year selector dropdowns with
+  custom components styled from the design system — the native ones look dated
+  and clash with the rest of the UI
 
 **pass 3 — weight and the adjustment engine**
 
@@ -51,6 +54,8 @@ itself live in `plan-spec.md`; design tokens in `design-system.md`.
 - one-off food entry from the `FOOD_DB` table for off-plan meals
 - weight chart with a trend line, daily noise de-emphasised
 - appetite / fullness note per day (`day.js` already carries the field)
+- daily meal reminders — local notifications at the best time to eat each
+  block. confirmed for the late stages of the build
 - first-run intro splash with a fade — deferred on purpose until there is an app
   to introduce
 
