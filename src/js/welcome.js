@@ -369,15 +369,16 @@ function renderDone(profile) {
 }
 
 /**
- * Render the profile screen into `mountEl`. When a complete profile already
- * exists we open on its summary — this is the "Edit setup" path — otherwise on
- * the empty form. `onComplete` runs when the user confirms from the summary.
- * The storage-availability check lives in app.js, ahead of this call.
+ * Render the profile screen into `mountEl`. First run opens on the empty form;
+ * once a complete profile exists it opens on the summary. Pass `edit: true` (the
+ * "Edit setup" path) to jump straight to the form and skip that summary hop.
+ * `onComplete` runs when the user confirms. The storage-availability check lives
+ * in app.js, ahead of this call.
  */
-export function renderWelcome(mountEl, { onComplete } = {}) {
+export function renderWelcome(mountEl, { onComplete, edit = false } = {}) {
   mount = mountEl;
   done = typeof onComplete === "function" ? onComplete : () => {};
   const profile = loadProfile();
-  if (isComplete(profile)) renderDone(profile);
+  if (isComplete(profile) && !edit) renderDone(profile);
   else renderForm(profile);
 }

@@ -74,20 +74,42 @@ real instant in UTC (`+0000`): correct "N ago" everywhere, no explicit `+05:00`.
 The post-commit hook is gone; `TZ=UTC` on the machines keeps new commits at real
 UTC. Full local time would show a correct absolute clock but state the zone.
 
+**pass 2c addendum** — "Edit setup" on Today now opens the profile form
+directly (`renderWelcome(..., { edit: true })`), skipping the summary hop. The
+summary still shows on first-run, right after saving.
+
 ## next
 
 **pass 3 — weight and the adjustment engine**
 
-- weekly weight entry, one number
-- 4-week rolling average, weekly adherence %
-- evaluate `ADJUSTMENT_RULES` from `plan.js` against the weight history and
-  *suggest* a change, with its reasoning shown — never auto-apply
-- the bottom tab bar lands here — this is the first pass with a second
-  destination (Today | Weight). one tab earlier would be scaffolding nothing.
-- **deferred here from screenshot feedback**, to land consistent with the tab
-  bar: the setup screen's "Start tracking" / "Edit details" layout, title
-  lengths across screens, and where the "Edit setup" action lives
-- the phase-banner gains a slot for the engine's suggestion
+Data / logic (all pure, testable without the DOM):
+
+- `core/weights.js` — a `wgt:weights` record, `{ "YYYY-MM-DD": kg }`, weekly
+  cadence. `logWeight` / `allWeights`.
+- `core/trend.js` — 4-week rolling average of the weekly weights, week-over-week
+  gain in kg/wk, and weekly adherence % (needs a helper that groups `days.js`
+  records into plan weeks and sums done / total).
+- `core/adjust.js` — evaluate `ADJUSTMENT_RULES` against the weight trend and
+  adherence; return `{ ruleId, suggestion, reasoning }` or null. Never mutates.
+
+Screens:
+
+- weight entry — one number (kg), the "same day, morning, fasted" reminder from
+  `plan-spec.md`, date defaults to today
+- a bottom tab bar — `Today | Weight`. `app.js` routing stops being a boolean.
+- the suggestion surfaces in the phase-banner slot: the change, its reasoning,
+  and an Apply the user confirms — never auto-applied
+
+Open question to settle first:
+
+- the rules talk about enabling add-on blocks **A1 → A2 → A3 individually**, but
+  blocks are currently switched on by phase (phase 2 = +A1 +A2, phase 3 = +A3).
+  Decide whether "apply a suggestion" moves `currentPhaseId`, or whether the
+  profile grows a per-block override list. This shapes `adjust.js` and `day.js`.
+
+Deferred here from screenshot feedback, to land with the tab bar: the setup
+screen's "Start tracking" / "Edit details" layout, and title lengths across
+screens.
 
 ## later
 

@@ -281,7 +281,7 @@ function footer() {
         type: "button",
         onclick: () =>
           import("./welcome.js").then((m) =>
-            m.renderWelcome(mount, { onComplete: () => renderToday(mount) }),
+            m.renderWelcome(mount, { onComplete: () => renderToday(mount), edit: true }),
           ),
       },
       "Edit setup",
