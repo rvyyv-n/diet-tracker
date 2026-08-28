@@ -360,6 +360,36 @@
   color: var(--text-muted);
 }
 
+
+/* adjustment suggestion --------------------------------------------------
+   Sits under the phase line. Informational, not an alert — a coral left edge
+   for "the plan wants to change", never the red status colour.               */
+
+.suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  border-left: 3px solid var(--color-primary);
+}
+
+.suggestion__headline {
+  font: var(--text-title-sm);
+  color: var(--text-ink);
+}
+
+.suggestion__detail {
+  font: var(--text-body-sm);
+  color: var(--text-body);
+}
+
+.suggestion__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xxs);
+}
+.suggestion__actions .btn--text { padding-inline: var(--space-xs); }
+
 /* running total --------------------------------------------------------- */
 
 .daytotal {

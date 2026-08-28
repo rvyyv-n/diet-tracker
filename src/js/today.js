@@ -14,7 +14,7 @@
  */
 
 import { el } from "./ui/dom.js";
-import { loadProfile } from "./core/profile.js";
+import { loadProfile, saveProfile } from "./core/profile.js";
 import { activeBlocks, phaseById, phaseTarget, rotationOptions } from "./core/plan.js";
 import {
   newDay,
@@ -26,8 +26,11 @@ import {
   intakeStatus,
   isDayEditable,
 } from "./core/day.js";
-import { getDay, putDay } from "./core/days.js";
-import { todayISO, addDays, planWeek } from "./core/dates.js";
+import { getDay, putDay, allDays } from "./core/days.js";
+import { allWeights } from "./core/weights.js";
+import { weeklyWeights, weeklyGains, rollingGain, weeklyAdherence } from "./core/trend.js";
+import { evaluate, applySuggestion } from "./core/adjust.js";
+import { todayISO, addDays, planWeek, daysBetween } from "./core/dates.js";
 
 const NUM = new Intl.NumberFormat("en-US"); // 1,890
 
@@ -73,18 +76,92 @@ function render() {
   const profile = loadProfile();
   const day = loadViewDay(profile);
   const editable = isDayEditable(day, todayISO());
+  const suggestion = viewDate === todayISO() ? liveSuggestion(profile) : null;
 
   mount.replaceChildren(
     el(
       "section",
       { class: "screen today" },
       dateHeader(profile, day, editable),
+      suggestion ? suggestionCard(suggestion, profile) : null,
       totalCard(day),
       backfillPrompt(),
       checklist(day, editable),
       footer(),
     ),
   );
+}
+
+/**
+ * The adjustment engine's current call, or null when there's nothing to act on
+ * (on track / not enough data) or the same rule was applied or dismissed within
+ * the last week — roughly, until the next weigh-in can show whether it helped.
+ */
+function liveSuggestion(profile) {
+  const start = profile.startDate || todayISO();
+  const series = weeklyWeights(allWeights(), start);
+  const s = evaluate(
+    {
+      rolling: rollingGain(weeklyGains(series)),
+      gains: weeklyGains(series),
+      adherence: weeklyAdherence(allDays(), start),
+      weeklyCount: series.length,
+    },
+    profile.addOns ?? [],
+  );
+  if (!["add-block", "remove-block", "checkup"].includes(s.kind)) return null;
+  const hushed = profile.dismissedSuggestion;
+  if (hushed && hushed.ruleId === s.ruleId && daysBetween(hushed.date, todayISO()) < 7) {
+    return null;
+  }
+  return s;
+}
+
+function suggestionCard(suggestion, profile) {
+  const actions = [];
+  if (suggestion.kind === "add-block" || suggestion.kind === "remove-block") {
+    actions.push(
+      el(
+        "button",
+        { class: "btn btn--primary", type: "button", onclick: () => applySuggestionAndSave(suggestion, profile) },
+        "Apply",
+      ),
+    );
+  }
+  actions.push(
+    el(
+      "button",
+      { class: "btn btn--text", type: "button", onclick: () => dismissSuggestion(suggestion, profile) },
+      suggestion.kind === "checkup" ? "Got it" : "Not now",
+    ),
+  );
+
+  return el(
+    "div",
+    { class: "card suggestion" },
+    el("p", { class: "suggestion__headline" }, suggestion.headline),
+    el("p", { class: "suggestion__detail" }, suggestion.detail),
+    el("div", { class: "suggestion__actions" }, ...actions),
+  );
+}
+
+function applySuggestionAndSave(suggestion, profile) {
+  const next = {
+    ...applySuggestion(profile, suggestion),
+    dismissedSuggestion: { ruleId: suggestion.ruleId, date: todayISO() },
+  };
+  saveProfile(next);
+  const day = getDay(viewDate); // reflect the block change on today straight away
+  if (day) putDay({ ...day, addOns: next.addOns });
+  render();
+}
+
+function dismissSuggestion(suggestion, profile) {
+  saveProfile({
+    ...profile,
+    dismissedSuggestion: { ruleId: suggestion.ruleId, date: todayISO() },
+  });
+  render();
 }
 
 function phaseBanner(profile, day) {
