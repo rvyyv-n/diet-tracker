@@ -20,6 +20,13 @@
   padding: var(--space-xl) var(--space-lg) var(--space-section);
 }
 
+/* When the tab bar is present it fixes to the bottom, so the scrolling content
+   above it needs room to clear it (bar height + the iOS home-indicator inset).
+   The first-run screen has no bar and keeps the plain .app-shell padding. */
+.app-content {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+}
+
 
 /* -------------------------------------------------------------- screen --- */
 
@@ -33,6 +40,13 @@
   font: var(--text-display-sm);
   letter-spacing: var(--type-display-sm-track);
   color: var(--text-ink);
+}
+
+/* One step up, for a tab's top-level title (Today, Weight). Trial size; drop
+   the modifier to fall back to display-sm. */
+.screen__title--lg {
+  font: var(--text-display-md);
+  letter-spacing: var(--type-display-md-track);
 }
 
 .screen__intro {
@@ -345,15 +359,6 @@
   font: var(--text-caption);
   color: var(--text-muted);
 }
-
-/* One step up from the shared screen title (display-sm) — the checklist is the
-   home screen and earns a little more presence. Trial; revert to plain
-   .screen__title to undo. */
-.today__title {
-  font: var(--text-display-md);
-  letter-spacing: var(--type-display-md-track);
-}
-
 
 /* running total --------------------------------------------------------- */
 
@@ -782,4 +787,99 @@
 .cal__cell.is-selected {
   background: var(--color-primary);
   color: var(--text-on-primary);
+}
+
+
+/* ------------------------------------------------------------- tab bar ---
+   Fixed to the bottom, matched to the app's centred column. Two tabs now
+   (Today | Weight), room for more. Press + selected states only.            */
+
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  display: flex;
+  background: var(--surface-canvas);
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tabbar__btn {
+  flex: 1;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: var(--text-nav);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-top: 2px solid transparent;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.tabbar__btn.is-active {
+  color: var(--text-ink);
+  border-top-color: var(--color-primary);
+}
+.tabbar__btn:active { background: var(--surface-soft); }
+.tabbar__btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+
+/* -------------------------------------------------------------- weight ---
+   Weekly weigh-in, the 4-week trend it feeds, and a history list.           */
+
+.weight { gap: var(--space-md); }
+
+.weight__entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.weight__entry .btn { align-self: flex-start; }
+
+.weight__sub {
+  font: var(--text-body-sm);
+  color: var(--text-muted-soft);
+}
+
+.weight__history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.weight__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: baseline;
+  gap: var(--space-sm);
+  padding-top: var(--space-xs);
+  border-top: var(--border-width-hairline) solid var(--border-hairline-soft);
+}
+.weight__row:first-of-type { border-top: none; }
+
+.weight__row-wk {
+  font: var(--text-caption);
+  color: var(--text-muted);
+}
+.weight__row-date {
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+.weight__row-kg {
+  font: var(--text-metric-sm);
+  color: var(--text-ink);
+  font-variant-numeric: tabular-nums;
+}
+.weight__row-delta {
+  min-width: 3ch;
+  text-align: right;
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }

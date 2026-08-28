@@ -44,9 +44,11 @@ const STATUS_CLASS = {
 let mount;
 let viewDate;
 let openPicker = null;
+let onEditSetup = () => {};
 
-export function renderToday(mountEl) {
+export function renderToday(mountEl, opts = {}) {
   mount = mountEl;
+  onEditSetup = typeof opts.onEditSetup === "function" ? opts.onEditSetup : () => {};
   viewDate = todayISO();
   openPicker = null;
   render();
@@ -100,7 +102,7 @@ function dateHeader(profile, day, editable) {
     el(
       "div",
       { class: "today__daterow" },
-      el("h1", { class: "screen__title today__title" }, isToday ? "Today" : longDate(day.date)),
+      el("h1", { class: "screen__title screen__title--lg" }, isToday ? "Today" : longDate(day.date)),
       isToday
         ? null
         : el(
@@ -275,18 +277,7 @@ function footer() {
   return el(
     "div",
     { class: "today__footer" },
-    el(
-      "button",
-      {
-        class: "btn btn--text",
-        type: "button",
-        onclick: () =>
-          import("./welcome.js").then((m) =>
-            m.renderWelcome(mount, { onComplete: () => renderToday(mount), edit: true }),
-          ),
-      },
-      "Edit setup",
-    ),
+    el("button", { class: "btn btn--text", type: "button", onclick: onEditSetup }, "Edit setup"),
   );
 }
 

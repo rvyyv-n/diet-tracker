@@ -1,13 +1,13 @@
 /**
- * app.js — entry point and router.
+ * app.js — entry point, router and app shell.
  *
- * Two screens, no history API: the first-run profile form until the profile is
- * complete, then the daily checklist. It also nudges the plan phase forward as
- * the weeks pass — Phase 1's two-week ramp into Phase 2 — but never into Phase 3,
- * which is condition-driven and only ever set by the user (docs/plan-spec.md).
+ * Before the profile is complete it shows the first-run form (loaded on demand).
+ * After that it renders a shell — a content area plus a bottom tab bar (Today |
+ * Weight) — and swaps the content when a tab is tapped. No history API; the
+ * active tab is module state and resets to Today on a fresh route().
  *
- * welcome.js is loaded on demand: a returning user with a complete profile never
- * pays for the first-run screen's code.
+ * It also keeps the plan phase and add-on list in step with the calendar — see
+ * syncPhase().
  */
 
 import { el } from "./ui/dom.js";
@@ -16,8 +16,79 @@ import { loadProfile, saveProfile, isComplete } from "./core/profile.js";
 import { defaultPhaseForWeek, phaseAddOns, normaliseAddOns } from "./core/plan.js";
 import { todayISO, planWeek } from "./core/dates.js";
 import { renderToday } from "./today.js";
+import { renderWeight } from "./weight.js";
 
 const mount = document.getElementById("app");
+
+const TABS = [
+  { id: "today", label: "Today" },
+  { id: "weight", label: "Weight" },
+];
+
+let activeTab = "today";
+let contentEl = null;
+let tabbarEl = null;
+
+// --- routing -------------------------------------------------------------
+
+function route() {
+  if (!isAvailable()) {
+    renderStorageOff();
+    return;
+  }
+  const profile = loadProfile();
+  if (!isComplete(profile)) {
+    import("./welcome.js").then((m) => m.renderWelcome(mount, { onComplete: route }));
+    return;
+  }
+  syncPhase(profile);
+  activeTab = "today";
+  renderShell();
+}
+
+function editSetup() {
+  import("./welcome.js").then((m) =>
+    m.renderWelcome(mount, { onComplete: route, edit: true }),
+  );
+}
+
+// --- shell --------------------------------------------------------------
+
+function renderShell() {
+  contentEl = el("div", { class: "app-content" });
+  tabbarEl = el("nav", { class: "tabbar", "aria-label": "Sections" });
+  mount.replaceChildren(contentEl, tabbarEl);
+  paintTabbar();
+  showTab(activeTab);
+}
+
+function paintTabbar() {
+  tabbarEl.replaceChildren(
+    ...TABS.map((tab) => {
+      const current = tab.id === activeTab;
+      return el(
+        "button",
+        {
+          class: `tabbar__btn${current ? " is-active" : ""}`,
+          type: "button",
+          "aria-current": current ? "page" : null,
+          onclick: () => {
+            if (tab.id === activeTab) return;
+            activeTab = tab.id;
+            paintTabbar();
+            showTab(activeTab);
+          },
+        },
+        tab.label,
+      );
+    }),
+  );
+}
+
+function showTab(id) {
+  if (id === "weight") renderWeight(contentEl);
+  else renderToday(contentEl, { onEditSetup: editSetup });
+}
 
 function renderStorageOff() {
   mount.replaceChildren(
@@ -33,6 +104,8 @@ function renderStorageOff() {
     ),
   );
 }
+
+// --- plan upkeep ------------------------------------------------------
 
 /**
  * Keep currentPhaseId and the add-on list in step with the calendar. The phase
@@ -53,20 +126,6 @@ function syncPhase(profile) {
     addOns.length === (profile.addOns ?? []).length &&
     addOns.every((id, i) => id === profile.addOns[i]);
   if (!unchanged) saveProfile({ ...profile, currentPhaseId: phaseId, addOns });
-}
-
-function route() {
-  if (!isAvailable()) {
-    renderStorageOff();
-    return;
-  }
-  const profile = loadProfile();
-  if (!isComplete(profile)) {
-    import("./welcome.js").then((m) => m.renderWelcome(mount, { onComplete: route }));
-    return;
-  }
-  syncPhase(profile);
-  renderToday(mount);
 }
 
 route();
