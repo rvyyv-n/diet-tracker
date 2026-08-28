@@ -59,6 +59,15 @@ itself live in `plan-spec.md`; design tokens in `design-system.md`.
 - "Today" heading bumped 28 → 36 px (`.today__title`; delete the rule to revert)
 - `day.extras` was reserved in `newDay()` back in pass 2a; its UI is a v2 item
 
+**pass 2c — polish from screenshot feedback**
+
+- phase line moved beneath the "Today" title, not above it
+- the daily total shows a light "kcal" against the big number, target reads
+  "of 2,565"
+- Swap sits on its own recessed strip so it reads as a control
+- `listbox.js` gained keyboard support: type-ahead, ↑/↓, Home/End, Enter/Esc
+- stale "lands in the next build pass" copy on the setup summary fixed
+
 ## next
 
 **pass 3 — weight and the adjustment engine**
@@ -69,6 +78,9 @@ itself live in `plan-spec.md`; design tokens in `design-system.md`.
   *suggest* a change, with its reasoning shown — never auto-apply
 - the bottom tab bar lands here — this is the first pass with a second
   destination (Today | Weight). one tab earlier would be scaffolding nothing.
+- **deferred here from screenshot feedback**, to land consistent with the tab
+  bar: the setup screen's "Start tracking" / "Edit details" layout, title
+  lengths across screens, and where the "Edit setup" action lives
 - the phase-banner gains a slot for the engine's suggestion
 
 ## later

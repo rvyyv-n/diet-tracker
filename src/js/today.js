@@ -75,8 +75,7 @@ function render() {
     el(
       "section",
       { class: "screen today" },
-      phaseBanner(profile, day),
-      dateHeader(day, editable),
+      dateHeader(profile, day, editable),
       totalCard(day),
       backfillPrompt(),
       checklist(day, editable),
@@ -92,27 +91,32 @@ function phaseBanner(profile, day) {
   return el("p", { class: "phase-banner" }, `${phase.name} · ${weekText}`);
 }
 
-function dateHeader(day, editable) {
+function dateHeader(profile, day, editable) {
   const isToday = day.date === todayISO();
   return el(
     "div",
-    { class: "today__daterow" },
-    el("h1", { class: "screen__title today__title" }, isToday ? "Today" : longDate(day.date)),
-    isToday
-      ? null
-      : el(
-          "button",
-          {
-            class: "btn btn--text",
-            type: "button",
-            onclick: () => {
-              viewDate = todayISO();
-              openPicker = null;
-              render();
+    { class: "today__header" },
+    el(
+      "div",
+      { class: "today__daterow" },
+      el("h1", { class: "screen__title today__title" }, isToday ? "Today" : longDate(day.date)),
+      isToday
+        ? null
+        : el(
+            "button",
+            {
+              class: "btn btn--text",
+              type: "button",
+              onclick: () => {
+                viewDate = todayISO();
+                openPicker = null;
+                render();
+              },
             },
-          },
-          "Back to today",
-        ),
+            "Back to today",
+          ),
+    ),
+    phaseBanner(profile, day),
     editable ? null : el("span", { class: "today__closed" }, "This day is closed."),
   );
 }
@@ -138,7 +142,8 @@ function totalCard(day) {
       "div",
       { class: "daytotal__figure" },
       el("span", { class: `daytotal__kcal ${STATUS_CLASS[status]}` }, NUM.format(totals.kcal)),
-      el("span", { class: "daytotal__target" }, `/ ${NUM.format(target.kcal)} kcal`),
+      el("span", { class: "daytotal__unit" }, "kcal"),
+      el("span", { class: "daytotal__target" }, `of ${NUM.format(target.kcal)}`),
     ),
     el("p", { class: "daytotal__remaining" }, remaining),
     el(

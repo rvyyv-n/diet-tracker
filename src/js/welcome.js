@@ -347,7 +347,7 @@ function renderDone(profile) {
       el(
         "p",
         { class: "screen__intro" },
-        "Saved to this browser only. The daily checklist lands in the next build pass and will read the figures below.",
+        "Saved to this browser only. These are the figures the plan adjusts from.",
       ),
       el(
         "div",

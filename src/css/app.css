@@ -317,6 +317,13 @@
 
 .today { gap: var(--space-md); }
 
+/* Title, then the phase line tucked beneath it. */
+.today__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
 .today__daterow {
   display: flex;
   align-items: baseline;
@@ -367,9 +374,17 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* "kcal" pinned to the big number in a lighter weight, so the unit reads with
+   the figure rather than only appearing on the target. */
+.daytotal__unit {
+  font: var(--text-body-sm);
+  color: var(--text-muted-soft);
+}
+
 .daytotal__target {
   font: var(--text-metric-sm);
   color: var(--text-muted);
+  margin-left: var(--space-xxs);
 }
 
 .daytotal__remaining {
@@ -500,18 +515,25 @@
 }
 .block-row.is-done .block-row__kcal { color: var(--text-muted); }
 
+/* Its own recessed strip, so it reads as a distinct control rather than a word
+   floating at the row's edge. */
 .block-row__swap {
   flex: none;
+  align-self: stretch;
   padding: 0 var(--space-md);
   font: var(--text-caption);
+  font-weight: var(--weight-medium);
   color: var(--text-muted);
-  background: transparent;
+  background: var(--surface-cream-strong);
   border: none;
   border-left: var(--border-width-hairline) solid var(--border-hairline);
   cursor: pointer;
   transition: var(--transition-control);
 }
-.block-row__swap:active { background: var(--surface-cream-strong); }
+.block-row__swap:active {
+  color: var(--color-primary);
+  background: var(--surface-card);
+}
 .block-row__swap:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
 
