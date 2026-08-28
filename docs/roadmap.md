@@ -78,43 +78,51 @@ UTC. Full local time would show a correct absolute clock but state the zone.
 directly (`renderWelcome(..., { edit: true })`), skipping the summary hop. The
 summary still shows on first-run, right after saving.
 
-## next
-
 **pass 3 — weight and the adjustment engine**
 
-Data / logic (all pure, testable without the DOM):
+Pure logic:
 
-- `core/weights.js` — a `wgt:weights` record, `{ "YYYY-MM-DD": kg }`, weekly
-  cadence. `logWeight` / `allWeights`.
-- `core/trend.js` — 4-week rolling average of the weekly weights, week-over-week
-  gain in kg/wk, and weekly adherence % (needs a helper that groups `days.js`
-  records into plan weeks and sums done / total).
-- `core/adjust.js` — evaluate `ADJUSTMENT_RULES` against the weight trend and
-  adherence; return `{ ruleId, suggestion, reasoning }` or null. Never mutates.
+- `core/weights.js` — a `wgt:weights` date→kg record
+- `core/trend.js` — one weight per plan week, week-over-week gain, an N-week
+  rolling average of that gain, and per-week adherence
+- `core/adjust.js` — `evaluate()` matches the trend + adherence to the rule
+  table and returns one result (add / drop an add-on, checkup, on-track, or
+  not-enough-data) with its reasoning; `applySuggestion()` returns a new
+  profile. Never mutates, never auto-applies.
 
 Screens:
 
-- weight entry — one number (kg), the "same day, morning, fasted" reminder from
-  `plan-spec.md`, date defaults to today
-- a bottom tab bar — `Today | Weight`. `app.js` routing stops being a boolean.
-- the suggestion surfaces in the phase-banner slot: the change, its reasoning,
-  and an Apply the user confirms — never auto-applied
+- Weight tab — weekly kg entry, the fasted-morning reminder, 4-week gain vs the
+  target band, this week's adherence, a history list, and an inline SVG trend
+  chart (weekly line over a shaded 0.25–0.4 kg/week cone)
+- a bottom tab bar (`Today | Weight`); `app.js` is now an app shell
+- the suggestion shows under the phase line on Today, with Apply / dismiss;
+  both hush that rule for ~a week
 
-Open question to settle first:
+Resolved — the add-on question: **per-block, not per-phase.** A day snapshots
+its own `addOns` list; the phase sets the default set and the kcal target, and
+`activeBlocks()` resolves from the snapshot. `syncPhase()` unions the profile's
+add-ons with the phase defaults (forward only). Apply mutates `profile.addOns`
+directly and never touches `currentPhaseId`.
 
-- the rules talk about enabling add-on blocks **A1 → A2 → A3 individually**, but
-  blocks are currently switched on by phase (phase 2 = +A1 +A2, phase 3 = +A3).
-  Decide whether "apply a suggestion" moves `currentPhaseId`, or whether the
-  profile grows a per-block override list. This shapes `adjust.js` and `day.js`.
-
-Deferred here from screenshot feedback, to land with the tab bar: the setup
+Deferred to v1 packaging, to land with the settings/about screen: the setup
 screen's "Start tracking" / "Edit details" layout, and title lengths across
 screens.
+
+## next
+
+**pass 4 — v1 release packaging**
+
+- PWA manifest + iOS meta + app icons + a cache-first service worker (offline)
+- safe-area insets throughout (partly done — tab bar and content already clear
+  the home indicator)
+- data export / import as JSON — everything is in `localStorage`
+- a Settings / About screen: Edit setup, export / import, version, reset
+- GitHub Pages (deploy from `main`, root; no build step), then tag v1
 
 ## later
 
 - grocery checklist with a weekly reset
-- weight chart with a trend line, daily noise de-emphasised
 - appetite / fullness note per day (`day.js` already carries the field)
 - daily meal reminders — local notifications at the best time to eat each
   block. confirmed for the late stages of the build
