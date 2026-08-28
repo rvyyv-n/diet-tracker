@@ -847,6 +847,40 @@
   color: var(--text-muted-soft);
 }
 
+/* trend chart — inline SVG, no library */
+.weight__chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.weight__chart-svg { margin-top: var(--space-xxs); }
+.weight__chart-key {
+  font: var(--text-caption);
+  color: var(--text-muted-soft);
+}
+
+.wc {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.wc-cone { fill: rgba(204, 120, 92, 0.1); }
+.wc-line {
+  fill: none;
+  stroke: var(--text-body);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.wc-dot { fill: var(--color-primary); }
+.wc-axis { stroke: var(--border-hairline); stroke-width: 1; }
+.wc-label {
+  fill: var(--text-muted-soft);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-anchor: middle;
+}
+
 .weight__history {
   display: flex;
   flex-direction: column;

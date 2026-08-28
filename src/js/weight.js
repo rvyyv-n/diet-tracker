@@ -41,9 +41,84 @@ function render() {
       el("h1", { class: "screen__title screen__title--lg" }, "Weight"),
       entryCard(),
       statsCard(latest, latestGain, thisWeekAdherence),
+      chartCard(series),
       historyCard(series),
     ),
   );
+}
+
+/**
+ * A weekly-weight line against the target band. The band is a *rate*
+ * (0.25–0.4 kg/week), so from the first reading it opens into a cone — being
+ * inside it means the gain is on pace. Plain inline SVG, no library.
+ */
+function chartCard(series) {
+  if (series.length < 2) {
+    return el(
+      "div",
+      { class: "card weight__chart" },
+      el("span", { class: "field__label" }, "Trend"),
+      el("p", { class: "screen__intro" }, "Two weigh-ins will draw the trend."),
+    );
+  }
+
+  const W = 320;
+  const H = 168;
+  const padL = 12;
+  const padR = 12;
+  const padT = 12;
+  const padB = 22;
+
+  const first = series[0];
+  const n = series.length;
+  const xs = series.map((_, i) => padL + (i * (W - padL - padR)) / (n - 1));
+  const weekDelta = (s) => s.week - first.week;
+
+  const kgs = series.map((s) => s.kg);
+  const dLast = weekDelta(series[n - 1]);
+  const lo = Math.min(...kgs, first.kg, first.kg + 0.25 * dLast);
+  const hi = Math.max(...kgs, first.kg + 0.4 * dLast);
+  const margin = (hi - lo) * 0.12 || 0.5;
+  const yMin = lo - margin;
+  const yMax = hi + margin;
+  const y = (kg) => padT + ((yMax - kg) * (H - padT - padB)) / (yMax - yMin);
+
+  const at = (i, y_) => `${xs[i].toFixed(1)},${y_.toFixed(1)}`;
+  const lower = series.map((s, i) => at(i, y(first.kg + 0.25 * weekDelta(s))));
+  const upper = series.map((s, i) => at(i, y(first.kg + 0.4 * weekDelta(s)))).reverse();
+  const cone = [...lower, ...upper].join(" ");
+  const line = series.map((s, i) => at(i, y(s.kg))).join(" ");
+  const dots = series
+    .map((s, i) => `<circle cx="${xs[i].toFixed(1)}" cy="${y(s.kg).toFixed(1)}" r="3" class="wc-dot"/>`)
+    .join("");
+  const labels = series
+    .map((s, i) => `<text x="${xs[i].toFixed(1)}" y="${H - 6}" class="wc-label">${s.week}</text>`)
+    .join("");
+
+  const svg =
+    `<svg viewBox="0 0 ${W} ${H}" class="wc" role="img" ` +
+    `aria-label="Weekly weight against the 0.25 to 0.4 kg per week target band">` +
+    `<polygon points="${cone}" class="wc-cone"/>` +
+    `<polyline points="${line}" class="wc-line"/>${dots}` +
+    `<line x1="${padL}" y1="${(H - padB).toFixed(1)}" x2="${W - padR}" y2="${(H - padB).toFixed(1)}" class="wc-axis"/>` +
+    `${labels}</svg>`;
+
+  const card = el(
+    "div",
+    { class: "card weight__chart" },
+    el("span", { class: "field__label" }, "Trend"),
+  );
+  const holder = el("div", { class: "weight__chart-svg" });
+  holder.innerHTML = svg;
+  card.append(
+    holder,
+    el(
+      "p",
+      { class: "weight__chart-key" },
+      "Line: your weekly weight. Shaded: on-pace for 0.25–0.4 kg/week.",
+    ),
+  );
+  return card;
 }
 
 function entryCard() {
