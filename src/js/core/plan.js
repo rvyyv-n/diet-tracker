@@ -20,20 +20,20 @@
 export const BLOCKS = [
   {
     id: "B1", order: 10, name: "Breakfast", kcal: 705, proteinG: 35, core: true, rotation: "breakfast",
-    desc: "3 eggs in clarified butter + 2 flatbreads + 250 ml full-fat milk",
+    desc: "Eggs (3) + flatbreads (2) + milk (250 ml) + butter (1 tsp)",
   },
   {
     id: "B2", order: 20, name: "Shake", kcal: 580, proteinG: 22, core: true, rotation: "shake",
-    desc: "300 ml milk + 2 tbsp peanut butter + banana + 25 g oats",
+    desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + oats (25 g)",
     note: "Highest skip risk — keep it prominent in the UI.",
   },
   {
     id: "B3", order: 30, name: "Lunch", kcal: 580, proteinG: 33, core: true, rotation: "lunch",
-    desc: "Pick from the lunch rotation.",
+    desc: "Choose from the lunch rotation.",
   },
   {
     id: "A1", order: 40, name: "Snack", kcal: 290, proteinG: 11, core: false,
-    desc: "200 g yogurt + 3 dates + 15 g almonds",
+    desc: "Yogurt (200 g) + dates (3) + almonds (15 g)",
   },
   {
     // A3 keeps a fixed value for now: it shares the shake recipes but is a
@@ -43,11 +43,11 @@ export const BLOCKS = [
   },
   {
     id: "B4", order: 60, name: "Dinner", kcal: 700, proteinG: 37, core: true, rotation: "dinner",
-    desc: "Pick from the dinner rotation.",
+    desc: "Choose from the dinner rotation.",
   },
   {
     id: "A2", order: 70, name: "Pre-bed", kcal: 255, proteinG: 12, core: false,
-    desc: "250 ml full-fat milk + 1 tbsp peanut butter",
+    desc: "Milk (250 ml) + peanut butter (1 tbsp)",
   },
 ];
 
@@ -80,24 +80,24 @@ export const PHASES = [
  */
 export const ROTATIONS = {
   breakfast: [
-    { id: "BR1", desc: "3 eggs in clarified butter + 2 flatbreads + 250 ml milk", kcal: 705, proteinG: 34 },
-    { id: "BR2", desc: "3 eggs + 1 flaky flatbread + 250 ml milk + 1 tsp clarified butter", kcal: 705, proteinG: 32 },
-    { id: "BR3", desc: "2 eggs + 2 slices bread + 2 tbsp peanut butter + 250 ml milk + 1 tsp clarified butter", kcal: 700, proteinG: 33 },
+    { id: "BR1", desc: "Eggs (3) + flatbreads (2) + milk (250 ml) + butter (1 tsp)", kcal: 705, proteinG: 34 },
+    { id: "BR2", desc: "Eggs (3) + flaky flatbread + milk (250 ml) + butter (1 tsp)", kcal: 705, proteinG: 32 },
+    { id: "BR3", desc: "Eggs (2) + bread (2 slices) + peanut butter (2 tbsp) + milk (250 ml) + butter (1 tsp)", kcal: 700, proteinG: 33 },
   ],
   lunch: [
-    { id: "L1", desc: "1 cup rice + chicken curry (150 g)", kcal: 580, proteinG: 33 },
-    { id: "L2", desc: "2 flatbreads + minced beef (150 g) + salad", kcal: 630, proteinG: 33 },
-    { id: "L3", desc: "1 cup chickpeas + 1 flatbread + yogurt (100 g)", kcal: 565, proteinG: 24 },
+    { id: "L1", desc: "Chicken curry (150 g) + rice (1 cup)", kcal: 580, proteinG: 33 },
+    { id: "L2", desc: "Minced beef (150 g) + flatbreads (2) + salad", kcal: 630, proteinG: 33 },
+    { id: "L3", desc: "Chickpeas (1 cup) + flatbread + yogurt (100 g)", kcal: 565, proteinG: 24 },
   ],
   dinner: [
-    { id: "D1", desc: "2 flatbreads + lentil stew + 2-egg curry", kcal: 700, proteinG: 37 },
-    { id: "D2", desc: "2 flatbreads + lentil stew + 100 g chicken or beef", kcal: 700, proteinG: 37 },
-    { id: "D3", desc: "chicken pilaf (1.5 cups) + yogurt (150 g)", kcal: 720, proteinG: 35 },
+    { id: "D1", desc: "Egg curry (2 eggs) + lentil stew + flatbreads (2)", kcal: 700, proteinG: 37 },
+    { id: "D2", desc: "Chicken or beef (100 g) + lentil stew + flatbreads (2)", kcal: 700, proteinG: 37 },
+    { id: "D3", desc: "Chicken pilaf (1.5 cups) + yogurt (150 g)", kcal: 720, proteinG: 35 },
   ],
   shake: [
-    { id: "standard", desc: "300 ml milk + 2 tbsp peanut butter + banana + 25 g oats", kcal: 580, proteinG: 22 },
-    { id: "no_blender", desc: "300 ml milk + 2 tbsp peanut butter + banana + 1 tbsp honey", kcal: 545, proteinG: 20 },
-    { id: "heavy", desc: "400 ml milk + 2 tbsp peanut butter + banana + 40 g oats + 3 dates", kcal: 790, proteinG: 27 },
+    { id: "standard", desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + oats (25 g)", kcal: 580, proteinG: 22 },
+    { id: "no_blender", desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + honey (1 tbsp)", kcal: 545, proteinG: 20 },
+    { id: "heavy", desc: "Milk (400 ml) + peanut butter (2 tbsp) + banana + oats (40 g) + dates (3)", kcal: 790, proteinG: 27 },
   ],
 };
 

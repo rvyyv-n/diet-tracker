@@ -9,16 +9,16 @@ Read this when you need the actual numbers. Not needed at session start.
 ```yaml
 blocks:
   - {id: B1, name: Breakfast,   kcal: 705, protein_g: 35, core: true,
-     desc: "3 eggs in clarified butter + 2 flatbreads + 250 ml full-fat milk", rotation: breakfast}
+     desc: "Eggs (3) + flatbreads (2) + milk (250 ml) + butter (1 tsp)", rotation: breakfast}
   - {id: B2, name: Shake,       kcal: 580, protein_g: 22, core: true,
-     desc: "300 ml milk + 2 tbsp peanut butter + banana + 25 g oats",
+     desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + oats (25 g)",
      note: "HIGHEST SKIP RISK — surface prominently in the UI"}
   - {id: B3, name: Lunch,       kcal: 580, protein_g: 33, core: true, rotation: lunch}
   - {id: B4, name: Dinner,      kcal: 700, protein_g: 37, core: true, rotation: dinner}
   - {id: A1, name: Snack,       kcal: 290, protein_g: 11, core: false,
-     desc: "200 g yogurt + 3 dates + 15 g almonds"}
+     desc: "Yogurt (200 g) + dates (3) + almonds (15 g)"}
   - {id: A2, name: "Pre-bed",   kcal: 255, protein_g: 12, core: false,
-     desc: "250 ml full-fat milk + 1 tbsp peanut butter"}
+     desc: "Milk (250 ml) + peanut butter (1 tbsp)"}
   - {id: A3, name: "2nd shake", kcal: 580, protein_g: 22, core: false,
      desc: "heavy shake — optional, or post-training"}
 ```
@@ -42,20 +42,20 @@ reason a bulk collapses in week one, from sheer fullness.
 
 ```yaml
 breakfast_rotation:
-  - {id: BR1, desc: "3 eggs in clarified butter + 2 flatbreads + 250 ml milk",        kcal: 705, protein_g: 34}
-  - {id: BR2, desc: "3 eggs + 1 flaky flatbread + 250 ml milk + 1 tsp clarified butter", kcal: 705, protein_g: 32}
-  - {id: BR3, desc: "2 eggs + 2 slices bread + 2 tbsp PB + 250 ml milk + 1 tsp clarified butter",
+  - {id: BR1, desc: "Eggs (3) + flatbreads (2) + milk (250 ml) + butter (1 tsp)", kcal: 705, protein_g: 34}
+  - {id: BR2, desc: "Eggs (3) + flaky flatbread + milk (250 ml) + butter (1 tsp)", kcal: 705, protein_g: 32}
+  - {id: BR3, desc: "Eggs (2) + bread (2 slices) + peanut butter (2 tbsp) + milk (250 ml) + butter (1 tsp)",
      kcal: 700, protein_g: 33}
 
 lunch_rotation:
-  - {id: L1, desc: "1 cup rice + chicken curry (150 g)",     kcal: 580, protein_g: 33}
-  - {id: L2, desc: "2 flatbreads + minced beef (150 g) + salad",         kcal: 630, protein_g: 33}
-  - {id: L3, desc: "1 cup chickpeas + 1 flatbread + yogurt (100 g)",  kcal: 565, protein_g: 24}
+  - {id: L1, desc: "Chicken curry (150 g) + rice (1 cup)",            kcal: 580, protein_g: 33}
+  - {id: L2, desc: "Minced beef (150 g) + flatbreads (2) + salad",    kcal: 630, protein_g: 33}
+  - {id: L3, desc: "Chickpeas (1 cup) + flatbread + yogurt (100 g)",  kcal: 565, protein_g: 24}
 
 dinner_rotation:
-  - {id: D1, desc: "2 flatbreads + lentil stew + 2-egg curry",            kcal: 700, protein_g: 37}
-  - {id: D2, desc: "2 flatbreads + lentil stew + 100 g chicken/beef",     kcal: 700, protein_g: 37}
-  - {id: D3, desc: "Chicken pilaf (1.5 c) + yogurt (150 g)", kcal: 720, protein_g: 35}
+  - {id: D1, desc: "Egg curry (2 eggs) + lentil stew + flatbreads (2)",     kcal: 700, protein_g: 37}
+  - {id: D2, desc: "Chicken or beef (100 g) + lentil stew + flatbreads (2)", kcal: 700, protein_g: 37}
+  - {id: D3, desc: "Chicken pilaf (1.5 cups) + yogurt (150 g)",             kcal: 720, protein_g: 35}
 ```
 
 IDs are L/D rather than A/B **on purpose** — an earlier version collided with the
