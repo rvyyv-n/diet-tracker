@@ -88,12 +88,8 @@ function render() {
 function phaseBanner(profile, day) {
   const phase = phaseById(day.phaseId);
   const week = planWeek(profile.startDate || todayISO(), todayISO());
-  const weekText = day.phaseId === 1 ? `week ${week} of 2` : `week ${week}`;
-  return el(
-    "p",
-    { class: "phase-banner" },
-    `${phase.label} · ${weekText} · ${NUM.format(phase.kcal)} kcal target`,
-  );
+  const weekText = day.phaseId === 1 ? `Week ${week} of 2` : `Week ${week}`;
+  return el("p", { class: "phase-banner" }, `${phase.name} · ${weekText}`);
 }
 
 function dateHeader(day, editable) {
@@ -101,7 +97,7 @@ function dateHeader(day, editable) {
   return el(
     "div",
     { class: "today__daterow" },
-    el("h1", { class: "screen__title" }, isToday ? "Today" : longDate(day.date)),
+    el("h1", { class: "screen__title today__title" }, isToday ? "Today" : longDate(day.date)),
     isToday
       ? null
       : el(
@@ -257,6 +253,7 @@ function rotationPicker(day, block) {
             commit(chooseRotation(day, block.rotation, opt.id));
           },
         },
+        el("span", { class: "rotation__radio", "aria-hidden": "true" }, opt.id === current ? "●" : "○"),
         el("span", { class: "rotation__opt-desc" }, opt.desc),
         el("span", { class: "rotation__opt-kcal" }, NUM.format(opt.kcal)),
       ),

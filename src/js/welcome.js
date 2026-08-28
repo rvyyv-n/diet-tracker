@@ -21,6 +21,8 @@ import {
 import { TARGET_RATE_KG_PER_WEEK } from "./core/plan.js";
 import { todayISO } from "./core/dates.js";
 import { el } from "./ui/dom.js";
+import { dateDropdowns } from "./ui/date-dropdowns.js";
+import { dateCalendar } from "./ui/date-calendar.js";
 
 // Both set by renderWelcome(): the node to render into, and the callback that
 // runs when the user confirms from the summary screen.
@@ -30,11 +32,12 @@ let done = () => {};
 const CM_PER_INCH = 2.54;
 const today = todayISO;
 
-// Fields other than height, split around where the height row sits visually so
-// that on-submit focus lands on the first invalid field in reading order.
+// Plain-input fields, split around where the height row sits visually so that
+// on-submit focus lands on the first invalid field in reading order. Date of
+// birth and plan start date have their own row builders (dropdowns and a
+// calendar) further down.
 const FIELDS_BEFORE_HEIGHT = [
   { name: "name", label: "Name (optional)", type: "text", validated: false },
-  { name: "birthDate", label: "Date of birth", type: "date", validated: true, required: "" },
 ];
 const FIELDS_AFTER_HEIGHT = [
   { name: "startWeightKg", label: "Current weight (kg)", type: "number", inputmode: "decimal", step: "0.1", min: "25", max: "300", validated: true },
@@ -43,7 +46,6 @@ const FIELDS_AFTER_HEIGHT = [
     inputmode: "decimal", step: "0.05", min: "0.05", max: "1", validated: true,
     hint: `Aim for ${TARGET_RATE_KG_PER_WEEK.min}–${TARGET_RATE_KG_PER_WEEK.max} kg/week.`,
   },
-  { name: "startDate", label: "Plan start date", type: "date", validated: false },
 ];
 
 function readValue(field, input) {
@@ -63,8 +65,7 @@ function buildSimpleRow(field, profile) {
     max: field.max,
     required: field.required,
   });
-  const preset =
-    field.name === "startDate" && profile.startDate == null ? today() : profile[field.name];
+  const preset = profile[field.name];
   if (preset != null) input.value = preset;
 
   const hint = el("span", { class: "field__hint" }, field.hint);
@@ -202,10 +203,68 @@ function buildHeightRow(profile) {
   return { node, collect };
 }
 
+/**
+ * Date of birth — day / month / year dropdowns. Stays empty until all three are
+ * chosen, so the required-field check still fires on an untouched form. The year
+ * range covers the ages profile.validate accepts (5–120).
+ */
+function buildBirthDateRow(profile) {
+  const thisYear = new Date().getFullYear();
+  const picker = dateDropdowns({
+    value: profile.birthDate ?? null,
+    yearFrom: thisYear - 120,
+    yearTo: thisYear - 5,
+  });
+  const hint = el("span", { class: "field__hint" });
+  const node = el(
+    "div",
+    { class: "field" },
+    el("span", { class: "field__label" }, "Date of birth"),
+    picker.node,
+    hint,
+  );
+
+  function collect(next) {
+    const iso = picker.get();
+    next.birthDate = iso;
+    const err = validate("birthDate", iso);
+    hint.textContent = err || "";
+    hint.classList.toggle("field__hint--error", Boolean(err));
+    picker.node.classList.toggle("is-invalid", Boolean(err));
+    return err ? picker.node.querySelector("button") : null;
+  }
+
+  return { node, collect };
+}
+
+/**
+ * Plan start date — a calendar popover seeded with today. It always holds a
+ * value, so there is nothing to validate.
+ */
+function buildStartDateRow(profile) {
+  const cal = dateCalendar({ value: profile.startDate || today() });
+  const node = el(
+    "div",
+    { class: "field" },
+    el("span", { class: "field__label" }, "Plan start date"),
+    cal.node,
+    el("span", { class: "field__hint" }, "Defaults to today."),
+  );
+
+  function collect(next) {
+    next.startDate = cal.get() || today();
+    return null;
+  }
+
+  return { node, collect };
+}
+
 function renderForm(profile) {
   const beforeRows = FIELDS_BEFORE_HEIGHT.map((f) => buildSimpleRow(f, profile));
+  const birthRow = buildBirthDateRow(profile);
   const heightRow = buildHeightRow(profile);
   const afterRows = FIELDS_AFTER_HEIGHT.map((f) => buildSimpleRow(f, profile));
+  const startRow = buildStartDateRow(profile);
 
   const errorNote = el("p", { class: "screen__intro field__hint--error" });
 
@@ -215,14 +274,15 @@ function renderForm(profile) {
     let firstBad = null;
 
     for (const row of beforeRows) firstBad = firstBad || collectSimple(row, next);
+    firstBad = firstBad || birthRow.collect(next);
     firstBad = firstBad || heightRow.collect(next);
     for (const row of afterRows) firstBad = firstBad || collectSimple(row, next);
+    firstBad = firstBad || startRow.collect(next);
 
     if (firstBad) {
       firstBad.focus();
       return;
     }
-    if (!next.startDate) next.startDate = today();
 
     if (!saveProfile(next)) {
       errorNote.textContent =
@@ -236,8 +296,10 @@ function renderForm(profile) {
     "form",
     { class: "form", onsubmit: submit, novalidate: "" },
     ...beforeRows.map((r) => r.node),
+    birthRow.node,
     heightRow.node,
     ...afterRows.map((r) => r.node),
+    startRow.node,
     errorNote,
     el("button", { class: "btn btn--primary btn--full", type: "submit" }, "Start"),
   );

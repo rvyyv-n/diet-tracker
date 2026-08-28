@@ -43,22 +43,23 @@ itself live in `plan-spec.md`; design tokens in `design-system.md`.
 - backfill: yesterday stays editable through the whole of the next day, then
   closes; a quiet prompt shows if it was left part-done
 
-## next
-
 **pass 2b — date components and checklist polish**
 
-- replace the native date input and the month / year selector dropdowns with
-  custom components styled from the design system — the native ones look dated
-  and clash with the rest of the UI
-- rotation picker cleanup: inset the options as a distinct panel, a radio-style
-  selected state (not just bold), tighter type on wrapping descriptions
-- simplify the phase banner to `<phase name> · Week N of M` — phase name over
-  number, and drop the kcal target (already shown on the total card). Phase 1
-  "Ramp-up · Week 1 of 2", phase 2 "Working target · Week 3", phase 3 "Pushed".
-- capitalisation pass: the banner line, and tidy the dish / rotation
-  descriptions in `plan.js` (they are verbatim plan text and read scruffy)
-- bump the "Today" heading one step (28 → 36 px) — trial, easy to revert
-- `day.extras` reserved in `newDay()` in pass 2a; the UI for it is a v2 item
+- `src/js/ui/` gained a small control kit: `popover.js` (open / outside-click /
+  Escape), `listbox.js` (a styled `<select>` replacement), `date-dropdowns.js`
+  (day / month / year, for the date of birth) and `date-calendar.js` (a
+  month-grid popover, for the plan start date). `welcome.js` uses these instead
+  of native `type="date"` inputs.
+- rotation picker reworked: recessed panel, left indent, a `● / ○` radio dot,
+  the current pick coral-tinted — reads as a nested choice, not more rows
+- phase banner cut to `<phase name> · Week N` — name over number, kcal dropped
+  (already on the total card). Phases gained a short `name` in `plan.js`.
+- capitalisation: `Ramp-up` in the banner; `D3`'s description lower-cased to
+  match its siblings. The quantity-led descriptions were left as they are.
+- "Today" heading bumped 28 → 36 px (`.today__title`; delete the rule to revert)
+- `day.extras` was reserved in `newDay()` back in pass 2a; its UI is a v2 item
+
+## next
 
 **pass 3 — weight and the adjustment engine**
 

@@ -339,6 +339,14 @@
   color: var(--text-muted);
 }
 
+/* One step up from the shared screen title (display-sm) — the checklist is the
+   home screen and earns a little more presence. Trial; revert to plain
+   .screen__title to undo. */
+.today__title {
+  font: var(--text-display-md);
+  letter-spacing: var(--type-display-md-track);
+}
+
 
 /* running total --------------------------------------------------------- */
 
@@ -507,11 +515,15 @@
 .block-row__swap:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
 
-/* rotation picker -------------------------------------------------- */
+/* rotation picker ------------------------------------------------------
+   Reads as a nested panel, not more checklist rows: recessed surface, a left
+   indent, and a radio dot so the current pick is unmistakable.               */
 
 .rotation {
   display: flex;
   flex-direction: column;
+  padding: var(--space-xxs) 0;
+  background: var(--surface-soft);
   border-top: var(--border-width-hairline) solid var(--border-hairline);
 }
 
@@ -519,22 +531,29 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-xs) var(--space-md) var(--space-xs) var(--space-lg);
   text-align: left;
-  background: var(--surface-canvas);
+  background: transparent;
   border: none;
   cursor: pointer;
   transition: var(--transition-control);
 }
-.rotation__opt + .rotation__opt {
-  border-top: var(--border-width-hairline) solid var(--border-hairline-soft);
-}
 .rotation__opt:active { background: var(--surface-cream-strong); }
 .rotation__opt:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.rotation__opt.is-picked { background: rgba(204, 120, 92, 0.06); }
+
+.rotation__radio {
+  flex: none;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--text-muted-soft);
+}
+.rotation__opt.is-picked .rotation__radio { color: var(--color-primary); }
 
 .rotation__opt-desc {
   flex: 1;
   font: var(--text-body-sm);
+  line-height: 1.35;
   color: var(--text-body);
 }
 .rotation__opt.is-picked .rotation__opt-desc {
@@ -550,3 +569,194 @@
 }
 
 .today__footer { margin-top: var(--space-md); }
+
+
+/* --------------------------------------------------- date controls ---
+   Custom day/month/year dropdowns (date of birth) and a calendar popover
+   (plan start date), replacing the native inputs. Trigger boxes mirror
+   .field__control; panels float on --shadow-float. Press + focus only.       */
+
+.lb,
+.cal {
+  position: relative;
+}
+
+.lb__trigger,
+.cal__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  width: 100%;
+  height: var(--control-height);
+  padding: 10px 12px 10px 14px;
+  background: var(--surface-canvas);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-control);
+  color: var(--text-ink);
+  font: var(--text-body-md);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-control), box-shadow var(--duration-fast) var(--ease-standard);
+}
+.lb__trigger:active,
+.cal__trigger:active { background: var(--surface-card); }
+.lb__trigger:focus-visible,
+.cal__trigger:focus-visible,
+.lb__trigger[aria-expanded="true"],
+.cal__trigger[aria-expanded="true"] {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+
+.lb__value,
+.cal__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lb__value.is-placeholder { color: var(--text-muted-soft); }
+
+.lb__caret,
+.cal__caret {
+  flex: none;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* the three DOB dropdowns on one row: day | month (wider) | year */
+.date-dmy {
+  display: flex;
+  gap: var(--space-xs);
+}
+.date-dmy .lb { flex: 1 1 0; }
+.date-dmy .lb:nth-child(2) { flex-grow: 1.5; }
+.date-dmy.is-invalid .lb__trigger { border-color: var(--status-error); }
+
+/* floating panels ---------------------------------------------------- */
+
+.lb__panel,
+.cal__panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  background: var(--surface-canvas);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-float);
+}
+
+.lb__panel {
+  min-width: 100%;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: var(--space-xxs);
+}
+
+.lb__opt {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-body);
+  font: var(--text-body-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.lb__opt:active { background: var(--surface-cream-strong); }
+.lb__opt:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.lb__opt.is-picked {
+  color: var(--text-ink);
+  font-weight: var(--weight-medium);
+  background: rgba(204, 120, 92, 0.08);
+}
+
+/* calendar --------------------------------------------------------- */
+
+.cal__panel {
+  width: min(320px, calc(100vw - 2 * var(--space-lg)));
+  padding: var(--space-sm);
+}
+
+.cal__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  margin-bottom: var(--space-xs);
+}
+
+.cal__heading {
+  flex: 1;
+  text-align: center;
+  font: var(--text-title-sm);
+  color: var(--text-ink);
+}
+
+.cal__nav {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.cal__nav:active { background: var(--surface-cream-strong); }
+.cal__nav:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.cal__weekdays,
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.cal__weekdays {
+  margin-bottom: 2px;
+}
+.cal__weekdays span {
+  padding: 4px 0;
+  text-align: center;
+  font: var(--text-caption-upper);
+  letter-spacing: var(--type-caption-upper-track);
+  text-transform: uppercase;
+  color: var(--text-muted-soft);
+}
+
+.cal__cell {
+  aspect-ratio: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-body);
+  font: var(--text-body-sm);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.cal__cell.is-blank {
+  cursor: default;
+}
+.cal__cell:not(.is-blank):active { background: var(--surface-cream-strong); }
+.cal__cell:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.cal__cell.is-today {
+  font-weight: var(--weight-medium);
+  color: var(--color-primary);
+}
+.cal__cell.is-selected {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+}

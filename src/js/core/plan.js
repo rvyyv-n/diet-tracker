@@ -59,15 +59,15 @@ export const BLOCKS = [
  */
 export const PHASES = [
   {
-    id: 1, label: "Phase 1 — ramp-up", when: "Weeks 1–2",
+    id: 1, name: "Ramp-up", label: "Phase 1 — ramp-up", when: "Weeks 1–2",
     blocks: ["B1", "B2", "B3", "B4"], kcal: 2565, proteinG: 127,
   },
   {
-    id: 2, label: "Phase 2 — working target", when: "Week 3 onward",
+    id: 2, name: "Working target", label: "Phase 2 — working target", when: "Week 3 onward",
     blocks: ["B1", "B2", "B3", "B4", "A1", "A2"], kcal: 3110, proteinG: 150,
   },
   {
-    id: 3, label: "Phase 3 — pushed", when: "Stalled 2 weeks, or training begins",
+    id: 3, name: "Pushed", label: "Phase 3 — pushed", when: "Stalled 2 weeks, or training begins",
     blocks: ["B1", "B2", "B3", "B4", "A1", "A2", "A3"], kcal: 3690, proteinG: 172,
   },
 ];
@@ -92,7 +92,7 @@ export const ROTATIONS = {
   dinner: [
     { id: "D1", desc: "2 flatbreads + lentil stew + 2-egg curry", kcal: 700, proteinG: 37 },
     { id: "D2", desc: "2 flatbreads + lentil stew + 100 g chicken or beef", kcal: 700, proteinG: 37 },
-    { id: "D3", desc: "Chicken pilaf (1.5 cups) + yogurt (150 g)", kcal: 720, proteinG: 35 },
+    { id: "D3", desc: "chicken pilaf (1.5 cups) + yogurt (150 g)", kcal: 720, proteinG: 35 },
   ],
   shake: [
     { id: "standard", desc: "300 ml milk + 2 tbsp peanut butter + banana + 25 g oats", kcal: 580, proteinG: 22 },

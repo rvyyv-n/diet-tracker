@@ -45,3 +45,20 @@ export function planWeek(startISO, onISO) {
   if (!startISO) return 1;
   return Math.max(1, Math.floor(daysBetween(startISO, onISO) / 7) + 1);
 }
+
+/** Month names, index 0 = January. Used by the date controls and headers. */
+export const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+/** "14 March 2009" from a local ISO date. */
+export function humanDate(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return `${d} ${MONTH_NAMES[m - 1]} ${y}`;
+}
+
+/** Days in a given month. `month1` is 1..12. */
+export function daysInMonth(year, month1) {
+  return new Date(year, month1, 0).getDate();
+}
