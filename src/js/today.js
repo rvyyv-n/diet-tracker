@@ -22,6 +22,7 @@ import {
   chooseRotation,
   blockValue,
   dayTotals,
+  dayAddOns,
   intakeStatus,
   isDayEditable,
 } from "./core/day.js";
@@ -53,9 +54,9 @@ export function renderToday(mountEl) {
 
 // --- data ----------------------------------------------------------------
 
-/** The viewed day's record, or a fresh one at the profile's current phase. */
+/** The viewed day's record, or a fresh one at the profile's current phase + add-ons. */
 function loadViewDay(profile) {
-  return getDay(viewDate) ?? newDay(viewDate, profile.currentPhaseId);
+  return getDay(viewDate) ?? newDay(viewDate, profile.currentPhaseId, profile.addOns);
 }
 
 /** Persist a changed day, then repaint. */
@@ -184,7 +185,7 @@ function checklist(day, editable) {
   return el(
     "ul",
     { class: "checklist" },
-    ...activeBlocks(day.phaseId).map((block) => blockRow(day, block, editable)),
+    ...activeBlocks(dayAddOns(day)).map((block) => blockRow(day, block, editable)),
   );
 }
 

@@ -181,11 +181,31 @@ export function phaseById(id) {
   return PHASES.find((p) => p.id === id) ?? null;
 }
 
-/** The blocks active in a phase, in time-of-day order (see BLOCKS `order`). */
-export function activeBlocks(phaseId) {
+/** Blocks that run every day, in every phase. */
+export const CORE_BLOCK_IDS = ["B1", "B2", "B3", "B4"];
+
+/** Add-on blocks, in the order the adjustment engine turns them on / off. */
+export const ADDON_IDS = ["A1", "A2", "A3"];
+
+/** The add-ons a phase switches on by default (its blocks, minus the core). */
+export function phaseAddOns(phaseId) {
   const phase = phaseById(phaseId);
-  if (!phase) return [];
-  return phase.blocks
+  return phase ? ADDON_IDS.filter((id) => phase.blocks.includes(id)) : [];
+}
+
+/** An add-on list in canonical order, deduped, unknown ids dropped. */
+export function normaliseAddOns(ids) {
+  const set = new Set(ids);
+  return ADDON_IDS.filter((id) => set.has(id));
+}
+
+/**
+ * The blocks active for a day: the four core blocks plus whichever add-ons are
+ * enabled. The add-on list is a snapshot on the day record (see day.js), so the
+ * engine changing the plan later never rewrites past days. Time-of-day order.
+ */
+export function activeBlocks(addOnIds = []) {
+  return [...CORE_BLOCK_IDS, ...normaliseAddOns(addOnIds)]
     .map(blockById)
     .filter(Boolean)
     .sort((a, b) => a.order - b.order);

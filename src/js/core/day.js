@@ -15,6 +15,7 @@ import {
   activeBlocks,
   blockById,
   phaseTarget,
+  phaseAddOns,
   rotationOptionById,
   defaultRotations,
 } from "./plan.js";
@@ -29,10 +30,12 @@ const ON_TRACK_AT = 1.0; // at or above target
 const PARTIAL_AT = 0.7; // partway there; below this is "low"
 
 /** A fresh day at a given phase: nothing completed, rotations at their defaults. */
-export function newDay(date, phaseId) {
+export function newDay(date, phaseId, addOns = phaseAddOns(phaseId)) {
   return {
     date, // ISO "YYYY-MM-DD"
     phaseId,
+    addOns: [...addOns], // which add-on blocks are on, snapshot at creation so a
+    //                      later plan change (the engine) can't rewrite this day
     completed: {}, // block id -> true; an absent key means not done
     rotations: defaultRotations(),
     appetite: null, // optional free note — appetite is the real bottleneck
@@ -40,6 +43,14 @@ export function newDay(date, phaseId) {
     //             custom-recipe feature; nothing reads it yet. It lives on the
     //             day (not its own record) because it changes that day's total.
   };
+}
+
+/**
+ * The add-ons in force for a day: its own snapshot, or — for a day recorded
+ * before add-ons were tracked — the default set for its phase.
+ */
+export function dayAddOns(day) {
+  return day.addOns ?? phaseAddOns(day.phaseId);
 }
 
 /** Toggle a block's completed flag, returning a new day record. */
@@ -81,7 +92,7 @@ export function blockValue(day, blockId) {
  * of the phase's active blocks are done.
  */
 export function dayTotals(day) {
-  const active = activeBlocks(day.phaseId);
+  const active = activeBlocks(dayAddOns(day));
   let kcal = 0;
   let proteinG = 0;
   let done = 0;

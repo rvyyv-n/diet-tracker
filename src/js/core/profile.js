@@ -26,7 +26,9 @@ export const DEFAULT_PROFILE = {
   targetRateKgPerWeek: 0.3,  // plan default; the user can override
   startDate: null,        // ISO date the plan began
   currentPhaseId: 1,      // plan phase the user is on now; app.js advances it
-};                        //   1 -> 2 with the weeks, never to 3 (user-only)
+  addOns: [],             //   1 -> 2 with the weeks, never to 3 (user-only)
+};                        // add-on blocks currently enabled ("A1".."A3"); seeded
+                          // from the phase default, then the engine adjusts it
 
 export function loadProfile() {
   // Merge over the defaults rather than using them only as an absent-record
