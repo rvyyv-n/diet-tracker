@@ -142,8 +142,7 @@ function totalCard(day) {
       "div",
       { class: "daytotal__figure" },
       el("span", { class: `daytotal__kcal ${STATUS_CLASS[status]}` }, NUM.format(totals.kcal)),
-      el("span", { class: "daytotal__unit" }, "kcal"),
-      el("span", { class: "daytotal__target" }, `of ${NUM.format(target.kcal)}`),
+      el("span", { class: "daytotal__target" }, `/ ${NUM.format(target.kcal)} kcal`),
     ),
     el("p", { class: "daytotal__remaining" }, remaining),
     el(
@@ -210,7 +209,12 @@ function blockRow(day, block, editable) {
       el("span", { class: "block-row__name" }, block.name),
       el("span", { class: "block-row__desc" }, resolveDesc(day, block)),
     ),
-    el("span", { class: "block-row__kcal" }, NUM.format(kcal)),
+    el(
+      "span",
+      { class: "block-row__kcal" },
+      NUM.format(kcal),
+      el("span", { class: "block-row__unit" }, "kcal"),
+    ),
   );
 
   const swap =

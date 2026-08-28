@@ -374,17 +374,9 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* "kcal" pinned to the big number in a lighter weight, so the unit reads with
-   the figure rather than only appearing on the target. */
-.daytotal__unit {
-  font: var(--text-body-sm);
-  color: var(--text-muted-soft);
-}
-
 .daytotal__target {
   font: var(--text-metric-sm);
   color: var(--text-muted);
-  margin-left: var(--space-xxs);
 }
 
 .daytotal__remaining {
@@ -509,9 +501,18 @@
 
 .block-row__kcal {
   flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
   font: var(--text-metric-sm);
   color: var(--text-body-strong);
   font-variant-numeric: tabular-nums;
+}
+/* the unit, kept quiet so the number still leads */
+.block-row__unit {
+  font: var(--text-caption);
+  font-weight: var(--weight-regular);
+  color: var(--text-muted-soft);
 }
 .block-row.is-done .block-row__kcal { color: var(--text-muted); }
 

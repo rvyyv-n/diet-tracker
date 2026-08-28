@@ -62,11 +62,17 @@ itself live in `plan-spec.md`; design tokens in `design-system.md`.
 **pass 2c — polish from screenshot feedback**
 
 - phase line moved beneath the "Today" title, not above it
-- the daily total shows a light "kcal" against the big number, target reads
-  "of 2,565"
+- "kcal" shown quietly on each meal row's number (not on the big total), so the
+  figure isn't a bare unexplained number
 - Swap sits on its own recessed strip so it reads as a control
 - `listbox.js` gained keyboard support: type-ahead, ↑/↓, Home/End, Enter/Esc
 - stale "lands in the next build pass" copy on the setup summary fixed
+
+**commit timestamps** — the earlier "flatten to noon UTC" scheme future-dated
+every commit (local date runs ahead of UTC). History was rewritten again to the
+real instant in UTC (`+0000`): correct "N ago" everywhere, no explicit `+05:00`.
+The post-commit hook is gone; `TZ=UTC` on the machines keeps new commits at real
+UTC. Full local time would show a correct absolute clock but state the zone.
 
 ## next
 
