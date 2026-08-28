@@ -12,38 +12,42 @@
  * Meal blocks. `core` blocks run every day; add-ons switch on by phase.
  * A block with a `rotation` draws its calories from the selected rotation option
  * (see day.js), not from the nominal figure here.
+ *
+ * `order` is time of day, spaced by tens so a block can be slotted between two
+ * others without renumbering. The daily checklist renders in this order, not in
+ * ID order — at Phase 2 the snack and pre-bed sit around dinner, not after it.
  */
 export const BLOCKS = [
   {
-    id: "B1", name: "Breakfast", kcal: 705, proteinG: 35, core: true, rotation: "breakfast",
+    id: "B1", order: 10, name: "Breakfast", kcal: 705, proteinG: 35, core: true, rotation: "breakfast",
     desc: "3 eggs in clarified butter + 2 flatbreads + 250 ml full-fat milk",
   },
   {
-    id: "B2", name: "Shake", kcal: 580, proteinG: 22, core: true, rotation: "shake",
+    id: "B2", order: 20, name: "Shake", kcal: 580, proteinG: 22, core: true, rotation: "shake",
     desc: "300 ml milk + 2 tbsp peanut butter + banana + 25 g oats",
     note: "Highest skip risk — keep it prominent in the UI.",
   },
   {
-    id: "B3", name: "Lunch", kcal: 580, proteinG: 33, core: true, rotation: "lunch",
+    id: "B3", order: 30, name: "Lunch", kcal: 580, proteinG: 33, core: true, rotation: "lunch",
     desc: "Pick from the lunch rotation.",
   },
   {
-    id: "B4", name: "Dinner", kcal: 700, proteinG: 37, core: true, rotation: "dinner",
-    desc: "Pick from the dinner rotation.",
-  },
-  {
-    id: "A1", name: "Snack", kcal: 290, proteinG: 11, core: false,
+    id: "A1", order: 40, name: "Snack", kcal: 290, proteinG: 11, core: false,
     desc: "200 g yogurt + 3 dates + 15 g almonds",
-  },
-  {
-    id: "A2", name: "Pre-bed", kcal: 255, proteinG: 12, core: false,
-    desc: "250 ml full-fat milk + 1 tbsp peanut butter",
   },
   {
     // A3 keeps a fixed value for now: it shares the shake recipes but is a
     // separate serving from B2, so it does not follow the B2 rotation choice.
-    id: "A3", name: "2nd shake", kcal: 580, proteinG: 22, core: false,
+    id: "A3", order: 50, name: "2nd shake", kcal: 580, proteinG: 22, core: false,
     desc: "Heavy shake — optional, or post-training.",
+  },
+  {
+    id: "B4", order: 60, name: "Dinner", kcal: 700, proteinG: 37, core: true, rotation: "dinner",
+    desc: "Pick from the dinner rotation.",
+  },
+  {
+    id: "A2", order: 70, name: "Pre-bed", kcal: 255, proteinG: 12, core: false,
+    desc: "250 ml full-fat milk + 1 tbsp peanut butter",
   },
 ];
 
@@ -177,11 +181,14 @@ export function phaseById(id) {
   return PHASES.find((p) => p.id === id) ?? null;
 }
 
-/** The blocks active in a phase, in plan order. */
+/** The blocks active in a phase, in time-of-day order (see BLOCKS `order`). */
 export function activeBlocks(phaseId) {
   const phase = phaseById(phaseId);
   if (!phase) return [];
-  return phase.blocks.map(blockById).filter(Boolean);
+  return phase.blocks
+    .map(blockById)
+    .filter(Boolean)
+    .sort((a, b) => a.order - b.order);
 }
 
 /** The kcal / protein a phase is aiming for. */

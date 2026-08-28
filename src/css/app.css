@@ -304,9 +304,249 @@
 
 /* ------------------------------------------------------- intake status ---
    The deliberate weight-gain inversion (tokens.css / docs/design-system.md):
-   "low" is the failure state, so it is the one that turns red. These helpers
-   are here for the daily screen in the next pass.                           */
+   "low" is the failure state, so it is the one that turns red.               */
 
 .is-on-track { color: var(--intake-on-track); }
 .is-partial  { color: var(--intake-partial); }
 .is-low      { color: var(--intake-low); }
+
+
+/* --------------------------------------------------------------- today ---
+   The daily checklist. Big tap rows (--touch-target), a mono running total in
+   the intake-status colour, an inline rotation swap. Press states only.      */
+
+.today { gap: var(--space-md); }
+
+.today__daterow {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.today__daterow .btn--text {
+  margin-left: auto;
+  padding-block: 0;
+}
+
+.today__closed {
+  width: 100%;
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+
+.phase-banner {
+  font: var(--text-caption);
+  color: var(--text-muted);
+}
+
+
+/* running total --------------------------------------------------------- */
+
+.daytotal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
+.daytotal__figure {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+}
+
+.daytotal__kcal {
+  font: var(--text-metric);
+  font-variant-numeric: tabular-nums;
+}
+
+.daytotal__target {
+  font: var(--text-metric-sm);
+  color: var(--text-muted);
+}
+
+.daytotal__remaining {
+  font: var(--text-body-md);
+  color: var(--text-body-strong);
+}
+
+.daytotal__protein {
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* backfill nudge ------------------------------------------------------ */
+
+.backfill {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  font: var(--text-body-sm);
+  color: var(--text-body);
+  background: var(--surface-soft);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.backfill:active { background: var(--surface-card); }
+.backfill:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+
+/* checklist --------------------------------------------------------- */
+
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.block-row {
+  background: var(--surface-card);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+/* B2 — the shake is the highest skip risk (plan-spec.md), so it carries a
+   coral edge the other rows don't. */
+.block-row--shake {
+  border-color: var(--color-primary);
+  border-left-width: 3px;
+}
+
+.block-row__lead {
+  display: flex;
+  align-items: stretch;
+}
+
+.block-row__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: var(--touch-target);
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.block-row__main:active { background: var(--surface-cream-strong); }
+.block-row__main:disabled { cursor: default; }
+.block-row__main:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.block-row__tick {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  font: var(--text-body-sm);
+  color: var(--text-on-primary);
+  background: var(--surface-canvas);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-sm);
+}
+.block-row__tick.is-done {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.block-row__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.block-row__name {
+  font: var(--text-title-sm);
+  color: var(--text-ink);
+}
+
+.block-row__desc {
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.block-row.is-done .block-row__name { color: var(--text-muted); }
+.block-row.is-done .block-row__desc { text-decoration: line-through; }
+
+.block-row__kcal {
+  flex: none;
+  font: var(--text-metric-sm);
+  color: var(--text-body-strong);
+  font-variant-numeric: tabular-nums;
+}
+.block-row.is-done .block-row__kcal { color: var(--text-muted); }
+
+.block-row__swap {
+  flex: none;
+  padding: 0 var(--space-md);
+  font: var(--text-caption);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-left: var(--border-width-hairline) solid var(--border-hairline);
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.block-row__swap:active { background: var(--surface-cream-strong); }
+.block-row__swap:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+
+/* rotation picker -------------------------------------------------- */
+
+.rotation {
+  display: flex;
+  flex-direction: column;
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+}
+
+.rotation__opt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  background: var(--surface-canvas);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.rotation__opt + .rotation__opt {
+  border-top: var(--border-width-hairline) solid var(--border-hairline-soft);
+}
+.rotation__opt:active { background: var(--surface-cream-strong); }
+.rotation__opt:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.rotation__opt-desc {
+  flex: 1;
+  font: var(--text-body-sm);
+  color: var(--text-body);
+}
+.rotation__opt.is-picked .rotation__opt-desc {
+  color: var(--text-ink);
+  font-weight: var(--weight-medium);
+}
+
+.rotation__opt-kcal {
+  flex: none;
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.today__footer { margin-top: var(--space-md); }

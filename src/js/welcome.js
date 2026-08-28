@@ -1,12 +1,13 @@
 /**
- * welcome.js — first-run screen, and the whole app for build pass 1.
+ * welcome.js — the first-run profile screen.
  *
  * It collects the handful of figures the adjustment engine needs — height,
  * weight, date of birth, target rate, start date — and stores them locally via
  * profile.js. Nothing here is committed to the repo; it lives only in this
- * browser. The daily checklist, weight log and adjustment engine come next, and
- * read the profile saved here.
+ * browser. app.js shows this screen until the profile is complete, then hands
+ * over to the daily checklist; it stays reachable afterwards from "Edit setup".
  *
+ * Entry point: renderWelcome(mount, { onComplete }).
  * Copy convention: sentence case throughout (first word + proper nouns only).
  */
 
@@ -17,29 +18,17 @@ import {
   validate,
   ageYears,
 } from "./core/profile.js";
-import { isAvailable } from "./core/storage.js";
 import { TARGET_RATE_KG_PER_WEEK } from "./core/plan.js";
+import { todayISO } from "./core/dates.js";
+import { el } from "./ui/dom.js";
 
-const app = document.getElementById("app");
+// Both set by renderWelcome(): the node to render into, and the callback that
+// runs when the user confirms from the summary screen.
+let mount;
+let done = () => {};
+
 const CM_PER_INCH = 2.54;
-
-/** Tiny DOM helper: el("div", { class: "x", onclick: fn }, child, "text"). */
-function el(tag, props = {}, ...kids) {
-  const node = document.createElement(tag);
-  for (const [k, v] of Object.entries(props)) {
-    if (v == null) continue;
-    if (k === "class") node.className = v;
-    else if (k.startsWith("on") && typeof v === "function") node.addEventListener(k.slice(2), v);
-    else node.setAttribute(k, v);
-  }
-  for (const kid of kids) {
-    if (kid == null) continue;
-    node.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
-  }
-  return node;
-}
-
-const today = () => new Date().toISOString().slice(0, 10);
+const today = todayISO;
 
 // Fields other than height, split around where the height row sits visually so
 // that on-submit focus lands on the first invalid field in reading order.
@@ -253,7 +242,7 @@ function renderForm(profile) {
     el("button", { class: "btn btn--primary btn--full", type: "submit" }, "Start"),
   );
 
-  app.replaceChildren(
+  mount.replaceChildren(
     el(
       "section",
       { class: "screen" },
@@ -288,7 +277,7 @@ function heightSummary(profile) {
 
 function renderDone(profile) {
   const age = ageYears(profile);
-  app.replaceChildren(
+  mount.replaceChildren(
     el(
       "section",
       { class: "screen" },
@@ -307,34 +296,26 @@ function renderDone(profile) {
         summaryRow("Target", `${profile.targetRateKgPerWeek} kg / wk`),
         summaryRow("Start date", profile.startDate || today()),
       ),
-      el("button", { class: "btn btn--text", onclick: () => renderForm(profile) }, "Edit details"),
-    ),
-  );
-}
-
-function renderStorageOff() {
-  app.replaceChildren(
-    el(
-      "section",
-      { class: "screen" },
-      el("h1", { class: "screen__title" }, "Storage is off"),
       el(
-        "p",
-        { class: "screen__intro" },
-        "This app keeps everything in your browser’s local storage, and it looks disabled — a private window, or blocked for this site. Enable it and reload.",
+        "div",
+        { class: "form" },
+        el("button", { class: "btn btn--primary btn--full", onclick: () => done() }, "Start tracking"),
+        el("button", { class: "btn btn--text", onclick: () => renderForm(profile) }, "Edit details"),
       ),
     ),
   );
 }
 
-function boot() {
-  if (!isAvailable()) {
-    renderStorageOff();
-    return;
-  }
+/**
+ * Render the profile screen into `mountEl`. When a complete profile already
+ * exists we open on its summary — this is the "Edit setup" path — otherwise on
+ * the empty form. `onComplete` runs when the user confirms from the summary.
+ * The storage-availability check lives in app.js, ahead of this call.
+ */
+export function renderWelcome(mountEl, { onComplete } = {}) {
+  mount = mountEl;
+  done = typeof onComplete === "function" ? onComplete : () => {};
   const profile = loadProfile();
   if (isComplete(profile)) renderDone(profile);
   else renderForm(profile);
 }
-
-boot();

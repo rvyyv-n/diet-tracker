@@ -25,10 +25,14 @@ export const DEFAULT_PROFILE = {
   startWeightKg: null,
   targetRateKgPerWeek: 0.3,  // plan default; the user can override
   startDate: null,        // ISO date the plan began
-};
+  currentPhaseId: 1,      // plan phase the user is on now; app.js advances it
+};                        //   1 -> 2 with the weeks, never to 3 (user-only)
 
 export function loadProfile() {
-  return load(RECORD, { ...DEFAULT_PROFILE });
+  // Merge over the defaults rather than using them only as an absent-record
+  // fallback: a profile saved by an earlier version is missing any field added
+  // since, and spreading it on top fills those in without a schema-version bump.
+  return { ...DEFAULT_PROFILE, ...load(RECORD, {}) };
 }
 
 export function saveProfile(profile) {

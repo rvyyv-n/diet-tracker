@@ -18,6 +18,7 @@ import {
   rotationOptionById,
   defaultRotations,
 } from "./plan.js";
+import { addDays } from "./dates.js";
 
 /**
  * Intake status cut-offs, as a fraction of the phase's kcal target. The naming
@@ -35,6 +36,9 @@ export function newDay(date, phaseId) {
     completed: {}, // block id -> true; an absent key means not done
     rotations: defaultRotations(),
     appetite: null, // optional free note — appetite is the real bottleneck
+    extras: [], // off-plan foods: { name, kcal, proteinG }. Reserved for the v2
+    //             custom-recipe feature; nothing reads it yet. It lives on the
+    //             day (not its own record) because it changes that day's total.
   };
 }
 
@@ -109,4 +113,14 @@ export function intakeStatus(day) {
 export function dayAdherence(day) {
   const { done, total } = dayTotals(day);
   return total ? done / total : 0;
+}
+
+/**
+ * Whether a day can still be edited. Today is always open; yesterday stays open
+ * through the whole of today and then closes (docs/plan-spec.md — "missed_days":
+ * backfillable for 24 h). Anything older is read-only, so the adherence history
+ * that feeds the adjustment engine can't be rewritten after the fact.
+ */
+export function isDayEditable(day, todayIso) {
+  return day.date === todayIso || day.date === addDays(todayIso, -1);
 }
