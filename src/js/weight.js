@@ -34,11 +34,20 @@ function render() {
   const thisWeek = planWeek(start, todayISO());
   const thisWeekAdherence = adherence.find((a) => a.week === thisWeek)?.pct ?? null;
 
+  const count = series.length;
+  const subtitle =
+    `Week ${thisWeek}` + (count ? ` · ${count} weigh-in${count === 1 ? "" : "s"}` : "");
+
   mount.replaceChildren(
     el(
       "section",
       { class: "screen weight" },
-      el("h1", { class: "screen__title screen__title--lg" }, "Weight"),
+      el(
+        "div",
+        { class: "screen-head" },
+        el("h1", { class: "screen__title screen__title--lg" }, "Weight"),
+        el("p", { class: "phase-banner" }, subtitle),
+      ),
       entryCard(),
       statsCard(latest, latestGain, thisWeekAdherence),
       chartCard(series),
@@ -188,24 +197,20 @@ function statsCard(latest, latestGain, adherencePct) {
     statRow("Latest", latest ? `${latest.kg} kg` : "—"),
     statRow(
       "4-week gain",
-      el("span", { class: gainClass }, latestGain == null ? "—" : `${latestGain.toFixed(2)} kg/wk`),
-      `target ${band.min}–${band.max}`,
+      latestGain == null
+        ? "—"
+        : el("span", { class: gainClass }, `${latestGain.toFixed(2)} kg/wk`),
     ),
     statRow("This week's adherence", adherencePct == null ? "—" : `${adherencePct}%`),
   );
 }
 
-function statRow(key, value, sub) {
+function statRow(key, value) {
   return el(
     "div",
     { class: "summary__row" },
     el("span", { class: "summary__key" }, key),
-    el(
-      "span",
-      { class: "summary__val" },
-      value,
-      sub ? el("span", { class: "weight__sub" }, ` ${sub}`) : null,
-    ),
+    el("span", { class: "summary__val" }, value),
   );
 }
 

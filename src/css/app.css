@@ -331,8 +331,8 @@
 
 .today { gap: var(--space-md); }
 
-/* Title, then the phase line tucked beneath it. */
-.today__header {
+/* A screen title with a small line tucked beneath it (Today, Weight). */
+.screen-head {
   display: flex;
   flex-direction: column;
   gap: var(--space-xxs);
@@ -626,7 +626,19 @@
   font-variant-numeric: tabular-nums;
 }
 
-.today__footer { margin-top: var(--space-md); }
+/* A quiet centred link, not a button — it moves into the settings screen in a
+   later pass. */
+.today__footer {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-lg);
+}
+.today__footer .btn--text {
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.today__footer .btn--text:active { color: var(--text-ink); }
 
 
 /* --------------------------------------------------- date controls ---
@@ -871,11 +883,6 @@
   gap: var(--space-md);
 }
 .weight__entry .btn { align-self: flex-start; }
-
-.weight__sub {
-  font: var(--text-body-sm);
-  color: var(--text-muted-soft);
-}
 
 /* trend chart — inline SVG, no library */
 .weight__chart {

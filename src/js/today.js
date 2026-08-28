@@ -175,7 +175,7 @@ function dateHeader(profile, day, editable) {
   const isToday = day.date === todayISO();
   return el(
     "div",
-    { class: "today__header" },
+    { class: "screen-head" },
     el(
       "div",
       { class: "today__daterow" },
