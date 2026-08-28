@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# post-commit — pin every commit to 12:00:00 +0000 on its own calendar date.
+#
+# Why: a commit's author/committer timestamp otherwise carries the machine's
+# UTC offset (e.g. +0500) and the real time of day. Both leak location and
+# working-hours information into a public history. Flattening every commit to
+# noon UTC removes the offset and the pattern while keeping the date truthful.
+#
+# This runs for `git commit` (including --amend, cherry-pick, merge). It does
+# NOT fire for commits replayed by `git rebase`; rewriting a range of history
+# is a deliberate filter-branch/filter-repo job, not this hook's concern.
+#
+# One-time setup per clone (this setting is local and cannot be committed):
+#
+#     git config core.hooksPath .githooks
+#
+# The DT_TZ_HOOK guard stops the amend below from re-triggering the hook.
+
+[ -n "$DT_TZ_HOOK" ] && exit 0
+
+day=$(git log -1 --format=%ad --date=format:%Y-%m-%d)
+neutral="$day 12:00:00 +0000"
+
+DT_TZ_HOOK=1 \
+GIT_AUTHOR_DATE="$neutral" \
+GIT_COMMITTER_DATE="$neutral" \
+  git commit --amend --no-edit --date="$neutral" >/dev/null 2>&1
