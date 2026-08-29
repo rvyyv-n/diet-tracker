@@ -11,19 +11,42 @@
 
 
 /* --------------------------------------------------------------- shell ---
-   Phone-first single column, centred with a gutter on wider screens.        */
+   Phone-first single column, centred with a gutter on wider screens. The
+   column width is fluid (--app-max-width is a clamp), and the side padding is
+   tight on a phone and roomier from tablet up, so a small screen spends its
+   pixels on content rather than margins.                                     */
+
+html,
+body {
+  /* keep the scrollbar gutter reserved so content doesn't shift when a screen
+     grows past one viewport */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
 
 .app-shell {
+  width: 100%;
   max-width: var(--app-max-width);
   margin: 0 auto;
   min-height: 100dvh;
-  padding: var(--space-xl) var(--space-lg) var(--space-section);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-md) var(--space-md) var(--space-section);
+}
+
+@media (min-width: 600px) {
+  .app-shell {
+    padding: var(--space-xl) var(--space-lg) var(--space-section);
+  }
 }
 
 /* When the tab bar is present it fixes to the bottom, so the scrolling content
    above it needs room to clear it (bar height + the iOS home-indicator inset).
    The first-run screen has no bar and keeps the plain .app-shell padding. */
 .app-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding-bottom: calc(64px + env(safe-area-inset-bottom));
 }
 
@@ -31,6 +54,7 @@
 /* -------------------------------------------------------------- screen --- */
 
 .screen {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
@@ -1388,3 +1412,115 @@
   gap: var(--space-sm);
 }
 .weight__entry .weight__save .btn { align-self: auto; }
+
+
+/* ------------------------------------------------------------- profile ---
+   The Settings screen's Profile card — the plan at a glance, the whole card a
+   tap target back into the setup form. Replaces the old "Edit setup" row.    */
+
+.set2-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  min-height: 72px;
+  padding: var(--space-md);
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.set2-profile:active { background: var(--surface-cream-strong); }
+.set2-profile:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.set2-profile__avatar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-soft);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  color: var(--text-muted);
+}
+.set2-profile__avatar svg { width: 22px; height: 22px; }
+
+.set2-profile__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.set2-profile__name {
+  font: var(--text-title-sm);
+  color: var(--text-ink);
+}
+
+.set2-profile__meta {
+  font: var(--text-caption);
+  color: var(--text-muted);
+}
+
+
+/* ============================================================================
+   micro-interactions — quiet, short, and disabled under prefers-reduced-motion
+   (the blanket rule lives in tokens.css). Press + focus states only, as ever.
+   ========================================================================== */
+
+/* checklist rows and the day total ease their colour rather than snapping */
+.block-row,
+.block-row__tick {
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+.block-row__name,
+.block-row__desc,
+.block-row__kcal,
+.daytotal__kcal,
+.daytotal__remaining,
+.daytotal__protein {
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+/* anything that expands in place — the rotation picker, the import preview,
+   the reset confirm — slides down a few pixels as it fades in */
+@keyframes accordion-drop {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rotation,
+.set-panel,
+.set-confirm {
+  animation: accordion-drop 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* the transient Copied / Saved acknowledgement */
+@keyframes ack-fade {
+  from { opacity: 0; transform: translateX(-3px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.ack {
+  animation: ack-fade 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* a small give on the tab icon when pressed */
+.tabbar__btn .tabbar__icon {
+  transition: transform 0.12s var(--ease-standard);
+}
+.tabbar__btn:active .tabbar__icon {
+  transform: scale(0.92);
+}
+
+/* content crossfade on a tab change — app.js toggles .tab-switching to
+   re-trigger it */
+@keyframes tab-crossfade {
+  from { opacity: 0.65; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.tab-switching {
+  animation: tab-crossfade 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+}
