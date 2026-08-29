@@ -1,4 +1,4 @@
-# <img src="assets/icon.svg" alt="" width="30" align="top"> Rise
+# Rise 🍳
 
 **a diet tracker and planner.** local-first, offline, no accounts.
 
