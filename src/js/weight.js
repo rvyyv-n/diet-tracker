@@ -8,6 +8,7 @@
 
 import { el } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
+import { dateCalendar } from "./ui/date-calendar.js";
 import { loadProfile } from "./core/profile.js";
 import { TARGET_RATE_KG_PER_WEEK } from "./core/plan.js";
 import { todayISO, humanDate, planWeek } from "./core/dates.js";
@@ -17,10 +18,14 @@ import { weeklyWeights, weeklyGains, rollingGain, weeklyAdherence } from "./core
 
 let mount;
 let editing = null; // ISO date of the history row being edited, or null
+let entryDate = todayISO(); // the day the weigh-in form is filing to
+let justSaved = false; // shows the transient "Saved" badge for ~2s
 
 export function renderWeight(mountEl) {
   mount = mountEl;
   editing = null;
+  entryDate = todayISO();
+  justSaved = false;
   render();
 }
 
@@ -139,7 +144,16 @@ function chartCard(series) {
 }
 
 function entryCard() {
-  const existing = getWeight(todayISO());
+  const today = todayISO();
+  if (entryDate > today) entryDate = today;
+  const existing = getWeight(entryDate);
+  const isToday = entryDate === today;
+
+  const cal = dateCalendar({ value: entryDate, max: today });
+  cal.onChange((iso) => {
+    entryDate = iso;
+    render();
+  });
 
   const input = el("input", {
     class: "field__input",
@@ -152,15 +166,14 @@ function entryCard() {
   });
   if (existing != null) input.value = existing;
 
-  const hint = el(
-    "span",
-    { class: "field__hint" },
-    existing != null
-      ? "Logged for today."
-      : "Same day each week — morning, after the bathroom, before food or water.",
-  );
+  let restingHint;
+  if (existing != null) restingHint = `Logged for ${humanDate(entryDate)}.`;
+  else if (isToday)
+    restingHint = "Same day each week — morning, after the bathroom, before food or water.";
+  else restingHint = `Backdating to ${humanDate(entryDate)}.`;
+  const hint = el("span", { class: "field__hint" }, restingHint);
 
-  const ack = el("span", { class: "ack", hidden: "" }, "Saved");
+  const ack = justSaved ? el("span", { class: "ack" }, "Saved") : null;
   const save = el("button", { class: "btn btn--primary", type: "button" }, "Save");
   save.addEventListener("click", () => {
     const raw = input.value.trim();
@@ -171,18 +184,28 @@ function entryCard() {
       input.classList.add("is-invalid");
       return;
     }
-    logWeight(todayISO(), kg);
-    ack.hidden = false;
-    setTimeout(render, 1500);
+    logWeight(entryDate, kg);
+    justSaved = true;
+    setTimeout(() => {
+      justSaved = false;
+      render();
+    }, 2000);
+    render();
   });
 
   return el(
     "div",
     { class: "card weight__entry" },
     el(
+      "div",
+      { class: "field" },
+      el("span", { class: "field__label" }, "Weigh-in date"),
+      cal.node,
+    ),
+    el(
       "label",
       { class: "field" },
-      el("span", { class: "field__label" }, `Today — ${humanDate(todayISO())}`),
+      el("span", { class: "field__label" }, "Weight"),
       el("span", { class: "field__control" }, input),
       hint,
     ),
