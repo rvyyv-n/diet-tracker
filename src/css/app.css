@@ -892,6 +892,24 @@ body {
 }
 .weight__entry .btn { align-self: flex-start; }
 
+/* the weigh-in date sits on one line — label left, a compact calendar trigger
+   right — rather than stacking full-width above the weight field */
+.weight__daterow {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.weight__daterow .field__label { flex: none; }
+.weight__daterow .cal { flex: none; }
+.weight__daterow .cal__trigger {
+  width: auto;
+  height: auto;
+  padding: 6px var(--space-sm);
+  font: var(--text-body-sm);
+}
+.weight__daterow .cal__value { flex: none; overflow: visible; }
+
 /* trend chart — inline SVG, no library */
 .weight__chart {
   display: flex;
@@ -1318,8 +1336,7 @@ body {
 .about2__sep { color: var(--border-on-dark); }
 
 .about2__sig {
-  font: var(--text-code);
-  font-size: 12px;
+  font: var(--text-body-sm);
   color: var(--text-on-dark-soft);
 }
 

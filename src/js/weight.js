@@ -198,14 +198,13 @@ function entryCard() {
     { class: "card weight__entry" },
     el(
       "div",
-      { class: "field" },
+      { class: "field weight__daterow" },
       el("span", { class: "field__label" }, "Weigh-in date"),
       cal.node,
     ),
     el(
       "label",
       { class: "field" },
-      el("span", { class: "field__label" }, "Weight"),
       el("span", { class: "field__control" }, input),
       hint,
     ),
