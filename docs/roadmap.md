@@ -109,41 +109,38 @@ Deferred to v1 packaging, to land with the settings/about screen: the setup
 screen's "Start tracking" / "Edit details" layout, and title lengths across
 screens.
 
+**pass 4 — the Settings / About screen + a consistency pass**
+
+Built from `docs/handoff/` (a Claude Design export: `SPEC.md`, `BUILD-PROMPT.md`,
+`additions.css`), now removed.
+
+- `settings.js` — a third tab. Setup (Edit setup, back into the profile form),
+  Data (Export data — clipboard primary, a small "Download file" secondary —
+  and Import data with a preview panel), a reset row behind a confirm panel,
+  and a dark-navy About block (`Diet Tracker · v1.0.0`, `schema wgt v1`, the
+  on-device note, a Source-on-GitHub link). One delegated `data-act` handler.
+- `core/backup.js` — `exportAll()` bundles the three `wgt:*` records into one
+  envelope; `importAll()` writes them back and refuses a newer `schemaVersion`.
+  `core/storage.js` gained `clear()` for the reset.
+- `ui/icons.js` — the app's inline Lucide 0.469 glyph set, stroke 1.75. The
+  tab bar is now `.tabbar--icons` (glyph above label, three tabs); Today's
+  tick and Weight's row pencil use it too.
+- Consistency: `.group__label` (an uppercase tracked label above a card) is
+  shared by Settings and by Weight's Trend / History. The adjustment
+  suggestion lost its coral left edge — which collided with the shake edge —
+  and became a recessed panel; coral stays on its Apply button only.
+- Carried-in fixes cleared: Weight history rows no longer overflow on a phone
+  (single-line rows, week label hidden on read rows, kg back to ~20px), and
+  the Settings rows are quiet list rows rather than heavy filled cards.
+
 ## next
 
-**pass 4 — v1 release packaging**
+**v1 release packaging**
 
 - PWA manifest + iOS meta + app icons + a cache-first service worker (offline)
 - safe-area insets throughout (partly done — tab bar and content already clear
   the home indicator)
-- data export / import as JSON — everything is in `localStorage`
-- a Settings / About screen: Edit setup, export / import, version, reset
 - GitHub Pages (deploy from `main`, root; no build step), then tag v1
-
-Carried-in fixes for this pass:
-
-- **Weight history rows are cramped on a phone.** The 5-column grid (week /
-  full-date / display-size kg / delta / pen) overflows ~330 px: the date wraps
-  to three lines and "62.2 kg" breaks across two. Fix in code, not design —
-  (a) a `shortDate(iso)` → "24 Aug 2026" helper in `dates.js` for the history
-  rows, (b) drop `.weight__row-kg` from display size to ~20 px (the big mono
-  size belongs to the single latest-weight figure, not every row), (c) wrap
-  number + unit in a `white-space: nowrap` span, (d) restructure to a two-line
-  row: `Week N · date` over `kg  delta`, pen right-aligned across both. ~15
-  lines across `weight.js` and `app.css`.
-- **Settings rows are too heavy.** The generated screen gives each action a fat
-  filled card-row with a bold title and two explanatory lines — reads nothing
-  like a restrained Claude/Anthropic screen. Slim to quiet list rows (action
-  left, chevron or small secondary control right, one muted line only where a
-  word is actually needed). Collapse "Copy export to clipboard" + "Download
-  .json" into one **Export data** row (clipboard primary, small "download file"
-  secondary). Cut the explanatory copy hard.
-- **About block.** Make it small and tight: line break after each sentence, not
-  wrapped paragraphs. Contents: `Version 1.0.0`, schema version (`wgt v1`,
-  quiet — for debugging imports), a one-line on-device/no-network note, then a
-  links row — Source on GitHub, a personal `@handle`, optional Discord. Handles
-  are placeholders until the user supplies real ones; GitHub Pages is public,
-  so only handles they're fine being public.
 
 ## later
 
