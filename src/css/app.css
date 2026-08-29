@@ -1295,7 +1295,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  margin-top: var(--space-sm);
+  /* pull up against the section gap so it sits closer to the reset row */
+  margin-top: calc(-1 * var(--space-xs));
   padding: var(--space-lg) var(--space-md);
   background: var(--surface-dark);
   border-radius: var(--radius-card);

@@ -8,8 +8,8 @@
  * This screen is view-only over storage — all reading and writing of records
  * goes through core/backup.js and core/storage.js. A single delegated handler
  * dispatches on `data-act`; every action ends by mutating module state and
- * re-rendering, except the two transient acknowledgements (Copied / Saved),
- * which touch the live DOM directly so a re-render doesn't blow them away.
+ * re-rendering, except the transient "Copied" acknowledgement, which swaps the
+ * button's own text so a re-render doesn't blow it away.
  *
  * Copy convention: sentence case, matching the rest of the app.
  */
@@ -143,28 +143,18 @@ function errorPanel() {
 function exportItem() {
   return el(
     "div",
-    { class: "set2-item" },
+    { class: "set2-row set2-row--static" },
+    el("span", { class: "set2-row__icon", "aria-hidden": "true" }, icon("download")),
     el(
-      "div",
-      { class: "set2-row set2-row--static" },
-      el("span", { class: "set2-row__icon", "aria-hidden": "true" }, icon("download")),
-      el(
-        "span",
-        { class: "set2-row__body" },
-        el("span", { class: "set2-row__name" }, "Export data"),
-        el("span", { class: "set2-row__desc" }, "Copy all records as JSON to clipboard."),
-      ),
-      el(
-        "button",
-        { class: "btn btn--secondary btn--sm", type: "button", "data-act": "export-copy" },
-        "Copy JSON",
-      ),
+      "span",
+      { class: "set2-row__body" },
+      el("span", { class: "set2-row__name" }, "Export data"),
+      el("span", { class: "set2-row__desc" }, "Copy all records as JSON to clipboard."),
     ),
     el(
       "button",
-      { class: "set2-sub", type: "button", "data-act": "export-file" },
-      el("span", { class: "set2-sub__icon", "aria-hidden": "true" }, icon("arrow-down-to-line", { size: 15 })),
-      el("span", {}, "Download .json file"),
+      { class: "btn btn--secondary btn--sm", type: "button", "data-act": "export-copy" },
+      "Copy JSON",
     ),
   );
 }
@@ -283,7 +273,7 @@ function aboutBlock() {
       { class: "about2__links" },
       el("a", { class: "about2__link", href: REPO_URL, target: "_blank", rel: "noopener" }, "Source on GitHub"),
       el("span", { class: "about2__sep", "aria-hidden": "true" }, "·"),
-      el("span", { class: "about2__sig" }, "Discord @rvyyv-n"),
+      el("span", { class: "about2__sig" }, "@rvyyv-n"),
     ),
   );
 }
@@ -301,9 +291,6 @@ function onAction(event) {
       break;
     case "export-copy":
       exportToClipboard(target);
-      break;
-    case "export-file":
-      exportToFile(target);
       break;
     case "import-pick":
       if (pending || importError) {
@@ -354,25 +341,6 @@ function exportToClipboard(btn) {
       /* clipboard blocked (insecure context, permissions) — the download still works */
     },
   );
-}
-
-function exportToFile(subBtn) {
-  const json = JSON.stringify(exportAll(), null, 2);
-  const date = new Date().toISOString().slice(0, 10);
-  const blob = new Blob([json], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `wgt-export-${date}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-
-  const label = subBtn.querySelector("span:last-child");
-  const original = label.textContent;
-  label.textContent = "Saved";
-  setTimeout(() => {
-    label.textContent = original;
-  }, 2000);
 }
 
 function onFileChosen(event) {

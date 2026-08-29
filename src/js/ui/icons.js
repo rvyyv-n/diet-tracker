@@ -22,7 +22,6 @@ const PATHS = {
   ],
   download: ["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", "m7 10 5 5 5-5", "M12 15V3"],
   upload: ["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", "m17 8-5-5-5 5", "M12 3v12"],
-  "arrow-down-to-line": ["M12 17V3", "m6 11 6 6 6-6", "M19 21H5"],
   "rotate-ccw": ["M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", "M3 3v5h5"],
   "chevron-right": ["m9 18 6-6-6-6"],
   "square-check-big": [
