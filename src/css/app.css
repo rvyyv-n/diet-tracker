@@ -926,13 +926,37 @@
 
 .weight__row {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr auto auto auto;
   align-items: baseline;
   gap: var(--space-sm);
   padding-top: var(--space-xs);
   border-top: var(--border-width-hairline) solid var(--border-hairline-soft);
 }
 .weight__row:first-of-type { border-top: none; }
+
+/* per-row pencil — edits that week's reading in place */
+.weight__row-edit {
+  align-self: center;
+  display: inline-flex;
+  padding: 4px;
+  color: var(--text-muted-soft);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.weight__row-edit:active { color: var(--color-primary); background: var(--surface-cream-strong); }
+.weight__row-edit:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+/* the row while it's being edited: label, input, Save, Cancel */
+.weight__row--edit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.weight__row-input { flex: 1; min-width: 0; }
+.weight__row--edit .btn { padding: 8px 12px; }
 
 .weight__row-wk {
   font: var(--text-caption);

@@ -14,10 +14,18 @@ import { allWeights, getWeight, logWeight } from "./core/weights.js";
 import { allDays } from "./core/days.js";
 import { weeklyWeights, weeklyGains, rollingGain, weeklyAdherence } from "./core/trend.js";
 
+// A small pencil, sized to the row text. currentColor so CSS controls the tint.
+const PEN_SVG =
+  '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">' +
+  '<path d="M10.6 2.1l3.3 3.3-8 8H2.6v-3.3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>' +
+  '<path d="M9.4 3.3l3.3 3.3" stroke="currentColor" stroke-width="1.4"/></svg>';
+
 let mount;
+let editing = null; // ISO date of the history row being edited, or null
 
 export function renderWeight(mountEl) {
   mount = mountEl;
+  editing = null;
   render();
 }
 
@@ -148,7 +156,7 @@ function entryCard() {
     "span",
     { class: "field__hint" },
     existing != null
-      ? "Logged for today. Save again to change it."
+      ? "Logged for today."
       : "Same day each week — morning, after the bathroom, before food or water.",
   );
 
@@ -226,19 +234,76 @@ function historyCard(series) {
     ...reversed.map((w, i) => {
       const prev = reversed[i + 1];
       const delta = prev ? round2(w.kg - prev.kg) : null;
-      return el(
-        "div",
-        { class: "weight__row" },
-        el("span", { class: "weight__row-wk" }, `Week ${w.week}`),
-        el("span", { class: "weight__row-date" }, humanDate(w.date)),
-        el("span", { class: "weight__row-kg" }, `${w.kg} kg`),
-        el(
-          "span",
-          { class: "weight__row-delta" },
-          delta == null ? "" : `${delta >= 0 ? "+" : ""}${delta}`,
-        ),
-      );
+      return editing === w.date ? historyRowEditor(w) : historyRow(w, delta);
     }),
+  );
+}
+
+function historyRow(w, delta) {
+  const pen = el("button", {
+    class: "weight__row-edit",
+    type: "button",
+    "aria-label": `Edit the ${humanDate(w.date)} weigh-in`,
+  });
+  pen.innerHTML = PEN_SVG;
+  pen.addEventListener("click", () => {
+    editing = w.date;
+    render();
+  });
+
+  return el(
+    "div",
+    { class: "weight__row" },
+    el("span", { class: "weight__row-wk" }, `Week ${w.week}`),
+    el("span", { class: "weight__row-date" }, humanDate(w.date)),
+    el("span", { class: "weight__row-kg" }, `${w.kg} kg`),
+    el(
+      "span",
+      { class: "weight__row-delta" },
+      delta == null ? "" : `${delta >= 0 ? "+" : ""}${delta}`,
+    ),
+    pen,
+  );
+}
+
+function historyRowEditor(w) {
+  const input = el("input", {
+    class: "field__input",
+    type: "number",
+    inputmode: "decimal",
+    step: "0.1",
+    min: "25",
+    max: "300",
+  });
+  input.value = w.kg;
+
+  const commit = () => {
+    const kg = Number(input.value);
+    if (Number.isNaN(kg) || kg < 25 || kg > 300) {
+      input.classList.add("is-invalid");
+      return;
+    }
+    logWeight(w.date, kg);
+    editing = null;
+    render();
+  };
+  const cancel = () => {
+    editing = null;
+    render();
+  };
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") commit();
+    if (e.key === "Escape") cancel();
+  });
+
+  return el(
+    "div",
+    { class: "weight__row weight__row--edit" },
+    el("span", { class: "weight__row-wk" }, `Week ${w.week}`),
+    el("span", { class: "field__control weight__row-input" }, input),
+    el("button", { class: "btn btn--primary", type: "button", onclick: commit }, "Save"),
+    el("button", { class: "btn btn--text", type: "button", onclick: cancel }, "Cancel"),
   );
 }
 
