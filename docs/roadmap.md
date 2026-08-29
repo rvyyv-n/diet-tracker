@@ -162,6 +162,14 @@ branch; the rest (a mechanical plan-model change) was rejected.
   is the bottleneck; the engine adds the snack itself if the gain stalls),
   and it contradicts `plan-spec.md`. Not ported.
 
+**pass 4c — merge and repo cleanup**
+
+`pass-4a` (4 + 4b + polish) merged to `main` via PR #1. Then: the app renamed
+**Rise** in the README and this file; the stale `README.md` rewritten around the
+three screens and the PWA; `src/js/data/food-source.js` (an unused v2 stub) and
+an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
+`CACHE_NAME` bumped.
+
 ## next
 
 **v1 release packaging**
@@ -171,6 +179,9 @@ branch; the rest (a mechanical plan-model change) was rejected.
   Likely near the Today phase banner. Deferred to the final compile.
 - safe-area insets throughout (partly done — tab bar and content already clear
   the home indicator)
+- **Settings rows crush below ~340px** — at iPhone-SE width and narrower the
+  `.set2-row` body competes with its button and the name wraps. Fix with a
+  min-width floor or a stacked layout under a breakpoint.
 - GitHub Pages (deploy from `main`, root; no build step), then tag v1
 
 ## later
@@ -185,10 +196,13 @@ branch; the rest (a mechanical plan-model change) was rejected.
 ## v2 — post-MVP
 
 - **custom recipes / off-plan food entries.** add a food that isn't in the plan
-  (quick-type name + kcal + protein, or build it from the `FOOD_DB` table); it
-  shows under the checklist and the day's totals adjust to include it. entries
-  can be saved as named recipes — a reusable recipe book with history — so a
-  repeat meal is one tap. this is what `day.extras` was reserved for.
+  (quick-type name + kcal + protein, or build it from the `FOOD_DB` table in
+  `core/plan.js`); it shows under the checklist and the day's totals adjust to
+  include it. entries can be saved as named recipes — a reusable recipe book
+  with history — so a repeat meal is one tap. this is what `day.extras` was
+  reserved for. the old `src/js/data/food-source.js` stub (an async seam for a
+  future nutrition API) was removed in the v1 cleanup; recreate it here when the
+  network path is actually wanted.
 - **configurable overview metrics.** add / remove / hide the readouts on the
   daily total — the protein line toggled off, other metrics added.
 

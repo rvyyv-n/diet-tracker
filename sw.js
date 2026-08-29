@@ -10,14 +10,13 @@
  * project (not just edited), add it here and bump CACHE_NAME so clients refetch.
  */
 
-const CACHE_NAME = "rise-v1";
+const CACHE_NAME = "rise-v2";
 
 const PRECACHE_URLS = [
   "./",
   "index.html",
   "manifest.json",
   "assets/icon.svg",
-  "favicon.svg",
 
   "src/css/tokens.css",
   "src/css/app.css",
@@ -44,8 +43,6 @@ const PRECACHE_URLS = [
   "src/js/core/storage.js",
   "src/js/core/trend.js",
   "src/js/core/weights.js",
-
-  "src/js/data/food-source.js",
 
   "src/js/ui/date-calendar.js",
   "src/js/ui/date-dropdowns.js",
