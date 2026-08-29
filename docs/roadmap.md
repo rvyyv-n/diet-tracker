@@ -120,6 +120,31 @@ screens.
 - a Settings / About screen: Edit setup, export / import, version, reset
 - GitHub Pages (deploy from `main`, root; no build step), then tag v1
 
+Carried-in fixes for this pass:
+
+- **Weight history rows are cramped on a phone.** The 5-column grid (week /
+  full-date / display-size kg / delta / pen) overflows ~330 px: the date wraps
+  to three lines and "62.2 kg" breaks across two. Fix in code, not design —
+  (a) a `shortDate(iso)` → "24 Aug 2026" helper in `dates.js` for the history
+  rows, (b) drop `.weight__row-kg` from display size to ~20 px (the big mono
+  size belongs to the single latest-weight figure, not every row), (c) wrap
+  number + unit in a `white-space: nowrap` span, (d) restructure to a two-line
+  row: `Week N · date` over `kg  delta`, pen right-aligned across both. ~15
+  lines across `weight.js` and `app.css`.
+- **Settings rows are too heavy.** The generated screen gives each action a fat
+  filled card-row with a bold title and two explanatory lines — reads nothing
+  like a restrained Claude/Anthropic screen. Slim to quiet list rows (action
+  left, chevron or small secondary control right, one muted line only where a
+  word is actually needed). Collapse "Copy export to clipboard" + "Download
+  .json" into one **Export data** row (clipboard primary, small "download file"
+  secondary). Cut the explanatory copy hard.
+- **About block.** Make it small and tight: line break after each sentence, not
+  wrapped paragraphs. Contents: `Version 1.0.0`, schema version (`wgt v1`,
+  quiet — for debugging imports), a one-line on-device/no-network note, then a
+  links row — Source on GitHub, a personal `@handle`, optional Discord. Handles
+  are placeholders until the user supplies real ones; GitHub Pages is public,
+  so only handles they're fine being public.
+
 ## later
 
 - grocery checklist with a weekly reset
