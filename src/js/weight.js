@@ -7,18 +7,13 @@
  */
 
 import { el } from "./ui/dom.js";
+import { icon } from "./ui/icons.js";
 import { loadProfile } from "./core/profile.js";
 import { TARGET_RATE_KG_PER_WEEK } from "./core/plan.js";
 import { todayISO, humanDate, planWeek } from "./core/dates.js";
 import { allWeights, getWeight, logWeight } from "./core/weights.js";
 import { allDays } from "./core/days.js";
 import { weeklyWeights, weeklyGains, rollingGain, weeklyAdherence } from "./core/trend.js";
-
-// A small pencil, sized to the row text. currentColor so CSS controls the tint.
-const PEN_SVG =
-  '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">' +
-  '<path d="M10.6 2.1l3.3 3.3-8 8H2.6v-3.3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>' +
-  '<path d="M9.4 3.3l3.3 3.3" stroke="currentColor" stroke-width="1.4"/></svg>';
 
 let mount;
 let editing = null; // ISO date of the history row being edited, or null
@@ -49,7 +44,7 @@ function render() {
   mount.replaceChildren(
     el(
       "section",
-      { class: "screen weight" },
+      { class: "screen weight weight--v2" },
       el(
         "div",
         { class: "screen-head" },
@@ -58,9 +53,19 @@ function render() {
       ),
       entryCard(),
       statsCard(latest, latestGain, thisWeekAdherence),
-      chartCard(series),
-      historyCard(series),
+      group("Trend", chartCard(series)),
+      group("History", historyCard(series)),
     ),
+  );
+}
+
+/** An uppercase tracked label above a card — the shared Settings/Weight shape. */
+function group(label, card) {
+  return el(
+    "div",
+    { class: "group" },
+    el("span", { class: "group__label" }, label),
+    card,
   );
 }
 
@@ -74,7 +79,6 @@ function chartCard(series) {
     return el(
       "div",
       { class: "card weight__chart" },
-      el("span", { class: "field__label" }, "Trend"),
       el("p", { class: "screen__intro" }, "Two weigh-ins will draw the trend."),
     );
   }
@@ -120,11 +124,7 @@ function chartCard(series) {
     `<line x1="${padL}" y1="${(H - padB).toFixed(1)}" x2="${W - padR}" y2="${(H - padB).toFixed(1)}" class="wc-axis"/>` +
     `${labels}</svg>`;
 
-  const card = el(
-    "div",
-    { class: "card weight__chart" },
-    el("span", { class: "field__label" }, "Trend"),
-  );
+  const card = el("div", { class: "card weight__chart" });
   const holder = el("div", { class: "weight__chart-svg" });
   holder.innerHTML = svg;
   card.append(
@@ -160,6 +160,7 @@ function entryCard() {
       : "Same day each week — morning, after the bathroom, before food or water.",
   );
 
+  const ack = el("span", { class: "ack", hidden: "" }, "Saved");
   const save = el("button", { class: "btn btn--primary", type: "button" }, "Save");
   save.addEventListener("click", () => {
     const raw = input.value.trim();
@@ -171,7 +172,8 @@ function entryCard() {
       return;
     }
     logWeight(todayISO(), kg);
-    render();
+    ack.hidden = false;
+    setTimeout(render, 1500);
   });
 
   return el(
@@ -184,7 +186,7 @@ function entryCard() {
       el("span", { class: "field__control" }, input),
       hint,
     ),
-    save,
+    el("div", { class: "weight__save" }, save, ack),
   );
 }
 
@@ -230,7 +232,6 @@ function historyCard(series) {
   return el(
     "div",
     { class: "card weight__history" },
-    el("span", { class: "field__label" }, "History"),
     ...reversed.map((w, i) => {
       const prev = reversed[i + 1];
       const delta = prev ? round2(w.kg - prev.kg) : null;
@@ -240,16 +241,19 @@ function historyCard(series) {
 }
 
 function historyRow(w, delta) {
-  const pen = el("button", {
-    class: "weight__row-edit",
-    type: "button",
-    "aria-label": `Edit the ${humanDate(w.date)} weigh-in`,
-  });
-  pen.innerHTML = PEN_SVG;
-  pen.addEventListener("click", () => {
-    editing = w.date;
-    render();
-  });
+  const pen = el(
+    "button",
+    {
+      class: "weight__row-edit",
+      type: "button",
+      "aria-label": `Edit the ${humanDate(w.date)} weigh-in`,
+      onclick: () => {
+        editing = w.date;
+        render();
+      },
+    },
+    icon("pencil", { size: 16 }),
+  );
 
   return el(
     "div",
@@ -302,8 +306,8 @@ function historyRowEditor(w) {
     { class: "weight__row weight__row--edit" },
     el("span", { class: "weight__row-wk" }, `Week ${w.week}`),
     el("span", { class: "field__control weight__row-input" }, input),
-    el("button", { class: "btn btn--primary", type: "button", onclick: commit }, "Save"),
-    el("button", { class: "btn btn--text", type: "button", onclick: cancel }, "Cancel"),
+    el("button", { class: "btn btn--primary btn--sm", type: "button", onclick: commit }, "Save"),
+    el("button", { class: "btn btn--text btn--sm", type: "button", onclick: cancel }, "Cancel"),
   );
 }
 
