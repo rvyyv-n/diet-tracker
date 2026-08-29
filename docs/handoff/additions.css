@@ -1,0 +1,568 @@
+/* ============================================================================
+   additions.css — everything this design adds to the existing app.
+   ----------------------------------------------------------------------------
+   tokens.css and app.css are untouched copies of the repo. This file is the
+   whole delta: paste it into app.css and delete it.
+
+   Contents, in order:
+     1. Settings screen, first pass   (.group, .ack, .set-*, .btn--danger)
+     2. Settings screen, second pass  (.set2-*, .about2, .tabbar--icons, .btn--sm)
+     3. Today and Weight consolidation (rules marked DELETE replace app.css ones)
+
+   proto.css is NOT part of this — it is prototype chrome only.
+   ========================================================================== */
+
+/* ============================================================================
+   settings.css — the Settings / About screen (pass 4). Paste into app.css when
+   you're happy; it only adds, and touches nothing already there.
+   ----------------------------------------------------------------------------
+   Same rules as the rest: press + focus states only, no hover, hairline
+   borders, 12px card radius, coral only on the control that commits.
+   ========================================================================== */
+
+.settings { gap: var(--space-lg); }
+
+
+/* ------------------------------------------------------------- groups ---
+   An uppercase tracked label above a card, matching .field__label. Named for
+   the job, not the screen — Weight uses it for Trend and History too.        */
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.group__label {
+  font: var(--text-caption-upper);
+  letter-spacing: var(--type-caption-upper-track);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------- ack ---
+   A transient coral acknowledgement after a write — Copied, Saved, Imported.
+   The one place coral appears at rest, and it leaves after two seconds.      */
+
+.ack {
+  flex: none;
+  font: var(--text-caption);
+  color: var(--color-primary);
+}
+
+/* .card, minus its padding, so rows run edge to edge. */
+.set-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+
+/* --------------------------------------------------------------- rows ---
+   Flatter than .block-row: one card, hairline dividers, no per-row border.  */
+
+.set-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  min-height: var(--touch-target);
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.set-row + .set-row,
+.set-panel + .set-row {
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+}
+.set-row:active { background: var(--surface-cream-strong); }
+.set-row:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.set-row__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.set-row__name {
+  font: var(--text-title-sm);
+  color: var(--text-ink);
+}
+
+.set-row__desc {
+  font: var(--text-body-sm);
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.set-row__chev {
+  flex: none;
+  font-size: 11px;
+  color: var(--text-muted-soft);
+}
+
+/* transient acknowledgement — see .ack above */
+
+
+/* -------------------------------------------------------------- panel ---
+   The import preview. Recessed inside the card, like .rotation.             */
+
+.set-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  background: var(--surface-soft);
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+}
+
+.set-panel__title {
+  font: var(--text-title-sm);
+  color: var(--text-ink);
+}
+
+.set-panel__stats {
+  font: var(--text-code);
+  color: var(--text-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.set-panel__meta {
+  font: var(--text-caption);
+  color: var(--text-muted-soft);
+}
+
+.set-panel__body {
+  font: var(--text-body-sm);
+  color: var(--text-body);
+}
+
+.set-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-xxs);
+}
+.set-panel__actions .btn--text { padding-inline: var(--space-sm); }
+
+
+/* ------------------------------------------------------------- danger ---
+   Its own section below a full-width rule, so it can't be mistaken for one
+   more data row. The button sits in ink; red appears only once the confirm
+   panel is open.                                                            */
+
+.set-danger {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+  padding-top: var(--space-lg);
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+}
+
+.set-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  background: var(--surface-canvas);
+  border: var(--border-width-hairline) solid var(--status-error);
+  border-radius: var(--radius-card);
+}
+
+.set-confirm__title {
+  font: var(--text-title-sm);
+  color: var(--text-ink);
+}
+
+.set-confirm__body {
+  font: var(--text-body-sm);
+  color: var(--text-body);
+}
+
+.set-confirm__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-xxs);
+}
+
+/* APP LAYER — a destructive button variant. The system has no such thing, and
+   --status-error already means "well under target" on Today, so red is kept off
+   every resting control and used only here, on the button that erases. */
+.btn--danger {
+  background: var(--status-error);
+  color: var(--text-on-primary);
+}
+.btn--danger:active { background: #a83a3a; }
+
+
+/* -------------------------------------------------------------- about ---
+   Quiet, at the very bottom, no card. Version is mono — it's a number.      */
+
+.set-about {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  margin-top: var(--space-sm);
+}
+
+.set-about__version {
+  font: var(--text-code);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.set-about__line {
+  font: var(--text-body-sm);
+  color: var(--text-muted-soft);
+}
+
+.set-about__link {
+  font: var(--text-body-sm);
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.set-about__link:active { color: var(--color-primary-active); }
+
+
+/* ------------------------------------------------- header consistency ---
+   Pass-4 item deferred from pass 3 ("title lengths across screens"). Every
+   top-level screen now uses .screen-head: a 36px serif title with one small
+   muted line under it. That makes the setup screen's 28px title + body-size
+   intro the odd one out, so it adopts the same pair.                         */
+
+.screen-head--setup .screen__title {
+  font: var(--text-display-md);
+  letter-spacing: var(--type-display-md-track);
+}
+
+
+/* ============================================================================
+   settings-v2.css — Settings screen, second direction.
+   ----------------------------------------------------------------------------
+   Additive, like settings.css. Depends on tokens.css + app.css, and reuses
+   .set-group / .set-panel / .set-confirm / .btn--danger from settings.css.
+
+   What is new here:
+     · icon-led list rows (Lucide 0.469 glyphs, inlined as SVG)
+     · a collapsed Export row with a small secondary action beneath
+     · an icon-above-label tab bar
+     · a dark-navy About block, using the --surface-dark token the app already
+       defines but has never used
+   ========================================================================== */
+
+.settings2 { gap: var(--space-lg); }
+
+
+/* --------------------------------------------------------------- card ---
+   Same shell as v1: .card with the padding removed so rows run edge to edge.
+   One divider rule covers rows, stacked items and expanding panels alike.   */
+
+.set2-card {
+  padding: 0;
+  overflow: hidden;
+}
+.set2-card > * + * {
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+}
+
+
+/* ---------------------------------------------------------------- row ---
+   Action name left behind a 20px glyph. Right side is either a chevron (it
+   navigates) or a small secondary button (it acts) — never both.            */
+
+.set2-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  min-height: var(--touch-target);
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.set2-row:active { background: var(--surface-cream-strong); }
+.set2-row:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+/* the Import row is a container, not the actuator — its button is */
+.set2-row--static { cursor: default; }
+.set2-row--static:active { background: transparent; }
+
+.set2-row__icon {
+  flex: none;
+  display: flex;
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+}
+.set2-row__icon svg { width: 100%; height: 100%; }
+
+.set2-row__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.set2-row__name {
+  font: var(--text-title-sm);
+  color: var(--text-ink);
+}
+
+/* one muted line, only where a word is genuinely needed */
+.set2-row__desc {
+  font: var(--text-body-sm);
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.set2-row__chev {
+  flex: none;
+  display: flex;
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted-soft);
+}
+.set2-row__chev svg { width: 100%; height: 100%; }
+
+/* row acknowledgement uses the shared .ack token (settings.css) */
+
+
+/* --------------------------------------------------------- stacked item ---
+   Export: the row itself copies; the file download sits under it as a small
+   secondary action, indented to the name's left edge (16 pad + 20 icon + 12
+   gap). Kept at 44px so it is still a real tap target.                      */
+
+.set2-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.set2-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  min-height: 44px;
+  margin-left: calc(var(--space-md) + 32px);
+  padding: 0 var(--space-xs) var(--space-xs) 0;
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.set2-sub span { text-decoration: underline; text-underline-offset: 3px; }
+.set2-sub:active { color: var(--text-ink); }
+.set2-sub:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-control); }
+
+.set2-sub__icon { display: flex; width: 15px; height: 15px; }
+.set2-sub__icon svg { width: 100%; height: 100%; }
+
+/* small secondary button, for a row that acts */
+.btn--sm {
+  min-height: 44px;
+  padding: 0 var(--space-sm);
+  font: var(--text-caption);
+}
+
+
+/* ------------------------------------------------------------- danger ---
+   A plain ink row under a divider — no red at rest. The confirm panel below
+   it carries the only red on the screen.                                     */
+
+.set2-danger {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+}
+
+.set2-danger .set2-row {
+  padding-inline: 0;
+  min-height: 48px;
+}
+
+
+/* -------------------------------------------------------------- about ---
+   Dark navy, inset at the very bottom. The app has carried --surface-dark
+   since the first pass without ever putting it on screen; this is the one
+   place a utility screen can use it without turning into a marketing band.
+   Sentence per line, no wrapped paragraphs. Mono for the version and the
+   signature — both read as machine strings, not prose.                       */
+
+.about2 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+  padding: var(--space-lg) var(--space-md);
+  background: var(--surface-dark);
+  border-radius: var(--radius-card);
+}
+
+.about2__group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.about2__name {
+  font: var(--text-code);
+  color: var(--text-on-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.about2__schema {
+  font: var(--text-code);
+  font-size: 12px;
+  color: var(--text-on-dark-soft);
+}
+
+.about2__line {
+  font: var(--text-body-sm);
+  color: var(--text-on-dark-soft);
+}
+
+.about2__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font: var(--text-body-sm);
+}
+
+.about2__link {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: var(--transition-control);
+}
+.about2__link:active { color: var(--color-primary-active); text-decoration: underline; text-underline-offset: 3px; }
+.about2__link:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
+
+.about2__sep { color: var(--border-on-dark); }
+
+.about2__sig {
+  font: var(--text-code);
+  font-size: 12px;
+  color: var(--text-on-dark-soft);
+}
+
+
+/* ------------------------------------------------------------- tabbar ---
+   Icon above label. Three tabs at 390px gave each one 130px and the labels
+   crowded; stacking buys the width back and leaves room for a fourth.
+
+   Height stays close to the 52px bar so the 64px .app-content clearance still
+   holds — the stack fits by tightening the gap, not by growing the bar. The
+   extra 2px of bottom padding offsets the 2px transparent border-top, which
+   would otherwise sit the icon and label visibly low in the button.          */
+
+.tabbar--icons .tabbar__btn {
+  flex-direction: column;
+  gap: 2px;
+  min-height: 54px;
+  padding: 4px 0 6px;
+}
+
+.tabbar__icon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+}
+.tabbar__icon svg { width: 100%; height: 100%; }
+
+.tabbar--icons .tabbar__label { font-size: 11px; line-height: 1.2; }
+
+
+/* ============================================================================
+   today-weight.css — pass 5. What Today and Weight take from the Settings
+   pass, so the three screens share one vocabulary.
+   ----------------------------------------------------------------------------
+   Additive, loaded after app.css. Every rule here overrides something in
+   app.css; when you merge, edit the original instead and delete this file.
+   Deletions it implies are marked DELETE.
+   ========================================================================== */
+
+
+/* ---------------------------------------------------------- suggestion ---
+   Was a 3px coral left edge. So is .block-row--shake, which means the same
+   mark carried two meanings — "the plan wants to change" and "you skip this
+   one" — and the two can appear on the same screen. The shake keeps the edge
+   (it is a property of one row); the suggestion becomes a recessed panel, the
+   same treatment .rotation and .set-panel already use for "something opened
+   here". Coral now only appears on its Apply button.
+   DELETE app.css: .suggestion { border-left: 3px solid var(--color-primary) } */
+
+.suggestion {
+  padding: var(--space-md);
+  background: var(--surface-soft);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-card);
+}
+
+
+/* ---------------------------------------------------------------- tick ---
+   The checklist tick was a text ✓, so its weight tracked the body font and
+   drifted from every other glyph in the app. Now the Lucide check, from the
+   same set as the Settings rows.                                             */
+
+.block-row__tick svg {
+  width: 14px;
+  height: 14px;
+}
+
+
+/* -------------------------------------------------------------- weight ---
+   "Trend" and "History" moved out of their cards and onto .group__label, so
+   the history card is now a pure row container — the same shape as .set2-card,
+   with dividers running the full card width instead of being inset by the
+   card's own padding.
+   DELETE app.css: the .field__label headings inside .weight__chart and
+   .weight__history; .weight__row's padding-top and border-top-color.          */
+
+/* Scoped to .weight--v2 so the 1a frame keeps app.css behaviour untouched.
+
+   The week label is hidden on read rows: at 390px the five-column grid left the
+   date track 58px and "24 August 2026" wrapped to three lines, making rows 92px
+   tall. "Week 3" and "17 August 2026" carry the same fact, so the read rows keep
+   the date and the edit row keeps the label. */
+
+.weight--v2 .weight__history {
+  padding: 0;
+  gap: 0;
+}
+
+.weight--v2 .weight__row {
+  grid-template-columns: 1fr auto auto auto;
+  padding: var(--space-sm) var(--space-md);
+  border-top-color: var(--border-hairline);
+}
+.weight--v2 .weight__row:first-of-type { border-top: none; }
+.weight--v2 .weight__row:not(.weight__row--edit) .weight__row-wk { display: none; }
+
+/* the inline edit row adopts .btn--sm rather than its own padding
+   DELETE app.css: .weight__row--edit .btn { padding: 8px 12px } */
+.weight--v2 .weight__row--edit .btn {
+  min-height: 44px;
+  padding: 0 var(--space-sm);
+}
+
+/* the weigh-in now acknowledges the write, like Export does */
+.weight__save {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.weight__entry .weight__save .btn { align-self: auto; }
