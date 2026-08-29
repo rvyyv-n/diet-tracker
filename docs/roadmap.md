@@ -133,11 +133,42 @@ Built from `docs/handoff/` (a Claude Design export: `SPEC.md`, `BUILD-PROMPT.md`
   (single-line rows, week label hidden on read rows, kg back to ~20px), and
   the Settings rows are quiet list rows rather than heavy filled cards.
 
+**pass 4b — port from the parallel v1.2 branch**
+
+A second pass at pass-4's scope was built independently with Gemini in a
+separate clone. The non-overlapping and better parts were ported onto this
+branch; the rest (a mechanical plan-model change) was rejected.
+
+- App renamed **Rise** in every user-facing string.
+- Settings: the "Edit setup" row becomes a **Profile card** — name over a
+  phase / height / target-rate line.
+- `welcome.js` gained a real **edit mode**: "Edit profile" title, "Save
+  changes" button, no summary card on save, Enter to confirm. Editing returns
+  to the Settings tab, not Today.
+- **Micro-interactions**: tab-change crossfade, accordion drop-in on the
+  rotation / import / confirm panels, ack fade, tab-icon press-scale, colour
+  easing on the checklist and day total. All disabled under
+  `prefers-reduced-motion`.
+- Weight: **backdated weigh-ins** — the form takes a date through the same
+  `dateCalendar` popover as the plan start date (new `max` option disables
+  future days).
+- **PWA shell**: `manifest.json`, iOS/theme meta, an offline cache-first
+  `sw.js` (precache list regenerated against the real tree), an app icon, and
+  a fluid `--app-max-width: clamp(380px, 94vw, 580px)` with a flex-column
+  shell that tightens its padding on a phone.
+- **Rejected — plan model change.** Gemini's version promoted the Snack
+  block (A1) to a mandatory core block and raised the Phase 1 target from
+  2,565 to 2,855 kcal. The gentle ramp-up is a considered decision (appetite
+  is the bottleneck; the engine adds the snack itself if the gain stalls),
+  and it contradicts `plan-spec.md`. Not ported.
+
 ## next
 
 **v1 release packaging**
 
-- PWA manifest + iOS meta + app icons + a cache-first service worker (offline)
+- **Phase explainer** — a short, visible note on what each phase means
+  (Phase 1 easing in ~2,565 · Phase 2 full target ~3,110 · Phase 3 pushed).
+  Likely near the Today phase banner. Deferred to the final compile.
 - safe-area insets throughout (partly done — tab bar and content already clear
   the home indicator)
 - GitHub Pages (deploy from `main`, root; no build step), then tag v1
