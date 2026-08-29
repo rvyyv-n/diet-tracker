@@ -909,6 +909,12 @@ body {
   font: var(--text-body-sm);
 }
 .weight__daterow .cal__value { flex: none; overflow: visible; }
+/* the trigger sits at the card's right edge, so the panel opens leftward from
+   there instead of overflowing the viewport */
+.weight__daterow .cal__panel {
+  left: auto;
+  right: 0;
+}
 
 /* trend chart — inline SVG, no library */
 .weight__chart {
@@ -1333,7 +1339,7 @@ body {
 .about2__link:active { color: var(--color-primary-active); text-decoration: underline; text-underline-offset: 3px; }
 .about2__link:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
 
-.about2__sep { color: var(--border-on-dark); }
+.about2__sep { color: var(--text-on-dark-soft); }
 
 .about2__sig {
   font: var(--text-body-sm);

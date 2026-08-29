@@ -145,21 +145,26 @@ function exportItem() {
     "div",
     { class: "set2-item" },
     el(
-      "button",
-      { class: "set2-row", type: "button", "data-act": "export-copy" },
+      "div",
+      { class: "set2-row set2-row--static" },
       el("span", { class: "set2-row__icon", "aria-hidden": "true" }, icon("download")),
       el(
         "span",
         { class: "set2-row__body" },
         el("span", { class: "set2-row__name" }, "Export data"),
+        el("span", { class: "set2-row__desc" }, "Copy all records as JSON to clipboard."),
       ),
-      el("span", { class: "ack", hidden: "" }, "Copied"),
+      el(
+        "button",
+        { class: "btn btn--secondary btn--sm", type: "button", "data-act": "export-copy" },
+        "Copy JSON",
+      ),
     ),
     el(
       "button",
       { class: "set2-sub", type: "button", "data-act": "export-file" },
       el("span", { class: "set2-sub__icon", "aria-hidden": "true" }, icon("arrow-down-to-line", { size: 15 })),
-      el("span", {}, "Download file"),
+      el("span", {}, "Download .json file"),
     ),
   );
 }
@@ -278,7 +283,7 @@ function aboutBlock() {
       { class: "about2__links" },
       el("a", { class: "about2__link", href: REPO_URL, target: "_blank", rel: "noopener" }, "Source on GitHub"),
       el("span", { class: "about2__sep", "aria-hidden": "true" }, "·"),
-      el("span", { class: "about2__sig" }, "Discord @rvyyvn"),
+      el("span", { class: "about2__sig" }, "Discord @rvyyv-n"),
     ),
   );
 }
@@ -336,12 +341,17 @@ function onAction(event) {
   }
 }
 
-function exportToClipboard(rowBtn) {
+function exportToClipboard(btn) {
   const json = JSON.stringify(exportAll(), null, 2);
   navigator.clipboard?.writeText(json).then(
-    () => flash(rowBtn.querySelector(".ack")),
     () => {
-      /* clipboard blocked (insecure context, permissions) — the file path still works */
+      btn.textContent = "Copied";
+      setTimeout(() => {
+        btn.textContent = "Copy JSON";
+      }, 2000);
+    },
+    () => {
+      /* clipboard blocked (insecure context, permissions) — the download still works */
     },
   );
 }
@@ -399,13 +409,4 @@ function commitImport() {
   }
   pending = null;
   render();
-}
-
-/** Reveal a transient `.ack`, then hide it after two seconds. */
-function flash(node) {
-  if (!node) return;
-  node.hidden = false;
-  setTimeout(() => {
-    node.hidden = true;
-  }, 2000);
 }
