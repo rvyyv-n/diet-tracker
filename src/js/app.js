@@ -51,7 +51,17 @@ function route() {
 
 function editSetup() {
   import("./welcome.js").then((m) =>
-    m.renderWelcome(mount, { onComplete: route, edit: true }),
+    m.renderWelcome(mount, {
+      // Editing is launched from Settings, so return there — not to Today, which
+      // is where a full route() would land. Re-sync the phase in case the target
+      // rate or start date moved.
+      onComplete: () => {
+        syncPhase(loadProfile());
+        activeTab = "settings";
+        renderShell();
+      },
+      edit: true,
+    }),
   );
 }
 
@@ -90,6 +100,11 @@ function paintTabbar() {
 }
 
 function showTab(id) {
+  // Re-trigger the crossfade: drop the class, force a reflow, add it back.
+  contentEl.classList.remove("tab-switching");
+  void contentEl.offsetWidth;
+  contentEl.classList.add("tab-switching");
+
   if (id === "weight") renderWeight(contentEl);
   else if (id === "settings") renderSettings(contentEl, { onEditSetup: editSetup, onReset: route });
   else renderToday(contentEl);
