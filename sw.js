@@ -10,7 +10,7 @@
  * project (not just edited), add it here and bump CACHE_NAME so clients refetch.
  */
 
-const CACHE_NAME = "rise-v2";
+const CACHE_NAME = "rise-v3";
 
 const PRECACHE_URLS = [
   "./",
