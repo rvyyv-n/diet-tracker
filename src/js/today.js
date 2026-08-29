@@ -14,6 +14,7 @@
  */
 
 import { el } from "./ui/dom.js";
+import { icon } from "./ui/icons.js";
 import { loadProfile, saveProfile } from "./core/profile.js";
 import { activeBlocks, phaseById, phaseTarget, rotationOptions } from "./core/plan.js";
 import {
@@ -47,11 +48,9 @@ const STATUS_CLASS = {
 let mount;
 let viewDate;
 let openPicker = null;
-let onEditSetup = () => {};
 
-export function renderToday(mountEl, opts = {}) {
+export function renderToday(mountEl) {
   mount = mountEl;
-  onEditSetup = typeof opts.onEditSetup === "function" ? opts.onEditSetup : () => {};
   viewDate = todayISO();
   openPicker = null;
   render();
@@ -87,7 +86,6 @@ function render() {
       totalCard(day),
       backfillPrompt(),
       checklist(day, editable),
-      footer(),
     ),
   );
 }
@@ -282,7 +280,11 @@ function blockRow(day, block, editable) {
       "aria-pressed": String(done),
       onclick: editable ? () => commit(toggleBlock(day, block.id)) : null,
     },
-    el("span", { class: `block-row__tick ${done ? "is-done" : ""}` }, done ? "✓" : ""),
+    el(
+      "span",
+      { class: `block-row__tick ${done ? "is-done" : ""}` },
+      done ? icon("check", { size: 14, stroke: 2.5 }) : null,
+    ),
     el(
       "span",
       { class: "block-row__body" },
@@ -347,14 +349,6 @@ function rotationPicker(day, block) {
         el("span", { class: "rotation__opt-kcal" }, NUM.format(opt.kcal)),
       ),
     ),
-  );
-}
-
-function footer() {
-  return el(
-    "div",
-    { class: "today__footer" },
-    el("button", { class: "btn btn--text", type: "button", onclick: onEditSetup }, "Edit setup"),
   );
 }
 
