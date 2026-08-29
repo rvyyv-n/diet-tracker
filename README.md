@@ -1,33 +1,29 @@
-# Rise
+# <img src="assets/icon.svg" alt="" width="30" align="top"> Rise
 
-**a weight-gain tracker.** local-first, offline, installable, no accounts.
+**a diet tracker and planner.** local-first, offline, no accounts.
 
 ```
 status: v1 packaging
 built:  today checklist, weight trend + adjustment engine, settings/about,
         json export/import, pwa shell (installable, offline)
-next:   phase explainer, github pages deploy, v1 tag
+next:   phase explainer, cross-platform packaging, v1 release
 ```
 
 ## the idea
 
-most diet apps ask you to weigh and log every item you eat. most people stop
-within a fortnight. this one inverts that — the plan is decided in advance as a
-set of meal **blocks**, and the only daily interaction is ticking off the blocks
-you actually ate. calories and protein are derived from the blocks, so the
-numbers appear without logging a single ingredient.
+most diet apps make you weigh and log every item you eat, and most people quit
+within a fortnight. this one inverts that: the plan is fixed in advance as a set
+of meal **blocks**, and the only daily action is ticking the ones you ate.
+calories and protein come from the blocks — no ingredient is ever logged.
 
-it is built for gaining weight slowly and sustainably: a weekly weigh-in feeds a
-four-week rolling average, and an engine *suggests* plan adjustments from it —
-never applies them.
+a weekly weigh-in feeds a four-week rolling average, and an engine *suggests*
+plan adjustments rather than applying them. the plan that ships aims at a slow,
+steady weight gain; the block structure generalises to any fixed plan.
 
 - **no food logging** — adherence tracking, not nutrition accounting
-- **works offline** — a service worker caches everything; fonts are vendored,
-  data never leaves the browser
-- **installable** — add to a phone home screen, launches standalone
+- **works offline** — everything is cached; fonts vendored, data stays in your browser
 - **never nags** — a missed block is a number, not a guilt trip
-- **no personal data in this repo** — your details are entered on first run and
-  stored only in your browser
+- **nothing personal in this repo** — your details are entered on first run
 
 ## screens
 
@@ -71,11 +67,12 @@ developing, hard-reload or bump `CACHE_NAME` in `sw.js` to pick up changes.
 
 full detail in [docs/roadmap.md](docs/roadmap.md).
 
-**v1** — the three screens above, offline, installable, deployed to github pages.
+**v1** — the three screens above, offline, packaged to run on android, iphone
+and desktop with no local server, and shipped as a github release.
 
 **v2** — off-plan food entries and a reusable recipe book, configurable overview
 metrics, a grocery checklist, and meal reminders.
 
-## licence
+## license
 
 mit — see [LICENSE](LICENSE)

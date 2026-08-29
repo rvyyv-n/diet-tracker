@@ -174,6 +174,8 @@ an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
 
 **v1 release packaging**
 
+Polish still owed:
+
 - **Phase explainer** — a short, visible note on what each phase means
   (Phase 1 easing in ~2,565 · Phase 2 full target ~3,110 · Phase 3 pushed).
   Likely near the Today phase banner. Deferred to the final compile.
@@ -182,7 +184,37 @@ an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
 - **Settings rows crush below ~340px** — at iPhone-SE width and narrower the
   `.set2-row` body competes with its button and the name wraps. Fix with a
   min-width floor or a stacked layout under a breakpoint.
-- GitHub Pages (deploy from `main`, root; no build step), then tag v1
+
+Storage durability:
+
+- Call `navigator.storage.persist()` on first run so the OS marks the data
+  durable and won't evict it under pressure. It already survives reboots
+  (localStorage); this closes the silent-wipe gap. Nothing but the in-app
+  **Reset all data** should ever clear it.
+
+Ship targets — the app has to run on a phone and a PC without anyone hosting or
+serving it, and keep its data across reboots, offline, until the user resets it:
+
+- **Deploy — GitHub Pages.** Serve `main` from the repo root, no build step.
+  This is the shared install surface: iPhone and Android both "Add to Home
+  Screen" from the Pages URL and get the standalone PWA, offline through the
+  service worker.
+- **iPhone.** The Pages PWA is the delivery — no App Store. Confirm
+  install-to-home-screen, standalone launch, and that data persists (iOS can
+  evict PWA storage after ~7 idle days; `storage.persist()` and the export
+  button are the mitigations).
+- **Android — a real APK.** Wrap the deployed PWA as a Trusted Web Activity
+  with Bubblewrap (needs the Pages URL and a signing key) → an installable
+  APK/AAB. Alternative if we want zero Pages dependency: a minimal WebView
+  shell that bundles the assets locally. TWA is the lighter path; decide.
+- **Desktop — no server.** ES-module imports fail under `file://`, so a
+  double-clickable `index.html` needs the JS flattened into one file (a one-off
+  concatenation / import-inline step — still no framework, no toolchain), or a
+  thin Tauri wrapper. Pick one before cutting the release.
+- **Release.** Tag `v1`, cut a GitHub Release, attach the artifacts: the
+  Android APK/AAB and the desktop bundle (single-file HTML or wrapped app).
+
+v2 work starts only after the release is out.
 
 ## later
 
