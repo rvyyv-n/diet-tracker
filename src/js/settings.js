@@ -1,9 +1,9 @@
 /**
  * settings.js — the Settings / About tab.
  *
- * Three groups: Setup (a link back into the profile form), Data (export, import,
- * with an import-preview panel), and a danger row that resets everything behind
- * a confirm panel. Then a quiet About block.
+ * Three groups: Profile (a card summarising the plan, tap to edit), Data
+ * (export, import, with an import-preview panel), and a danger row that resets
+ * everything behind a confirm panel. Then a quiet About block.
  *
  * This screen is view-only over storage — all reading and writing of records
  * goes through core/backup.js and core/storage.js. A single delegated handler
@@ -18,8 +18,11 @@ import { el } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { SCHEMA_VERSION, clear as clearStorage } from "./core/storage.js";
 import { exportAll, importAll, countRecords } from "./core/backup.js";
+import { loadProfile } from "./core/profile.js";
+import { phaseById } from "./core/plan.js";
 import { humanDate } from "./core/dates.js";
 
+const APP_NAME = "Rise";
 const VERSION = "1.0.0";
 const REPO_URL = "https://github.com/rvyyv-n/diet-tracker";
 
@@ -58,7 +61,7 @@ function render() {
       el("h1", { class: "screen__title screen__title--lg" }, "Settings"),
       el("p", { class: "phase-banner" }, "Setup, data and about"),
     ),
-    setupGroup(),
+    profileGroup(),
     dataGroup(),
     dangerGroup(),
     aboutBlock(),
@@ -67,22 +70,40 @@ function render() {
   mount.replaceChildren(section);
 }
 
-function setupGroup() {
+/**
+ * A card that stands in for the old "Edit setup" row: the plan at a glance —
+ * name, then phase · height · target rate — with the whole card as the tap
+ * target back into the profile form.
+ */
+function profileGroup() {
+  const profile = loadProfile();
+  const phase = phaseById(profile.currentPhaseId);
+
+  const name = profile.name?.trim() || "Your profile";
+  const meta = [
+    phase?.name,
+    profile.heightCm ? `${profile.heightCm} cm` : null,
+    profile.targetRateKgPerWeek ? `+${profile.targetRateKgPerWeek} kg/wk` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return el(
     "div",
     { class: "group" },
-    el("span", { class: "group__label" }, "Setup"),
+    el("span", { class: "group__label" }, "Profile"),
     el(
       "div",
       { class: "card set2-card" },
       el(
         "button",
-        { class: "set2-row", type: "button", "data-act": "edit-setup" },
-        el("span", { class: "set2-row__icon", "aria-hidden": "true" }, icon("pencil")),
+        { class: "set2-profile", type: "button", "data-act": "edit-setup" },
+        el("span", { class: "set2-profile__avatar", "aria-hidden": "true" }, icon("user")),
         el(
           "span",
-          { class: "set2-row__body" },
-          el("span", { class: "set2-row__name" }, "Edit setup"),
+          { class: "set2-profile__body" },
+          el("span", { class: "set2-profile__name" }, name),
+          el("span", { class: "set2-profile__meta" }, meta || "Tap to edit details"),
         ),
         el("span", { class: "set2-row__chev", "aria-hidden": "true" }, icon("chevron-right", { size: 16, stroke: 2 })),
       ),
@@ -243,7 +264,7 @@ function aboutBlock() {
     el(
       "div",
       { class: "about2__group" },
-      el("p", { class: "about2__name" }, `Diet Tracker · v${VERSION}`),
+      el("p", { class: "about2__name" }, `${APP_NAME} · v${VERSION}`),
       el("p", { class: "about2__schema" }, `schema wgt v${SCHEMA_VERSION}`),
     ),
     el(

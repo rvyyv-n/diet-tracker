@@ -10,6 +10,9 @@
  *
  * Stroke defaults to 1.75, not Lucide's 2: at 20px the heavier weight competes
  * with the app's 1px hairlines.
+ *
+ * A glyph is either an array of `d` strings (drawn as `<path>` elements) or a
+ * raw inner-markup string for the few that also need a `<circle>`.
  */
 
 const PATHS = {
@@ -32,15 +35,19 @@ const PATHS = {
     "M12 20H3", "M14 2v4", "M8 10v4", "M16 18v4",
   ],
   check: ["M20 6 9 17l-5-5"],
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>',
 };
 
 /** The raw `<svg …>` markup for a glyph — for places that build HTML strings. */
 export function iconSvg(name, { size = 20, stroke = 1.75 } = {}) {
-  const paths = (PATHS[name] ?? []).map((d) => `<path d="${d}"></path>`).join("");
+  const shape = PATHS[name] ?? [];
+  const inner = Array.isArray(shape)
+    ? shape.map((d) => `<path d="${d}"></path>`).join("")
+    : shape;
   return (
     `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" ` +
     `stroke="currentColor" stroke-width="${stroke}" stroke-linecap="round" ` +
-    `stroke-linejoin="round" aria-hidden="true">${paths}</svg>`
+    `stroke-linejoin="round" aria-hidden="true">${inner}</svg>`
   );
 }
 
