@@ -6,6 +6,10 @@
  * Always holds a value (the caller seeds it with today), so there is nothing to
  * validate.
  *
+ * Pass `max` (an ISO date) to forbid later days — those cells render disabled
+ * and unclickable. The weigh-in picker uses this so a reading can't be filed in
+ * the future.
+ *
  * Returns { node, get, set, onChange }.
  */
 import { el } from "./dom.js";
@@ -14,7 +18,7 @@ import { todayISO, humanDate, daysInMonth, MONTH_NAMES } from "../core/dates.js"
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-export function dateCalendar({ value }) {
+export function dateCalendar({ value, max = null }) {
   let selected = value || todayISO();
   let [viewY, viewM] = selected.split("-").map(Number); // month on screen
 
@@ -76,24 +80,29 @@ export function dateCalendar({ value }) {
     for (let i = 0; i < lead; i++) cells.push(el("span", { class: "cal__cell is-blank" }));
     for (let dm = 1; dm <= total; dm++) {
       const iso = `${viewY}-${String(viewM).padStart(2, "0")}-${String(dm).padStart(2, "0")}`;
+      const disabled = max != null && iso > max;
       const btn = el(
         "button",
         {
           class:
             "cal__cell" +
             (iso === selected ? " is-selected" : "") +
-            (iso === today ? " is-today" : ""),
+            (iso === today ? " is-today" : "") +
+            (disabled ? " is-disabled" : ""),
           type: "button",
+          disabled: disabled ? "" : null,
         },
         String(dm),
       );
-      btn.addEventListener("click", () => {
-        selected = iso; // viewY / viewM already match the shown month
-        paintTrigger();
-        pop.close();
-        trigger.focus();
-        onChange?.(selected);
-      });
+      if (!disabled) {
+        btn.addEventListener("click", () => {
+          selected = iso; // viewY / viewM already match the shown month
+          paintTrigger();
+          pop.close();
+          trigger.focus();
+          onChange?.(selected);
+        });
+      }
       cells.push(btn);
     }
     grid.replaceChildren(...cells);

@@ -90,6 +90,23 @@ export function remove(name) {
   }
 }
 
+/**
+ * Remove every record this app owns — the "reset all data" path. Only keys under
+ * the `wgt:` namespace are touched, so anything else on the origin is left alone.
+ */
+export function clear() {
+  try {
+    const doomed = [];
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(`${NAMESPACE}:`)) doomed.push(k);
+    }
+    doomed.forEach((k) => localStorage.removeItem(k));
+  } catch {
+    /* nothing useful to do */
+  }
+}
+
 /** True when localStorage is actually usable — worth checking on first run. */
 export function isAvailable() {
   try {

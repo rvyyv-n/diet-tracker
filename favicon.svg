@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Warm canvas background -->
+  <rect width="512" height="512" rx="120" fill="#FAF9F5"/>
+  <rect width="504" height="504" x="4" y="4" rx="116" fill="none" stroke="#E6DFD8" stroke-width="8"/>
+  
+  <!-- Minimalist organic egg white -->
+  <path d="M 256 100 C 350 100, 420 180, 410 290 C 400 390, 340 420, 256 420 C 172 420, 110 390, 102 290 C 92 180, 162 100, 256 100 Z" 
+        fill="#FFFFFF" 
+        stroke="#E6DFD8" 
+        stroke-width="10"/>
+  
+  <!-- Golden warm yolk -->
+  <circle cx="256" cy="275" r="76" fill="#E8A55A"/>
+  <circle cx="256" cy="275" r="68" fill="#D4A017"/>
+  
+  <!-- Soft specular highlight on yolk -->
+  <circle cx="232" cy="245" r="16" fill="#FFF2DC" opacity="0.85"/>
+</svg>

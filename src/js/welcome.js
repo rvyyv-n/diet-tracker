@@ -28,6 +28,9 @@ import { dateCalendar } from "./ui/date-calendar.js";
 // runs when the user confirms from the summary screen.
 let mount;
 let done = () => {};
+// True on the "Edit setup" path — retitles the form, relabels its button, and
+// skips the summary card on save (the user has seen these numbers before).
+let editing = false;
 
 const CM_PER_INCH = 2.54;
 const today = todayISO;
@@ -289,6 +292,10 @@ function renderForm(profile) {
         "Could not save — storage may be full or blocked. Nothing was stored.";
       return;
     }
+    if (editing) {
+      done();
+      return;
+    }
     renderDone(next);
   }
 
@@ -301,14 +308,18 @@ function renderForm(profile) {
     ...afterRows.map((r) => r.node),
     startRow.node,
     errorNote,
-    el("button", { class: "btn btn--primary btn--full", type: "submit" }, "Start"),
+    el(
+      "button",
+      { class: "btn btn--primary btn--full", type: "submit" },
+      editing ? "Save changes" : "Start",
+    ),
   );
 
   mount.replaceChildren(
     el(
       "section",
       { class: "screen" },
-      el("h1", { class: "screen__title" }, "Set up your plan"),
+      el("h1", { class: "screen__title" }, editing ? "Edit profile" : "Set up your plan"),
       el(
         "p",
         { class: "screen__intro" },
@@ -339,6 +350,23 @@ function heightSummary(profile) {
 
 function renderDone(profile) {
   const age = ageYears(profile);
+
+  // Enter anywhere on the summary confirms it, matching the form's submit key.
+  function onKey(e) {
+    if (e.key !== "Enter") return;
+    window.removeEventListener("keydown", onKey);
+    done();
+  }
+  window.addEventListener("keydown", onKey);
+  const finish = () => {
+    window.removeEventListener("keydown", onKey);
+    done();
+  };
+  const backToForm = () => {
+    window.removeEventListener("keydown", onKey);
+    renderForm(profile);
+  };
+
   mount.replaceChildren(
     el(
       "section",
@@ -361,23 +389,24 @@ function renderDone(profile) {
       el(
         "div",
         { class: "form" },
-        el("button", { class: "btn btn--primary btn--full", onclick: () => done() }, "Start tracking"),
-        el("button", { class: "btn btn--text", onclick: () => renderForm(profile) }, "Edit details"),
+        el("button", { class: "btn btn--primary btn--full", onclick: finish }, "Start tracking"),
+        el("button", { class: "btn btn--text", onclick: backToForm }, "Edit details"),
       ),
     ),
   );
 }
 
 /**
- * Render the profile screen into `mountEl`. First run opens on the empty form;
- * once a complete profile exists it opens on the summary. Pass `edit: true` (the
- * "Edit setup" path) to jump straight to the form and skip that summary hop.
- * `onComplete` runs when the user confirms. The storage-availability check lives
- * in app.js, ahead of this call.
+ * Render the profile screen into `mountEl`. First run opens on the empty form
+ * then a summary card; once a complete profile exists it opens on the summary.
+ * Pass `edit: true` (the "Edit profile" path) to jump straight to the form,
+ * retitle it, and return through `onComplete` on save without the summary hop.
+ * The storage-availability check lives in app.js, ahead of this call.
  */
 export function renderWelcome(mountEl, { onComplete, edit = false } = {}) {
   mount = mountEl;
   done = typeof onComplete === "function" ? onComplete : () => {};
+  editing = Boolean(edit);
   const profile = loadProfile();
   if (isComplete(profile) && !edit) renderDone(profile);
   else renderForm(profile);

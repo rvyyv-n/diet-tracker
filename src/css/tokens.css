@@ -117,7 +117,7 @@
    in a kitchen, so tap rows get a real thumb target. Genuine form controls stay
    at --control-height.                                                       */
 --touch-target:56px;
---app-max-width:520px;   /* phone-first; centred gutter on desktop */
+--app-max-width:clamp(380px, 94vw, 580px);   /* fluid: small phone up to tablet / desktop */
 
 
 /* -------------------------------------------------------------- radii --- */
@@ -208,5 +208,5 @@ code,pre{font:var(--text-code);font-variant-numeric:tabular-nums}
 *,*::before,*::after{box-sizing:border-box}
 
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }

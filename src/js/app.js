@@ -11,18 +11,21 @@
  */
 
 import { el } from "./ui/dom.js";
+import { icon } from "./ui/icons.js";
 import { isAvailable } from "./core/storage.js";
 import { loadProfile, saveProfile, isComplete } from "./core/profile.js";
 import { defaultPhaseForWeek, phaseAddOns, normaliseAddOns } from "./core/plan.js";
 import { todayISO, planWeek } from "./core/dates.js";
 import { renderToday } from "./today.js";
 import { renderWeight } from "./weight.js";
+import { renderSettings } from "./settings.js";
 
 const mount = document.getElementById("app");
 
 const TABS = [
-  { id: "today", label: "Today" },
-  { id: "weight", label: "Weight" },
+  { id: "today", label: "Today", icon: "square-check-big" },
+  { id: "weight", label: "Weight", icon: "trending-up" },
+  { id: "settings", label: "Settings", icon: "sliders-horizontal" },
 ];
 
 let activeTab = "today";
@@ -48,7 +51,17 @@ function route() {
 
 function editSetup() {
   import("./welcome.js").then((m) =>
-    m.renderWelcome(mount, { onComplete: route, edit: true }),
+    m.renderWelcome(mount, {
+      // Editing is launched from Settings, so return there — not to Today, which
+      // is where a full route() would land. Re-sync the phase in case the target
+      // rate or start date moved.
+      onComplete: () => {
+        syncPhase(loadProfile());
+        activeTab = "settings";
+        renderShell();
+      },
+      edit: true,
+    }),
   );
 }
 
@@ -56,7 +69,7 @@ function editSetup() {
 
 function renderShell() {
   contentEl = el("div", { class: "app-content" });
-  tabbarEl = el("nav", { class: "tabbar", "aria-label": "Sections" });
+  tabbarEl = el("nav", { class: "tabbar tabbar--icons", "aria-label": "Sections" });
   mount.replaceChildren(contentEl, tabbarEl);
   paintTabbar();
   showTab(activeTab);
@@ -79,15 +92,22 @@ function paintTabbar() {
             showTab(activeTab);
           },
         },
-        tab.label,
+        el("span", { class: "tabbar__icon", "aria-hidden": "true" }, icon(tab.icon)),
+        el("span", { class: "tabbar__label" }, tab.label),
       );
     }),
   );
 }
 
 function showTab(id) {
+  // Re-trigger the crossfade: drop the class, force a reflow, add it back.
+  contentEl.classList.remove("tab-switching");
+  void contentEl.offsetWidth;
+  contentEl.classList.add("tab-switching");
+
   if (id === "weight") renderWeight(contentEl);
-  else renderToday(contentEl, { onEditSetup: editSetup });
+  else if (id === "settings") renderSettings(contentEl, { onEditSetup: editSetup, onReset: route });
+  else renderToday(contentEl);
 }
 
 function renderStorageOff() {
