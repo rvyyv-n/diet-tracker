@@ -32,8 +32,8 @@ export const BLOCKS = [
     desc: "Choose from the lunch rotation.",
   },
   {
-    id: "A1", order: 40, name: "Snack", kcal: 290, proteinG: 11, core: false,
-    desc: "Yogurt (200 g) + dates (3) + almonds (15 g)",
+    id: "A1", order: 40, name: "Snack", kcal: 290, proteinG: 11, core: false, rotation: "snack",
+    desc: "Choose from the snack rotation.",
   },
   {
     // A3 keeps a fixed value for now: it shares the shake recipes but is a
@@ -93,6 +93,13 @@ export const ROTATIONS = {
     { id: "D1", desc: "Egg curry (2 eggs) + lentil stew + flatbreads (2)", kcal: 700, proteinG: 37 },
     { id: "D2", desc: "Chicken or beef (100 g) + lentil stew + flatbreads (2)", kcal: 700, proteinG: 37 },
     { id: "D3", desc: "Chicken pilaf (1.5 cups) + yogurt (150 g)", kcal: 720, proteinG: 35 },
+  ],
+  snack: [
+    { id: "SN1", desc: "Yogurt (200 g) + dates (3) + almonds (15 g)", kcal: 290, proteinG: 11 },
+    { id: "SN2", desc: "Banana + peanut butter (2 tbsp)", kcal: 295, proteinG: 9 },
+    { id: "SN3", desc: "Yogurt (200 g) + oats (25 g) + honey (1 tbsp)", kcal: 290, proteinG: 11 },
+    { id: "SN4", desc: "Boiled eggs (2) + flatbread (1)", kcal: 290, proteinG: 16 },
+    { id: "SN5", desc: "Milk (250 ml) + oats (40 g) + honey (1 tbsp)", kcal: 315, proteinG: 12 },
   ],
   shake: [
     { id: "standard", desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + oats (25 g)", kcal: 580, proteinG: 22 },
@@ -239,5 +246,5 @@ export function defaultPhaseForWeek(weekNumber) {
 
 /** The first rotation option for each slot — the starting picks for a new day. */
 export function defaultRotations() {
-  return { breakfast: "BR1", lunch: "L1", dinner: "D1", shake: "standard" };
+  return { breakfast: "BR1", lunch: "L1", dinner: "D1", snack: "SN1", shake: "standard" };
 }

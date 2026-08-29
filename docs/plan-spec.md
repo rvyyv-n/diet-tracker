@@ -15,8 +15,7 @@ blocks:
      note: "HIGHEST SKIP RISK — surface prominently in the UI"}
   - {id: B3, name: Lunch,       kcal: 580, protein_g: 33, core: true, rotation: lunch}
   - {id: B4, name: Dinner,      kcal: 700, protein_g: 37, core: true, rotation: dinner}
-  - {id: A1, name: Snack,       kcal: 290, protein_g: 11, core: false,
-     desc: "Yogurt (200 g) + dates (3) + almonds (15 g)"}
+  - {id: A1, name: Snack,       kcal: 290, protein_g: 11, core: false, rotation: snack}
   - {id: A2, name: "Pre-bed",   kcal: 255, protein_g: 12, core: false,
      desc: "Milk (250 ml) + peanut butter (1 tbsp)"}
   - {id: A3, name: "2nd shake", kcal: 580, protein_g: 22, core: false,
@@ -56,6 +55,13 @@ dinner_rotation:
   - {id: D1, desc: "Egg curry (2 eggs) + lentil stew + flatbreads (2)",     kcal: 700, protein_g: 37}
   - {id: D2, desc: "Chicken or beef (100 g) + lentil stew + flatbreads (2)", kcal: 700, protein_g: 37}
   - {id: D3, desc: "Chicken pilaf (1.5 cups) + yogurt (150 g)",             kcal: 720, protein_g: 35}
+
+snack_rotation:
+  - {id: SN1, desc: "Yogurt (200 g) + dates (3) + almonds (15 g)",     kcal: 290, protein_g: 11}
+  - {id: SN2, desc: "Banana + peanut butter (2 tbsp)",                 kcal: 295, protein_g: 9}
+  - {id: SN3, desc: "Yogurt (200 g) + oats (25 g) + honey (1 tbsp)",   kcal: 290, protein_g: 11}
+  - {id: SN4, desc: "Boiled eggs (2) + flatbread (1)",                 kcal: 290, protein_g: 16}
+  - {id: SN5, desc: "Milk (250 ml) + oats (40 g) + honey (1 tbsp)",    kcal: 315, protein_g: 12}
 ```
 
 IDs are L/D rather than A/B **on purpose** — an earlier version collided with the
