@@ -50,7 +50,9 @@ jobs:
           python-version: "3.x"
           
       - name: Install Cairo library
-        run: choco install cairo -y
+        run: |
+          python -m pip install --upgrade pip
+          pip install pycairo cairosvg
 
       - name: Rasterise assets/icon.svg to a 1024x1024 PNG
         run: |
