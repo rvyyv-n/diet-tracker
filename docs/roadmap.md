@@ -280,14 +280,45 @@ Build the executables (pass 3):
   AAB (for a Play Store listing rather than a sideloaded APK) is a later
   add if that distribution path is ever wanted — not needed for a GitHub
   Release artifact.
-- **Desktop `.exe` / `.dmg`** — a thin Tauri wrapper over the same build, for a
-  double-clickable installer alongside the browser-installed PWA.
+- **Desktop `.exe`** — ✅ done, Windows only (macOS `.dmg` skipped — not the
+  target platform for now). `desktop/` is a thin Tauri wrapper over the same
+  build: no second copy of the app (`desktop/scripts/sync-desktop-assets.sh`
+  copies `index.html`/`src/`/etc. from the repo root into `desktop/dist/`
+  before every build), and `src-tauri/main.rs` just opens the window
+  `tauri.conf.json` describes. Tauri serves the bundle over its own local
+  origin rather than `file://`, so — unlike the Android shell — no
+  asset-loader workaround was needed for the ES-module imports.
+  Weighed against the already-working browser-installed PWA: this adds a
+  normal "download and run setup.exe" install with no browser round-trip,
+  at the cost of no auto-update (a new installer per release, same as the
+  APK), a separate WebView2 storage partition from whatever browser has the
+  PWA installed (Export/Import moves data between them), and — since
+  there's no code-signing certificate — a SmartScreen "unknown publisher"
+  warning on first run. None of that is a functionality gap: Tauri renders
+  through WebView2, the same Chromium engine the browser PWA uses.
+  `.github/workflows/desktop.yml` builds an NSIS installer on
+  `windows-latest` — this machine has no Rust/MSVC toolchain, so the build
+  runs on GitHub's runners, same reasoning as the Android pipeline. Icon
+  rasterising went through two failed attempts before landing: `cairosvg`
+  needs a native Cairo library pip can't provide on Windows, so it was
+  swapped for `resvg` (pure Rust, no native dependency, and Rust was already
+  in the job for `tauri-cli`). The `beforeBuildCommand` hook approach for
+  syncing web assets also failed — its working directory didn't match what
+  a relative script path assumed — so the sync runs as an explicit CI step
+  with a known cwd instead. Verified: installed and launched by hand from a
+  CI-built `Rise_1.0.0_x64-setup.exe` — SmartScreen prompt as expected, then
+  a normal NSIS wizard, then the app rendering and persisting data
+  correctly in its own window.
 
 Release (pass 4):
 
-- Hold the `v1` tag until the executables are built, then tag once and cut a
-  GitHub Release with every artifact attached: source + the Android APK/AAB +
-  the desktop installers.
+- Both executables are built and CI-verified; the Android PWA install check
+  is the one open item above. Once that's done: tag `v1` once and cut a
+  GitHub Release with every artifact attached — source + the Android APK +
+  the Windows installer. Both `android.yml` and `desktop.yml` already attach
+  their build to a published Release automatically (`on: release: types:
+  [published]`), so cutting the Release is what triggers both builds to
+  reattach against it.
 
 **1.5** — the incremental release after v1. Numbered **1.5**, not 1.1, to keep
 the version line clean; v2 is the whole-number jump for the bulk redesign.
