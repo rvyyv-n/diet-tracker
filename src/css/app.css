@@ -372,11 +372,14 @@
 
 .today { gap: var(--space-md); }
 
-/* A screen title with a small line tucked beneath it (Today, Weight). */
+/* A screen title with a small line tucked beneath it (Today, Weight). The
+   eyebrow sits tight under the title (--space-xxxs), and the whole block keeps
+   more air beneath it than the cards keep between themselves. */
 .screen-head {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xxs);
+  gap: var(--space-xxxs);
+  margin-bottom: var(--space-sm);
 }
 
 .today__daterow {

@@ -59,7 +59,6 @@ function render() {
       "div",
       { class: "screen-head" },
       el("h1", { class: "screen__title screen__title--lg" }, "Settings"),
-      el("p", { class: "phase-banner" }, "Setup, data and about"),
     ),
     profileGroup(),
     dataGroup(),

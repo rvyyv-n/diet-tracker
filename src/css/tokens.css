@@ -105,6 +105,11 @@
 --space-xxs:4px;--space-xs:8px;--space-sm:12px;--space-md:16px;--space-lg:24px;
 --space-xl:32px;--space-xxl:48px;--space-section:96px;
 
+/* Below the 4pt scale. Exists for one hairline gap — the title-to-eyebrow
+   space in .screen-head, where 4px reads as a touch too loose. Don't reach
+   for this elsewhere; if a second use appears, question it. */
+--space-xxxs:2px;
+
 --pad-card:var(--space-xl);
 --pad-card-tight:var(--space-lg);
 --pad-callout:var(--space-xxl);
