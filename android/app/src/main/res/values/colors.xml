@@ -1,0 +1,6 @@
+<resources>
+    <!-- Matches --color-bg / theme_color in manifest.json, so the launch
+         window, status bar and nav bar don't flash a different colour
+         before the WebView paints. -->
+    <color name="rise_cream">#FAF9F5</color>
+</resources>
