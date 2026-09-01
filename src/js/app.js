@@ -42,6 +42,17 @@ function route() {
   }
   const profile = loadProfile();
   if (!isComplete(profile)) {
+    if (!profile.introSeen) {
+      import("./intro.js").then((m) =>
+        m.renderIntro(mount, {
+          onDone: () => {
+            saveProfile({ ...loadProfile(), introSeen: true });
+            route();
+          },
+        }),
+      );
+      return;
+    }
     import("./welcome.js").then((m) => m.renderWelcome(mount, { onComplete: route }));
     return;
   }

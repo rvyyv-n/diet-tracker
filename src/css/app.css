@@ -1672,6 +1672,61 @@
 }
 
 
+/* ------------------------------------------------------------- intro ---
+   The first-run splash (pass 11). Full-screen, shown once ahead of the
+   welcome form. It fades in, and fades out on dismiss; the blanket
+   reduced-motion rule in tokens.css disables both, and intro.js also
+   skips the fade-out wait in that case. */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  background: var(--surface-canvas);
+  cursor: pointer;
+}
+
+.intro__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  max-width: 32ch;
+  text-align: center;
+}
+
+.intro__mark {
+  font: var(--text-screen-title);
+  letter-spacing: var(--type-screen-title-track);
+  color: var(--text-ink);
+}
+
+.intro__line {
+  font: var(--text-body-md);
+  color: var(--text-muted);
+}
+
+.intro__skip {
+  margin-top: var(--space-md);
+}
+
+@keyframes intro-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.intro--in {
+  animation: intro-in 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.intro--out {
+  opacity: 0;
+  transition: opacity 0.24s var(--ease-standard);
+}
+
+
 /* ============================================================================
    micro-interactions — quiet, short, and disabled under prefers-reduced-motion
    (the blanket rule lives in tokens.css). Press + focus states only, as ever.

@@ -30,7 +30,9 @@ export const DEFAULT_PROFILE = {
   //                         add-on blocks currently enabled ("A1".."A3"); seeded
   //                         from the phase default, then the engine adjusts it
   dismissedSuggestion: null, // { ruleId, date } — hushes that rule for ~a week,
-};                            // set on Dismiss and after Apply (see today.js)
+  //                            set on Dismiss and after Apply (see today.js)
+  introSeen: false,       // the first-run splash has been shown once (pass 11).
+};                        // merged over defaults on load, so no schema bump.
 
 export function loadProfile() {
   // Merge over the defaults rather than using them only as an absent-record
