@@ -16,7 +16,7 @@
 import { el } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { loadProfile, saveProfile } from "./core/profile.js";
-import { activeBlocks, phaseById, phaseTarget, rotationOptions } from "./core/plan.js";
+import { activeBlocks, phaseById, phaseTarget, rotationOptions, PHASES } from "./core/plan.js";
 import {
   newDay,
   toggleBlock,
@@ -169,6 +169,28 @@ function phaseBanner(profile, day) {
   return el("p", { class: "phase-banner" }, `${phase.name} · ${weekText}`);
 }
 
+/**
+ * The three-rung target ladder, with the viewed day's phase picked out. Keeps
+ * the daily figure in context — ramp-up is meant to feel low, the pushed target
+ * is meant to feel like a lot — so a number that would otherwise read as "wrong"
+ * reads as "this rung".
+ */
+function phaseLadder(day) {
+  return el(
+    "p",
+    { class: "phase-ladder" },
+    ...PHASES.flatMap((phase, i) => {
+      const rung = el(
+        "span",
+        { class: phase.id === day.phaseId ? "phase-ladder__now" : null },
+        `${phase.name} ${NUM.format(phase.kcal)}`,
+      );
+      return i === 0 ? [rung] : [" · ", rung];
+    }),
+    " kcal",
+  );
+}
+
 function dateHeader(profile, day, editable) {
   const isToday = day.date === todayISO();
   return el(
@@ -195,6 +217,7 @@ function dateHeader(profile, day, editable) {
           ),
     ),
     phaseBanner(profile, day),
+    phaseLadder(day),
     editable ? null : el("span", { class: "today__closed" }, "This day is closed."),
   );
 }
