@@ -258,10 +258,28 @@ Verify the Pages PWA:
 
 Build the executables (pass 3):
 
-- **Android APK/AAB** — a minimal WebView shell that bundles the assets locally,
-  signed. Chosen over a Bubblewrap TWA so the app carries no dependency on the
-  Pages URL staying put — self-contained, offline from first launch. Cost: no
-  auto-update (ship a fresh APK per release) and a little native glue code.
+- **Android APK** — ✅ done. `android/` is a minimal WebView shell (no second
+  copy of the app: `app/build.gradle.kts` copies `index.html`/`src/`/etc. from
+  the repo root into `assets/` on every build). `MainActivity.kt` serves it
+  through `WebViewAssetLoader` on a virtual `https://rise.local/` origin
+  rather than `file://`, since Chromium blocks the ES-module imports
+  `app.js` pulls in when loaded from `file://`. Chosen over a Bubblewrap TWA
+  so the app carries no dependency on the Pages URL staying put —
+  self-contained, offline from first launch, no permissions requested. Cost:
+  no auto-update (ship a fresh APK per release).
+  `.github/workflows/android.yml` builds and signs the release APK in CI —
+  this machine has no Android SDK and only a Java 8 runtime, both short of
+  what Gradle/AGP need, so the build runs on GitHub's runners instead of
+  locally. It triggers on pushes touching the app or `android/`, on demand,
+  and on publishing a GitHub Release (attaches the APK as a release asset).
+  The signing keystore is generated once, kept out of the repo, and read by
+  CI from GitHub Actions secrets (`ANDROID_KEYSTORE_BASE64` +
+  passwords/alias) — see `android/README.md`'s Signing section for what
+  losing it would break. Verified: a run on `main` produced a
+  correctly-signed ~1.9MB APK with the app's assets bundled inside.
+  AAB (for a Play Store listing rather than a sideloaded APK) is a later
+  add if that distribution path is ever wanted — not needed for a GitHub
+  Release artifact.
 - **Desktop `.exe` / `.dmg`** — a thin Tauri wrapper over the same build, for a
   double-clickable installer alongside the browser-installed PWA.
 
