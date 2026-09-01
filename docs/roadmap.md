@@ -200,8 +200,13 @@ an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
   relative, so it works unchanged under the `/diet-tracker/` sub-path — the SW
   scope, `manifest.json`'s `./` `start_url` / `scope`, the font `url()`s in
   `tokens.css`, all of it. Added an empty `.nojekyll` so Pages serves the tree
-  as-is. `manifest.json` `name` and the `<title>` aligned to **Rise — Diet
-  Tracker** (the installed-app label).
+  as-is. `manifest.json` `name`, the `<title>` and the README heading set to
+  **Rise: Diet Tracker** (the installed-app label).
+- Post-install fix from a PC screenshot: the installed PWA window showed two
+  scrollbars and centred the column off to the left. Cause was `overflow-y`
+  set on `<body>` as well as `<html>`, giving the body its own scroll
+  container; moved it to `<html>` only (`overflow-y: auto` +
+  `scrollbar-gutter: stable`). `CACHE_NAME` → `rise-v5`.
 
 ## next
 

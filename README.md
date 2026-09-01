@@ -1,4 +1,4 @@
-# Rise 🍳
+# Rise: Diet Tracker 🍳
 
 **a diet tracker and planner.** local-first, offline, no accounts.
 
