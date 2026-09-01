@@ -6,14 +6,16 @@
 Screen" (mobile) or "Install app" (desktop) for the standalone, offline PWA.
 
 ```
-status: v1.0.0 released · 1.5 in progress on `release-1.5`
+status: v1.0.0 released · 1.5 built on `release-1.5`, not yet cut
 built:  today checklist + phase ladder, weight trend + adjustment engine,
         settings/about, json export/import, pwa shell (installable, offline),
         durable storage, deployed to github pages, android apk, windows
         installer
-next:   1.5 — manual add-on blocks, daily appetite check, first-run intro,
-        header polish, in-app update check; android pwa install check on a
-        device (non-blocking)
+1.5:    manual add-on / bonus blocks + drop-a-block on today, one-tap daily
+        appetite check, first-run intro splash, header polish, in-app update
+        check (deep-link floor: apk/installer get a link to the next release,
+        no in-place install yet)
+next:   cut the 1.5 release; android pwa install check on a device (non-blocking)
 ```
 
 ## the idea
@@ -28,7 +30,10 @@ plan adjustments rather than applying them. the plan that ships aims at a slow,
 steady weight gain; the block structure generalises to any fixed plan.
 
 - **no food logging** — adherence tracking, not nutrition accounting
-- **works offline** — everything is cached; fonts vendored, data stays in your browser
+- **works offline** — everything is cached; fonts vendored, data stays in your
+  browser. the one outbound request is the update check: a version lookup
+  against the GitHub API, run on a manual tap or at most weekly, sending
+  nothing about you. it can be ignored entirely.
 - **never nags** — a missed block is a number, not a guilt trip
 - **nothing personal in this repo** — your details are entered on first run
 

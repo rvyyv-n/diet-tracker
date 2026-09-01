@@ -12,8 +12,8 @@ android {
         minSdk = 24
         targetSdk = 34
         // Bump both on every release; versionName is what shows in "About".
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.5.0"
     }
 
     // Release signing comes from env vars (see .github/workflows/android.yml).

@@ -322,6 +322,15 @@ line clean; v2 is the whole-number jump for the bulk redesign. Character: small
 features and a design-polish pass, owner-driven. Everything below lands on the
 `release-1.5` branch and merges to `main` in one go at release time.
 
+**Build status.** Passes 8–12 are built on `release-1.5`. Pass 12 shipped as the
+deep-link floor only — the two in-place updaters (Tauri updater plugin, Android
+FileProvider install) were deliberately left out; see that pass. Pass 13's code
+prep is done (version bumped to 1.5.0 in `core/appinfo.js`,
+`android/app/build.gradle.kts`, `desktop/src-tauri/tauri.conf.json` and the
+README; `sw.js` precache list extended and `CACHE_NAME` → `rise-v11`). Still
+open, all owner actions: merge to `main`, tag `v1.5.0`, publish the Release, and
+verify the update check against the real `v1.5.0` tag from an installed build.
+
 **Decisions taken up front.** Settled with the user before these passes were
 written — implement them, don't reopen.
 
@@ -538,11 +547,13 @@ them.
 
 **pass 13 — the 1.5 release**
 
-- Version bump to **1.5.0** in all four places it is written: `settings.js:26`
-  (`VERSION`, which feeds the About block), `android/app/build.gradle.kts:16`
+- Version bump to **1.5.0** in all four places it is written:
+  `src/js/core/appinfo.js` (`APP_VERSION` — the single JS source of truth since
+  pass 12; feeds the About block and the update compare), and it replaced the
+  old `settings.js` `VERSION` const), `android/app/build.gradle.kts:16`
   (`versionName`, and step `versionCode`), `desktop/src-tauri/tauri.conf.json:4`,
   and the README status block. `schema wgt v1` is unchanged — no pass above
-  bumps it.
+  bumps it. **Done.**
 - `sw.js` — add every new module to the precache list (passes 11 and 12 each add
   at least one) and bump `CACHE_NAME` past `rise-v10`. A new file missing from
   that list is the failure that only shows up offline.
