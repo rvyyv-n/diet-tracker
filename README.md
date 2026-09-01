@@ -6,12 +6,13 @@
 Screen" (mobile) or "Install app" (desktop) for the standalone, offline PWA.
 
 ```
-status: v1.0.0 released
+status: v1.0.0 released · 1.5 in progress on `release-1.5`
 built:  today checklist + phase ladder, weight trend + adjustment engine,
         settings/about, json export/import, pwa shell (installable, offline),
         durable storage, deployed to github pages, android apk, windows
         installer
-next:   android pwa install check on a real device (non-blocking); 1.5
+next:   1.5 — manual add-on blocks, daily appetite check, first-run intro,
+        header polish; android pwa install check on a device (non-blocking)
 ```
 
 ## the idea
@@ -114,8 +115,9 @@ full detail in [docs/roadmap.md](docs/roadmap.md).
 **v1** — the three screens above, offline, packaged to run on android, iphone
 and desktop with no local server, and shipped as a github release.
 
-**1.5** — small features and a design-polish pass: adding an add-on block for
-the day from the today screen, and header tweaks.
+**1.5** — small features and a design-polish pass: adding or dropping a block
+for the day from the today screen, a one-tap daily appetite check, a first-run
+intro, and header tweaks.
 
 **v2** — off-plan food entries and a reusable recipe book, configurable overview
 metrics, a real desktop layout, a grocery checklist, and meal reminders.

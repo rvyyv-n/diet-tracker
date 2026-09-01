@@ -312,32 +312,154 @@ well-trodden ground, so this wasn't held up waiting on a device.
 
 - **Android PWA verification** — the browser-installed path (install /
   standalone / persistence) on an actual Android device, from the Pages URL.
-  Deferred out of v1.0.0 as non-blocking; do this when a device's in hand.
+  Deferred out of v1.0.0 as non-blocking; carried into 1.5 as a release chore,
+  still non-blocking. Do this when a device's in hand.
 
-**1.5** — the incremental release after v1. Numbered **1.5**, not 1.1, to keep
-the version line clean; v2 is the whole-number jump for the bulk redesign.
-Small features and a design-polish pass, owner-driven, once v1 ships:
+## 1.5 — planned
 
-- **manual add-on blocks on Today** — add or drop the snack / pre-bed /
-  2nd-shake block for the day yourself, not only through the phase default or
-  the adjustment engine's Apply. `day.addOns` is already a per-day snapshot, so
-  the checklist needs an "add a block" affordance that writes to it (and a way
-  to drop one back off). Wanted after using it on a phone — the engine-only
-  path feels too indirect for a block you just want today.
-- **header polish** carried over from the prominence pass: drop the filler
-  "Setup, data and about" subline (#4), a little more air under the header block
-  (#3), tighten the title-to-eyebrow gap 4 → 2px (#5).
+The incremental release after v1. Numbered **1.5**, not 1.1, to keep the version
+line clean; v2 is the whole-number jump for the bulk redesign. Character: small
+features and a design-polish pass, owner-driven. Everything below lands on the
+`release-1.5` branch and merges to `main` in one go at release time.
+
+**Decisions taken up front.** Settled with the user before these passes were
+written — implement them, don't reopen.
+
+```yaml
+manual_add_on_scope:
+  decision: "that day only — a manual add writes to the day record, never the profile"
+  why: >
+    day.addOns is already a per-day snapshot, and the use case is "I want a
+    second shake today", not a plan change. A lasting change is what the
+    adjustment engine's Apply is for; keeping the two paths separate means a
+    manual add can never quietly re-target the plan.
+
+manual_add_on_adherence:
+  decision: "an added block is a bonus — it adds kcal when ticked but never grows the denominator"
+  why: >
+    Adherence has to keep meaning "did I eat the plan". If adding a block could
+    lower the percentage, the feature would carry a disincentive to use it, and
+    the number feeding the adjustment engine would move for a reason that has
+    nothing to do with adherence.
+
+appetite_note_form:
+  decision: "a three-way tap scale (stuffed / fine / still hungry), not free text"
+  why: >
+    One tap, no keyboard, and structured enough that the engine could read it in
+    v2 — appetite is the documented bottleneck (plan-spec.md), so a value that
+    can be computed over is worth more than prose. Changes day.appetite from a
+    nullable string to a nullable enum.
+```
+
+**pass 8 — manual add-on blocks on Today**
+
+The anchor feature. The engine-only path to an add-on block feels too indirect
+for a block you just want today — noticed while using v1 on a phone.
+
+- A new `day.bonus` list: block ids added by hand for that day. It sits
+  alongside `day.addOns` rather than inside it, because the two carry different
+  meaning — `addOns` is the plan for the day and counts toward adherence,
+  `bonus` is extra and counts only toward kcal. `newDay()` gains the field;
+  `dayAddOns()` is unchanged.
+- `dayTotals()` folds ticked bonus blocks into `kcal`, `proteinG` and `done`,
+  but leaves `total` at the plan count — so `dayAdherence()` can read above 1
+  and can never be pushed down by an added block. Check `trend.js`'s
+  `weeklyAdherence` handles that ceiling rather than assuming 0–1.
+- Today gains an **add a block** affordance under the checklist: the add-ons not
+  already on the day (from `ADDON_IDS`), each with its kcal, in a recessed panel
+  in the same register as the rotation picker — a nested choice, not more tap
+  rows.
+- Bonus rows render in `order` position with a quiet marker separating them from
+  plan rows, and a way to drop one back off.
+- **Dropping a plan add-on** — a phase default you're not having today — removes
+  it from `day.addOns`, and so does shrink the denominator. This is the one path
+  where adherence can be moved by hand. The mitigation is that the kcal target
+  stays `phaseTarget()` and does not move, so `intakeStatus` still measures the
+  day against the full phase figure. Flagged rather than prevented: the honest
+  case ("I'm genuinely not having the snack") is the common one.
+- Editable days only (`isDayEditable` — today, and yesterday until it closes).
+- The A1 → A2 → A3 order the engine steps through is not a constraint here; a
+  manual add can pick any of the three.
+
+**pass 9 — appetite check per day**
+
+`day.appetite` and `setAppetite()` have sat in `core/day.js` since pass 2a with
+nothing reading or writing them. This wires the field up.
+
+- `setAppetite()` narrows to the enum (`"stuffed" | "fine" | "hungry" | null`)
+  and validates its input; re-tapping the current value clears it back to null.
+- Today gains three chips, low on the screen under the checklist, under nothing
+  heavier than a `.group__label`. Optional and skippable — the never-nag
+  principle: no prompt, and no red state for a day left blank.
+- No `SCHEMA_VERSION` bump. Nothing ever wrote the field, so every stored day
+  already holds `appetite: null` and there is nothing to migrate.
+- Nothing computes over it in 1.5. It's a record for the user, and the seam the
+  v2 engine reads.
+
+**pass 10 — header polish + design sweep**
+
+The three items carried out of pass 6's prominence pass, plus a look for
+whatever else the same eye catches.
+
+- **#4** — drop the filler "Setup, data and about" subline (`settings.js:62`).
+  Settings is the one screen whose eyebrow says nothing its title doesn't;
+  Weight's and Today's carry real data and stay.
+- **#3** — more air under the header block. `.screen` is a flex column at
+  `--space-lg` (24px); the header wants more separation from the first card than
+  the cards want from each other.
+- **#5** — title-to-eyebrow gap 4 → 2px. `.screen-head` uses `--space-xxs`
+  today; 2px sits below the 4pt scale, so this needs either a literal or a new
+  `--space-xxxs` token. Take the token, and note in `tokens.css` why it exists.
+- Then look at the three tab screens side by side for anything the changes
+  expose.
+
+**pass 11 — first-run intro splash**
+
+Deferred through v1 "on purpose until there is an app to introduce". v1 has
+shipped, so the condition is met.
+
+- A short branded card — the Rise mark and one line on what the app does — that
+  fades through to the welcome screen. `app.js` routes it ahead of
+  `renderWelcome()`.
+- It needs a stored "seen" flag, or a reload part-way through setup replays it.
+  A boolean on the profile record is enough: `loadProfile()` merges over the
+  defaults, so an added field needs no migration (same reasoning as
+  `currentPhaseId` in pass 2).
+- Honours `prefers-reduced-motion` like the pass-4b micro-interactions — the
+  splash still shows, the fade doesn't run.
+- A skip affordance and a hard cap on how long it holds the screen. An intro
+  that can't be got past is worse than no intro.
+
+**pass 12 — the 1.5 release**
+
+- Version bump to **1.5.0** in all four places it is written: `settings.js:26`
+  (`VERSION`, which feeds the About block), `android/app/build.gradle.kts:16`
+  (`versionName`, and step `versionCode`), `desktop/src-tauri/tauri.conf.json:4`,
+  and the README status block. `schema wgt v1` is unchanged — no pass above
+  bumps it.
+- `sw.js` — add any new module to the precache list (pass 11 adds at least one
+  file) and bump `CACHE_NAME` past `rise-v10`. A new file missing from that list
+  is the failure that only shows up offline.
+- The Android PWA verification from "next" above, if a device turns up.
+- Merge `release-1.5` to `main`, tag `v1.5.0`, publish the Release —
+  `android.yml` and `desktop.yml` both trigger on `release: published` and
+  attach the APK and the NSIS installer themselves.
+- README and this file updated to record 1.5 as shipped.
+
+**Considered and left out of 1.5.** The grocery checklist — the data is already
+transcribed in `plan.js`, but it is a new screen plus weekly-reset state, so it
+stays a v2 item. A rotation picker for the 2nd shake — A3 is fixed at 580 kcal
+while B2 rotates through standard / no-blender / heavy, a real inconsistency but
+not one that has bitten yet. Meal reminders — they need notification permissions
+and a scheduling path iOS PWAs don't reliably give; recorded below as before.
 
 **v2** — the bulk redesign and the larger feature set below.
 
 ## later
 
 - grocery checklist with a weekly reset
-- appetite / fullness note per day (`day.js` already carries the field)
 - daily meal reminders — local notifications at the best time to eat each
   block. confirmed for the late stages of the build
-- first-run intro splash with a fade — deferred on purpose until there is an app
-  to introduce
 
 ## v2 — post-MVP
 
