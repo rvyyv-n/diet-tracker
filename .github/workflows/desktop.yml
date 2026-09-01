@@ -48,6 +48,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+          
+      - name: Install Cairo library
+        run: choco install cairo -y
 
       - name: Rasterise assets/icon.svg to a 1024x1024 PNG
         run: |
