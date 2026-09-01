@@ -2,11 +2,15 @@
 
 **a diet tracker and planner.** local-first, offline, no accounts.
 
+**live:** <https://rvyyv-n.github.io/diet-tracker/> — open it, then "Add to Home
+Screen" (mobile) or "Install app" (desktop) for the standalone, offline PWA.
+
 ```
 status: v1 packaging
 built:  today checklist + phase ladder, weight trend + adjustment engine,
-        settings/about, json export/import, pwa shell (installable, offline)
-next:   persistent storage, github pages deploy, android apk, v1 release
+        settings/about, json export/import, pwa shell (installable, offline),
+        durable storage, deployed to github pages
+next:   android apk, desktop installers, v1 release
 ```
 
 ## the idea

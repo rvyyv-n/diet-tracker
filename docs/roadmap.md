@@ -186,41 +186,54 @@ an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
   row name, so the body no longer competes with the button. Above 360px the row
   is unchanged.
 
+**pass 6 — storage durability + Pages deploy**
+
+- `core/persist.js` — `requestPersistence()` calls `navigator.storage.persist()`
+  once per load from `app.js`, fire-and-forget. It short-circuits if the grant
+  is already in place, swallows every error, and never blocks the first render.
+  This closes the silent-eviction gap: localStorage already survives a reboot,
+  but the OS can drop it under pressure, and iOS clears a PWA's storage after
+  ~7 idle days. Nothing but the in-app **Reset all data** clears it on purpose;
+  the Export button is the backstop.
+- **GitHub Pages** enabled on `main` / repo root, no build step, served at
+  `https://rvyyv-n.github.io/diet-tracker/`. Every path in the app was already
+  relative, so it works unchanged under the `/diet-tracker/` sub-path — the SW
+  scope, `manifest.json`'s `./` `start_url` / `scope`, the font `url()`s in
+  `tokens.css`, all of it. Added an empty `.nojekyll` so Pages serves the tree
+  as-is. `manifest.json` `name` and the `<title>` aligned to **Rise — Diet
+  Tracker** (the installed-app label).
+
 ## next
 
-**v1 release packaging**
+**v1 release packaging** — the app runs on a phone and a PC and keeps its data
+across reboots, offline, until the user resets it. The Pages PWA is the live
+delivery; what's left is the standalone executables and the release itself.
 
-Storage durability:
+Verify the Pages PWA:
 
-- Call `navigator.storage.persist()` on first run so the OS marks the data
-  durable and won't evict it under pressure. It already survives reboots
-  (localStorage); this closes the silent-wipe gap. Nothing but the in-app
-  **Reset all data** should ever clear it.
+- **iPhone** — install-to-home-screen, standalone launch, data persists across a
+  reboot and a few days idle (`storage.persist()` + Export are the mitigations
+  for iOS's ~7-day eviction).
+- **Android** — same install / standalone / persistence check from the Pages URL.
+- **Desktop** — Chrome / Edge "Install app", standalone window, offline after
+  first load. This also confirms the `file://` ES-module problem is moot.
 
-Ship targets — the app has to run on a phone and a PC and keep its data across
-reboots, offline, until the user resets it:
+Build the executables (pass 3):
 
-- **Deploy — GitHub Pages.** Serve `main` from the repo root, no build step.
-  The shared install surface: iPhone and Android both "Add to Home Screen" from
-  the Pages URL and get the standalone PWA, offline through the service worker.
-  Desktop installs the same PWA from the browser (Chrome / Edge "Install app"),
-  which also sidesteps the `file://` ES-module problem — no flatten step needed.
-- **iPhone.** The Pages PWA is the delivery — no App Store. Confirm
-  install-to-home-screen, standalone launch, and that data persists (iOS can
-  evict PWA storage after ~7 idle days; `storage.persist()` and the export
-  button are the mitigations).
-- **Android — a real APK.** A minimal WebView shell that bundles the assets
-  locally, wrapped as an installable APK/AAB. Chosen over a Bubblewrap TWA so
-  the app carries no dependency on the Pages URL staying put — it is
-  self-contained and offline from first launch. Cost: no auto-update (ship a
-  fresh APK per release) and a little native glue code.
+- **Android APK/AAB** — a minimal WebView shell that bundles the assets locally,
+  signed. Chosen over a Bubblewrap TWA so the app carries no dependency on the
+  Pages URL staying put — self-contained, offline from first launch. Cost: no
+  auto-update (ship a fresh APK per release) and a little native glue code.
 - **Desktop `.exe` / `.dmg`** — a thin Tauri wrapper over the same build, for a
-  double-clickable installer alongside the browser-installed PWA. Slated for
-  **1.1**, after the release is out; not a v1 blocker.
-- **Release.** Tag `v1`, cut a GitHub Release, attach the artifacts: the
-  Android APK/AAB (the desktop wrapper follows in 1.1).
+  double-clickable installer alongside the browser-installed PWA.
 
-v2 work starts only after the release is out.
+Release (pass 4):
+
+- Tag `v1`, cut a GitHub Release, attach the artifacts: the Android APK/AAB and
+  the desktop installers.
+
+**1.1** — small features and a design-polish pass (owner-driven), after v1 is
+out. **v2** — the bulk redesign and the larger feature set below.
 
 ## later
 
