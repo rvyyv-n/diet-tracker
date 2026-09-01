@@ -1347,6 +1347,10 @@
   margin-top: calc(-1 * var(--space-xs));
   padding: var(--space-lg) var(--space-md);
   background: var(--surface-dark);
+  /* the cream cards above carry a 1px hairline; without a border of its own the
+     dark fill sat 1px proud on each side and read as a slightly wider block.
+     Match their box exactly with the on-dark hairline token. */
+  border: var(--border-width-hairline) solid var(--border-on-dark);
   border-radius: var(--radius-card);
 }
 

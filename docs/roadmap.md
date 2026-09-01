@@ -221,6 +221,9 @@ an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
     `--app-max-width` and centred on the column via `left: 50%` +
     `translateX(-50%)`. A purpose-built wide-screen layout is a v2 item.
   - `CACHE_NAME` → `rise-v7`.
+- The About block on Settings sat 1px proud on each side of the cream cards
+  above it — those carry a hairline border and it didn't. Gave it the same
+  box with the `--border-on-dark` hairline token. `CACHE_NAME` → `rise-v8`.
 
 ## next
 
