@@ -202,11 +202,15 @@ an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
   `tokens.css`, all of it. Added an empty `.nojekyll` so Pages serves the tree
   as-is. `manifest.json` `name`, the `<title>` and the README heading set to
   **Rise: Diet Tracker** (the installed-app label).
-- Post-install fix from a PC screenshot: the installed PWA window showed two
-  scrollbars and centred the column off to the left. Cause was `overflow-y`
-  set on `<body>` as well as `<html>`, giving the body its own scroll
-  container; moved it to `<html>` only (`overflow-y: auto` +
-  `scrollbar-gutter: stable`). `CACHE_NAME` → `rise-v5`.
+- Post-install fixes from PC screenshots:
+  - two scrollbars, column centred off to the left — `overflow-y` was set on
+    `<body>` as well as `<html>`, so the body became its own scroll container.
+    Moved to `<html>` only (`overflow-y: auto` + `scrollbar-gutter: stable`).
+  - the bottom tab bar floated with a gap on each side on mid-width phones
+    (`--app-max-width` clamps to 94vw / 380px). It's now edge-to-edge below
+    600px and only matched to the centred column from 600px up. A proper
+    wide-screen layout is a v2 item.
+  - `CACHE_NAME` → `rise-v6`.
 
 ## next
 
@@ -261,6 +265,10 @@ out. **v2** — the bulk redesign and the larger feature set below.
   network path is actually wanted.
 - **configurable overview metrics.** add / remove / hide the readouts on the
   daily total — the protein line toggled off, other metrics added.
+- **a real desktop layout.** the app is phone-first and just centres a narrow
+  column on a wide screen. A purpose-built wide layout — side nav instead of the
+  bottom tab bar, the three screens laid out together rather than swapped — is
+  its own design pass, not a media query bolted onto the current CSS.
 
 ## resuming on another machine
 

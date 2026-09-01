@@ -864,8 +864,12 @@ html {
 
 
 /* ------------------------------------------------------------- tab bar ---
-   Fixed to the bottom, matched to the app's centred column. Two tabs now
-   (Today | Weight), room for more. Press + selected states only.            */
+   Fixed to the bottom. On a phone it spans the whole viewport, edge to edge —
+   anything narrower and it reads as a floating strip with a gap on each side
+   (--app-max-width bottoms out at 380px and clamps to 94vw, so a 400–580px
+   window left a visible margin). From 600px up it stays matched to the centred
+   column; a purpose-built desktop layout is a post-v1 job. Press + selected
+   states only.                                                               */
 
 .tabbar {
   position: fixed;
@@ -873,8 +877,6 @@ html {
   right: 0;
   bottom: 0;
   z-index: 30;
-  max-width: var(--app-max-width);
-  margin: 0 auto;
   display: flex;
   background: var(--surface-canvas);
   border-top: var(--border-width-hairline) solid var(--border-hairline);
@@ -882,6 +884,13 @@ html {
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+}
+
+@media (min-width: 600px) {
+  .tabbar {
+    max-width: var(--app-max-width);
+    margin: 0 auto;
+  }
 }
 
 .tabbar__btn {
