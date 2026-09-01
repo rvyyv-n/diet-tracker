@@ -199,7 +199,11 @@ function dateHeader(profile, day, editable) {
     el(
       "div",
       { class: "today__daterow" },
-      el("h1", { class: "screen__title screen__title--lg" }, isToday ? "Today" : longDate(day.date)),
+      el(
+        "h1",
+        { class: `screen__title screen__title--lg${isToday ? "" : " screen__title--date"}` },
+        isToday ? "Today" : longDate(day.date),
+      ),
       isToday
         ? null
         : el(

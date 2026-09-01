@@ -74,12 +74,20 @@
   color: var(--text-ink);
 }
 
-/* The top-level title on a tab screen (Today, Weight, Settings). One step above
-   display-md so the header anchors the page; see --text-screen-title in
+/* The top-level title on a tab screen (Today, Weight, Settings). Takes
+   display-lg so the header anchors the page; see --text-screen-title in
    tokens.css. Drop the modifier to fall back to display-sm. */
 .screen__title--lg {
   font: var(--text-screen-title);
   letter-spacing: var(--type-screen-title-track);
+}
+
+/* The backfill header on Today shows a full date, not a one-word screen name.
+   At display-lg "Wednesday 24 September" would run to three lines on a phone,
+   so the date variant steps back to display-sm. */
+.screen__title--date {
+  font: var(--text-display-sm);
+  letter-spacing: var(--type-display-sm-track);
 }
 
 .screen__intro {

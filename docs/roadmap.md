@@ -224,14 +224,17 @@ an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
 - The About block on Settings sat 1px proud on each side of the cream cards
   above it — those carry a hairline border and it didn't. Gave it the same
   box with the `--border-on-dark` hairline token. `CACHE_NAME` → `rise-v8`.
-- Header prominence pass. The top-level title went 36 → 40px via a new
-  `--text-screen-title` APP LAYER token (serif, 400, −0.6px track), used by
-  `.screen__title--lg` and the setup screen. The line beneath it
-  (`.phase-banner`) became an uppercase tracked caption — the `.group__label`
-  register — so it reads as an eyebrow and the serif title is the one large
-  thing in the header. `CACHE_NAME` → `rise-v9`. Open: the backfill long-date
-  title ("Thursday 28 August") wraps on ≤375px phones; pre-existing, slightly
-  wider now — a size-down for the date variant is the fix if it matters.
+- Header prominence pass. The top-level title took **display-lg (48px)** via a
+  new `--text-screen-title` APP LAYER token (serif, 400, −1px track), used by
+  `.screen__title--lg` and the setup screen — the source system keeps 48px for
+  marketing heroes, but the page title is the app's loudest on-screen text and
+  should anchor the screen. The line beneath it (`.phase-banner`) became an
+  uppercase tracked caption in the `.group__label` register, so it reads as an
+  eyebrow. The backfill header shows a full date, not a one-word screen name,
+  so `.screen__title--date` steps it back to display-sm (28px) — at 48px
+  "Wednesday 24 September" ran to three lines on a phone. Screen-name titles
+  stay one line to 320px; "Set up your plan" wraps to two only at 320px (SE
+  1st-gen). `CACHE_NAME` → `rise-v10`.
 
 ## next
 

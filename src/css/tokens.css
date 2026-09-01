@@ -183,10 +183,11 @@
 --text-metric-sm:var(--weight-medium) 20px/1.2 var(--font-mono);
 
 /* APP LAYER — the top-level screen title (Today / Weight / Settings / setup).
-   The source system's display-md is 36px; the app runs its page titles one step
-   larger so the header anchors the screen. Serif, weight 400, tracking scaled
-   between display-md and display-lg. */
---type-screen-title-size:40px;--type-screen-title-line:1.12;--type-screen-title-track:-.6px;
+   The source system reserves display-lg (48px) for marketing heroes, but the
+   app's page titles are its loudest on-screen text and need to anchor the
+   screen, so they take that size. Serif, weight 400, display-lg tracking. The
+   backfill date header steps back down — see .screen__title--date. */
+--type-screen-title-size:48px;--type-screen-title-line:1.05;--type-screen-title-track:-1px;
 --text-screen-title:var(--weight-regular) var(--type-screen-title-size)/var(--type-screen-title-line) var(--font-serif-display);
 
 
