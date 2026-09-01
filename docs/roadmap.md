@@ -240,27 +240,20 @@ an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
   note. iPhone 11 verified: home-screen install, standalone launch and the icon
   all working.
 
-## next
+**pass 7 — v1 packaging: executables + the release**
 
-**v1 release packaging** — the app runs on a phone and a PC and keeps its data
-across reboots, offline, until the user resets it. The Pages PWA is the live
-delivery; what's left is the standalone executables and the release itself.
+The Pages PWA verification: **iPhone** ✅ (home-screen install, standalone
+launch, icon — multi-day idle persistence is the one thing only time
+confirms; `storage.persist()` + Export are the mitigations for iOS's ~7-day
+eviction) and **Desktop** ✅ (Chrome PWA window, offline after first load).
+**Android** device install/standalone/persistence check is still open —
+deferred, non-blocking (see "next"); the same PWA code path is already
+proven on iPhone and desktop, and Chrome's install support on Android is
+well-trodden ground, so this wasn't held up waiting on a device.
 
-Verify the Pages PWA:
-
-- **iPhone** — ✅ verified on an iPhone 11: home-screen install, standalone
-  launch, icon. Multi-day idle persistence is the one thing only time confirms;
-  `storage.persist()` + Export are the mitigations for iOS's ~7-day eviction.
-- **Desktop** — ✅ verified: Chrome PWA window, offline after first load, layout
-  fixes above landed against it. Confirms the `file://` ES-module problem is moot.
-- **Android** — still to do: same install / standalone / persistence check from
-  the Pages URL.
-
-Build the executables (pass 3):
-
-- **Android APK** — ✅ done. `android/` is a minimal WebView shell (no second
-  copy of the app: `app/build.gradle.kts` copies `index.html`/`src/`/etc. from
-  the repo root into `assets/` on every build). `MainActivity.kt` serves it
+- **Android APK** — `android/` is a minimal WebView shell (no second copy of
+  the app: `app/build.gradle.kts` copies `index.html`/`src/`/etc. from the
+  repo root into `assets/` on every build). `MainActivity.kt` serves it
   through `WebViewAssetLoader` on a virtual `https://rise.local/` origin
   rather than `file://`, since Chromium blocks the ES-module imports
   `app.js` pulls in when loaded from `file://`. Chosen over a Bubblewrap TWA
@@ -280,9 +273,9 @@ Build the executables (pass 3):
   AAB (for a Play Store listing rather than a sideloaded APK) is a later
   add if that distribution path is ever wanted — not needed for a GitHub
   Release artifact.
-- **Desktop `.exe`** — ✅ done, Windows only (macOS `.dmg` skipped — not the
-  target platform for now). `desktop/` is a thin Tauri wrapper over the same
-  build: no second copy of the app (`desktop/scripts/sync-desktop-assets.sh`
+- **Desktop `.exe`** — Windows only (macOS `.dmg` skipped — not the target
+  platform for now). `desktop/` is a thin Tauri wrapper over the same build:
+  no second copy of the app (`desktop/scripts/sync-desktop-assets.sh`
   copies `index.html`/`src/`/etc. from the repo root into `desktop/dist/`
   before every build), and `src-tauri/main.rs` just opens the window
   `tauri.conf.json` describes. Tauri serves the bundle over its own local
@@ -309,16 +302,17 @@ Build the executables (pass 3):
   CI-built `Rise_1.0.0_x64-setup.exe` — SmartScreen prompt as expected, then
   a normal NSIS wizard, then the app rendering and persisting data
   correctly in its own window.
+- **The release** — tagged `v1.0.0` and cut as a GitHub Release with source
+  (attached automatically by GitHub) + the Android APK + the Windows
+  installer. Both `android.yml` and `desktop.yml` attach their build to a
+  published Release automatically (`on: release: types: [published]`), so
+  publishing the Release is what triggers both builds to attach against it.
 
-Release (pass 4):
+## next
 
-- Both executables are built and CI-verified; the Android PWA install check
-  is the one open item above. Once that's done: tag `v1` once and cut a
-  GitHub Release with every artifact attached — source + the Android APK +
-  the Windows installer. Both `android.yml` and `desktop.yml` already attach
-  their build to a published Release automatically (`on: release: types:
-  [published]`), so cutting the Release is what triggers both builds to
-  reattach against it.
+- **Android PWA verification** — the browser-installed path (install /
+  standalone / persistence) on an actual Android device, from the Pages URL.
+  Deferred out of v1.0.0 as non-blocking; do this when a device's in hand.
 
 **1.5** — the incremental release after v1. Numbered **1.5**, not 1.1, to keep
 the version line clean; v2 is the whole-number jump for the bulk redesign.

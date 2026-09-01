@@ -6,11 +6,12 @@
 Screen" (mobile) or "Install app" (desktop) for the standalone, offline PWA.
 
 ```
-status: v1 packaging
+status: v1.0.0 released
 built:  today checklist + phase ladder, weight trend + adjustment engine,
         settings/about, json export/import, pwa shell (installable, offline),
-        durable storage, deployed to github pages
-next:   android apk, desktop installers, v1 release
+        durable storage, deployed to github pages, android apk, windows
+        installer
+next:   android pwa install check on a real device (non-blocking); 1.5
 ```
 
 ## the idea
@@ -66,6 +67,17 @@ Open the URL in Chrome, then take the **Install app** prompt, or
 
 Open the URL and click the **install icon** at the right of the address bar, or
 **⋮ menu → Install Rise…**. It opens in its own window.
+
+**Standalone installers**
+
+For a self-contained copy that doesn't depend on the Pages URL staying up,
+grab the Android APK or the Windows installer from the
+[latest release](https://github.com/rvyyv-n/diet-tracker/releases/latest).
+Both are unsigned (no code-signing certificate), so Android/Windows will
+warn before the first install/run — that's expected, not a sign anything's
+wrong. Neither auto-updates; a new release ships a new file. Data doesn't
+carry over between this and a browser-installed copy — use **Settings →
+Export/Import data** to move it.
 
 ## structure
 
