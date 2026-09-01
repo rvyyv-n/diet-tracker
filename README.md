@@ -102,8 +102,11 @@ full detail in [docs/roadmap.md](docs/roadmap.md).
 **v1** — the three screens above, offline, packaged to run on android, iphone
 and desktop with no local server, and shipped as a github release.
 
+**1.5** — small features and a design-polish pass: adding an add-on block for
+the day from the today screen, and header tweaks.
+
 **v2** — off-plan food entries and a reusable recipe book, configurable overview
-metrics, a grocery checklist, and meal reminders.
+metrics, a real desktop layout, a grocery checklist, and meal reminders.
 
 ## license
 

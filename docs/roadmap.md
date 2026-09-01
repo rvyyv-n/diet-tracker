@@ -235,6 +235,10 @@ an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
   "Wednesday 24 September" ran to three lines on a phone. Screen-name titles
   stay one line to 320px; "Set up your plan" wraps to two only at 320px (SE
   1st-gen). `CACHE_NAME` → `rise-v10`.
+- README gained an **install** section — Add to Home Screen / Install app steps
+  for iPhone (Safari only), Android and desktop, with the iOS storage-eviction
+  note. iPhone 11 verified: home-screen install, standalone launch and the icon
+  all working.
 
 ## next
 
@@ -244,12 +248,13 @@ delivery; what's left is the standalone executables and the release itself.
 
 Verify the Pages PWA:
 
-- **iPhone** — install-to-home-screen, standalone launch, data persists across a
-  reboot and a few days idle (`storage.persist()` + Export are the mitigations
-  for iOS's ~7-day eviction).
-- **Android** — same install / standalone / persistence check from the Pages URL.
-- **Desktop** — Chrome / Edge "Install app", standalone window, offline after
-  first load. This also confirms the `file://` ES-module problem is moot.
+- **iPhone** — ✅ verified on an iPhone 11: home-screen install, standalone
+  launch, icon. Multi-day idle persistence is the one thing only time confirms;
+  `storage.persist()` + Export are the mitigations for iOS's ~7-day eviction.
+- **Desktop** — ✅ verified: Chrome PWA window, offline after first load, layout
+  fixes above landed against it. Confirms the `file://` ES-module problem is moot.
+- **Android** — still to do: same install / standalone / persistence check from
+  the Pages URL.
 
 Build the executables (pass 3):
 
@@ -262,20 +267,28 @@ Build the executables (pass 3):
 
 Release (pass 4):
 
-- Tag `v1`, cut a GitHub Release, attach the artifacts: the Android APK/AAB and
+- Hold the `v1` tag until the executables are built, then tag once and cut a
+  GitHub Release with every artifact attached: source + the Android APK/AAB +
   the desktop installers.
 
-**1.1** — small features and a design-polish pass (owner-driven), after v1 is
-out. **v2** — the bulk redesign and the larger feature set below.
+**1.5** — the incremental release after v1. Numbered **1.5**, not 1.1, to keep
+the version line clean; v2 is the whole-number jump for the bulk redesign.
+Small features and a design-polish pass, owner-driven, once v1 ships:
 
-## later
-
-- **manual add-on blocks on Today** — turn the snack / pre-bed / 2nd-shake
-  blocks on or off for the day yourself, not only through the phase default or
+- **manual add-on blocks on Today** — add or drop the snack / pre-bed /
+  2nd-shake block for the day yourself, not only through the phase default or
   the adjustment engine's Apply. `day.addOns` is already a per-day snapshot, so
   the checklist needs an "add a block" affordance that writes to it (and a way
   to drop one back off). Wanted after using it on a phone — the engine-only
   path feels too indirect for a block you just want today.
+- **header polish** carried over from the prominence pass: drop the filler
+  "Setup, data and about" subline (#4), a little more air under the header block
+  (#3), tighten the title-to-eyebrow gap 4 → 2px (#5).
+
+**v2** — the bulk redesign and the larger feature set below.
+
+## later
+
 - grocery checklist with a weekly reset
 - appetite / fullness note per day (`day.js` already carries the field)
 - daily meal reminders — local notifications at the best time to eat each
