@@ -1521,6 +1521,36 @@
 .about2__link:active { color: var(--color-primary-active); text-decoration: underline; text-underline-offset: 3px; }
 .about2__link:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
 
+/* the "Check for updates" row (pass 12) — a quiet button with its status
+   trailing, plus one line of fine print beneath */
+.about2__update {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 0;
+  font: var(--text-body-sm);
+  color: var(--color-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.about2__update:active { color: var(--color-primary-active); }
+.about2__update:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
+
+.about2__update-status {
+  flex: none;
+  color: var(--text-on-dark-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.about2__fineprint {
+  font: var(--text-caption);
+  color: var(--text-on-dark-soft);
+}
+
 .about2__sep { color: var(--text-on-dark-soft); }
 
 .about2__sig {

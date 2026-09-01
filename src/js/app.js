@@ -14,6 +14,7 @@ import { el } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { isAvailable } from "./core/storage.js";
 import { requestPersistence } from "./core/persist.js";
+import { autoCheckForUpdate } from "./core/updates.js";
 import { loadProfile, saveProfile, isComplete } from "./core/profile.js";
 import { defaultPhaseForWeek, phaseAddOns, normaliseAddOns } from "./core/plan.js";
 import { todayISO, planWeek } from "./core/dates.js";
@@ -165,3 +166,7 @@ route();
 // Ask the OS to mark our storage durable so it isn't evicted under pressure.
 // Fire-and-forget: idempotent, best-effort, and never blocks the first render.
 requestPersistence();
+
+// Check GitHub for a newer release, at most once every 7 days. Fire-and-forget,
+// silent on failure, and off the first-render path — same shape as above.
+autoCheckForUpdate();

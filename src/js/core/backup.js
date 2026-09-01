@@ -6,6 +6,10 @@
  * `wgt:days` and `wgt:weights`. This module reads all three into one envelope
  * and writes them back from one. It does not own any UI — settings.js drives it
  * — and it never clears storage; a replace overwrites the three keys in place.
+ *
+ * `wgt:update` (the update check's state) is deliberately NOT bundled: it is
+ * device state, not user data, and carrying it between browsers would be
+ * meaningless. This omission is intentional, not an oversight.
  */
 
 import { load, save, SCHEMA_VERSION } from "./storage.js";

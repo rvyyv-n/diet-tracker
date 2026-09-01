@@ -21,10 +21,10 @@ import { exportAll, importAll, countRecords } from "./core/backup.js";
 import { loadProfile } from "./core/profile.js";
 import { phaseById } from "./core/plan.js";
 import { humanDate } from "./core/dates.js";
+import { APP_VERSION, REPO_URL } from "./core/appinfo.js";
+import { checkForUpdate, updateStatus, detectBuild } from "./core/updates.js";
 
 const APP_NAME = "Rise";
-const VERSION = "1.0.0";
-const REPO_URL = "https://github.com/rvyyv-n/diet-tracker";
 
 let mount;
 let onEditSetup = () => {};
@@ -36,6 +36,9 @@ let pending = null;
 let importError = null;
 // Whether the reset confirm panel is open.
 let confirming = false;
+// The update-check row's transient phase: "idle" (show the stored status),
+// "checking", or "error" (last manual check failed to reach GitHub).
+let updatePhase = "idle";
 // The hidden <input type="file">, kept across renders so its click reopens it.
 let fileInput;
 
@@ -46,6 +49,7 @@ export function renderSettings(mountEl, opts = {}) {
   pending = null;
   importError = null;
   confirming = false;
+  updatePhase = "idle";
   render();
 }
 
@@ -258,14 +262,15 @@ function aboutBlock() {
     el(
       "div",
       { class: "about2__group" },
-      el("p", { class: "about2__name" }, `${APP_NAME} · v${VERSION}`),
+      el("p", { class: "about2__name" }, `${APP_NAME} · v${APP_VERSION}`),
       el("p", { class: "about2__schema" }, `schema wgt v${SCHEMA_VERSION}`),
     ),
+    updatesRow(),
     el(
       "div",
       { class: "about2__group" },
       el("p", { class: "about2__line" }, "Everything stays on this device."),
-      el("p", { class: "about2__line" }, "No accounts, no network."),
+      el("p", { class: "about2__line" }, "No accounts. The only network request is the update check below."),
     ),
     el(
       "p",
@@ -273,6 +278,67 @@ function aboutBlock() {
       el("a", { class: "about2__link", href: REPO_URL, target: "_blank", rel: "noopener" }, "Source on GitHub"),
       el("span", { class: "about2__sep", "aria-hidden": "true" }, "·"),
       el("span", { class: "about2__sig" }, "@rvyyv-n"),
+    ),
+  );
+}
+
+/**
+ * The "Check for updates" row in About. Tappable any time; also runs on its own
+ * at most once a week from app.js. The status line is derived from the stored
+ * wgt:update record, so it shows a sensible last-known state offline. When a
+ * newer release exists it links straight to the right download for this build
+ * (or, in the browser, offers a reload — the service worker has the update).
+ */
+function updatesRow() {
+  const status = updateStatus();
+  let statusText;
+  let action = null;
+
+  if (updatePhase === "checking") {
+    statusText = "Checking…";
+  } else if (updatePhase === "error") {
+    statusText = "Couldn’t reach GitHub — try later";
+  } else if (status.kind === "unknown") {
+    statusText = "Not checked yet";
+  } else if (status.kind === "current") {
+    statusText = "Up to date";
+  } else {
+    statusText = `${status.version} available`;
+    if (detectBuild() === "web") {
+      action = el(
+        "button",
+        { class: "about2__link", type: "button", "data-act": "update-reload" },
+        "Reload to finish updating",
+      );
+    } else if (status.downloadUrl) {
+      action = el(
+        "a",
+        { class: "about2__link", href: status.downloadUrl, target: "_blank", rel: "noopener" },
+        `Download ${status.version}`,
+      );
+    } else if (status.releaseUrl) {
+      action = el(
+        "a",
+        { class: "about2__link", href: status.releaseUrl, target: "_blank", rel: "noopener" },
+        "Open the release page",
+      );
+    }
+  }
+
+  return el(
+    "div",
+    { class: "about2__group" },
+    el(
+      "button",
+      { class: "about2__update", type: "button", "data-act": "update-check" },
+      el("span", {}, "Check for updates"),
+      el("span", { class: "about2__update-status" }, statusText),
+    ),
+    action,
+    el(
+      "p",
+      { class: "about2__fineprint" },
+      "Asks GitHub for the latest release version. No account, nothing sent about you.",
     ),
   );
 }
@@ -322,9 +388,28 @@ function onAction(event) {
       confirming = false;
       render();
       break;
+    case "update-check":
+      runUpdateCheck();
+      break;
+    case "update-reload":
+      location.reload();
+      break;
     default:
       break;
   }
+}
+
+async function runUpdateCheck() {
+  updatePhase = "checking";
+  render();
+  let ok = false;
+  try {
+    ({ ok } = await checkForUpdate({ force: true }));
+  } catch {
+    ok = false;
+  }
+  updatePhase = ok ? "idle" : "error";
+  render();
 }
 
 function exportToClipboard(btn) {
