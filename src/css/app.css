@@ -16,11 +16,12 @@
    tight on a phone and roomier from tablet up, so a small screen spends its
    pixels on content rather than margins.                                     */
 
-html,
-body {
-  /* keep the scrollbar gutter reserved so content doesn't shift when a screen
-     grows past one viewport */
-  overflow-y: scroll;
+html {
+  /* Reserve the scrollbar gutter so content doesn't shift when a screen grows
+     past one viewport. This lives on <html> ONLY — putting overflow on <body>
+     as well gives it its own scroll container, and an installed PWA window then
+     shows two scrollbars and centres the column off to the left. */
+  overflow-y: auto;
   scrollbar-gutter: stable;
 }
 
