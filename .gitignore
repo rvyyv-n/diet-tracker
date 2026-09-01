@@ -32,6 +32,17 @@ android/.gradle/
 android/app/src/main/assets/
 android/app/src/main/res/mipmap-*/
 
+# ---- Tauri desktop shell --------------------------------------------
+# dist/ is the synced web-app copy (scripts/sync-desktop-assets.sh);
+# icons/ and icon-source.png are generated from assets/icon.svg by
+# `cargo tauri icon`; target/ is the Rust build output. All regenerated
+# every build — see desktop/README.md.
+desktop/dist/
+desktop/src-tauri/target/
+desktop/src-tauri/icons/
+desktop/src-tauri/icon-source.png
+desktop/src-tauri/Cargo.lock
+
 # ---- OS / editor ---------------------------------------------------
 Thumbs.db
 desktop.ini
