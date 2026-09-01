@@ -56,6 +56,9 @@ jobs:
         working-directory: desktop/src-tauri
         run: cargo tauri icon icon-source.png
 
+      - name: Sync the web app into desktop/dist
+        run: bash desktop/scripts/sync-desktop-assets.sh
+
       - name: Build the installer
         working-directory: desktop/src-tauri
         run: cargo tauri build

@@ -23,8 +23,10 @@ itself behaves identically either way.
 
 There is no second copy of the app in this folder. `scripts/sync-desktop-assets.sh`
 copies `index.html`, `manifest.json`, `sw.js`, `src/` and `assets/` from the
-repo root into `dist/` right before every build (wired in as Tauri's
-`beforeBuildCommand`), so the build always ships whatever is on disk.
+repo root into `dist/`, so the build always ships whatever is on disk. Run it
+yourself before building — it's a plain CI step rather than Tauri's
+`beforeBuildCommand` hook, since that hook's working directory didn't match
+what a relative script path assumed and silently broke the CI build.
 
 Tauri serves that bundle over its own local origin (not `file://`), so —
 unlike the Android shell — no asset-loader workaround was needed for the
@@ -41,8 +43,9 @@ from the Actions run, or the Release once one is cut.
 **Locally**, once Rust + the MSVC Build Tools (C++ workload) are installed:
 
 ```sh
-cd desktop/src-tauri
 cargo install tauri-cli --version "^2" --locked   # once
+bash desktop/scripts/sync-desktop-assets.sh       # from the repo root
+cd desktop/src-tauri
 cargo tauri icon icon-source.png                  # once, see below
 cargo tauri build
 ```

@@ -4,7 +4,6 @@
   "version": "1.0.0",
   "identifier": "com.rise.diettracker",
   "build": {
-    "beforeBuildCommand": "bash ../scripts/sync-desktop-assets.sh",
     "frontendDist": "../dist"
   },
   "app": {
