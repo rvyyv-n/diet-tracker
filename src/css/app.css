@@ -758,6 +758,42 @@
   border-radius: var(--radius-card);
 }
 
+/* appetite check (pass 9) ----------------------------------------------
+   A three-way tap scale, low on Today under a .group__label. Entirely
+   optional — no prompt, no red state for a blank day. */
+
+.appetite {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.appetite__chips {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.appetite__chip {
+  flex: 1;
+  min-height: var(--touch-target);
+  padding: var(--space-xs) var(--space-sm);
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+  background: var(--surface-card);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.appetite__chip:active { background: var(--surface-cream-strong); }
+.appetite__chip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.appetite__chip.is-picked {
+  color: var(--text-ink);
+  font-weight: var(--weight-medium);
+  border-color: var(--color-primary);
+  background: rgba(204, 120, 92, 0.06);
+}
+
 /* --------------------------------------------------- date controls ---
    Custom day/month/year dropdowns (date of birth) and a calendar popover
    (plan start date), replacing the native inputs. Trigger boxes mirror

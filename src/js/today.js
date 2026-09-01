@@ -35,6 +35,8 @@ import {
   dayBonus,
   addBlock,
   removeBlock,
+  setAppetite,
+  APPETITE_VALUES,
   intakeStatus,
   isDayEditable,
 } from "./core/day.js";
@@ -45,6 +47,9 @@ import { evaluate, applySuggestion } from "./core/adjust.js";
 import { todayISO, addDays, planWeek, daysBetween } from "./core/dates.js";
 
 const NUM = new Intl.NumberFormat("en-US"); // 1,890
+
+// The appetite check labels, in tap order. Keys are APPETITE_VALUES.
+const APPETITE_LABEL = { stuffed: "Stuffed", fine: "Fine", hungry: "Still hungry" };
 
 const STATUS_CLASS = {
   "on-track": "is-on-track",
@@ -100,6 +105,7 @@ function render() {
       backfillPrompt(),
       checklist(day, editable),
       editable ? addBlockSection(day) : null,
+      editable ? appetiteSection(day) : null,
     ),
   );
 }
@@ -364,6 +370,36 @@ function addBlockSection(day) {
           ),
         )
       : null,
+  );
+}
+
+/**
+ * The per-day appetite check: three chips under a quiet label, low on the
+ * screen. Optional and never nagged — no prompt, and no red state for a day
+ * left blank. Tapping the picked chip again clears it (see day.setAppetite).
+ */
+function appetiteSection(day) {
+  const current = day.appetite;
+  return el(
+    "div",
+    { class: "appetite" },
+    el("p", { class: "group__label" }, "Appetite"),
+    el(
+      "div",
+      { class: "appetite__chips" },
+      ...APPETITE_VALUES.map((value) =>
+        el(
+          "button",
+          {
+            class: `appetite__chip${value === current ? " is-picked" : ""}`,
+            type: "button",
+            "aria-pressed": String(value === current),
+            onclick: () => commit(setAppetite(day, value)),
+          },
+          APPETITE_LABEL[value],
+        ),
+      ),
+    ),
   );
 }
 

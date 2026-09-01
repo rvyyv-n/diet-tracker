@@ -44,7 +44,7 @@ export function newDay(date, phaseId, addOns = phaseAddOns(phaseId)) {
     //            bonus is extra and counts only toward the day's kcal / protein.
     completed: {}, // block id -> true; an absent key means not done
     rotations: defaultRotations(),
-    appetite: null, // optional free note — appetite is the real bottleneck
+    appetite: null, // optional per-day appetite check, one of APPETITE_VALUES
     extras: [], // off-plan foods: { name, kcal, proteinG }. Reserved for the v2
     //             custom-recipe feature; nothing reads it yet. It lives on the
     //             day (not its own record) because it changes that day's total.
@@ -110,9 +110,22 @@ export function chooseRotation(day, slot, optionId) {
   return { ...day, rotations: { ...day.rotations, [slot]: optionId } };
 }
 
-/** Attach or clear the day's appetite note. */
-export function setAppetite(day, note) {
-  return { ...day, appetite: note || null };
+/**
+ * The appetite check is a three-way tap scale, low on the Today screen and
+ * entirely optional. It is a record for the user and the seam the v2 engine
+ * reads (appetite is the documented bottleneck, plan-spec.md); nothing computes
+ * over it in 1.5.
+ */
+export const APPETITE_VALUES = ["stuffed", "fine", "hungry"];
+
+/**
+ * Set the day's appetite check to one of APPETITE_VALUES, or clear it. Tapping
+ * the value that is already set clears it back to null; an unrecognised value
+ * clears it too.
+ */
+export function setAppetite(day, value) {
+  const next = APPETITE_VALUES.includes(value) ? value : null;
+  return { ...day, appetite: next === day.appetite ? null : next };
 }
 
 /**
