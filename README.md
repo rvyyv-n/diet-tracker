@@ -12,7 +12,8 @@ built:  today checklist + phase ladder, weight trend + adjustment engine,
         durable storage, deployed to github pages, android apk, windows
         installer
 next:   1.5 — manual add-on blocks, daily appetite check, first-run intro,
-        header polish; android pwa install check on a device (non-blocking)
+        header polish, in-app update check; android pwa install check on a
+        device (non-blocking)
 ```
 
 ## the idea
@@ -117,7 +118,8 @@ and desktop with no local server, and shipped as a github release.
 
 **1.5** — small features and a design-polish pass: adding or dropping a block
 for the day from the today screen, a one-tap daily appetite check, a first-run
-intro, and header tweaks.
+intro, header tweaks, and an in-app update check so the apk and the installer
+have a route to the next release.
 
 **v2** — off-plan food entries and a reusable recipe book, configurable overview
 metrics, a real desktop layout, a grocery checklist, and meal reminders.

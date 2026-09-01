@@ -430,28 +430,134 @@ shipped, so the condition is met.
 - A skip affordance and a hard cap on how long it holds the screen. An intro
   that can't be got past is worse than no intro.
 
-**pass 12 — the 1.5 release**
+**pass 12 — the update check**
+
+Added to 1.5 after the plan above was first written. The PWA already updates
+itself — `sw.js` calls `skipWaiting()` on install and `clients.claim()` on
+activate, so a `CACHE_NAME` bump reaches a browser-installed copy on the next
+load. The APK and the NSIS installer do not: both shipped as "no auto-update, a
+fresh file per release", which leaves the people most likely to be using Rise
+day to day with no route to v2 but remembering to look at the Releases page.
+
+**This is the one pass that has to be right first time.** Whatever ships in 1.5
+is the code that will be running when v2 lands, and a wrong endpoint or a wrong
+version compare cannot be fixed remotely — it strands every 1.5 user on 1.5.
+Treat the compare and the fetch as the highest-care code in the release and test
+them against a real tag before merging. Note also that none of this can help
+anyone on **v1.0.0**: that build has no updater in it. 1.5 is a manual install;
+the path this pass opens is 1.5 → v2 and onward.
+
+Trigger — **a manual tap, plus a hard 7-day check**:
+
+- A `Check for updates` row in Settings → About, tappable any time.
+- An automatic check at most once every 7 days, on launch. Fire-and-forget and
+  off the first-render path, in the shape of `core/persist.js`.
+- State lives in its own `wgt:update` record (`lastCheckedAt`, `latestSeen`) and
+  not on the profile — it is device state, not user data, so `exportAll()` in
+  `backup.js` should deliberately **not** bundle it. Say so there, or the
+  omission reads as an oversight later.
+- A failed check is silent. Offline is this app's normal case and a network
+  error is not something the user did wrong: no error state, no retry loop, and
+  leave `lastCheckedAt` unmoved so the next launch simply tries again.
+- Never a modal and never a launch interruption — the never-nag principle holds.
+  The result is a line in About and nothing more.
+
+The check itself:
+
+- `GET https://api.github.com/repos/rvyyv-n/diet-tracker/releases/latest` —
+  unauthenticated, no token. The 60-per-hour-per-IP limit is unreachable at this
+  volume, and `/latest` already excludes drafts and prereleases.
+- No `sw.js` change is needed: the fetch handler returns early on a cross-origin
+  URL, and GitHub sends `Access-Control-Allow-Origin: *`.
+- `tauri.conf.json` sets no `security.csp`, so the Tauri webview won't block it.
+  If a CSP is ever added, `connect-src` has to keep `api.github.com` — write
+  that next to the key when it goes in.
+- **The version compare must be numeric, part by part.** Tags read `v1.0.0` /
+  `v1.5.0` / `v2.0.0`, the tag carries a leading `v` and `settings.js`'s
+  `VERSION` does not, so strip it. A plain string compare passes today and fails
+  at `v10`. Keep it a small pure function in its own module so it can be
+  reasoned about, and tested, away from the network.
+
+Which build is this? — three cases, each with its own route:
+
+- **Browser / PWA** — served from the Pages host. Nothing to download; the
+  service worker has handled it. Show "up to date", or "reload to finish
+  updating".
+- **Android APK** — `location.hostname === "rise.local"` (`MainActivity.kt:65`).
+- **Windows / Tauri** — `window.__TAURI_INTERNALS__` is injected.
+
+Updating in place, per platform. The user asked for a true in-app update where
+one is possible, and a deep-link where it isn't:
+
+- **Windows — the Tauri v2 updater plugin.** `tauri-plugin-updater` can download
+  and install a new version in place. It needs a minisign keypair from
+  `tauri signer generate` (public key in `tauri.conf.json`, private key and
+  password as CI secrets), `createUpdaterArtifacts` switched on so the build
+  emits a signed `.nsis.zip` + `.sig` beside the setup.exe, and an update
+  manifest to poll — a static JSON on the Pages site the repo already publishes,
+  or an endpoint pointed straight at the release assets. **That keypair is a
+  second irreplaceable secret**, alongside the Android keystore: lose it and
+  every installed copy loses its update path. Document it exactly as
+  `android/README.md` documents signing.
+- **Android — download, then hand off to the system installer.** A sideloaded
+  APK cannot update itself silently. The best available is to fetch the new APK
+  and pass it to the OS via `ACTION_VIEW` on a FileProvider URI, which requires
+  the `REQUEST_INSTALL_PACKAGES` permission and shows the system install dialog.
+  **This costs the "no permissions requested" property** the shell was built
+  with in pass 7. If that trade isn't wanted, Android falls back to the
+  deep-link below — decide when the pass is built and record which was taken.
+  The downloaded APK must carry the same signing key or the install is refused;
+  CI already signs with it.
+- **The floor, everywhere — deep-link the asset.** Read
+  `assets[].browser_download_url` off the release, match it to the detected
+  build, and open the exact `.apk` or `-setup.exe`. A handful of lines that
+  cannot really break. If either updater above turns out to cost more than the
+  release is worth, ship this instead and move on.
+
+Honesty about the network. This is the app's first outbound request. "Local-first,
+offline, no accounts" and "data stays in your browser" all stay true, but *makes
+no network requests at all* stops being true, so say so rather than let someone
+find out. Nothing is sent — a GET with no token, no identifier and no body;
+GitHub sees an IP, as it would for any download. The About row should state what
+it contacts, and the README's offline claim should carry the exception.
+
+Scope warning: the two real updaters together are plausibly more work than passes
+8–11 combined. The deep-link fallback is there so 1.5 is never held hostage to
+them.
+
+**pass 13 — the 1.5 release**
 
 - Version bump to **1.5.0** in all four places it is written: `settings.js:26`
   (`VERSION`, which feeds the About block), `android/app/build.gradle.kts:16`
   (`versionName`, and step `versionCode`), `desktop/src-tauri/tauri.conf.json:4`,
   and the README status block. `schema wgt v1` is unchanged — no pass above
   bumps it.
-- `sw.js` — add any new module to the precache list (pass 11 adds at least one
-  file) and bump `CACHE_NAME` past `rise-v10`. A new file missing from that list
-  is the failure that only shows up offline.
+- `sw.js` — add every new module to the precache list (passes 11 and 12 each add
+  at least one) and bump `CACHE_NAME` past `rise-v10`. A new file missing from
+  that list is the failure that only shows up offline.
+- If the Tauri updater went in (pass 12), `desktop.yml` has to sign and attach
+  the `.nsis.zip` + `.sig` alongside the setup.exe, and the update manifest has
+  to be published before the Release is — an installed copy polls it, so a
+  manifest that lags the tag is a broken update for the window in between.
+- **Verify the update check against the real tag**, from an installed 1.5 build,
+  before calling the release done. This is the one thing that cannot be repaired
+  after the fact: if 1.5 can't see v1.5.0, it won't see v2 either.
 - The Android PWA verification from "next" above, if a device turns up.
 - Merge `release-1.5` to `main`, tag `v1.5.0`, publish the Release —
   `android.yml` and `desktop.yml` both trigger on `release: published` and
   attach the APK and the NSIS installer themselves.
-- README and this file updated to record 1.5 as shipped.
+- README and this file updated to record 1.5 as shipped, and the README's
+  offline claim amended for the update check.
 
-**Considered and left out of 1.5.** The grocery checklist — the data is already
-transcribed in `plan.js`, but it is a new screen plus weekly-reset state, so it
-stays a v2 item. A rotation picker for the 2nd shake — A3 is fixed at 580 kcal
-while B2 rotates through standard / no-blender / heavy, a real inconsistency but
-not one that has bitten yet. Meal reminders — they need notification permissions
-and a scheduling path iOS PWAs don't reliably give; recorded below as before.
+**Considered and left out of 1.5.** Custom recipes and off-plan food entries were
+raised again and confirmed as **v2**, where they already sat: they are what
+`day.extras` was reserved for, and a recipe book with history is a feature set,
+not a small addition. The grocery checklist — the data is already transcribed in
+`plan.js`, but it is a new screen plus weekly-reset state, so it stays a v2 item
+too. A rotation picker for the 2nd shake — A3 is fixed at 580 kcal while B2
+rotates through standard / no-blender / heavy, a real inconsistency but not one
+that has bitten yet. Meal reminders — they need notification permissions and a
+scheduling path iOS PWAs don't reliably give; recorded below as before.
 
 **v2** — the bulk redesign and the larger feature set below.
 
