@@ -19,6 +19,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write # softprops/action-gh-release needs write to attach the APK
+
 jobs:
   build:
     runs-on: ubuntu-latest
