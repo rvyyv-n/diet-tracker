@@ -64,9 +64,11 @@ export function weeklyAdherence(days, startISO) {
   const byWeek = new Map();
   for (const day of days) {
     const wk = planWeek(startISO, day.date);
-    const { done, total } = dayTotals(day);
+    // planDone, not done: a hand-added bonus block adds kcal but must never
+    // push weekly adherence above 100% (pass 8 decision).
+    const { planDone, total } = dayTotals(day);
     const acc = byWeek.get(wk) ?? { done: 0, total: 0, dayCount: 0 };
-    acc.done += done;
+    acc.done += planDone;
     acc.total += total;
     acc.dayCount += 1;
     byWeek.set(wk, acc);

@@ -16,7 +16,15 @@
 import { el } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { loadProfile, saveProfile } from "./core/profile.js";
-import { activeBlocks, phaseById, phaseTarget, rotationOptions, PHASES } from "./core/plan.js";
+import {
+  activeBlocks,
+  blockById,
+  phaseById,
+  phaseTarget,
+  rotationOptions,
+  PHASES,
+  ADDON_IDS,
+} from "./core/plan.js";
 import {
   newDay,
   toggleBlock,
@@ -24,6 +32,9 @@ import {
   blockValue,
   dayTotals,
   dayAddOns,
+  dayBonus,
+  addBlock,
+  removeBlock,
   intakeStatus,
   isDayEditable,
 } from "./core/day.js";
@@ -48,11 +59,13 @@ const STATUS_CLASS = {
 let mount;
 let viewDate;
 let openPicker = null;
+let addOpen = false; // the "add a block" panel under the checklist
 
 export function renderToday(mountEl) {
   mount = mountEl;
   viewDate = todayISO();
   openPicker = null;
+  addOpen = false;
   render();
 }
 
@@ -86,6 +99,7 @@ function render() {
       totalCard(day),
       backfillPrompt(),
       checklist(day, editable),
+      editable ? addBlockSection(day) : null,
     ),
   );
 }
@@ -232,7 +246,7 @@ function totalCard(day) {
   const status = intakeStatus(day);
 
   const toGo = Math.max(0, target.kcal - totals.kcal);
-  const blocksLeft = totals.total - totals.done;
+  const blocksLeft = Math.max(0, totals.total - totals.planDone);
   const blockWord = blocksLeft === 1 ? "block" : "blocks";
 
   let remaining;
@@ -269,7 +283,7 @@ function backfillPrompt() {
   const record = getDay(yesterday);
   if (!record) return null;
   const totals = dayTotals(record);
-  if (totals.done >= totals.total) return null;
+  if (totals.planDone >= totals.total) return null;
   return el(
     "button",
     {
@@ -281,19 +295,79 @@ function backfillPrompt() {
         render();
       },
     },
-    `Yesterday — ${totals.done} of ${totals.total} blocks. Tap to finish.`,
+    `Yesterday — ${totals.planDone} of ${totals.total} blocks. Tap to finish.`,
   );
 }
 
 function checklist(day, editable) {
+  const rows = [
+    ...activeBlocks(dayAddOns(day)).map((block) => ({ block, bonus: false })),
+    ...dayBonus(day)
+      .map(blockById)
+      .filter(Boolean)
+      .map((block) => ({ block, bonus: true })),
+  ].sort((a, b) => a.block.order - b.block.order);
   return el(
     "ul",
     { class: "checklist" },
-    ...activeBlocks(dayAddOns(day)).map((block) => blockRow(day, block, editable)),
+    ...rows.map(({ block, bonus }) => blockRow(day, block, editable, bonus)),
   );
 }
 
-function blockRow(day, block, editable) {
+/**
+ * The "add a block" affordance under the checklist: the add-ons not already on
+ * the day, each with its kcal, in a recessed panel in the rotation-picker
+ * register. Adding a phase default the user dropped restores it to the plan;
+ * adding anything else makes it a bonus block (kcal only). See day.addBlock.
+ */
+function addBlockSection(day) {
+  const onDay = new Set([...dayAddOns(day), ...dayBonus(day)]);
+  const available = ADDON_IDS.filter((id) => !onDay.has(id))
+    .map(blockById)
+    .filter(Boolean);
+  if (!available.length) return null;
+  return el(
+    "div",
+    { class: "addblock" },
+    el(
+      "button",
+      {
+        class: "addblock__trigger",
+        type: "button",
+        onclick: () => {
+          addOpen = !addOpen;
+          render();
+        },
+      },
+      el("span", { class: "addblock__icon", "aria-hidden": "true" }, addOpen ? "−" : "+"),
+      addOpen ? "Close" : "Add a block",
+    ),
+    addOpen
+      ? el(
+          "div",
+          { class: "rotation addblock__panel" },
+          ...available.map((block) =>
+            el(
+              "button",
+              {
+                class: "rotation__opt",
+                type: "button",
+                onclick: () => {
+                  addOpen = false;
+                  commit(addBlock(day, block.id));
+                },
+              },
+              el("span", { class: "rotation__radio", "aria-hidden": "true" }, "+"),
+              el("span", { class: "rotation__opt-desc" }, block.name),
+              el("span", { class: "rotation__opt-kcal" }, NUM.format(blockValue(day, block.id).kcal)),
+            ),
+          ),
+        )
+      : null,
+  );
+}
+
+function blockRow(day, block, editable, bonus = false) {
   const done = Boolean(day.completed[block.id]);
   const kcal = blockValue(day, block.id).kcal;
   const pickerOpen = openPicker === block.id;
@@ -315,7 +389,12 @@ function blockRow(day, block, editable) {
     el(
       "span",
       { class: "block-row__body" },
-      el("span", { class: "block-row__name" }, block.name),
+      el(
+        "span",
+        { class: "block-row__name" },
+        block.name,
+        bonus ? el("span", { class: "block-row__tag" }, "bonus") : null,
+      ),
       el("span", { class: "block-row__desc" }, resolveDesc(day, block)),
     ),
     el(
@@ -342,15 +421,37 @@ function blockRow(day, block, editable) {
         )
       : null;
 
+  // Add-on rows carry a drop control: for a bonus block it removes the extra,
+  // for a plan add-on it's "not having this today" (shrinks the denominator —
+  // the one hand-driven adherence move; the kcal target is unaffected).
+  const drop =
+    editable && ADDON_IDS.includes(block.id)
+      ? el(
+          "button",
+          {
+            class: "block-row__drop",
+            type: "button",
+            "aria-label": `Remove ${block.name}`,
+            onclick: () => {
+              openPicker = null;
+              addOpen = false;
+              commit(removeBlock(day, block.id));
+            },
+          },
+          "×",
+        )
+      : null;
+
   return el(
     "li",
     {
       class:
         "block-row" +
         (done ? " is-done" : "") +
+        (bonus ? " block-row--bonus" : "") +
         (block.id === "B2" ? " block-row--shake" : ""),
     },
-    el("div", { class: "block-row__lead" }, main, swap),
+    el("div", { class: "block-row__lead" }, main, swap, drop),
     block.rotation && pickerOpen && editable ? rotationPicker(day, block) : null,
   );
 }

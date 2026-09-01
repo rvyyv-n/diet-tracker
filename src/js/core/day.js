@@ -18,6 +18,8 @@ import {
   phaseAddOns,
   rotationOptionById,
   defaultRotations,
+  ADDON_IDS,
+  normaliseAddOns,
 } from "./plan.js";
 import { addDays } from "./dates.js";
 
@@ -36,6 +38,10 @@ export function newDay(date, phaseId, addOns = phaseAddOns(phaseId)) {
     phaseId,
     addOns: [...addOns], // which add-on blocks are on, snapshot at creation so a
     //                      later plan change (the engine) can't rewrite this day
+    bonus: [], // add-on block ids added by hand for this day only (pass 8). Kept
+    //            apart from `addOns` because the two carry different meaning: an
+    //            add-on is the plan for the day and counts toward adherence, a
+    //            bonus is extra and counts only toward the day's kcal / protein.
     completed: {}, // block id -> true; an absent key means not done
     rotations: defaultRotations(),
     appetite: null, // optional free note — appetite is the real bottleneck
@@ -51,6 +57,44 @@ export function newDay(date, phaseId, addOns = phaseAddOns(phaseId)) {
  */
 export function dayAddOns(day) {
   return day.addOns ?? phaseAddOns(day.phaseId);
+}
+
+/** The bonus (hand-added, that-day-only) block ids for a day. */
+export function dayBonus(day) {
+  return day.bonus ?? [];
+}
+
+/**
+ * Add an add-on block to a day by hand. If the block is one of the day's phase
+ * defaults — i.e. one the user dropped earlier with removeBlock — it is restored
+ * to `addOns` (back into the plan). Otherwise it is added as a `bonus`: extra
+ * kcal, no change to the adherence denominator. A no-op for a non-add-on id or a
+ * block already on the day.
+ */
+export function addBlock(day, blockId) {
+  if (!ADDON_IDS.includes(blockId)) return day;
+  if (dayAddOns(day).includes(blockId) || dayBonus(day).includes(blockId)) return day;
+  if (phaseAddOns(day.phaseId).includes(blockId)) {
+    return { ...day, addOns: normaliseAddOns([...dayAddOns(day), blockId]) };
+  }
+  return { ...day, bonus: normaliseAddOns([...dayBonus(day), blockId]) };
+}
+
+/**
+ * Remove an add-on block from a day, whether it sat in `addOns` (dropping a
+ * phase default — the one path where adherence can be moved by hand; the kcal
+ * target does not move, so intakeStatus still measures against the full phase
+ * figure) or in `bonus`. Its completed flag is cleared too.
+ */
+export function removeBlock(day, blockId) {
+  const completed = { ...day.completed };
+  delete completed[blockId];
+  return {
+    ...day,
+    addOns: dayAddOns(day).filter((id) => id !== blockId),
+    bonus: dayBonus(day).filter((id) => id !== blockId),
+    completed,
+  };
 }
 
 /** Toggle a block's completed flag, returning a new day record. */
@@ -89,21 +133,34 @@ export function blockValue(day, blockId) {
 
 /**
  * Totals for the day: calories and protein from completed blocks, and how many
- * of the phase's active blocks are done.
+ * blocks are done.
+ *
+ * `total` is the plan block count only — bonus blocks add kcal / protein when
+ * ticked but never grow the denominator (pass 8). `planDone` counts completed
+ * plan blocks (0..total) and is what adherence reads; `done` also counts ticked
+ * bonus blocks, so it can exceed `total`.
  */
 export function dayTotals(day) {
   const active = activeBlocks(dayAddOns(day));
   let kcal = 0;
   let proteinG = 0;
-  let done = 0;
+  let planDone = 0;
   for (const block of active) {
     if (!day.completed[block.id]) continue;
     const v = blockValue(day, block.id);
     kcal += v.kcal;
     proteinG += v.proteinG;
-    done += 1;
+    planDone += 1;
   }
-  return { kcal, proteinG, done, total: active.length };
+  let bonusDone = 0;
+  for (const id of dayBonus(day)) {
+    if (!day.completed[id]) continue;
+    const v = blockValue(day, id);
+    kcal += v.kcal;
+    proteinG += v.proteinG;
+    bonusDone += 1;
+  }
+  return { kcal, proteinG, planDone, done: planDone + bonusDone, total: active.length };
 }
 
 /**
@@ -120,10 +177,10 @@ export function intakeStatus(day) {
   return "low";
 }
 
-/** Day-level completion fraction (0–1). Weekly adherence is computed elsewhere. */
+/** Day-level completion fraction (0–1), plan blocks only. Weekly adherence is computed elsewhere. */
 export function dayAdherence(day) {
-  const { done, total } = dayTotals(day);
-  return total ? done / total : 0;
+  const { planDone, total } = dayTotals(day);
+  return total ? planDone / total : 0;
 }
 
 /**

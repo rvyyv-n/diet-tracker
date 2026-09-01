@@ -683,6 +683,81 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* manual add-on blocks (pass 8) -------------------------------------------
+   A bonus block is one added by hand for that day only: it adds kcal when
+   ticked but never grows the adherence denominator. It reads like a plan row
+   with a quiet tag; the drop control (×) removes it. The same × on a plan
+   add-on row means "not having this today". */
+
+.block-row__tag {
+  display: inline-block;
+  margin-left: var(--space-xs);
+  padding: 1px 6px;
+  font: var(--text-caption);
+  font-weight: var(--weight-medium);
+  color: var(--text-muted);
+  background: var(--surface-soft);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-sm);
+  vertical-align: middle;
+}
+.block-row--bonus { border-style: dashed; }
+
+.block-row__drop {
+  flex: none;
+  align-self: stretch;
+  padding: 0 var(--space-md);
+  font-size: 18px;
+  line-height: 1;
+  color: var(--text-muted-soft);
+  background: var(--surface-cream-strong);
+  border: none;
+  border-left: var(--border-width-hairline) solid var(--border-hairline);
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.block-row__drop:active { color: var(--color-primary); background: var(--surface-card); }
+.block-row__drop:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.addblock {
+  display: flex;
+  flex-direction: column;
+}
+
+.addblock__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  align-self: flex-start;
+  padding: var(--space-xs) var(--space-sm);
+  font: var(--text-caption);
+  font-weight: var(--weight-medium);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.addblock__trigger:active { color: var(--color-primary); }
+.addblock__trigger:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.addblock__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 14px;
+  line-height: 1;
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-sm);
+}
+
+.addblock__panel {
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-card);
+}
+
 /* --------------------------------------------------- date controls ---
    Custom day/month/year dropdowns (date of birth) and a calendar popover
    (plan start date), replacing the native inputs. Trigger boxes mirror
