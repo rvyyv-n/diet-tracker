@@ -202,15 +202,25 @@ an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
   `tokens.css`, all of it. Added an empty `.nojekyll` so Pages serves the tree
   as-is. `manifest.json` `name`, the `<title>` and the README heading set to
   **Rise: Diet Tracker** (the installed-app label).
-- Post-install fixes from PC screenshots:
-  - two scrollbars, column centred off to the left — `overflow-y` was set on
-    `<body>` as well as `<html>`, so the body became its own scroll container.
-    Moved to `<html>` only (`overflow-y: auto` + `scrollbar-gutter: stable`).
-  - the bottom tab bar floated with a gap on each side on mid-width phones
-    (`--app-max-width` clamps to 94vw / 380px). It's now edge-to-edge below
-    600px and only matched to the centred column from 600px up. A proper
-    wide-screen layout is a v2 item.
-  - `CACHE_NAME` → `rise-v6`.
+- Post-install fixes from PC screenshots — the installed PWA window (a
+  ~500px desktop window with a classic 15px scrollbar) showed dead space
+  down the right and a strip beside the bottom tab bar:
+  - **two scrollbars** — `overflow-y` was set on `<body>` as well as `<html>`,
+    so the body became its own scroll container. Removed the override
+    entirely; the browser default is one viewport scrollbar, shown only when
+    needed. `scrollbar-gutter: stable` went too — it was reserving a strip
+    that pushed the centred column off-side on screens that didn't scroll.
+  - **`--app-max-width`** dropped from `clamp(380px, 94vw, 580px)` to a flat
+    `580px`. The `94vw` term left a 3vw margin on every phone-width window;
+    now the column fills to the viewport and only caps past 580px. The old
+    380px floor also forced a horizontal scrollbar under 380px.
+  - **tab bar** is `width: 100vw` (not `left:0; right:0`), so it runs the full
+    width with a classic desktop scrollbar overlaying its trailing edge
+    rather than leaving a ~15px strip beside it. Tab labels are centred in
+    their cells, so nothing is clipped. From 600px up it's capped at
+    `--app-max-width` and centred on the column via `left: 50%` +
+    `translateX(-50%)`. A purpose-built wide-screen layout is a v2 item.
+  - `CACHE_NAME` → `rise-v7`.
 
 ## next
 

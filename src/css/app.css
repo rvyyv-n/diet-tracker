@@ -11,19 +11,15 @@
 
 
 /* --------------------------------------------------------------- shell ---
-   Phone-first single column, centred with a gutter on wider screens. The
-   column width is fluid (--app-max-width is a clamp), and the side padding is
-   tight on a phone and roomier from tablet up, so a small screen spends its
-   pixels on content rather than margins.                                     */
+   Phone-first single column: it fills the viewport up to --app-max-width, then
+   centres with a gutter on wider screens. Side padding is tight on a phone and
+   roomier from tablet up, so a small screen spends its pixels on content.
 
-html {
-  /* Reserve the scrollbar gutter so content doesn't shift when a screen grows
-     past one viewport. This lives on <html> ONLY — putting overflow on <body>
-     as well gives it its own scroll container, and an installed PWA window then
-     shows two scrollbars and centres the column off to the left. */
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-}
+   No overflow / scrollbar-gutter override here on purpose. An earlier version
+   set overflow-y on <html> AND <body>, which gave an installed PWA window two
+   scrollbars; scrollbar-gutter: stable then reserved a strip that pushed the
+   centred column off to one side. The browser default — one scrollbar on the
+   viewport, only when it's needed — is what we want.                          */
 
 .app-shell {
   width: 100%;
@@ -864,18 +860,19 @@ html {
 
 
 /* ------------------------------------------------------------- tab bar ---
-   Fixed to the bottom. On a phone it spans the whole viewport, edge to edge —
-   anything narrower and it reads as a floating strip with a gap on each side
-   (--app-max-width bottoms out at 380px and clamps to 94vw, so a 400–580px
-   window left a visible margin). From 600px up it stays matched to the centred
-   column; a purpose-built desktop layout is a post-v1 job. Press + selected
-   states only.                                                               */
+   Fixed to the bottom. On a phone it spans the whole viewport, edge to edge.
+   Width is 100vw, not left:0 + right:0 — a fixed element honours the classic
+   desktop scrollbar and would otherwise leave a ~15px strip beside it; 100vw
+   runs the bar the full width, with the scrollbar overlaying its trailing edge
+   (the tab labels are centred in their cells, so nothing is clipped). From
+   600px up the bar is capped and centred on the column; a purpose-built
+   desktop layout is a post-v1 job. Press + selected states only.             */
 
 .tabbar {
   position: fixed;
   left: 0;
-  right: 0;
   bottom: 0;
+  width: 100vw;
   z-index: 30;
   display: flex;
   background: var(--surface-canvas);
@@ -888,8 +885,9 @@ html {
 
 @media (min-width: 600px) {
   .tabbar {
-    max-width: var(--app-max-width);
-    margin: 0 auto;
+    left: 50%;
+    width: var(--app-max-width);
+    transform: translateX(-50%);
   }
 }
 
