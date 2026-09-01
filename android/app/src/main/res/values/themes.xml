@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.Rise" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/rise_cream</item>
+        <item name="android:statusBarColor">@color/rise_cream</item>
+        <item name="android:navigationBarColor">@color/rise_cream</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

@@ -16,6 +16,22 @@ node_modules/
 __pycache__/
 *.pyc
 
+# ---- Android release signing ---------------------------------------
+# The signing keystore never gets committed. CI reads it from a repo
+# secret (see .github/workflows/android.yml); local Gradle builds fall
+# back to an unsigned/debug build if it's missing.
+android/keystore/*.keystore
+android/keystore/*.jks
+android/local.properties
+android/**/build/
+android/.gradle/
+
+# Generated at build time by app/build.gradle.kts (copyWebAssets) and by
+# android.yml (rasterising assets/icon.svg) — not the source of truth, so
+# not tracked.
+android/app/src/main/assets/
+android/app/src/main/res/mipmap-*/
+
 # ---- OS / editor ---------------------------------------------------
 Thumbs.db
 desktop.ini
