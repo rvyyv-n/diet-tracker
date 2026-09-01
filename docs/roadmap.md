@@ -170,20 +170,25 @@ three screens and the PWA; `src/js/data/food-source.js` (an unused v2 stub) and
 an unreferenced `favicon.svg` removed, with `sw.js` trimmed to match and its
 `CACHE_NAME` bumped.
 
+**pass 5 — v1 packaging polish**
+
+- **Phase ladder** on Today — a line under the phase banner showing all three
+  targets (`Ramp-up 2,565 · Working target 3,110 · Pushed 3,690 kcal`) with the
+  current rung picked out. Rendered from `PHASES` in `plan.js`, so a plan-data
+  change carries through. `.phase-ladder` in `app.css`, muted so it reads as
+  reference, not instruction.
+- **Safe-area insets finished** — `.app-shell` now folds `env(safe-area-inset-*)`
+  into its top and side padding (was bottom-only, through `.app-content`), and
+  the tab bar gains left/right insets. The insets resolve to 0 on non-notched
+  devices, so `calc()` just returns the base value.
+- **Settings rows below 360px** — `.set2-row--static` wraps and drops its
+  Copy JSON / Choose file button onto its own full-width line, indented under the
+  row name, so the body no longer competes with the button. Above 360px the row
+  is unchanged.
+
 ## next
 
 **v1 release packaging**
-
-Polish still owed:
-
-- **Phase explainer** — a short, visible note on what each phase means
-  (Phase 1 easing in ~2,565 · Phase 2 full target ~3,110 · Phase 3 pushed).
-  Likely near the Today phase banner. Deferred to the final compile.
-- safe-area insets throughout (partly done — tab bar and content already clear
-  the home indicator)
-- **Settings rows crush below ~340px** — at iPhone-SE width and narrower the
-  `.set2-row` body competes with its button and the name wraps. Fix with a
-  min-width floor or a stacked layout under a breakpoint.
 
 Storage durability:
 
@@ -192,27 +197,28 @@ Storage durability:
   (localStorage); this closes the silent-wipe gap. Nothing but the in-app
   **Reset all data** should ever clear it.
 
-Ship targets — the app has to run on a phone and a PC without anyone hosting or
-serving it, and keep its data across reboots, offline, until the user resets it:
+Ship targets — the app has to run on a phone and a PC and keep its data across
+reboots, offline, until the user resets it:
 
 - **Deploy — GitHub Pages.** Serve `main` from the repo root, no build step.
-  This is the shared install surface: iPhone and Android both "Add to Home
-  Screen" from the Pages URL and get the standalone PWA, offline through the
-  service worker.
+  The shared install surface: iPhone and Android both "Add to Home Screen" from
+  the Pages URL and get the standalone PWA, offline through the service worker.
+  Desktop installs the same PWA from the browser (Chrome / Edge "Install app"),
+  which also sidesteps the `file://` ES-module problem — no flatten step needed.
 - **iPhone.** The Pages PWA is the delivery — no App Store. Confirm
   install-to-home-screen, standalone launch, and that data persists (iOS can
   evict PWA storage after ~7 idle days; `storage.persist()` and the export
   button are the mitigations).
-- **Android — a real APK.** Wrap the deployed PWA as a Trusted Web Activity
-  with Bubblewrap (needs the Pages URL and a signing key) → an installable
-  APK/AAB. Alternative if we want zero Pages dependency: a minimal WebView
-  shell that bundles the assets locally. TWA is the lighter path; decide.
-- **Desktop — no server.** ES-module imports fail under `file://`, so a
-  double-clickable `index.html` needs the JS flattened into one file (a one-off
-  concatenation / import-inline step — still no framework, no toolchain), or a
-  thin Tauri wrapper. Pick one before cutting the release.
+- **Android — a real APK.** A minimal WebView shell that bundles the assets
+  locally, wrapped as an installable APK/AAB. Chosen over a Bubblewrap TWA so
+  the app carries no dependency on the Pages URL staying put — it is
+  self-contained and offline from first launch. Cost: no auto-update (ship a
+  fresh APK per release) and a little native glue code.
+- **Desktop `.exe` / `.dmg`** — a thin Tauri wrapper over the same build, for a
+  double-clickable installer alongside the browser-installed PWA. Slated for
+  **1.1**, after the release is out; not a v1 blocker.
 - **Release.** Tag `v1`, cut a GitHub Release, attach the artifacts: the
-  Android APK/AAB and the desktop bundle (single-file HTML or wrapped app).
+  Android APK/AAB (the desktop wrapper follows in 1.1).
 
 v2 work starts only after the release is out.
 

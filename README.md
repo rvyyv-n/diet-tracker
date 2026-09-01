@@ -4,9 +4,9 @@
 
 ```
 status: v1 packaging
-built:  today checklist, weight trend + adjustment engine, settings/about,
-        json export/import, pwa shell (installable, offline)
-next:   phase explainer, cross-platform packaging, v1 release
+built:  today checklist + phase ladder, weight trend + adjustment engine,
+        settings/about, json export/import, pwa shell (installable, offline)
+next:   persistent storage, github pages deploy, android apk, v1 release
 ```
 
 ## the idea
