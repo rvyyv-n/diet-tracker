@@ -432,6 +432,17 @@ shipped, so the condition is met.
 
 **pass 12 — the update check**
 
+**Sequenced last on purpose, and the one pass that may slip.** It is by some way
+the most expensive item in 1.5 — the two real updaters together are plausibly
+more work than passes 8–11 combined — and nothing in 8–11 depends on it, so it
+is deliberately built when there is budget to do it properly rather than
+squeezed in beside the others. If the budget isn't there when the rest is done,
+take one of two exits rather than half-building it: ship the deep-link floor
+described below, which is a handful of lines and gets the same v2 route, or drop
+the pass to 1.6 and cut 1.5 without it. What must not happen is a
+half-implemented check going out in 1.5 — see the "right first time" note below
+for why that one is unrecoverable.
+
 Added to 1.5 after the plan above was first written. The PWA already updates
 itself — `sw.js` calls `skipWaiting()` on install and `clients.claim()` on
 activate, so a `CACHE_NAME` bump reaches a browser-installed copy on the next
