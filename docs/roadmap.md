@@ -270,6 +270,12 @@ out. **v2** — the bulk redesign and the larger feature set below.
 
 ## later
 
+- **manual add-on blocks on Today** — turn the snack / pre-bed / 2nd-shake
+  blocks on or off for the day yourself, not only through the phase default or
+  the adjustment engine's Apply. `day.addOns` is already a per-day snapshot, so
+  the checklist needs an "add a block" affordance that writes to it (and a way
+  to drop one back off). Wanted after using it on a phone — the engine-only
+  path feels too indirect for a block you just want today.
 - grocery checklist with a weekly reset
 - appetite / fullness note per day (`day.js` already carries the field)
 - daily meal reminders — local notifications at the best time to eat each

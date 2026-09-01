@@ -39,6 +39,34 @@ steady weight gain; the block structure generalises to any fixed plan.
 - **settings** — the profile card (tap to edit), json export / import with a
   preview, a data reset behind a confirm, and an about block
 
+## install
+
+Rise is a PWA — no App Store, no Play Store. Open the live URL and add it to
+your device; it then launches standalone and works with no signal.
+
+**iPhone / iPad**
+
+1. Open <https://rvyyv-n.github.io/diet-tracker/> in **Safari** — only Safari
+   can install a web app on iOS, not Chrome or Firefox.
+2. Tap the **Share** button (square with an upward arrow).
+3. Scroll down, tap **Add to Home Screen**, then **Add**.
+4. Launch it from the new **Rise** icon. It opens full-screen with no browser
+   bars and keeps working offline.
+
+iOS can clear an unused web app's storage after roughly a week offline. Rise
+requests persistent storage on first run to avoid that, and **Settings →
+Export data** is the manual backup.
+
+**Android**
+
+Open the URL in Chrome, then take the **Install app** prompt, or
+**⋮ menu → Add to Home screen → Install**.
+
+**Desktop (Chrome / Edge)**
+
+Open the URL and click the **install icon** at the right of the address bar, or
+**⋮ menu → Install Rise…**. It opens in its own window.
+
 ## structure
 
 ```
