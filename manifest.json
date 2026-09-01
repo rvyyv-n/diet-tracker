@@ -1,7 +1,7 @@
 {
-  "name": "Rise — Weight-Gain Tracker",
+  "name": "Rise — Diet Tracker",
   "short_name": "Rise",
-  "description": "A local-first weight-gain tracker built on fixed meal blocks and weekly trend adjustments.",
+  "description": "A local-first diet tracker and planner built on fixed meal blocks and weekly trend adjustments.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
