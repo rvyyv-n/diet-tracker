@@ -74,11 +74,12 @@
   color: var(--text-ink);
 }
 
-/* One step up, for a tab's top-level title (Today, Weight). Trial size; drop
-   the modifier to fall back to display-sm. */
+/* The top-level title on a tab screen (Today, Weight, Settings). One step above
+   display-md so the header anchors the page; see --text-screen-title in
+   tokens.css. Drop the modifier to fall back to display-sm. */
 .screen__title--lg {
-  font: var(--text-display-md);
-  letter-spacing: var(--type-display-md-track);
+  font: var(--text-screen-title);
+  letter-spacing: var(--type-screen-title-track);
 }
 
 .screen__intro {
@@ -387,8 +388,14 @@
   color: var(--text-muted);
 }
 
+/* The one line under a screen title (phase + week on Today, week + count on
+   Weight, a plain label on Settings). An uppercase tracked caption — the same
+   register as .group__label — so it reads as an eyebrow and leaves the serif
+   title as the single large thing in the header. */
 .phase-banner {
-  font: var(--text-caption);
+  font: var(--text-caption-upper);
+  letter-spacing: var(--type-caption-upper-track);
+  text-transform: uppercase;
   color: var(--text-muted);
 }
 
@@ -1164,12 +1171,12 @@
 
 
 /* ------------------------------------------------- header consistency ---
-   Every top-level screen uses .screen-head: a 36px serif title with one small
-   muted line under it. The setup screen adopts the same pair.                */
+   Every top-level screen uses .screen-head: the --text-screen-title serif over
+   one small uppercase line. The setup screen adopts the same pair.            */
 
 .screen-head--setup .screen__title {
-  font: var(--text-display-md);
-  letter-spacing: var(--type-display-md-track);
+  font: var(--text-screen-title);
+  letter-spacing: var(--type-screen-title-track);
 }
 
 
