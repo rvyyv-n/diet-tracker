@@ -1,0 +1,75 @@
+name: Desktop (Windows)
+
+# Builds the Tauri desktop shell described in docs/roadmap.md ("next" ->
+# "Build the executables"). Runs on windows-latest — this repo has no
+# Rust toolchain or MSVC Build Tools installed anywhere else, and Tauri's
+# Windows targets need both. Same trigger shape as android.yml: pushes
+# touching the app or the desktop project, on demand, and on publishing a
+# GitHub Release (where it attaches the installer as a release asset).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "desktop/**"
+      - "src/**"
+      - "index.html"
+      - "manifest.json"
+      - "sw.js"
+      - "assets/**"
+      - ".github/workflows/desktop.yml"
+  workflow_dispatch: {}
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo registry and build output
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            desktop/src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('desktop/src-tauri/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install tauri-cli
+        run: cargo install tauri-cli --version "^2" --locked
+
+      - name: Set up Python (for icon rasterising)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Rasterise assets/icon.svg to a 1024x1024 PNG
+        run: |
+          pip install cairosvg
+          python -c "import cairosvg; cairosvg.svg2png(url='assets/icon.svg', write_to='desktop/src-tauri/icon-source.png', output_width=1024, output_height=1024)"
+
+      - name: Generate the Tauri icon set
+        working-directory: desktop/src-tauri
+        run: cargo tauri icon icon-source.png
+
+      - name: Build the installer
+        working-directory: desktop/src-tauri
+        run: cargo tauri build
+
+      - name: Upload the installer as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rise-windows-installer
+          path: desktop/src-tauri/target/release/bundle/nsis/*.exe
+
+      - name: Attach the installer to the GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: desktop/src-tauri/target/release/bundle/nsis/*.exe
