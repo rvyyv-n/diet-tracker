@@ -10,7 +10,7 @@
  * project (not just edited), add it here and bump CACHE_NAME so clients refetch.
  */
 
-const CACHE_NAME = "rise-v3";
+const CACHE_NAME = "rise-v4";
 
 const PRECACHE_URLS = [
   "./",
@@ -38,6 +38,7 @@ const PRECACHE_URLS = [
   "src/js/core/dates.js",
   "src/js/core/day.js",
   "src/js/core/days.js",
+  "src/js/core/persist.js",
   "src/js/core/plan.js",
   "src/js/core/profile.js",
   "src/js/core/storage.js",
