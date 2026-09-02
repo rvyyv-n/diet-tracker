@@ -58,7 +58,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  padding-bottom: calc(56px + env(safe-area-inset-bottom));
 }
 
 
@@ -1100,7 +1100,7 @@
 
 .tabbar__btn {
   flex: 1;
-  min-height: 52px;
+  min-height: 46px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1662,15 +1662,16 @@
 
 /* ------------------------------------------------------------- tabbar ---
    Icon above label. Three tabs side by side crowd the labels at 390px;
-   stacking buys the width back. Height stays close to the 52px bar so the
-   .app-content clearance still holds — the 2px bottom padding offsets the
-   2px transparent border-top.                                                */
+   stacking buys the width back. The icon (20px) + gap + 11px label only need
+   ~40px; the bar sat at 54px, leaving a dead band above and below on tall
+   phones. 44px is the tap-target floor and matches the .app-content clearance
+   (56px, which also covers the 2px transparent border-top).                   */
 
 .tabbar--icons .tabbar__btn {
   flex-direction: column;
   gap: 2px;
-  min-height: 54px;
-  padding: 4px 0 6px;
+  min-height: 44px;
+  padding: 2px 0 4px;
 }
 
 .tabbar__icon {
