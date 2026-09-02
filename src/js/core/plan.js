@@ -16,35 +16,39 @@
  * `order` is time of day, spaced by tens so a block can be slotted between two
  * others without renumbering. The daily checklist renders in this order, not in
  * ID order — at Phase 2 the snack and pre-bed sit around dinner, not after it.
+ *
+ * `time` is the block's nominal clock time ("HH:MM", from docs/plan-spec.md) — a
+ * cue for "where am I in the day", not a schedule. Today marks the block due now
+ * and lets the earlier ones recede; it never flags one as overdue.
  */
 export const BLOCKS = [
   {
-    id: "B1", order: 10, name: "Breakfast", kcal: 705, proteinG: 35, core: true, rotation: "breakfast",
+    id: "B1", order: 10, time: "08:00", name: "Breakfast", kcal: 705, proteinG: 35, core: true, rotation: "breakfast",
     desc: "Eggs (3) + flatbreads (2) + milk (250 ml) + butter (1 tsp)",
   },
   {
-    id: "B2", order: 20, name: "Shake", kcal: 580, proteinG: 22, core: true, rotation: "shake",
+    id: "B2", order: 20, time: "11:00", name: "Shake", kcal: 580, proteinG: 22, core: true, rotation: "shake",
     desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + oats (25 g)",
     note: "Highest skip risk — keep it prominent in the UI.",
   },
   {
-    id: "B3", order: 30, name: "Lunch", kcal: 580, proteinG: 33, core: true, rotation: "lunch",
+    id: "B3", order: 30, time: "13:30", name: "Lunch", kcal: 580, proteinG: 33, core: true, rotation: "lunch",
     desc: "Choose from the lunch rotation.",
   },
   {
-    id: "A1", order: 40, name: "Snack", kcal: 290, proteinG: 11, core: false, rotation: "snack",
+    id: "A1", order: 40, time: "16:00", name: "Snack", kcal: 290, proteinG: 11, core: false, rotation: "snack",
     desc: "Choose from the snack rotation.",
   },
   {
-    id: "A3", order: 50, name: "Shake 2", kcal: 580, proteinG: 22, core: false, rotation: "shake2",
+    id: "A3", order: 50, time: "17:00", name: "Shake 2", kcal: 580, proteinG: 22, core: false, rotation: "shake2",
     desc: "Heavy shake — optional, or post-training.",
   },
   {
-    id: "B4", order: 60, name: "Dinner", kcal: 700, proteinG: 37, core: true, rotation: "dinner",
+    id: "B4", order: 60, time: "19:30", name: "Dinner", kcal: 700, proteinG: 37, core: true, rotation: "dinner",
     desc: "Choose from the dinner rotation.",
   },
   {
-    id: "A2", order: 70, name: "Pre-bed", kcal: 255, proteinG: 12, core: false,
+    id: "A2", order: 70, time: "22:00", name: "Pre-bed", kcal: 255, proteinG: 12, core: false,
     desc: "Milk (250 ml) + peanut butter (1 tbsp)",
   },
 ];

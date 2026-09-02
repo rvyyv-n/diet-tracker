@@ -37,6 +37,24 @@ phases:
 The ramp-up is deliberate. Jumping straight to the full target is the most common
 reason a bulk collapses in week one, from sheer fullness.
 
+## Block times
+
+Nominal time of day for each block — a cue for "where am I in the day", not a
+schedule to keep. Transcribed to `BLOCKS[].time` in `plan.js`. The Today screen
+marks the block due now and lets earlier ones recede (weight and typography
+only, never a red "overdue").
+
+```yaml
+times:
+  B1: "08:00"   # breakfast
+  B2: "11:00"   # shake
+  B3: "13:30"   # lunch
+  A1: "16:00"   # snack
+  A3: "17:00"   # 2nd shake
+  B4: "19:30"   # dinner
+  A2: "22:00"   # pre-bed
+```
+
 ## Rotations
 
 ```yaml

@@ -4,7 +4,8 @@
  * Before the profile is complete it shows the first-run form (loaded on demand).
  * After that it renders a shell — a content area plus a bottom tab bar (Today |
  * Weight) — and swaps the content when a tab is tapped. No history API; the
- * active tab is module state and resets to Today on a fresh route().
+ * active tab is module state and resets to Today on a fresh route(), unless the
+ * launch URL carries a `?tab=` (the manifest shortcuts land that way).
  *
  * It also keeps the plan phase and add-on list in step with the calendar — see
  * syncPhase().
@@ -34,6 +35,16 @@ const TABS = [
 let activeTab = "today";
 let contentEl = null;
 let tabbarEl = null;
+
+/**
+ * The tab to open on launch. Normally "today"; a `?tab=weight` (or today /
+ * settings) on the URL overrides it, which is how the manifest shortcuts and
+ * any deep link land on a section. An unknown value falls back to "today".
+ */
+function launchTab() {
+  const wanted = new URLSearchParams(location.search).get("tab");
+  return TABS.some((t) => t.id === wanted) ? wanted : "today";
+}
 
 // --- routing -------------------------------------------------------------
 
@@ -70,7 +81,7 @@ function route() {
     return;
   }
   syncPhase(profile);
-  activeTab = "today";
+  activeTab = launchTab();
   renderShell();
 }
 

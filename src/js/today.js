@@ -384,10 +384,33 @@ function checklist(day, editable) {
       .filter(Boolean)
       .map((block) => ({ block, bonus: true })),
   ].sort((a, b) => a.block.order - b.block.order);
+
+  // Time-of-day cue — today only. The "now" row is the last one whose nominal
+  // time has arrived; rows above it recede, rows below are still to come. Before
+  // the first block's time, nothing is "now" and every row is upcoming.
+  // Typography and weight only — never a red "overdue" (insight_copy_states_facts).
+  const live = day.date === todayISO();
+  const now = live ? nowHHMM() : null;
+  let nowIdx = -1;
+  if (live) {
+    rows.forEach(({ block }, i) => {
+      if (block.time && block.time <= now) nowIdx = i;
+    });
+  }
+
   return el(
     "ul",
     { class: "checklist" },
-    ...rows.map(({ block, bonus }) => blockRow(day, block, editable, bonus)),
+    ...rows.map(({ block, bonus }, i) => {
+      const timeState = !live
+        ? "plain"
+        : i < nowIdx
+          ? "past"
+          : i === nowIdx
+            ? "now"
+            : "upcoming";
+      return blockRow(day, block, editable, bonus, timeState);
+    }),
   );
 }
 
@@ -474,10 +497,21 @@ function appetiteSection(day) {
   );
 }
 
-function blockRow(day, block, editable, bonus = false) {
+function blockRow(day, block, editable, bonus = false, timeState = "plain") {
   const done = Boolean(day.completed[block.id]);
   const kcal = blockValue(day, block.id).kcal;
   const pickerOpen = openPicker === block.id;
+  // The cue is a today-only affordance: "now" on the current block, the nominal
+  // time on the rest. Nothing on a past day being reviewed (timeState "plain"),
+  // and nothing for a hand-added bonus block with no time.
+  const timeText =
+    timeState === "plain"
+      ? null
+      : timeState === "now"
+        ? "now"
+        : block.time
+          ? fmtTime(block.time)
+          : null;
 
   const main = el(
     "button",
@@ -499,6 +533,13 @@ function blockRow(day, block, editable, bonus = false) {
       el(
         "span",
         { class: "block-row__name" },
+        timeText
+          ? el(
+              "span",
+              { class: `block-row__time${timeState === "now" ? " is-now" : ""}` },
+              timeText,
+            )
+          : null,
         block.name,
         bonus ? el("span", { class: "block-row__tag" }, "bonus") : null,
       ),
@@ -556,6 +597,7 @@ function blockRow(day, block, editable, bonus = false) {
         "block-row" +
         (done ? " is-done" : "") +
         (bonus ? " block-row--bonus" : "") +
+        (timeState === "past" ? " block-row--past" : "") +
         (block.id === "B2" ? " block-row--shake" : ""),
     },
     el("div", { class: "block-row__lead" }, main, swap, drop),
@@ -588,6 +630,20 @@ function rotationPicker(day, block) {
 }
 
 // --- helpers ---------------------------------------------------------------
+
+/** Local clock as "HH:MM", to compare against a block's nominal `time`. */
+function nowHHMM() {
+  const d = new Date();
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+/** "08:00" -> "8am", "13:30" -> "1:30pm" — a compact time-of-day label. */
+function fmtTime(hhmm) {
+  const [h, m] = hhmm.split(":").map(Number);
+  const period = h < 12 ? "am" : "pm";
+  const h12 = h % 12 || 12;
+  return m ? `${h12}:${String(m).padStart(2, "0")}${period}` : `${h12}${period}`;
+}
 
 /** The description to show for a block — the chosen rotation option's, if any. */
 function resolveDesc(day, block) {

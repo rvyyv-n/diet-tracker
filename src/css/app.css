@@ -621,6 +621,22 @@
 .block-row.is-done .block-row__name { color: var(--text-muted); }
 .block-row.is-done .block-row__desc { text-decoration: line-through; }
 
+/* time-of-day cue (pass 18) — a small nominal time ahead of the block name.
+   The current block reads "now" in coral instead; blocks whose time has passed
+   dim a little. Typography only — no red, nothing that reads as "overdue". */
+.block-row__time {
+  flex: none;
+  font: var(--text-caption);
+  font-weight: var(--weight-regular);
+  color: var(--text-muted-soft);
+  font-variant-numeric: tabular-nums;
+}
+.block-row__time.is-now {
+  color: var(--color-primary);
+  font-weight: var(--weight-medium);
+}
+.block-row--past:not(.is-done) { opacity: 0.62; }
+
 .block-row__kcal {
   flex: none;
   /* Reserved rather than intrinsic: every block tops out at 3 digits except
