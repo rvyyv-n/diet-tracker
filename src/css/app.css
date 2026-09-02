@@ -735,7 +735,12 @@
   color: var(--text-muted-soft);
   background: var(--surface-cream-strong);
   border: none;
-  border-left: var(--border-width-hairline) solid var(--border-hairline);
+  /* --border-hairline (#e6dfd8) reads fine against --surface-card, but sits
+     right next to --surface-cream-strong (#e8e0d2) here — a 1-2 point RGB
+     gap, effectively invisible between Swap and this row's own background.
+     An ink tint (--text-ink at low opacity) stays visible regardless of the
+     exact cream shade beneath it. */
+  border-left: var(--border-width-hairline) solid rgba(20, 20, 19, 0.12);
   cursor: pointer;
   transition: var(--transition-control);
 }

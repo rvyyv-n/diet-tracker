@@ -63,6 +63,7 @@ function render() {
       "div",
       { class: "screen-head" },
       el("h1", { class: "screen__title screen__title--lg" }, "Settings"),
+      el("p", { class: "phase-banner" }, recordSubtitle()),
     ),
     profileGroup(),
     dataGroup(),
@@ -71,6 +72,19 @@ function render() {
   );
   section.addEventListener("click", onAction);
   mount.replaceChildren(section);
+}
+
+/**
+ * The eyebrow under the Settings title, same register as Today's phase line
+ * and Weight's week line. Pass 10 dropped this screen's old subline
+ * ("Setup, data and about") for saying nothing the title didn't; this one
+ * carries real, screen-specific data instead — the stored record counts,
+ * which nothing else on the screen states as a headline number (the Profile
+ * card below shows phase / height / rate, not counts).
+ */
+function recordSubtitle() {
+  const { days, weights } = countRecords(exportAll());
+  return `${days} day${days === 1 ? "" : "s"} logged · ${weights} weigh-in${weights === 1 ? "" : "s"}`;
 }
 
 /**
