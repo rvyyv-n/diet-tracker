@@ -19,10 +19,12 @@ import {
   ageYears,
 } from "./core/profile.js";
 import { TARGET_RATE_KG_PER_WEEK } from "./core/plan.js";
+import { WEIGHT_UNITS, formatWeight, weightRangeText } from "./core/units.js";
 import { todayISO } from "./core/dates.js";
 import { el } from "./ui/dom.js";
 import { dateDropdowns } from "./ui/date-dropdowns.js";
 import { dateCalendar } from "./ui/date-calendar.js";
+import { weightInput } from "./ui/weight-input.js";
 
 // Both set by renderWelcome(): the node to render into, and the callback that
 // runs when the user confirms from the summary screen.
@@ -46,8 +48,9 @@ const today = todayISO;
 const FIELDS_BEFORE_HEIGHT = [
   { name: "name", label: "Name (optional)", type: "text", validated: false },
 ];
+// Current weight sits between the height row and these — it has its own builder
+// (a unit toggle + a kg / lb / st-aware control), like the height row does.
 const FIELDS_AFTER_HEIGHT = [
-  { name: "startWeightKg", label: "Current weight (kg)", type: "number", inputmode: "decimal", step: "0.1", min: "25", max: "300", validated: true },
   {
     name: "targetRateKgPerWeek", label: "Target gain (kg / week)", type: "number",
     inputmode: "decimal", step: "0.05", min: "0.05", max: "1", validated: true,
@@ -211,6 +214,70 @@ function buildHeightRow(profile) {
 }
 
 /**
+ * Current weight: a kg / lb / st segmented toggle over the shared weightInput
+ * control. Like the height row, everything downstream still sees a single
+ * startWeightKg; the unit is a display choice, remembered on the profile so
+ * re-editing and the Weight tab show the value the way it was entered. Stone
+ * switches the control to a stone + pounds pair.
+ */
+function buildWeightRow(profile) {
+  let unit = WEIGHT_UNITS.includes(profile.weightUnit) ? profile.weightUnit : "kg";
+  let control = weightInput({ unit, kg: profile.startWeightKg });
+
+  const holder = el("div", {}, control.node);
+  const hint = el("span", { class: "field__hint" });
+
+  const segs = WEIGHT_UNITS.map((u) => el("button", { class: "seg__btn", type: "button" }, u));
+  function paintSegs() {
+    segs.forEach((b, i) => {
+      const on = WEIGHT_UNITS[i] === unit;
+      b.classList.toggle("is-on", on);
+      b.setAttribute("aria-pressed", String(on));
+    });
+  }
+  segs.forEach((b, i) => {
+    b.addEventListener("click", () => {
+      const next = WEIGHT_UNITS[i];
+      if (next === unit) return;
+      const carried = control.getKg(); // carry the figure across the unit change
+      unit = next;
+      control = weightInput({ unit, kg: Number.isFinite(carried) ? carried : null });
+      holder.replaceChildren(control.node);
+      paintSegs();
+      control.inputs[0].focus();
+    });
+  });
+  paintSegs();
+
+  const node = el(
+    "div",
+    { class: "field" },
+    el(
+      "div",
+      { class: "field__labelrow" },
+      el("span", { class: "field__label" }, "Current weight"),
+      el("div", { class: "seg", role: "group", "aria-label": "Weight unit" }, ...segs),
+    ),
+    holder,
+    hint,
+  );
+
+  function collect(next) {
+    const kg = control.getKg();
+    next.startWeightKg = kg == null || Number.isNaN(kg) ? null : kg;
+    next.weightUnit = unit;
+
+    const err = validate("startWeightKg", next.startWeightKg);
+    hint.textContent = err ? `Enter a weight, ${weightRangeText(unit)}.` : "";
+    hint.classList.toggle("field__hint--error", Boolean(err));
+    control.setInvalid(Boolean(err));
+    return err ? control.focusEl : null;
+  }
+
+  return { node, collect };
+}
+
+/**
  * Date of birth — day / month / year dropdowns. Stays empty until all three are
  * chosen, so the required-field check still fires on an untouched form. The year
  * range covers the ages profile.validate accepts (5–120).
@@ -270,6 +337,7 @@ function renderForm(profile) {
   const beforeRows = FIELDS_BEFORE_HEIGHT.map((f) => buildSimpleRow(f, profile));
   const birthRow = buildBirthDateRow(profile);
   const heightRow = buildHeightRow(profile);
+  const weightRow = buildWeightRow(profile);
   const afterRows = FIELDS_AFTER_HEIGHT.map((f) => buildSimpleRow(f, profile));
   const startRow = buildStartDateRow(profile);
 
@@ -283,6 +351,7 @@ function renderForm(profile) {
     for (const row of beforeRows) firstBad = firstBad || collectSimple(row, next);
     firstBad = firstBad || birthRow.collect(next);
     firstBad = firstBad || heightRow.collect(next);
+    firstBad = firstBad || weightRow.collect(next);
     for (const row of afterRows) firstBad = firstBad || collectSimple(row, next);
     firstBad = firstBad || startRow.collect(next);
 
@@ -309,6 +378,7 @@ function renderForm(profile) {
     ...beforeRows.map((r) => r.node),
     birthRow.node,
     heightRow.node,
+    weightRow.node,
     ...afterRows.map((r) => r.node),
     startRow.node,
     errorNote,
@@ -395,7 +465,7 @@ function renderDone(profile) {
         "div",
         { class: "card summary" },
         summaryRow("Height", heightSummary(profile)),
-        summaryRow("Start weight", `${profile.startWeightKg} kg`),
+        summaryRow("Start weight", formatWeight(profile.startWeightKg, profile.weightUnit)),
         age != null ? summaryRow("Age", `${age}`) : null,
         summaryRow("Target", `${profile.targetRateKgPerWeek} kg / wk`),
         summaryRow("Start date", profile.startDate || today()),

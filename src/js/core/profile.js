@@ -22,7 +22,8 @@ export const DEFAULT_PROFILE = {
   birthDate: null,        // ISO "YYYY-MM-DD"
   heightCm: null,         // always stored in cm, whatever unit was typed
   heightUnit: "cm",       // "cm" | "ftin" — how to show the field on re-edit
-  startWeightKg: null,
+  startWeightKg: null,    // always stored in kg, whatever unit was typed
+  weightUnit: "kg",       // "kg" | "lb" | "st" — display + entry unit for weight
   targetRateKgPerWeek: 0.3,  // plan default; the user can override
   startDate: null,        // ISO date the plan began
   currentPhaseId: 1,      // plan phase the user is on now; app.js advances it

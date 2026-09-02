@@ -26,10 +26,7 @@ insight_copy_states_facts:
 
 ## 1.6 — Active Build Passes
 
-**Pass 18 — Small Platform**
-- [ ] **Time-of-day cue:** Add `times:` block to `plan-spec.md` (breakfast ~08:00, shake ~11:00, lunch ~13:30, snack ~16:00, 2nd shake ~17:00, dinner ~19:30, pre-bed ~22:00). Transcribe as `time` in `plan.js`. Today view marks the block due now (weight/typography only, no red "overdue").
-- [ ] **Manifest shortcuts:** Add long-press icon shortcuts for "Log weight" and "Today". Read `?tab=` param in `route()` to set `activeTab` before `renderShell()`.
-- [ ] **lb / stone display:** Mirror the `heightCm` / `heightUnit` pattern. Weight is stored strictly in `kg`. `profile.weightUnit` controls rendering in `welcome.js`, entry validation, and chart axes.
+Pass 18 is done — see `CHANGELOG.md`.
 
 **Pass 19 — Dark Mode**
 - [ ] Implement `prefers-color-scheme` via `tokens.css` `--night-*` palette.

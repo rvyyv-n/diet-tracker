@@ -175,18 +175,30 @@
   background: var(--surface-card);
 }
 
-/* Feet + inches: two controls plus their unit labels, on one row. */
-.height-ftin {
+/* Feet + inches: two controls plus their unit labels, on one row. Stone +
+   pounds (the weight unit) takes the same shape. */
+.height-ftin,
+.weight-stlb {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
 }
-.height-ftin .field__control {
+.height-ftin .field__control,
+.weight-stlb .field__control {
   flex: 1;
+  min-width: 0;
 }
-.height-ftin__unit {
+.height-ftin__unit,
+.weight-stlb__unit {
   font: var(--text-body-sm);
   color: var(--text-muted);
+}
+/* the stone pair is also used in the narrow inline history-row editor, where it
+   has to share the row with Save / Cancel — let it take the free space and
+   shrink to it rather than sizing to the inputs' intrinsic width */
+.weight-stlb {
+  flex: 1;
+  min-width: 0;
 }
 
 .field__control {
@@ -1243,6 +1255,9 @@
   gap: var(--space-sm);
 }
 .weight__row-input { flex: 1; min-width: 0; }
+/* stone entry needs two fields plus Save/Cancel on one row — drop the week
+   label here to buy the width back (read rows already hide it) */
+.weight__row--edit:has(.weight-stlb) .weight__row-wk { display: none; }
 
 .weight__row-wk {
   font: var(--text-caption);

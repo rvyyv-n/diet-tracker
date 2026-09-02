@@ -9,6 +9,8 @@
 import { el } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { dateCalendar } from "./ui/date-calendar.js";
+import { weightInput } from "./ui/weight-input.js";
+import { formatWeight, formatWeightDelta, weightRangeText } from "./core/units.js";
 import { loadProfile } from "./core/profile.js";
 import { TARGET_RATE_KG_PER_WEEK, blockById } from "./core/plan.js";
 import { todayISO, humanDate, planWeek } from "./core/dates.js";
@@ -29,6 +31,7 @@ let mount;
 let editing = null; // ISO date of the history row being edited, or null
 let entryDate = todayISO(); // the day the weigh-in form is filing to
 let justSaved = false; // shows the transient "Saved" badge for ~2s
+let unit = "kg"; // profile.weightUnit — display + entry unit, kg stays stored
 
 export function renderWeight(mountEl) {
   mount = mountEl;
@@ -40,6 +43,7 @@ export function renderWeight(mountEl) {
 
 function render() {
   const profile = loadProfile();
+  unit = profile.weightUnit || "kg";
   const start = profile.startDate || todayISO();
 
   const series = weeklyWeights(allWeights(), start);
@@ -165,16 +169,7 @@ function entryCard() {
     render();
   });
 
-  const input = el("input", {
-    class: "field__input",
-    type: "number",
-    inputmode: "decimal",
-    step: "0.1",
-    min: "25",
-    max: "300",
-    placeholder: "kg",
-  });
-  if (existing != null) input.value = existing;
+  const field = weightInput({ unit, kg: existing });
 
   let restingHint;
   if (existing != null) restingHint = `Logged for ${humanDate(entryDate)}.`;
@@ -186,12 +181,11 @@ function entryCard() {
   const ack = justSaved ? el("span", { class: "ack" }, "Saved") : null;
   const save = el("button", { class: "btn btn--primary", type: "button" }, "Save");
   save.addEventListener("click", () => {
-    const raw = input.value.trim();
-    const kg = raw === "" ? NaN : Number(raw);
-    if (Number.isNaN(kg) || kg < 25 || kg > 300) {
-      hint.textContent = "Enter a weight in kg, roughly 25–300.";
+    const kg = field.getKg();
+    if (kg == null || Number.isNaN(kg) || kg < 25 || kg > 300) {
+      hint.textContent = `Enter a weight, ${weightRangeText(unit)}.`;
       hint.classList.add("field__hint--error");
-      input.classList.add("is-invalid");
+      field.setInvalid(true);
       return;
     }
     logWeight(entryDate, kg);
@@ -212,12 +206,7 @@ function entryCard() {
       el("span", { class: "field__label" }, "Weigh-in date"),
       cal.node,
     ),
-    el(
-      "label",
-      { class: "field" },
-      el("span", { class: "field__control" }, input),
-      hint,
-    ),
+    el("div", { class: "field" }, field.node, hint),
     el("div", { class: "weight__save" }, save, ack),
   );
 }
@@ -236,7 +225,7 @@ function statsCard(latest, latestGain, adherencePct) {
   return el(
     "div",
     { class: "card summary" },
-    statRow("Latest", latest ? `${latest.kg} kg` : "—"),
+    statRow("Latest", latest ? formatWeight(latest.kg, unit) : "—"),
     statRow(
       "4-week gain",
       latestGain == null
@@ -284,7 +273,7 @@ function reviewCard(series, rolling, start) {
   const pct = adhSeries.find((a) => a.week === wk)?.pct ?? null;
   const wkWeight = series.find((s) => s.week === wk) ?? null;
   const prevWeight = series.filter((s) => s.week < wk).at(-1) ?? null;
-  const delta = wkWeight && prevWeight ? round2(wkWeight.kg - prevWeight.kg) : null;
+  const kgDelta = wkWeight && prevWeight ? wkWeight.kg - prevWeight.kg : null;
   const roll = rolling.find((r) => r.week === wk)?.avgKgPerWeek ?? null;
   const band = TARGET_RATE_KG_PER_WEEK;
   const inBand = roll == null ? null : roll >= band.min && roll <= band.max;
@@ -302,10 +291,10 @@ function reviewCard(series, rolling, start) {
         : el(
             "span",
             {},
-            `${wkWeight.kg} kg`,
-            delta == null
+            formatWeight(wkWeight.kg, unit),
+            kgDelta == null
               ? null
-              : el("span", { class: "review__delta" }, ` (${delta >= 0 ? "+" : ""}${delta})`),
+              : el("span", { class: "review__delta" }, ` (${formatWeightDelta(kgDelta, unit)})`),
           ),
     ),
     statRow(
@@ -340,13 +329,13 @@ function historyCard(series) {
     { class: "card weight__history" },
     ...reversed.map((w, i) => {
       const prev = reversed[i + 1];
-      const delta = prev ? round2(w.kg - prev.kg) : null;
-      return editing === w.date ? historyRowEditor(w) : historyRow(w, delta);
+      const kgDelta = prev ? w.kg - prev.kg : null;
+      return editing === w.date ? historyRowEditor(w) : historyRow(w, kgDelta);
     }),
   );
 }
 
-function historyRow(w, delta) {
+function historyRow(w, kgDelta) {
   const pen = el(
     "button",
     {
@@ -366,31 +355,23 @@ function historyRow(w, delta) {
     { class: "weight__row" },
     el("span", { class: "weight__row-wk" }, `Week ${w.week}`),
     el("span", { class: "weight__row-date" }, humanDate(w.date)),
-    el("span", { class: "weight__row-kg" }, `${w.kg} kg`),
+    el("span", { class: "weight__row-kg" }, formatWeight(w.kg, unit)),
     el(
       "span",
       { class: "weight__row-delta" },
-      delta == null ? "" : `${delta >= 0 ? "+" : ""}${delta}`,
+      kgDelta == null ? "" : formatWeightDelta(kgDelta, unit),
     ),
     pen,
   );
 }
 
 function historyRowEditor(w) {
-  const input = el("input", {
-    class: "field__input",
-    type: "number",
-    inputmode: "decimal",
-    step: "0.1",
-    min: "25",
-    max: "300",
-  });
-  input.value = w.kg;
+  const field = weightInput({ unit, kg: w.kg });
 
   const commit = () => {
-    const kg = Number(input.value);
-    if (Number.isNaN(kg) || kg < 25 || kg > 300) {
-      input.classList.add("is-invalid");
+    const kg = field.getKg();
+    if (kg == null || Number.isNaN(kg) || kg < 25 || kg > 300) {
+      field.setInvalid(true);
       return;
     }
     logWeight(w.date, kg);
@@ -402,21 +383,19 @@ function historyRowEditor(w) {
     render();
   };
 
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") commit();
-    if (e.key === "Escape") cancel();
-  });
+  for (const i of field.inputs) {
+    i.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") commit();
+      if (e.key === "Escape") cancel();
+    });
+  }
 
   return el(
     "div",
     { class: "weight__row weight__row--edit" },
     el("span", { class: "weight__row-wk" }, `Week ${w.week}`),
-    el("span", { class: "field__control weight__row-input" }, input),
+    el("span", { class: "weight__row-input" }, field.node),
     el("button", { class: "btn btn--primary btn--sm", type: "button", onclick: commit }, "Save"),
     el("button", { class: "btn btn--text btn--sm", type: "button", onclick: cancel }, "Cancel"),
   );
-}
-
-function round2(n) {
-  return Math.round(n * 100) / 100;
 }
