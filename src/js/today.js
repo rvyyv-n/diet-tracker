@@ -60,8 +60,8 @@ const STATUS_CLASS = {
 };
 
 // --- module state ----------------------------------------------------------
-// `viewDate` is the day on screen — today, unless the user stepped back with the
-// header arrows or the dot strip to look at (or backfill) an earlier day.
+// `viewDate` is the day on screen — today, unless the user tapped a dot in the
+// six-week strip or the backfill prompt to look at (or finish) an earlier day.
 // `openPicker` is the block id whose rotation picker is expanded, or null. All
 // reset on each renderToday() entry.
 let mount;
@@ -129,22 +129,6 @@ function render() {
       editable ? appetiteSection(day) : null,
     ),
   );
-}
-
-/**
- * Move `viewDate` one day earlier or later, clamped to the plan start date and
- * to today — history stays a read-only window (past days outside the edit
- * window render exactly as they do now), and there is no stepping into the
- * future. Closes any open picker / add panel so the new day starts clean.
- */
-function stepDay(profile, delta) {
-  const start = profile.startDate || todayISO();
-  const next = addDays(viewDate, delta);
-  if (next < start || next > todayISO()) return;
-  viewDate = next;
-  openPicker = null;
-  addOpen = false;
-  render();
 }
 
 /** Jump straight back to today from any earlier day. */
@@ -259,24 +243,7 @@ function phaseLadder(day) {
 }
 
 function dateHeader(profile, day, editable) {
-  const today = todayISO();
-  const isToday = day.date === today;
-  const start = profile.startDate || today;
-  const atStart = day.date <= start;
-
-  const stepBtn = (dir, label, disabled) =>
-    el(
-      "button",
-      {
-        class: "today__step",
-        type: "button",
-        "aria-label": label,
-        disabled: disabled ? "" : null,
-        onclick: disabled ? null : () => stepDay(profile, dir),
-      },
-      icon(dir < 0 ? "chevron-left" : "chevron-right", { size: 20, stroke: 2 }),
-    );
-
+  const isToday = day.date === todayISO();
   return el(
     "div",
     { class: "screen-head" },
@@ -284,15 +251,9 @@ function dateHeader(profile, day, editable) {
       "div",
       { class: "today__daterow" },
       el(
-        "div",
-        { class: "today__nav" },
-        stepBtn(-1, "Previous day", atStart),
-        el(
-          "h1",
-          { class: `screen__title screen__title--lg${isToday ? "" : " screen__title--date"}` },
-          isToday ? "Today" : longDate(day.date),
-        ),
-        stepBtn(1, "Next day", isToday),
+        "h1",
+        { class: `screen__title screen__title--lg${isToday ? "" : " screen__title--date"}` },
+        isToday ? "Today" : longDate(day.date),
       ),
       isToday
         ? null

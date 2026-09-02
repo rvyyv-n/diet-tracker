@@ -413,41 +413,6 @@
   padding-block: 0;
 }
 
-/* title + a step arrow either side, kept together as the date wraps. The row
-   above stays baseline-aligned so "Back to today" still sits on the title's
-   baseline; the arrows centre on the (much taller) serif via align-self. */
-.today__nav {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-xs);
-}
-
-.today__step {
-  flex: none;
-  align-self: center;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--control-height);
-  height: var(--control-height);
-  color: var(--text-muted);
-  background: transparent;
-  border: var(--border-width-hairline) solid var(--border-hairline);
-  border-radius: var(--radius-control);
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.today__step:active { background: var(--surface-cream-strong); color: var(--color-primary); }
-.today__step:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-.today__step:disabled {
-  color: var(--text-muted-soft);
-  border-color: var(--border-hairline-soft);
-  cursor: default;
-}
-.today__step svg { width: 18px; height: 18px; }
-
 .today__closed {
   width: 100%;
   font: var(--text-body-sm);

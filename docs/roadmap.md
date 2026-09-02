@@ -734,6 +734,13 @@ yesterday was left part-done.
   `profile.startDate`, don't step into the future, and keep "Back to today".
   Days outside the edit window render as they already do, with the existing
   "This day is closed." line.
+  **Removed after review.** The two header chevrons were built as specified,
+  then cut at the user's request — they disliked the arrow buttons flanking the
+  "Today" title. Browsing earlier days now goes solely through the dot strip
+  (tap a dot → `viewDate`) and the yesterday backfill prompt; "Back to today"
+  still appears whenever an earlier day is on screen. The phase-derivation fix
+  in `loadViewDay` (an unrecorded past day shows *its* week's phase, not
+  today's) stayed.
 - **An adherence dot strip.** One small dot per day over roughly six weeks,
   coloured by that day's `intakeStatus`, with untouched days left blank. It shows
   the clusters a single percentage averages away. Tapping a dot sets `viewDate`,
