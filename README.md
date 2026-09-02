@@ -6,7 +6,7 @@
 Screen" (mobile) or "Install app" (desktop) for the standalone, offline PWA.
 
 ```
-status: v1.5.0 released — the incremental release after v1
+status: v1.6.0 released — the quality-of-life pass after v1.5
 built:  today checklist + phase ladder, weight trend + adjustment engine,
         settings/about, json export/import, pwa shell (installable, offline),
         durable storage, deployed to github pages, android apk, windows
@@ -15,9 +15,12 @@ built:  today checklist + phase ladder, weight trend + adjustment engine,
         check, first-run intro splash, header polish, black app icon, and
         an in-app update check (links the apk / installer straight to the
         next release; no in-place install yet)
-next:   1.6 — a quality-of-life pass (sticky rotations, a date stepper +
-        adherence strip, a weekly review, dark mode); android pwa install
-        check on a device (non-blocking)
+1.6:    sticky meal rotations + a slot for the 2nd shake, past-day browsing
+        with an adherence dot strip, a weekly review card + most-skipped
+        readout, a repaired export/import round trip, time-of-day meal cues,
+        manifest shortcuts, lb / stone weight display, and dark mode
+next:   v2 — the bulk redesign; android pwa install check on a device
+        (non-blocking)
 ```
 
 ## the idea
@@ -133,10 +136,11 @@ dropping a block for the day from the today screen, a one-tap daily appetite
 check, a first-run intro, header tweaks, a black app icon, and an in-app update
 check so the apk and the installer have a route to the next release.
 
-**1.6** — a quality-of-life pass over data the app already stores: sticky meal
-rotations, a rotation for the 2nd shake, a date stepper and adherence strip for
-past days, a weekly review card, a most-skipped-block readout, a real
-export/import round trip, time-of-day cues, and dark mode.
+**1.6** *(shipped)* — a quality-of-life pass over data the app already stores:
+sticky meal rotations, a rotation for the 2nd shake, past-day browsing with an
+adherence strip, a weekly review card, a most-skipped-block readout, a real
+export/import round trip, time-of-day cues, manifest shortcuts, lb / stone
+weight display, and dark mode.
 
 **v2** — the bulk redesign: off-plan food entries and a reusable recipe book,
 configurable overview metrics, a real desktop layout, a grocery checklist, and

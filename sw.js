@@ -10,7 +10,7 @@
  * project (not just edited), add it here and bump CACHE_NAME so clients refetch.
  */
 
-const CACHE_NAME = "rise-v12";
+const CACHE_NAME = "rise-v13";
 
 const PRECACHE_URLS = [
   "./",
@@ -44,7 +44,9 @@ const PRECACHE_URLS = [
   "src/js/core/plan.js",
   "src/js/core/profile.js",
   "src/js/core/storage.js",
+  "src/js/core/theme.js",
   "src/js/core/trend.js",
+  "src/js/core/units.js",
   "src/js/core/updates.js",
   "src/js/core/version.js",
   "src/js/core/weights.js",
@@ -55,6 +57,7 @@ const PRECACHE_URLS = [
   "src/js/ui/icons.js",
   "src/js/ui/listbox.js",
   "src/js/ui/popover.js",
+  "src/js/ui/weight-input.js",
 ];
 
 self.addEventListener("install", (event) => {

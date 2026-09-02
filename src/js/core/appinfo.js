@@ -7,7 +7,7 @@
  * README states it too; a release bumps all of them together.
  */
 
-export const APP_VERSION = "1.5.0";
+export const APP_VERSION = "1.6.0";
 
 export const REPO = "rvyyv-n/diet-tracker";
 export const REPO_URL = `https://github.com/${REPO}`;
