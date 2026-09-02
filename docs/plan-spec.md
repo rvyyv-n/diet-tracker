@@ -18,8 +18,8 @@ blocks:
   - {id: A1, name: Snack,       kcal: 290, protein_g: 11, core: false, rotation: snack}
   - {id: A2, name: "Pre-bed",   kcal: 255, protein_g: 12, core: false,
      desc: "Milk (250 ml) + peanut butter (1 tbsp)"}
-  - {id: A3, name: "2nd shake", kcal: 580, protein_g: 22, core: false,
-     desc: "heavy shake — optional, or post-training"}
+  - {id: A3, name: "Shake 2", kcal: 580, protein_g: 22, core: false,
+     desc: "heavy shake — optional, or post-training", rotation: shake2}
 ```
 
 ## Phases

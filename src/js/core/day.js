@@ -31,8 +31,15 @@ import { addDays } from "./dates.js";
 const ON_TRACK_AT = 1.0; // at or above target
 const PARTIAL_AT = 0.7; // partway there; below this is "low"
 
-/** A fresh day at a given phase: nothing completed, rotations at their defaults. */
-export function newDay(date, phaseId, addOns = phaseAddOns(phaseId)) {
+/**
+ * A fresh day at a given phase: nothing completed, rotations at their defaults
+ * unless `rotations` is given (pass 14 — sticky rotations: the caller seeds a
+ * new day from the last recorded one, since a fixed slot resetting to BR1 / L1
+ * / D1 / standard every day just means re-picking what you almost always eat).
+ * A partial seed is topped up over the defaults, so a day carried forward from
+ * before a rotation slot existed (e.g. `shake2`) still gets every key filled.
+ */
+export function newDay(date, phaseId, addOns = phaseAddOns(phaseId), rotations = null) {
   return {
     date, // ISO "YYYY-MM-DD"
     phaseId,
@@ -43,7 +50,7 @@ export function newDay(date, phaseId, addOns = phaseAddOns(phaseId)) {
     //            add-on is the plan for the day and counts toward adherence, a
     //            bonus is extra and counts only toward the day's kcal / protein.
     completed: {}, // block id -> true; an absent key means not done
-    rotations: defaultRotations(),
+    rotations: { ...defaultRotations(), ...rotations },
     appetite: null, // optional per-day appetite check, one of APPETITE_VALUES
     extras: [], // off-plan foods: { name, kcal, proteinG }. Reserved for the v2
     //             custom-recipe feature; nothing reads it yet. It lives on the
@@ -188,12 +195,6 @@ export function intakeStatus(day) {
   if (ratio >= ON_TRACK_AT) return "on-track";
   if (ratio >= PARTIAL_AT) return "partial";
   return "low";
-}
-
-/** Day-level completion fraction (0–1), plan blocks only. Weekly adherence is computed elsewhere. */
-export function dayAdherence(day) {
-  const { planDone, total } = dayTotals(day);
-  return total ? planDone / total : 0;
 }
 
 /**

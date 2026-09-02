@@ -76,9 +76,17 @@ export function renderToday(mountEl) {
 
 // --- data ----------------------------------------------------------------
 
-/** The viewed day's record, or a fresh one at the profile's current phase + add-ons. */
+/**
+ * The viewed day's record, or a fresh one at the profile's current phase +
+ * add-ons. A fresh day's rotations are seeded from the last recorded day
+ * (pass 14 — sticky rotations), not the hardcoded defaults, so most days need
+ * no re-picking at all.
+ */
 function loadViewDay(profile) {
-  return getDay(viewDate) ?? newDay(viewDate, profile.currentPhaseId, profile.addOns);
+  const stored = getDay(viewDate);
+  if (stored) return stored;
+  const last = allDays().at(-1);
+  return newDay(viewDate, profile.currentPhaseId, profile.addOns, last?.rotations);
 }
 
 /** Persist a changed day, then repaint. */

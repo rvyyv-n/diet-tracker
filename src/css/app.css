@@ -30,9 +30,12 @@
   flex-direction: column;
   /* side + top padding fold in the notch / status-bar insets so nothing sits
      under a cutout in landscape or in an iOS standalone launch; the insets are
-     0 on every non-notched device, so calc() just resolves to the base value */
+     0 on every non-notched device, so calc() just resolves to the base value.
+     Top alone steps up to --space-lg (24px, not the 16px the sides keep): iOS
+     HIG's 16–20pt top-margin range read as cramped at our floor once a
+     display-lg serif title sat this close to the status bar / notch. */
   padding:
-    calc(var(--space-md) + env(safe-area-inset-top))
+    calc(var(--space-lg) + env(safe-area-inset-top))
     calc(var(--space-md) + env(safe-area-inset-right))
     var(--space-section)
     calc(var(--space-md) + env(safe-area-inset-left));
@@ -373,12 +376,15 @@
 .today { gap: var(--space-md); }
 
 /* A screen title with a small line tucked beneath it (Today, Weight). The
-   eyebrow sits tight under the title (--space-xxxs), and the whole block keeps
-   more air beneath it than the cards keep between themselves. */
+   eyebrow sits under the title at --space-xxs — reverted from pass 10's
+   --space-xxxs (2px): that read as misaligned rather than tight, and sits
+   below what Material 3 typically uses for a title/subtitle pair (~4dp). The
+   whole block keeps more air beneath it than the cards keep between
+   themselves. */
 .screen-head {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xxxs);
+  gap: var(--space-xxs);
   margin-bottom: var(--space-sm);
 }
 
@@ -579,8 +585,15 @@
 }
 
 .block-row__name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 0;
   font: var(--text-title-sm);
   color: var(--text-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .block-row__desc {
@@ -596,8 +609,15 @@
 
 .block-row__kcal {
   flex: none;
+  /* Reserved rather than intrinsic: every block tops out at 3 digits except
+     A3's "mass" shake option at 1,050 — without a floor, that one row's wider
+     number eats into .block-row__body's space and crushes the name/desc
+     column next to it (pass 14). tabular-nums keeps digits aligned inside
+     this width; the width itself has to be fixed for the same reason. */
+  min-width: 88px;
   display: flex;
   align-items: baseline;
+  justify-content: flex-end;
   gap: 3px;
   font: var(--text-metric-sm);
   color: var(--text-body-strong);
@@ -693,8 +713,8 @@
    add-on row means "not having this today". */
 
 .block-row__tag {
+  flex: none;
   display: inline-block;
-  margin-left: var(--space-xs);
   padding: 1px 6px;
   font: var(--text-caption);
   font-weight: var(--weight-medium);
@@ -1438,7 +1458,11 @@
     row-gap: var(--space-xs);
   }
   .set2-row--static > .btn--sm {
-    flex: 0 0 100%;
+    /* Auto width, not 0 0 100% — a full-width button here reads as a CTA and
+       swamps the card; this is a small secondary action, same as it is on
+       every wider screen, just moved onto its own line. */
+    flex: 0 0 auto;
+    align-self: flex-start;
     justify-content: flex-start;
     margin-left: calc(20px + var(--space-sm));
   }

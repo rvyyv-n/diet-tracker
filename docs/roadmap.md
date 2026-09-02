@@ -692,6 +692,28 @@ Both items touch `day.rotations` and `defaultRotations()`, so they go together.
   key; `blockValue()` already falls through to the block's nominal figure when
   `rotationOptionById` misses, which is the correct reading for a historical day.
 
+**Design debt flagged mid-pass, since resolved.** Testing pass 14 on a local
+server surfaced pass 10's title-to-eyebrow gap change (`--space-xxxs`, 4 → 2px,
+`.screen-head` — the header polish + design sweep pass) as too tight — 2px reads
+as misaligned rather than tight, and sits below what Material 3 typically uses
+for a title/subtitle pair (~4dp). First recorded here as deferred ("revert in
+the next pass that touches `.screen-head`, not pass 14"), then reverted directly
+once the user asked again and it turned out to be a two-line fix backed by an
+actual guideline, not a redesign: `.screen-head`'s gap moved back to
+`--space-xxs` (4px), and separately, `.app-shell`'s top padding (shared by every
+screen) moved from `--space-md` (16px) to `--space-lg` (24px) — iOS HIG's
+16–20pt top-margin range read as cramped at our floor once a display-lg serif
+title sat this close to the status bar / notch. Side gutters were untouched;
+nothing flagged those. The same testing pass also surfaced and fixed two live
+bugs in `block-row` (`app.css`): the bonus tag wrapping onto its own line under
+the block name on narrow rows, and A3's `mass` shake option (1,050 kcal, the
+first 4-digit block value) crushing the name/desc column next to it. A third,
+the Settings export/import row's fallback button stretching to near-full card
+width under 360px (Galaxy S8+ and narrower) rather than staying a compact
+secondary action, was fixed the same way. None of the four were folded into
+pass 14's scope, which stays rotations-only; they're cross-cutting fixes applied
+directly because each was a breakage or a guideline miss, not taste.
+
 **pass 15 — the past**
 
 The app stores every day and shows you one. `allDays()` feeds the adjustment
@@ -733,16 +755,26 @@ reads — no new stored state, no schema implications.
 
 **pass 17 — the data round trip**
 
-The one repair pass. Export copies JSON to the clipboard **only**; import accepts
-a file **only**. There is no download and no paste-in, so the backup route the
+The one repair pass. Export copied JSON to the clipboard **only**; import accepts
+a file **only**. There was no download and no paste-in, so the backup route the
 README points at — for iOS storage eviction, and for moving between the APK and
-the browser — cannot complete unless the user pastes the clipboard into a text
-editor and saves a `.json` by hand. `settings.js:421` even carries a comment
-claiming "the download still works"; no download path exists.
+the browser — couldn't complete unless the user pasted the clipboard into a text
+editor and saved a `.json` by hand.
 
-- **Download JSON** as a second export action beside Copy JSON, and **Paste JSON**
-  as a second import route beside Choose file. Either half of the round trip then
-  completes on its own. Kill the stale comment.
+- **Export is now Download JSON, done.** Turned out worse than "no download
+  path exists": `navigator.clipboard` is `undefined` outside a secure context —
+  any origin that isn't `https` or `localhost`, which includes a plain LAN IP —
+  so `navigator.clipboard?.writeText(json).then(...)` threw before either branch
+  of that `.then()` ever ran. Copy JSON did visibly nothing, full stop; it
+  wasn't a narrower "clipboard blocked" case as the old comment claimed. Rather
+  than add a download beside a working copy button, **Copy JSON was replaced
+  outright** with a `Blob` + object-URL download (`exportDownload()` in
+  `settings.js`) — no permission needed, no secure-context requirement, works
+  everywhere the app does. Filename is `rise-backup-<date>.json`.
+- **Paste JSON** as a second import route beside Choose file, still open. Only
+  half the round trip is fixed — Choose-file import was never broken, but
+  there's still no way in without a file picker (e.g. pasting a backup someone
+  sent you as text).
 - **Backup freshness** — Settings shows when data was last exported, with a quiet
   line once it goes stale. The timestamp is device state, not user data: it must
   live outside the export envelope, the way `wgt:update` already does

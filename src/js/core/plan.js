@@ -36,9 +36,7 @@ export const BLOCKS = [
     desc: "Choose from the snack rotation.",
   },
   {
-    // A3 keeps a fixed value for now: it shares the shake recipes but is a
-    // separate serving from B2, so it does not follow the B2 rotation choice.
-    id: "A3", order: 50, name: "2nd shake", kcal: 580, proteinG: 22, core: false,
+    id: "A3", order: 50, name: "Shake 2", kcal: 580, proteinG: 22, core: false, rotation: "shake2",
     desc: "Heavy shake — optional, or post-training.",
   },
   {
@@ -63,7 +61,7 @@ export const PHASES = [
     blocks: ["B1", "B2", "B3", "B4"], kcal: 2565, proteinG: 127,
   },
   {
-    id: 2, name: "Working target", label: "Phase 2 — working target", when: "Week 3 onward",
+    id: 2, name: "Target", label: "Phase 2 — working target", when: "Week 3 onward",
     blocks: ["B1", "B2", "B3", "B4", "A1", "A2"], kcal: 3110, proteinG: 150,
   },
   {
@@ -114,8 +112,10 @@ export const ROTATIONS = {
   ],
 };
 
-/** Shake recipes, exposed under their own name; they are the B2 rotation. */
-export const SHAKES = ROTATIONS.shake;
+// A3 ("Shake 2") draws from the same recipe list as B2 but needs its own
+// rotation slot — day.rotations is keyed by slot, so sharing "shake" would make
+// picking heavy for the second shake silently rewrite the first.
+ROTATIONS.shake2 = ROTATIONS.shake;
 
 /**
  * Food table for off-plan single entries (name, portion, kcal, protein). Names
@@ -252,5 +252,5 @@ export function defaultPhaseForWeek(weekNumber) {
 
 /** The first rotation option for each slot — the starting picks for a new day. */
 export function defaultRotations() {
-  return { breakfast: "BR1", lunch: "L1", dinner: "D1", snack: "SN1", shake: "standard" };
+  return { breakfast: "BR1", lunch: "L1", dinner: "D1", snack: "SN1", shake: "standard", shake2: "standard" };
 }

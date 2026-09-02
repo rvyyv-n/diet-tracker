@@ -20,7 +20,7 @@ import { SCHEMA_VERSION, clear as clearStorage } from "./core/storage.js";
 import { exportAll, importAll, countRecords } from "./core/backup.js";
 import { loadProfile } from "./core/profile.js";
 import { phaseById } from "./core/plan.js";
-import { humanDate } from "./core/dates.js";
+import { humanDate, todayISO } from "./core/dates.js";
 import { APP_VERSION, REPO_URL } from "./core/appinfo.js";
 import { checkForUpdate, updateStatus, detectBuild } from "./core/updates.js";
 
@@ -152,12 +152,12 @@ function exportItem() {
       "span",
       { class: "set2-row__body" },
       el("span", { class: "set2-row__name" }, "Export data"),
-      el("span", { class: "set2-row__desc" }, "Copy all records as JSON to clipboard."),
+      el("span", { class: "set2-row__desc" }, "Save all records as a JSON file."),
     ),
     el(
       "button",
-      { class: "btn btn--secondary btn--sm", type: "button", "data-act": "export-copy" },
-      "Copy JSON",
+      { class: "btn btn--secondary btn--sm", type: "button", "data-act": "export-download" },
+      "Download JSON",
     ),
   );
 }
@@ -350,8 +350,8 @@ function onAction(event) {
     case "edit-setup":
       onEditSetup();
       break;
-    case "export-copy":
-      exportToClipboard(target);
+    case "export-download":
+      exportDownload(target);
       break;
     case "import-pick":
       if (pending || importError) {
@@ -408,19 +408,31 @@ async function runUpdateCheck() {
   render();
 }
 
-function exportToClipboard(btn) {
+/**
+ * A file download, not a clipboard copy (pass 17). navigator.clipboard is
+ * undefined outside a secure context — any origin that isn't https or
+ * localhost, which includes a plain LAN IP — so `navigator.clipboard
+ * ?.writeText(json).then(...)` used to throw before either branch of that
+ * .then() ever ran: the button did visibly nothing. A Blob download needs no
+ * permission and no secure context, so it works everywhere the app does.
+ */
+function exportDownload(btn) {
   const json = JSON.stringify(exportAll(), null, 2);
-  navigator.clipboard?.writeText(json).then(
-    () => {
-      btn.textContent = "Copied";
-      setTimeout(() => {
-        btn.textContent = "Copy JSON";
-      }, 2000);
-    },
-    () => {
-      /* clipboard blocked (insecure context, permissions) — the download still works */
-    },
-  );
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = el("a", { href: url, download: `rise-backup-${todayISO()}.json` });
+  // Safari needs the anchor actually in the DOM for .click() to trigger a
+  // real download rather than silently no-op — same family of issue as the
+  // clipboard one above, so not worth risking again.
+  document.body.append(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+
+  btn.textContent = "Downloaded";
+  setTimeout(() => {
+    btn.textContent = "Download JSON";
+  }, 2000);
 }
 
 function onFileChosen(event) {
