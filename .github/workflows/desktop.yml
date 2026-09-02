@@ -65,7 +65,9 @@ jobs:
         # The Cargo cache includes desktop/src-tauri/target, so a previous
         # release's installer (named from its version) can be restored into
         # bundle/nsis/ and then swept up by the glob below. Wipe it so only
-        # this build's installer is uploaded / attached.
+        # this build's installer is uploaded / attached. Needs bash — the
+        # default shell on windows-latest is PowerShell, where `rm -rf` fails.
+        shell: bash
         run: rm -rf desktop/src-tauri/target/release/bundle
 
       - name: Build the installer
