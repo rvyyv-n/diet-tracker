@@ -91,8 +91,16 @@ color-scheme:light;
 --status-warning:var(--gold-500);
 --status-error:var(--red-500);
 
-/* focus ring — coral at 15% alpha, per the text-input-focused spec */
---focus-ring:0 0 0 3px rgba(204,120,92,.15);
+/* focus ring — the canonical treatment, and the one every focusable surface
+   reads. A 2px gap in the theme's own canvas colour, then a 2px coral ring.
+   The canvas-coloured gap is what makes it work anywhere: the ring's immediate
+   neighbour is always the canvas, so it never has to fight the surface it
+   happens to sit on — including a coral button, where the old 15%-alpha coral
+   wash was very nearly invisible. There is deliberately no dark-theme override
+   below: --surface-canvas already flips, and custom properties resolve at use
+   time, so the same declaration produces the right ring in both themes. */
+--border-focus:var(--coral-500);
+--focus-ring:0 0 0 2px var(--surface-canvas),0 0 0 4px var(--border-focus);
 
 /* coral washes that were inline literals before pass 19. Tokenised so the dark
    theme can raise their alpha — at 6–10% they vanish on a night surface. */
@@ -141,6 +149,24 @@ color-scheme:light;
    at --control-height.                                                       */
 --touch-target:56px;
 --app-max-width:580px;   /* fills the viewport on a phone, caps for tablet / desktop */
+
+
+/* -------------------------------------------------------- breakpoints ---
+   REFERENCE ONLY. A custom property cannot be used in an @media condition —
+   `@media (min-width: var(--bp-desktop))` does not work in any browser — so
+   media queries must repeat these as literals. They live here so the scale has
+   one authoritative home and the literals can be checked against it.
+   360 and 600 are what the app already ships; the rest land with phase 4.     */
+--bp-compact:360px;   /* small phone — floor of support */
+--bp-medium:600px;    /* large phone / small tablet */
+--bp-expanded:840px;  /* tablet / foldable */
+--bp-desktop:1024px;  /* side nav + main panel */
+--bp-wide:1440px;     /* side nav + main + detail, three panels */
+
+--gutter-compact:16px;--gutter-medium:20px;--gutter-desktop:32px;
+--panel-nav-width:240px;      /* desktop side nav, 72px collapsed */
+--panel-detail-width:360px;   /* the third panel at --bp-wide */
+--container-app:960px;        /* reading column inside the desktop main panel */
 
 
 /* -------------------------------------------------------------- radii --- */
@@ -288,7 +314,6 @@ body{margin:0;background:var(--surface-canvas);color:var(--text-body);font:var(-
   --status-warning:#e0af3a;
   --status-error:#d76a6a;
 
-  --focus-ring:0 0 0 3px rgba(204,120,92,.28);
   --surface-primary-tint:rgba(204,120,92,.18);
   --chart-cone-fill:rgba(204,120,92,.16);
   --divider-strong:rgba(247,245,240,.16);
@@ -327,7 +352,6 @@ body{margin:0;background:var(--surface-canvas);color:var(--text-body);font:var(-
     --status-warning:#e0af3a;
     --status-error:#d76a6a;
 
-    --focus-ring:0 0 0 3px rgba(204,120,92,.28);
     --surface-primary-tint:rgba(204,120,92,.18);
     --chart-cone-fill:rgba(204,120,92,.16);
     --divider-strong:rgba(247,245,240,.16);

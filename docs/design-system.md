@@ -145,18 +145,76 @@ and kept on purpose.
 | Container max | 960px app column | **`--app-max-width: 580px`** | Rise had already made this call, tighter. 960px returns as the desktop *panel* width in phase 4. |
 | `--surface-overlay` | a modal scrim | **the surface a floating panel sits on** | Name collision with the export. Rise's meaning is load-bearing in `listbox`/`calendar`; a scrim token gets a distinct name when modals land. |
 
+## Form controls
+
+Rise already has a coherent form system; it was undocumented, not missing.
+**Use it — do not introduce a parallel set of control classes.**
+
+| Class | Role |
+|---|---|
+| `.field` | Wrapper for one labelled control |
+| `.field__label` / `.field__labelrow` | Label, and a label row with a trailing element |
+| `.field__control` | The bordered box. Takes `:focus-within` for the focus ring |
+| `.field__input` | The input itself, incl. `::placeholder` and `input[type=date]` handling |
+| `.field__hint` | Helper text; `:empty` collapses it so layout doesn't jump |
+| `.field__hint--error` | Error text. Pair with `.is-invalid`, which `.field__control:has()` reads to colour the border |
+| `.seg` / `.seg__btn` / `.seg--full` | Segmented control; `.is-on` marks the active segment |
+
+Controls the app does **not** yet have — checkbox, radio, toggle/switch, slider.
+The export specifies all four (20×20 box at `--radius-xs`; 20×20 pill; 44×24
+track with a 20px thumb; 4px track with a 20px thumb — coral when on/filled).
+Those specs are the reference to build against **when a feature actually needs
+one**; they are deliberately not in `app.css` today, because unused component
+CSS rots. A toggle uses **coral** when on, never green — green already means
+"at or above target" here, and a green switch would collide with a live
+semantic.
+
+## Focus
+
+One canonical treatment, in one token, read by every focusable surface —
+`--focus-ring`, currently used in 18 places.
+
+```css
+--border-focus: var(--coral-500);
+--focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--border-focus);
+```
+
+A 2px gap in the theme's own canvas colour, then a 2px coral ring. The gap is
+the trick: the ring's immediate neighbour is always the canvas, so it never has
+to fight the surface beneath it — including a coral button, where the previous
+15%-alpha coral wash was very nearly invisible.
+
+**There is no dark-theme override, on purpose.** `--surface-canvas` already
+flips, and custom properties resolve at use time, so the one declaration
+produces the correct ring in both themes.
+
+Apply it as `outline: none; box-shadow: var(--focus-ring);` on `:focus-visible`
+— never on `:focus`, so a mouse click doesn't draw a ring.
+
+## Breakpoints
+
+| Token | Width | Layout |
+|---|---|---|
+| `--bp-compact` | 360px | 1 column, bottom tab bar, 16px gutter |
+| `--bp-medium` | 600px | 1 column, wider gutter |
+| `--bp-expanded` | 840px | Tablet / foldable; 2-column settings |
+| `--bp-desktop` | 1024px | Side nav (240px) + main panel, 960px column |
+| `--bp-wide` | 1440px | Side nav + main + 360px detail panel |
+
+> ⚠️ **These tokens are reference only.** A custom property cannot be used in a
+> media condition — `@media (min-width: var(--bp-desktop))` does not work in any
+> browser. Media queries must repeat the literals; the tokens exist so the scale
+> has one authoritative home to check them against.
+
+360 and 600 ship today. The rest land with phase 4.
+
 ## Still open — do not invent, ask first
 
-The export marks these `PROPOSED`; they are inferred from the marketing
-system's visual language and have **not** been validated against a real Rise
-screen. Confirm before treating any as load-bearing:
-
-- **Form controls** — checkbox, radio, switch, segmented control, slider.
-  Only the text input exists in the source.
-- **The canonical focus ring.** Proposed as a 2px canvas-colour gap plus a 2px
-  coral ring; Rise currently ships `--focus-ring` as a 3px coral wash at 15%
-  alpha. These are different treatments and need reconciling.
-- **Modal / sheet / toast**, and the z-index scale that orders them.
+- **Modal / sheet / toast** and the z-index scale that orders them. The export
+  specifies all of it (§12, §17); nothing is built, so nothing is adopted yet.
 - **Empty, loading and error states**, including skeleton styling.
-- **Desktop breakpoints and the multi-panel grid** — blocking phase 4.
-- **Dark-mode chart band opacity** (10% → 18%) — an unverified guess.
+- **Dark-mode chart band opacity** (10% → 18%) — an unverified guess with no
+  real chart screen checked against it.
+- **Hover.** Agreed in principle to scope to `(hover:hover) and (pointer:fine)`
+  so touch keeps the two-state model and the Tauri desktop build gets hover.
+  Not yet implemented — it belongs with phase 4, where desktop becomes real.
