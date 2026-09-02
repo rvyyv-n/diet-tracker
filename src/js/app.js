@@ -15,6 +15,7 @@ import { icon } from "./ui/icons.js";
 import { isAvailable } from "./core/storage.js";
 import { requestPersistence } from "./core/persist.js";
 import { autoCheckForUpdate } from "./core/updates.js";
+import { snapshotInfo, restoreSnapshot } from "./core/backup.js";
 import { loadProfile, saveProfile, isComplete } from "./core/profile.js";
 import { defaultPhaseForWeek, phaseAddOns, normaliseAddOns } from "./core/plan.js";
 import { todayISO, planWeek } from "./core/dates.js";
@@ -54,7 +55,18 @@ function route() {
       );
       return;
     }
-    import("./welcome.js").then((m) => m.renderWelcome(mount, { onComplete: route }));
+    // A "reset all data" leaves a one-shot undo snapshot behind (pass 17). The
+    // reset drops the user back here to first-run, so the undo has to be
+    // offered on the welcome screen, not just in Settings.
+    const snap = snapshotInfo();
+    const undoReset =
+      snap && snap.reason === "reset"
+        ? () => {
+            restoreSnapshot();
+            route();
+          }
+        : null;
+    import("./welcome.js").then((m) => m.renderWelcome(mount, { onComplete: route, undoReset }));
     return;
   }
   syncPhase(profile);

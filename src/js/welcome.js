@@ -31,6 +31,10 @@ let done = () => {};
 // True on the "Edit setup" path — retitles the form, relabels its button, and
 // skips the summary card on save (the user has seen these numbers before).
 let editing = false;
+// Set only when the app routed here straight after a "reset all data" and an
+// undo snapshot is still available (pass 17). Shows a restore line above the
+// form; null the rest of the time.
+let undoReset = null;
 
 const CM_PER_INCH = 2.54;
 const today = todayISO;
@@ -315,6 +319,15 @@ function renderForm(profile) {
     ),
   );
 
+  const undoLine =
+    !editing && typeof undoReset === "function"
+      ? el(
+          "button",
+          { class: "backfill", type: "button", onclick: undoReset },
+          "Reset by mistake? Restore the data from before it.",
+        )
+      : null;
+
   mount.replaceChildren(
     el(
       "section",
@@ -325,6 +338,7 @@ function renderForm(profile) {
         { class: "screen__intro" },
         "The numbers the plan adjusts from. They stay on this device.",
       ),
+      undoLine,
       form,
     ),
   );
@@ -401,12 +415,15 @@ function renderDone(profile) {
  * then a summary card; once a complete profile exists it opens on the summary.
  * Pass `edit: true` (the "Edit profile" path) to jump straight to the form,
  * retitle it, and return through `onComplete` on save without the summary hop.
- * The storage-availability check lives in app.js, ahead of this call.
+ * Pass `undoReset` (a function) to show a one-line "restore data from before
+ * the reset" affordance above the form. The storage-availability check lives
+ * in app.js, ahead of this call.
  */
-export function renderWelcome(mountEl, { onComplete, edit = false } = {}) {
+export function renderWelcome(mountEl, { onComplete, edit = false, undoReset: undo = null } = {}) {
   mount = mountEl;
   done = typeof onComplete === "function" ? onComplete : () => {};
   editing = Boolean(edit);
+  undoReset = typeof undo === "function" ? undo : null;
   const profile = loadProfile();
   if (isComplete(profile) && !edit) renderDone(profile);
   else renderForm(profile);

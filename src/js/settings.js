@@ -17,7 +17,19 @@
 import { el } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { SCHEMA_VERSION, clear as clearStorage } from "./core/storage.js";
-import { exportAll, importAll, countRecords } from "./core/backup.js";
+import {
+  exportAll,
+  importAll,
+  assertImportable,
+  countRecords,
+  parseBackup,
+  noteExport,
+  exportFreshness,
+  takeSnapshot,
+  snapshotInfo,
+  restoreSnapshot,
+  discardSnapshot,
+} from "./core/backup.js";
 import { loadProfile } from "./core/profile.js";
 import { phaseById } from "./core/plan.js";
 import { humanDate, todayISO } from "./core/dates.js";
@@ -34,6 +46,9 @@ let onReset = () => {};
 let pending = null;
 // A message shown in place of the preview when a file can't be read or applied.
 let importError = null;
+// Whether the paste-JSON textarea panel is open (pass 17 — the second import
+// route beside "Choose file").
+let pasteOpen = false;
 // Whether the reset confirm panel is open.
 let confirming = false;
 // The update-check row's transient phase: "idle" (show the stored status),
@@ -48,6 +63,7 @@ export function renderSettings(mountEl, opts = {}) {
   onReset = typeof opts.onReset === "function" ? opts.onReset : () => {};
   pending = null;
   importError = null;
+  pasteOpen = false;
   confirming = false;
   updatePhase = "idle";
   render();
@@ -129,6 +145,7 @@ function profileGroup() {
 }
 
 function dataGroup() {
+  const snap = snapshotInfo();
   return el(
     "div",
     { class: "group" },
@@ -136,10 +153,77 @@ function dataGroup() {
     el(
       "div",
       { class: "card set2-card" },
+      snap ? undoRow(snap) : null,
       exportItem(),
+      freshnessRow(),
       importRow(),
+      pasteOpen ? pastePanel() : null,
       pending ? importPanel() : null,
       importError ? errorPanel() : null,
+    ),
+  );
+}
+
+/**
+ * The undo slot's row, shown whenever a snapshot is waiting (see backup.js).
+ * Import and reset both take one first; this offers the single undo and a way
+ * to drop it so the doubled storage is reclaimed.
+ */
+function undoRow(snap) {
+  const what = snap.reason === "reset" ? "the reset" : "the import";
+  return el(
+    "div",
+    { class: "set-panel set-panel--undo" },
+    el(
+      "p",
+      { class: "set-panel__body" },
+      `The data from before ${what} on ${humanDate(snap.takenAt.slice(0, 10))} is still saved here.`,
+    ),
+    el(
+      "div",
+      { class: "set-panel__actions" },
+      el("button", { class: "btn btn--primary btn--sm", type: "button", "data-act": "snapshot-undo" }, "Undo"),
+      el("button", { class: "btn btn--text btn--sm", type: "button", "data-act": "snapshot-dismiss" }, "Dismiss"),
+    ),
+  );
+}
+
+/** A quiet line under Export: when this browser's data was last written out. */
+function freshnessRow() {
+  const f = exportFreshness();
+  let text;
+  if (!f) text = "Not exported from this browser yet.";
+  else if (f.ageDays === 0) text = "Last export: today.";
+  else
+    text =
+      `Last export: ${f.ageDays} day${f.ageDays === 1 ? "" : "s"} ago` +
+      (f.stale ? " — worth doing again." : ".");
+  return el("p", { class: "set2-note" }, text);
+}
+
+/** The paste-in import route: a textarea and a Preview button. */
+function pastePanel() {
+  return el(
+    "div",
+    { class: "set-panel" },
+    el(
+      "p",
+      { class: "set-panel__body" },
+      "Paste a backup's JSON. It goes through the same preview and replace as a file.",
+    ),
+    el("textarea", {
+      class: "set-paste__input",
+      rows: "5",
+      spellcheck: "false",
+      autocapitalize: "off",
+      placeholder: "{ …backup JSON… }",
+      "aria-label": "Backup JSON",
+    }),
+    el(
+      "div",
+      { class: "set-panel__actions" },
+      el("button", { class: "btn btn--primary btn--sm", type: "button", "data-act": "import-paste-parse" }, "Preview"),
+      el("button", { class: "btn btn--text btn--sm", type: "button", "data-act": "import-paste-close" }, "Cancel"),
     ),
   );
 }
@@ -190,9 +274,18 @@ function importRow() {
       el("span", { class: "set2-row__desc" }, "Replaces what is here, after a preview."),
     ),
     el(
-      "button",
-      { class: "btn btn--secondary btn--sm", type: "button", "data-act": "import-pick" },
-      pending || importError ? "Close" : "Choose file",
+      "span",
+      { class: "set2-row__buttons" },
+      el(
+        "button",
+        { class: "btn btn--secondary btn--sm", type: "button", "data-act": "import-pick" },
+        pending || importError ? "Close" : "Choose file",
+      ),
+      el(
+        "button",
+        { class: "btn btn--secondary btn--sm", type: "button", "data-act": "import-paste" },
+        pasteOpen ? "Close" : "Paste",
+      ),
     ),
     fileInput,
   );
@@ -373,8 +466,33 @@ function onAction(event) {
         importError = null;
         render();
       } else {
+        pasteOpen = false;
         fileInput.click();
       }
+      break;
+    case "import-paste":
+      pasteOpen = !pasteOpen;
+      pending = null;
+      importError = null;
+      render();
+      break;
+    case "import-paste-parse": {
+      const ta = mount.querySelector(".set-paste__input");
+      try {
+        const obj = parseBackup(ta ? ta.value : "");
+        pending = { name: "Pasted JSON", obj, counts: countRecords(obj) };
+        importError = null;
+      } catch (err) {
+        pending = null;
+        importError = err.message;
+      }
+      pasteOpen = false;
+      render();
+      break;
+    }
+    case "import-paste-close":
+      pasteOpen = false;
+      render();
       break;
     case "import-commit":
       commitImport();
@@ -384,13 +502,23 @@ function onAction(event) {
       importError = null;
       render();
       break;
+    case "snapshot-undo":
+      if (restoreSnapshot()) onReset();
+      else render();
+      break;
+    case "snapshot-dismiss":
+      discardSnapshot();
+      render();
+      break;
     case "reset-open":
       confirming = !confirming;
       pending = null;
       importError = null;
+      pasteOpen = false;
       render();
       break;
     case "reset-commit":
+      takeSnapshot("reset");
       clearStorage();
       onReset();
       break;
@@ -442,11 +570,11 @@ function exportDownload(btn) {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+  noteExport();
 
   btn.textContent = "Downloaded";
-  setTimeout(() => {
-    btn.textContent = "Download JSON";
-  }, 2000);
+  // Re-render after the acknowledgement so the "Last export" line refreshes.
+  setTimeout(render, 2000);
 }
 
 function onFileChosen(event) {
@@ -456,10 +584,10 @@ function onFileChosen(event) {
   reader.onload = () => {
     let obj;
     try {
-      obj = JSON.parse(String(reader.result));
-    } catch {
+      obj = parseBackup(reader.result);
+    } catch (err) {
       pending = null;
-      importError = "That file is not valid JSON.";
+      importError = err.message;
       render();
       return;
     }
@@ -474,6 +602,8 @@ function onFileChosen(event) {
 function commitImport() {
   if (!pending) return;
   try {
+    assertImportable(pending.obj); // check before snapshotting what we overwrite
+    takeSnapshot("import");
     importAll(pending.obj);
   } catch (err) {
     pending = null;

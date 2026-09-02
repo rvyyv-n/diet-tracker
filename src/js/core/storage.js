@@ -91,15 +91,24 @@ export function remove(name) {
 }
 
 /**
+ * Records that survive a "reset all data". Only the undo snapshot: a reset that
+ * could not be undone would defeat the point of taking one. backup.js writes
+ * and consumes it.
+ */
+const PRESERVE_ON_CLEAR = new Set([key("snapshot")]);
+
+/**
  * Remove every record this app owns — the "reset all data" path. Only keys under
- * the `wgt:` namespace are touched, so anything else on the origin is left alone.
+ * the `wgt:` namespace are touched, so anything else on the origin is left alone,
+ * and the undo snapshot (see PRESERVE_ON_CLEAR) is kept so the reset is
+ * reversible.
  */
 export function clear() {
   try {
     const doomed = [];
     for (let i = 0; i < localStorage.length; i += 1) {
       const k = localStorage.key(i);
-      if (k && k.startsWith(`${NAMESPACE}:`)) doomed.push(k);
+      if (k && k.startsWith(`${NAMESPACE}:`) && !PRESERVE_ON_CLEAR.has(k)) doomed.push(k);
     }
     doomed.forEach((k) => localStorage.removeItem(k));
   } catch {

@@ -1542,6 +1542,45 @@
   font: var(--text-caption);
 }
 
+/* two small actions kept together at a row's right edge (Import: file / paste) */
+.set2-row__buttons {
+  flex: none;
+  display: flex;
+  gap: var(--space-xs);
+}
+
+/* a quiet full-width line inside a card — the "Last export" freshness note */
+.set2-note {
+  padding: var(--space-xs) var(--space-md) var(--space-sm);
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+
+/* the paste-in import textarea */
+.set-paste__input {
+  width: 100%;
+  min-height: 96px;
+  padding: var(--space-sm);
+  font: var(--text-code);
+  color: var(--text-ink);
+  background: var(--surface-canvas);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-control);
+  resize: vertical;
+  transition: var(--transition-control), box-shadow var(--duration-fast) var(--ease-standard);
+}
+.set-paste__input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+
+/* the undo slot's panel — a coral hairline, the one time it flags a pending
+   safety net rather than a committed action */
+.set-panel--undo {
+  border-top-color: var(--color-primary);
+}
+
 /* Narrow phones (iPhone SE and down): the row's button competes with the body
    for width and the name wraps mid-word. Drop the button onto its own line
    under the text, indented to the name's left edge (20px icon + gap). */
@@ -1550,7 +1589,8 @@
     flex-wrap: wrap;
     row-gap: var(--space-xs);
   }
-  .set2-row--static > .btn--sm {
+  .set2-row--static > .btn--sm,
+  .set2-row--static > .set2-row__buttons {
     /* Auto width, not 0 0 100% — a full-width button here reads as a CTA and
        swamps the card; this is a small secondary action, same as it is on
        every wider screen, just moved onto its own line. */
