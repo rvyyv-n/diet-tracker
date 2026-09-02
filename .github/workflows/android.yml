@@ -72,14 +72,23 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: gradle assembleRelease --no-daemon
 
+      - name: Rename the APK to Rise_<version>.apk
+        # Gradle emits app-release.apk; rename it to match the Windows
+        # installer's Rise_<version>_… scheme so the release assets are
+        # consistent. versionName is the single source in build.gradle.kts.
+        run: |
+          version=$(grep -oP 'versionName\s*=\s*"\K[^"]+' android/app/build.gradle.kts)
+          cd android/app/build/outputs/apk/release
+          mv app-release.apk "Rise_${version}.apk"
+
       - name: Upload the APK as a build artifact
         uses: actions/upload-artifact@v4
         with:
           name: rise-release-apk
-          path: android/app/build/outputs/apk/release/*.apk
+          path: android/app/build/outputs/apk/release/Rise_*.apk
 
       - name: Attach the APK to the GitHub Release
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: android/app/build/outputs/apk/release/*.apk
+          files: android/app/build/outputs/apk/release/Rise_*.apk
