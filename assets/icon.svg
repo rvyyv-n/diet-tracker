@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- warm cream tile -->
-  <rect width="512" height="512" rx="112" fill="#FAF9F5"/>
+  <!-- black tile -->
+  <rect width="512" height="512" rx="112" fill="#000000"/>
   <!-- egg white: centred, near-symmetric, filling most of the tile so it
        still reads at 16px -->
   <ellipse cx="256" cy="258" rx="158" ry="190" fill="#FFFFFF" stroke="#E6DFD8" stroke-width="14"/>
