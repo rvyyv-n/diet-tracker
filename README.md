@@ -6,17 +6,18 @@
 Screen" (mobile) or "Install app" (desktop) for the standalone, offline PWA.
 
 ```
-status: v1.0.0 released · 1.5 on main, out as the v1.5.0-beta.1 prerelease
+status: v1.5.0 released — the incremental release after v1
 built:  today checklist + phase ladder, weight trend + adjustment engine,
         settings/about, json export/import, pwa shell (installable, offline),
         durable storage, deployed to github pages, android apk, windows
         installer
-1.5:    manual add-on / bonus blocks + drop-a-block on today, one-tap daily
-        appetite check, first-run intro splash, header polish, black app icon,
-        in-app update check (deep-link floor: apk/installer get a link to the
-        next release, no in-place install yet)
-next:   verify the update check against a real v1.5.0 tag, then cut v1.5.0;
-        android pwa install check on a device (non-blocking)
+1.5:    add / drop a block for the day on today, one-tap daily appetite
+        check, first-run intro splash, header polish, black app icon, and
+        an in-app update check (links the apk / installer straight to the
+        next release; no in-place install yet)
+next:   1.6 — a quality-of-life pass (sticky rotations, a date stepper +
+        adherence strip, a weekly review, dark mode); android pwa install
+        check on a device (non-blocking)
 ```
 
 ## the idea
@@ -41,12 +42,14 @@ steady weight gain; the block structure generalises to any fixed plan.
 ## screens
 
 - **today** — the day's active blocks as tap rows; running kcal + protein, an
-  intake-status colour, an inline rotation picker per meal, and any adjustment
-  suggestion with apply / dismiss
+  intake-status colour, an inline rotation picker per meal, a way to add or drop
+  a block for the day, a one-tap appetite check, and any adjustment suggestion
+  with apply / dismiss
 - **weight** — a weigh-in (any date, through a calendar popover), the four-week
   gain against the target band, a trend chart, and an editable history
 - **settings** — the profile card (tap to edit), json export / import with a
-  preview, a data reset behind a confirm, and an about block
+  preview, a check-for-updates row, a data reset behind a confirm, and an about
+  block
 
 ## install
 
@@ -83,9 +86,10 @@ grab the Android APK or the Windows installer from the
 [latest release](https://github.com/rvyyv-n/diet-tracker/releases/latest).
 Both are unsigned (no code-signing certificate), so Android/Windows will
 warn before the first install/run — that's expected, not a sign anything's
-wrong. Neither auto-updates; a new release ships a new file. Data doesn't
-carry over between this and a browser-installed copy — use **Settings →
-Export/Import data** to move it.
+wrong. Neither updates in place, but the app checks GitHub for a newer
+release and links you straight to it (**Settings → Check for updates**, also
+run automatically at most weekly). Data doesn't carry over between this and a
+browser-installed copy — use **Settings → Export/Import data** to move it.
 
 ## structure
 
@@ -122,13 +126,19 @@ full detail in [docs/roadmap.md](docs/roadmap.md).
 **v1** — the three screens above, offline, packaged to run on android, iphone
 and desktop with no local server, and shipped as a github release.
 
-**1.5** — small features and a design-polish pass: adding or dropping a block
-for the day from the today screen, a one-tap daily appetite check, a first-run
-intro, header tweaks, and an in-app update check so the apk and the installer
-have a route to the next release.
+**1.5** *(shipped)* — small features and a design-polish pass: adding or
+dropping a block for the day from the today screen, a one-tap daily appetite
+check, a first-run intro, header tweaks, a black app icon, and an in-app update
+check so the apk and the installer have a route to the next release.
 
-**v2** — off-plan food entries and a reusable recipe book, configurable overview
-metrics, a real desktop layout, a grocery checklist, and meal reminders.
+**1.6** — a quality-of-life pass over data the app already stores: sticky meal
+rotations, a rotation for the 2nd shake, a date stepper and adherence strip for
+past days, a weekly review card, a most-skipped-block readout, a real
+export/import round trip, time-of-day cues, and dark mode.
+
+**v2** — the bulk redesign: off-plan food entries and a reusable recipe book,
+configurable overview metrics, a real desktop layout, a grocery checklist, and
+meal reminders.
 
 ## license
 

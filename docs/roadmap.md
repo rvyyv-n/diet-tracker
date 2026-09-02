@@ -312,24 +312,31 @@ well-trodden ground, so this wasn't held up waiting on a device.
 
 - **Android PWA verification** — the browser-installed path (install /
   standalone / persistence) on an actual Android device, from the Pages URL.
-  Deferred out of v1.0.0 as non-blocking; carried into 1.5 as a release chore,
-  still non-blocking. Do this when a device's in hand.
+  Deferred out of v1.0.0 as non-blocking; carried through 1.5 and into 1.6 as a
+  release chore, still non-blocking. Do this when a device's in hand.
 
-## 1.5 — built, beta out
+## 1.5 — shipped
 
 The incremental release after v1. Numbered **1.5**, not 1.1, to keep the version
 line clean; v2 is the whole-number jump for the bulk redesign. Character: small
 features and a design-polish pass, owner-driven.
 
-**Status.** Passes 8–13 are built and merged to `main`. Deployed to Pages and cut
-as the prerelease **`v1.5.0-beta.1`** (APK + Windows installer attached, black
-icon). Pass 12 shipped as the deep-link floor only — the two in-place updaters
-(Tauri updater plugin, Android FileProvider install) were left out on purpose;
-see that pass. Still open before the final `v1.5.0`: verify the update check
-against a real `v1.5.0` tag from an installed build, and the Android PWA device
-check below (non-blocking). The `v1.5.0-beta.1` prerelease is kept as a
-historical artifact — a prerelease is excluded from `releases/latest`, so it
-never reaches the update check.
+**Status — released as `v1.5.0`.** Passes 8–13 built and merged to `main`,
+`release-1.5` fast-forwarded in and tagged, the Release published (`android.yml`
+and `desktop.yml` attached the APK and NSIS installer on publish). Pass 12
+shipped as the deep-link floor only — the two in-place updaters (Tauri updater
+plugin, Android FileProvider install) were left out on purpose; see that pass.
+The earlier `v1.5.0-beta.1` prerelease is kept as a historical artifact — a
+prerelease is excluded from `releases/latest`, so it never reaches the update
+check.
+
+**One check remains, and it does not gate the tag.** Verify the update check
+against the real `v1.5.0` tag from an installed build — it can only be done once
+the tag exists. A failure there is a `v1.5.1`, not a reason to have held 1.5.
+The Android PWA device check stays non-blocking and carries into 1.6.
+
+**Nothing else went into 1.5.** The QoL set raised after the beta is scoped as
+**1.6** below; it was not started on `release-1.5`.
 
 **Decisions taken up front.** Settled with the user before these passes were
 written — implement them, don't reopen.
@@ -570,9 +577,11 @@ the `*.exe` glob). Left for the final `v1.5.0`: the real-tag verification below.
   `desktop.yml` attaches only the `setup.exe`. If the updater is added later,
   it also has to sign and attach the `.nsis.zip` + `.sig` and publish the update
   manifest before the Release.
-- **Verify the update check against the real tag**, from an installed 1.5 build,
-  before calling the release done. This is the one thing that cannot be repaired
-  after the fact: if 1.5 can't see v1.5.0, it won't see v2 either.
+- **Verify the update check against the real tag**, from an installed 1.5 build.
+  This is the one thing that cannot be repaired after the fact: if 1.5 can't see
+  v1.5.0, it won't see v2 either. It runs *after* the publish, not before — the
+  tag has to exist for there to be anything to see. See the ordered close-out
+  list in the Status block above.
 - The Android PWA verification from "next" above, if a device turns up.
 - Merge `release-1.5` to `main`, tag `v1.5.0`, publish the Release —
   `android.yml` and `desktop.yml` both trigger on `release: published` and
@@ -587,10 +596,234 @@ not a small addition. The grocery checklist — the data is already transcribed 
 `plan.js`, but it is a new screen plus weekly-reset state, so it stays a v2 item
 too. A rotation picker for the 2nd shake — A3 is fixed at 580 kcal while B2
 rotates through standard / no-blender / heavy, a real inconsistency but not one
-that has bitten yet. Meal reminders — they need notification permissions and a
-scheduling path iOS PWAs don't reliably give; recorded below as before.
+that had bitten yet; **now scheduled as part of pass 14 in 1.6**. Meal reminders
+— they need notification permissions and a scheduling path iOS PWAs don't
+reliably give; recorded below as before.
 
-**v2** — the bulk redesign and the larger feature set below.
+**After 1.5** — the QoL set in 1.6 below, then v2 for the bulk redesign.
+
+## 1.6 — planned
+
+The quality-of-life release. Scoped after the `v1.5.0-beta.1` beta by reading the
+roadmap and the README against what the mainstream trackers do, then picked from
+a ballot by the user. Numbered **1.6** rather than folded into 1.5 for two
+reasons: it is roughly the size of passes 8–13 again, which is not what "small
+features and a design-polish pass" meant; and holding 1.5 open to fit it would
+leave the update check unverified against a real tag for the whole of that time.
+
+Character: nothing here is a new capability. Every pass either removes a daily
+tap, exposes data the app already stores but never shows, or repairs something
+that is quietly broken.
+
+**What this borrows from elsewhere.** Rise's premise — ticking a fixed block is
+the only daily action — means the usual "faster food logging" QoL does not
+translate. Three things do. Cronometer's copy-a-previous-day and MyFitnessPal's
+habit dashboard both answer "make the repetitive day cost nothing", which here
+becomes sticky rotations rather than copied food. MacroFactor's weekly check-in
+answers "tell me what the week actually did", which `trend.js` can already
+compute and nothing displays. Loop Habit Tracker's calendar answers "am I
+actually doing this", which a single adherence percentage cannot.
+
+**Decisions taken up front.** Settled with the user before these passes were
+written — implement them, don't reopen.
+
+```yaml
+block_times_home:
+  decision: "nominal meal times go into plan-spec.md first, then transcribe to plan.js"
+  why: >
+    Meal timing is plan data, not presentation. plan.js's header states it is a
+    pure description of the plan — "a changed plan is a changed file, nothing
+    more" — so putting the times in today.js would make them undocumented plan
+    facts buried in a render function. BLOCKS gains a `time` beside `order`.
+
+past_days_stay_closed:
+  decision: "browsing back never reopens a day — isDayEditable is unchanged"
+  why: >
+    Adherence % feeds the adjustment engine, so history has to stay honest
+    (plan-spec.md, missed_days). The stepper is a window onto stored days, not a
+    second backfill route: anything outside the edit window renders exactly as a
+    closed day renders today.
+
+second_shake_slot:
+  decision: "A3 gets its own rotation slot (`shake2`), not B2's"
+  why: >
+    blockValue() resolves through day.rotations[slot], so giving A3
+    `rotation: "shake"` would make both shakes share one choice — picking heavy
+    for the second would silently rewrite the first. A separate key over the same
+    ROTATIONS.shake list is the only version that works.
+
+backup_round_trip:
+  decision: "close the existing export/import gap; no CSV export, no merging import"
+  why: >
+    Export writes JSON to the clipboard only and import accepts a file only, so
+    the documented backup route cannot complete without the user hand-pasting the
+    clipboard into a text editor and saving a .json. A download action and a
+    paste-in route repair the actual defect. CSV and a merging import are new
+    features stacked on a broken round trip, and were dropped from the ballot for
+    that reason.
+
+insight_copy_states_facts:
+  decision: "the time-of-day cue and the most-skipped readout state facts, never verdicts"
+  why: >
+    Both sit one design slip from the guilt mechanic the never-nag principle
+    rules out. "B2 is your most-missed block — 9 of the last 14 days" is a fact;
+    the same number with an exclamation mark is a nag. No red rows, no streak
+    that breaks loudly, no colour used as an alarm.
+```
+
+**pass 14 — rotations**
+
+Both items touch `day.rotations` and `defaultRotations()`, so they go together.
+
+- **Sticky rotations.** `newDay()` seeds each slot from the last choice instead
+  of the hardcoded `defaultRotations()`, which resets every day to BR1 / L1 / D1 /
+  standard and makes you re-pick what you almost always eat. Prefer deriving the
+  seed from `allDays().at(-1).rotations` over storing a new profile field — the
+  data is already there, and a profile field would need keeping in step with days
+  that get edited. Fall back to `defaultRotations()` when there is no prior day.
+- **The A3 rotation.** A3 (the 2nd shake) is pinned at 580 kcal while B2 rotates
+  through standard 580 / no-blender 545 / heavy 790 / mass 1050 — so making the
+  heavy shake as the second one records a 210 kcal under-count on precisely the
+  block that exists to close a calorie gap. Add a `shake2` key to `ROTATIONS`
+  pointing at the same option list, give A3 `rotation: "shake2"`, add the key to
+  `defaultRotations()`, and the existing per-block picker does the rest. Delete
+  the "keeps a fixed value for now" comment at `plan.js:38` when it goes.
+- No `SCHEMA_VERSION` bump. A day saved before this has no `rotations.shake2`
+  key; `blockValue()` already falls through to the block's nominal figure when
+  `rotationOptionById` misses, which is the correct reading for a historical day.
+
+**pass 15 — the past**
+
+The app stores every day and shows you one. `allDays()` feeds the adjustment
+engine; the UI's only door to the past is the backfill button that appears when
+yesterday was left part-done.
+
+- **A date stepper on Today.** `‹ ›` beside the title, stepping `viewDate`
+  through recorded days. The plumbing exists — the backfill button already sets
+  `viewDate` and re-renders — so this is mostly guards: don't step past
+  `profile.startDate`, don't step into the future, and keep "Back to today".
+  Days outside the edit window render as they already do, with the existing
+  "This day is closed." line.
+- **An adherence dot strip.** One small dot per day over roughly six weeks,
+  coloured by that day's `intakeStatus`, with untouched days left blank. It shows
+  the clusters a single percentage averages away. Tapping a dot sets `viewDate`,
+  which is why it follows the stepper rather than leading it.
+- Placement is the open design question: under Today's checklist, or on Weight
+  above Trend. Decide it against the two screens side by side, as pass 10 did.
+
+**pass 16 — the week**
+
+Two readouts over data that is already computed and never shown. Both are pure
+reads — no new stored state, no schema implications.
+
+- **A weekly review card.** One completed plan week: average kcal/day, adherence
+  %, that week's weigh-in and its change from the week before, and whether the
+  4-week rolling average sat inside the 0.25–0.4 kg/wk band. `trend.js` already
+  exposes `weeklyWeights`, `weeklyGains`, `rollingGain` and `weeklyAdherence`.
+  This is reporting, not coaching — the adjustment engine keeps its own separate
+  suggestion card on Today, and the two must not start arguing with each other.
+- **The most-skipped block.** Count, across recorded days, how often each plan
+  block went unticked, and name the worst. `plan-spec.md` marks B2 as the highest
+  skip risk and the whole shake mechanism exists because liquid calories bypass
+  fullness — but the app never tells you whether that risk is materialising for
+  you. New maths, so it wants a small pure function next to `weeklyAdherence`
+  rather than a count inlined in a render.
+- Copy discipline per `insight_copy_states_facts` above. Both readouts are
+  descriptive; neither gets an exhortation.
+
+**pass 17 — the data round trip**
+
+The one repair pass. Export copies JSON to the clipboard **only**; import accepts
+a file **only**. There is no download and no paste-in, so the backup route the
+README points at — for iOS storage eviction, and for moving between the APK and
+the browser — cannot complete unless the user pastes the clipboard into a text
+editor and saves a `.json` by hand. `settings.js:421` even carries a comment
+claiming "the download still works"; no download path exists.
+
+- **Download JSON** as a second export action beside Copy JSON, and **Paste JSON**
+  as a second import route beside Choose file. Either half of the round trip then
+  completes on its own. Kill the stale comment.
+- **Backup freshness** — Settings shows when data was last exported, with a quiet
+  line once it goes stale. The timestamp is device state, not user data: it must
+  live outside the export envelope, the way `wgt:update` already does
+  (`backup.js` explains that omission). Bundling it would make an imported backup
+  claim you had just exported on the receiving device.
+- **A snapshot before import and reset.** One slot holding the pre-change
+  envelope, offering a single undo, cleared once taken. These are the only two
+  destructive actions in the app and both are currently one tap past a confirm.
+  Note the storage cost — it briefly doubles the footprint — so it is one slot,
+  not a history.
+
+**pass 18 — small platform**
+
+Three independent items, none large enough to carry a pass alone.
+
+- **The time-of-day cue.** `plan-spec.md` gains a `times:` block with a nominal
+  time per block (breakfast ~08:00, shake ~11:00, lunch ~13:30, snack ~16:00, 2nd
+  shake ~17:00, dinner ~19:30, pre-bed ~22:00); `plan.js` transcribes it as a
+  `time` on each entry. Today marks the block due now and lets passed ones
+  recede, turning six identical rows into a list that says where you are in the
+  day. Weight and typography only — no red row, no "overdue".
+- **Manifest shortcuts.** Long-press the icon for "Log weight" / "Today". A few
+  lines in `manifest.json`, but `app.js` has no history API and always opens on
+  Today, so a shortcut needs a landing route: read a `?tab=` param in `route()`
+  and set `activeTab` before `renderShell()`.
+- **lb / stone display.** Height already toggles cm ↔ ft/in; weight is kg-only
+  end to end. Follow the `heightCm` / `heightUnit` discipline exactly — kg stays
+  the stored unit, `profile.weightUnit` records how to render it, and the
+  conversion is display-side. This touches `welcome.js`, every kg readout on
+  Weight, the entry field's validation copy, and the chart's axis, so it is the
+  largest of the three.
+
+**pass 19 — dark mode**
+
+Last on purpose: it has to cover everything the five passes above add, and doing
+it earlier means doing it twice.
+
+- `tokens.css` already carries a `--night-*` palette, used by the About block —
+  that is the starting point, not the finished set. The work is a token pass, not
+  per-component overrides.
+- Default to the system preference via `prefers-color-scheme`, with an explicit
+  override in Settings for people whose OS setting doesn't match how they use the
+  app at night. Stored on the profile, so the merge-over-defaults rule covers it.
+- The `theme_color` in `manifest.json` and the meta tag in `index.html` both need
+  a dark counterpart, or the standalone window keeps a cream chrome around a dark
+  app.
+- The About block is the trap. It uses `--surface-dark` **as a contrast device** —
+  a dark panel on a cream page. In dark mode that contrast evaporates and it
+  becomes an invisible box, so it needs a deliberate re-think rather than a token
+  swap. `app.css:1477` says as much about its intent.
+- Honour `prefers-reduced-motion` on any theme transition, matching pass 4b.
+
+**pass 20 — the 1.6 release**
+
+Same shape as pass 13, and the same trap: a new module missing from the precache
+list is the failure that only shows up offline.
+
+- Version bump to **1.6.0** in the places 1.5 documented:
+  `src/js/core/appinfo.js` (`APP_VERSION`), `android/app/build.gradle.kts`
+  (`versionName` and `versionCode`), `desktop/src-tauri/tauri.conf.json`,
+  `desktop/src-tauri/Cargo.toml`, and the README status block.
+- `sw.js` — every module added by passes 14–19 into the precache list, and
+  `CACHE_NAME` bumped.
+- `schema wgt v1` is expected to stay put. No pass above bumps it: pass 14 leans
+  on the `blockValue()` fall-through, and every new profile field is covered by
+  `loadProfile()` merging over the defaults.
+- Tag `v1.6.0` and publish the Release; both workflows attach their build.
+- The Android PWA device check, if a device turns up.
+
+**Considered and left out of 1.6.** *Mark the rest done* (one tap to tick the
+remaining blocks) and a general *undo toast* were on the ballot and not taken.
+*CSV export* and a *merging import* were dropped in favour of repairing the
+round trip first — see `backup_round_trip` above. A *streak count* was dropped as
+the classic guilt mechanic the never-nag principle rules out. *Free-text day
+notes* conflict with the pass-9 decision against prose. A *7-day appetite strip*
+and a *read-only plan reference sheet* (the blocks, rotations and foods already
+in `plan.js`) were both raised and held: the reference sheet in particular
+overlaps the v2 grocery checklist and should be designed with it. A contextual
+*"you're short and it's late — add a shake"* nudge follows `plan-spec.md`'s own
+appetite tactic and would wire to the pass-8 add panel; held as the closest thing
+to a nag on the list.
 
 ## later
 
