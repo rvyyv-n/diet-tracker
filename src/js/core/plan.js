@@ -93,6 +93,9 @@ export const ROTATIONS = {
     { id: "D1", desc: "Egg curry (2 eggs) + lentil stew + flatbreads (2)", kcal: 700, proteinG: 37 },
     { id: "D2", desc: "Chicken or beef (100 g) + lentil stew + flatbreads (2)", kcal: 700, proteinG: 37 },
     { id: "D3", desc: "Chicken pilaf (1.5 cups) + yogurt (150 g)", kcal: 720, proteinG: 35 },
+    { id: "D4", desc: "Beef mince pasta (100 g) + tomato sauce + parmesan", kcal: 720, proteinG: 35 },
+    { id: "D5", desc: "Creamy chicken pasta (120 g chicken) + vegetables", kcal: 730, proteinG: 38 },
+    { id: "D6", desc: "Tuna pasta (1 can) + sweetcorn + olive oil", kcal: 720, proteinG: 40 },
   ],
   snack: [
     { id: "SN1", desc: "Yogurt (200 g) + dates (3) + almonds (15 g)", kcal: 290, proteinG: 11 },
@@ -105,6 +108,9 @@ export const ROTATIONS = {
     { id: "standard", desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + oats (25 g)", kcal: 580, proteinG: 22 },
     { id: "no_blender", desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + honey (1 tbsp)", kcal: 545, proteinG: 20 },
     { id: "heavy", desc: "Milk (400 ml) + peanut butter (2 tbsp) + banana + oats (40 g) + dates (3)", kcal: 790, proteinG: 27 },
+    // High-calorie mass shake — 2 bananas, 300 ml milk, 2 tbsp peanut butter,
+    // 45 g oats, 40 g almonds, 1 tbsp sugar, ice. Totals to ~1,050 kcal / ~32 g.
+    { id: "mass", desc: "Milk (300 ml) + 2 bananas + peanut butter (2 tbsp) + oats (45 g) + almonds (40 g) + sugar", kcal: 1050, proteinG: 32 },
   ],
 };
 

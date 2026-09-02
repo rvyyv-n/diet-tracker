@@ -49,7 +49,7 @@ import { todayISO, addDays, planWeek, daysBetween } from "./core/dates.js";
 const NUM = new Intl.NumberFormat("en-US"); // 1,890
 
 // The appetite check labels, in tap order. Keys are APPETITE_VALUES.
-const APPETITE_LABEL = { stuffed: "Stuffed", fine: "Fine", hungry: "Still hungry" };
+const APPETITE_LABEL = { stuffed: "Stuffed", fine: "Fine", hungry: "Hungry" };
 
 const STATUS_CLASS = {
   "on-track": "is-on-track",

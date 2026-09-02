@@ -469,7 +469,9 @@ the path this pass opens is 1.5 → v2 and onward.
 
 Trigger — **a manual tap, plus a hard 7-day check**:
 
-- A `Check for updates` row in Settings → About, tappable any time.
+- A `Check for updates` row on Settings, tappable any time. (Built inside the
+  About block; moved out in 1.5 to its own plain row beside "Reset all data",
+  with the network-honesty note kept in the About block.)
 - An automatic check at most once every 7 days, on launch. Fire-and-forget and
   off the first-render path, in the shape of `core/persist.js`.
 - State lives in its own `wgt:update` record (`lastCheckedAt`, `latestSeen`) and
@@ -480,7 +482,8 @@ Trigger — **a manual tap, plus a hard 7-day check**:
   error is not something the user did wrong: no error state, no retry loop, and
   leave `lastCheckedAt` unmoved so the next launch simply tries again.
 - Never a modal and never a launch interruption — the never-nag principle holds.
-  The result is a line in About and nothing more.
+  The result is a trailing word on the row (and, when there's an update, one
+  panel with a download / reload button) and nothing more.
 
 The check itself:
 

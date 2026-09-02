@@ -1445,11 +1445,12 @@
 }
 
 
-/* ------------------------------------------------------------- danger ---
-   A plain ink row under a divider — no red at rest. The confirm panel below
-   it carries the only red on the screen.                                     */
+/* ------------------------------------------------------- utility rows ---
+   Plain ink rows under a divider: "Check for updates" and "Reset all data".
+   No red at rest — the reset confirm panel carries the only red on the screen.
+   The update panel below its row reuses .set-panel.                          */
 
-.set2-danger {
+.set2-actions {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
@@ -1457,9 +1458,17 @@
   border-top: var(--border-width-hairline) solid var(--border-hairline);
 }
 
-.set2-danger .set2-row {
+.set2-actions .set2-row {
   padding-inline: 0;
   min-height: 48px;
+}
+
+/* the last-checked / "Up to date" / "vX available" word trailing the row */
+.set2-row__trail {
+  flex: none;
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 
@@ -1520,36 +1529,6 @@
 }
 .about2__link:active { color: var(--color-primary-active); text-decoration: underline; text-underline-offset: 3px; }
 .about2__link:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
-
-/* the "Check for updates" row (pass 12) — a quiet button with its status
-   trailing, plus one line of fine print beneath */
-.about2__update {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-sm);
-  width: 100%;
-  padding: 0;
-  font: var(--text-body-sm);
-  color: var(--color-primary);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.about2__update:active { color: var(--color-primary-active); }
-.about2__update:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
-
-.about2__update-status {
-  flex: none;
-  color: var(--text-on-dark-soft);
-  font-variant-numeric: tabular-nums;
-}
-
-.about2__fineprint {
-  font: var(--text-caption);
-  color: var(--text-on-dark-soft);
-}
 
 .about2__sep { color: var(--text-on-dark-soft); }
 

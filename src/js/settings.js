@@ -66,7 +66,7 @@ function render() {
     ),
     profileGroup(),
     dataGroup(),
-    dangerGroup(),
+    actionsGroup(),
     aboutBlock(),
   );
   section.addEventListener("click", onAction);
@@ -215,10 +215,39 @@ function importPanel() {
   );
 }
 
-function dangerGroup() {
+/**
+ * The two plain rows under a divider: "Check for updates" and "Reset all data".
+ * The update check is tappable any time and also runs on its own at most once a
+ * week from app.js; its trailing word comes from the stored wgt:update record,
+ * so it reads sensibly offline. When a newer release exists the panel below the
+ * row links to the right download (or, in the browser, a reload — the service
+ * worker already has it). The honest note about the one network request lives
+ * in the About block below.
+ */
+function actionsGroup() {
+  const status = updateStatus();
+  let trail;
+  if (updatePhase === "checking") trail = "Checking…";
+  else if (updatePhase === "error") trail = "Try later";
+  else if (status.kind === "unknown") trail = "";
+  else if (status.kind === "current") trail = "Up to date";
+  else trail = `${status.version} available`;
+
   return el(
     "div",
-    { class: "set2-danger" },
+    { class: "set2-actions" },
+    el(
+      "button",
+      { class: "set2-row", type: "button", "data-act": "update-check" },
+      el("span", { class: "set2-row__icon", "aria-hidden": "true" }, icon("refresh-cw")),
+      el(
+        "span",
+        { class: "set2-row__body" },
+        el("span", { class: "set2-row__name" }, "Check for updates"),
+      ),
+      trail ? el("span", { class: "set2-row__trail" }, trail) : null,
+    ),
+    status.kind === "available" ? updatePanel(status) : null,
     el(
       "button",
       { class: "set2-row", type: "button", "data-act": "reset-open" },
@@ -230,6 +259,35 @@ function dangerGroup() {
       ),
     ),
     confirming ? resetConfirm() : null,
+  );
+}
+
+function updatePanel(status) {
+  let action;
+  if (detectBuild() === "web") {
+    action = el(
+      "button",
+      { class: "btn btn--primary", type: "button", "data-act": "update-reload" },
+      "Reload to update",
+    );
+  } else if (status.downloadUrl) {
+    action = el(
+      "a",
+      { class: "btn btn--primary", href: status.downloadUrl, target: "_blank", rel: "noopener" },
+      `Download ${status.version}`,
+    );
+  } else if (status.releaseUrl) {
+    action = el(
+      "a",
+      { class: "btn btn--primary", href: status.releaseUrl, target: "_blank", rel: "noopener" },
+      "Open the release page",
+    );
+  }
+  return el(
+    "div",
+    { class: "set-panel" },
+    el("p", { class: "set-panel__body" }, `${status.version} is available.`),
+    action ? el("div", { class: "set-panel__actions" }, action) : null,
   );
 }
 
@@ -265,12 +323,11 @@ function aboutBlock() {
       el("p", { class: "about2__name" }, `${APP_NAME} · v${APP_VERSION}`),
       el("p", { class: "about2__schema" }, `schema wgt v${SCHEMA_VERSION}`),
     ),
-    updatesRow(),
     el(
       "div",
       { class: "about2__group" },
       el("p", { class: "about2__line" }, "Everything stays on this device."),
-      el("p", { class: "about2__line" }, "No accounts. The only network request is the update check below."),
+      el("p", { class: "about2__line" }, "No accounts. The only network request is the update check, and it sends nothing about you."),
     ),
     el(
       "p",
@@ -278,67 +335,6 @@ function aboutBlock() {
       el("a", { class: "about2__link", href: REPO_URL, target: "_blank", rel: "noopener" }, "Source on GitHub"),
       el("span", { class: "about2__sep", "aria-hidden": "true" }, "·"),
       el("span", { class: "about2__sig" }, "@rvyyv-n"),
-    ),
-  );
-}
-
-/**
- * The "Check for updates" row in About. Tappable any time; also runs on its own
- * at most once a week from app.js. The status line is derived from the stored
- * wgt:update record, so it shows a sensible last-known state offline. When a
- * newer release exists it links straight to the right download for this build
- * (or, in the browser, offers a reload — the service worker has the update).
- */
-function updatesRow() {
-  const status = updateStatus();
-  let statusText;
-  let action = null;
-
-  if (updatePhase === "checking") {
-    statusText = "Checking…";
-  } else if (updatePhase === "error") {
-    statusText = "Couldn’t reach GitHub — try later";
-  } else if (status.kind === "unknown") {
-    statusText = "Not checked yet";
-  } else if (status.kind === "current") {
-    statusText = "Up to date";
-  } else {
-    statusText = `${status.version} available`;
-    if (detectBuild() === "web") {
-      action = el(
-        "button",
-        { class: "about2__link", type: "button", "data-act": "update-reload" },
-        "Reload to finish updating",
-      );
-    } else if (status.downloadUrl) {
-      action = el(
-        "a",
-        { class: "about2__link", href: status.downloadUrl, target: "_blank", rel: "noopener" },
-        `Download ${status.version}`,
-      );
-    } else if (status.releaseUrl) {
-      action = el(
-        "a",
-        { class: "about2__link", href: status.releaseUrl, target: "_blank", rel: "noopener" },
-        "Open the release page",
-      );
-    }
-  }
-
-  return el(
-    "div",
-    { class: "about2__group" },
-    el(
-      "button",
-      { class: "about2__update", type: "button", "data-act": "update-check" },
-      el("span", {}, "Check for updates"),
-      el("span", { class: "about2__update-status" }, statusText),
-    ),
-    action,
-    el(
-      "p",
-      { class: "about2__fineprint" },
-      "Asks GitHub for the latest release version. No account, nothing sent about you.",
     ),
   );
 }
