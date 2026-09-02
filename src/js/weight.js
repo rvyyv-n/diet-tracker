@@ -354,15 +354,32 @@ function historyRow(w, kgDelta) {
     "div",
     { class: "weight__row" },
     el("span", { class: "weight__row-wk" }, `Week ${w.week}`),
-    el("span", { class: "weight__row-date" }, humanDate(w.date)),
-    el("span", { class: "weight__row-kg" }, formatWeight(w.kg, unit)),
     el(
       "span",
-      { class: "weight__row-delta" },
-      kgDelta == null ? "" : formatWeightDelta(kgDelta, unit),
+      { class: "weight__row-main" },
+      el("span", { class: "weight__row-date" }, humanDate(w.date)),
+      kgDelta == null
+        ? null
+        : el(
+            "span",
+            { class: `weight__row-delta is-${deltaDir(kgDelta)}` },
+            formatWeightDelta(kgDelta, unit),
+          ),
     ),
+    el("span", { class: "weight__row-kg" }, formatWeight(w.kg, unit)),
     pen,
   );
+}
+
+/**
+ * Direction of a week-over-week change, for colour only. Gain is the goal here
+ * (the plan builds weight), so a rise reads green and a drop red; a flat week
+ * stays neutral. A hair of tolerance keeps rounding noise off "flat".
+ */
+function deltaDir(kgDelta) {
+  if (kgDelta > 0.005) return "gain";
+  if (kgDelta < -0.005) return "loss";
+  return "flat";
 }
 
 function historyRowEditor(w) {

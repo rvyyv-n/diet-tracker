@@ -402,11 +402,15 @@ function renderForm(profile) {
     el(
       "section",
       { class: "screen" },
-      el("h1", { class: "screen__title" }, editing ? "Edit profile" : "Set up your plan"),
       el(
-        "p",
-        { class: "screen__intro" },
-        "The numbers the plan adjusts from. They stay on this device.",
+        "div",
+        { class: "screen-head screen-head--setup" },
+        el("h1", { class: "screen__title" }, editing ? "Edit profile" : "Set up your plan"),
+        el(
+          "p",
+          { class: "screen__intro" },
+          "The numbers the plan adjusts from. They stay on this device.",
+        ),
       ),
       undoLine,
       form,

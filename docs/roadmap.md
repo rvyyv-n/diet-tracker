@@ -26,19 +26,28 @@ insight_copy_states_facts:
 
 ## 1.6 — Active Build Passes
 
-Pass 18 is done — see `CHANGELOG.md`.
+Passes 14–20 are built — see `CHANGELOG.md`. Pass 19 (dark mode) shipped
+`prefers-color-scheme` + a `[data-theme]` override, `profile.themePref`, the
+Appearance toggle, and the About-block refactor. Pass 20 bumped the version to
+`1.6.0` across the five files and refreshed the `sw.js` precache
+(`CACHE_NAME` → `rise-v13`); `schema wgt v1` is unchanged.
 
-**Pass 19 — Dark Mode**
-- [ ] Implement `prefers-color-scheme` via `tokens.css` `--night-*` palette.
-- [ ] Add settings override stored on the user profile.
-- [ ] Add dark `theme_color` counterparts to `manifest.json` and `index.html`.
-- [ ] Refactor the Settings "About block" — remove the `--surface-dark` contrast device and ensure true dark mode visibility.
-- [ ] Honour `prefers-reduced-motion` for theme transitions.
+A review pass after 20 also landed: the Today adherence strip moved above the
+header and shrank to 7 days with a calendar popover for older days; the current
+block is now marked by a coral row edge instead of an inline "now" label (that
+edge moved off the shake); the setup form title matches the tab-screen titles;
+and the Weight history rows stack the week-over-week change under the date,
+colour-coded by direction.
 
-**Pass 20 — The 1.6 Release**
-- [ ] Bump version to `1.6.0` in `appinfo.js`, `build.gradle.kts`, `tauri.conf.json`, `Cargo.toml`, and `README.md`.
-- [ ] Add all new modules to `sw.js` `PRECACHE_URLS` and bump `CACHE_NAME`.
-- [ ] *Note: `schema wgt v1` remains unchanged.*
+Manifest note: `manifest.json` has no per-scheme `theme_color` field, so the
+dark counterpart lives only in `index.html` (media-scoped `<meta>` tags); the
+manifest keeps the light value.
+
+Remaining — owner actions:
+- [ ] Fast-forward `main` to `release-1.6`, tag `v1.6.0`, publish the Release
+  (triggers the APK + installer builds).
+- [ ] Verify the in-app update check against the real `v1.6.0` tag once it
+  exists.
 
 ## Not doing (1.6)
 
@@ -72,6 +81,7 @@ without a reason that wasn't already weighed:
   - Re-introduce `src/js/data/food-source.js` as an async seam when the network path is needed.
 - [ ] **Configurable overview metrics:** Allow users to add/remove/hide readouts on the daily total (e.g., toggling the protein line).
 - [ ] **Desktop layout:** Implement a purpose-built wide-screen native layout (side nav, all three screens laid out together). Must be a deliberate structural design pass, not just media queries bolted onto the mobile CSS.
+- [ ] **Motion polish via [reactbits.dev](https://reactbits.dev):** pull in a few of its components — transitions, animations, small effects — to make the app feel nicer. Subtle, not showy. The app is vanilla ES modules today, so this rides on whatever build/framework v2 lands on (or the effects get ported), and it should be scoped per surface during the redesign rather than sprayed everywhere.
 
 ## resuming on another machine
 `git clone`, then serve the folder over http (`python -m http.server`). `file://` breaks ES-module imports. 

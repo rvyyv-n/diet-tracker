@@ -566,9 +566,11 @@
   overflow: hidden;
 }
 
-/* B2 — the shake is the highest skip risk (plan-spec.md), so it carries a
-   coral edge the other rows don't. */
-.block-row--shake {
+/* The block whose nominal time has most recently passed — today only. The coral
+   edge says "you're here now"; it replaces the inline "now" label, which crowded
+   the block name off a 390px row. (This edge used to flag B2, the shake, as the
+   highest skip risk — that treatment was dropped for this one.) */
+.block-row--now {
   border-color: var(--color-primary);
   border-left-width: 3px;
 }
@@ -624,13 +626,18 @@
 
 .block-row__name {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: var(--space-xs);
   min-width: 0;
   font: var(--text-title-sm);
   color: var(--text-ink);
-  white-space: nowrap;
+}
+/* Only the name itself clips — the time chip after it keeps its width so it
+   can't be the thing that gets cut. */
+.block-row__label {
+  min-width: 0;
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 
@@ -645,19 +652,16 @@
 .block-row.is-done .block-row__name { color: var(--text-muted); }
 .block-row.is-done .block-row__desc { text-decoration: line-through; }
 
-/* time-of-day cue (pass 18) — a small nominal time ahead of the block name.
-   The current block reads "now" in coral instead; blocks whose time has passed
-   dim a little. Typography only — no red, nothing that reads as "overdue". */
+/* time-of-day cue (pass 18) — a small nominal time after the block name. The
+   current block is picked out by a coral edge (block-row--now), not a word
+   here; blocks whose time has passed dim a little. Typography only — no red,
+   nothing that reads as "overdue". */
 .block-row__time {
   flex: none;
   font: var(--text-caption);
   font-weight: var(--weight-regular);
   color: var(--text-muted-soft);
   font-variant-numeric: tabular-nums;
-}
-.block-row__time.is-now {
-  color: var(--color-primary);
-  font-weight: var(--weight-medium);
 }
 .block-row--past:not(.is-done) { opacity: 0.62; }
 
@@ -886,6 +890,33 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
+}
+
+/* label left, the "older days" calendar trigger right — same shape as the
+   weigh-in date row on Weight. */
+.daystrip__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.daystrip__head .cal {
+  flex: none;
+}
+.daystrip__head .cal__trigger {
+  width: auto;
+  height: auto;
+  padding: 4px var(--space-xs);
+  font: var(--text-body-sm);
+}
+.daystrip__head .cal__value {
+  flex: none;
+  overflow: visible;
+}
+/* the trigger hugs the right edge, so open the panel leftward from there */
+.daystrip__head .cal__panel {
+  left: auto;
+  right: 0;
 }
 
 .daystrip__row {
@@ -1245,12 +1276,13 @@
 }
 .weight__row:first-of-type { border-top: none; }
 
-/* per-row pencil — edits that week's reading in place */
+/* per-row pencil — edits that week's reading in place. Coral, so the one
+   interactive thing on an otherwise static row reads as tappable. */
 .weight__row-edit {
   align-self: center;
   display: inline-flex;
   padding: 4px;
-  color: var(--text-muted-soft);
+  color: var(--color-primary);
   background: transparent;
   border: none;
   border-radius: var(--radius-sm);
@@ -1275,6 +1307,14 @@
   font: var(--text-caption);
   color: var(--text-muted);
 }
+/* date over its week-over-week change, stacked — the change used to sit in its
+   own column and made the read row a cramped four-across grid at 390px. */
+.weight__row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
 .weight__row-date {
   font: var(--text-body-sm);
   color: var(--text-muted);
@@ -1284,13 +1324,15 @@
   color: var(--text-ink);
   font-variant-numeric: tabular-nums;
 }
+/* the change from the previous weigh-in, colour-coded by direction: gain is the
+   plan's goal so it reads green, a drop reads red, a flat week stays neutral. */
 .weight__row-delta {
-  min-width: 3ch;
-  text-align: right;
-  font: var(--text-body-sm);
+  font: var(--text-caption);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
+.weight__row-delta.is-gain { color: var(--status-success); }
+.weight__row-delta.is-loss { color: var(--status-error); }
 
 
 /* ============================================================================
@@ -1764,10 +1806,11 @@
 
 
 /* ---------------------------------------------------------- suggestion ---
-   Was a 3px coral left edge — but so is .block-row--shake, and the two could
-   appear together carrying different meanings. The shake keeps the edge; the
-   suggestion becomes a recessed panel, the treatment .rotation and .set-panel
-   already use for "something opened here". Coral now only appears on Apply.   */
+   Was a 3px coral left edge — but so is .block-row--now, and the two could
+   appear together carrying different meanings. The "now" row keeps the edge;
+   the suggestion becomes a recessed panel, the treatment .rotation and
+   .set-panel already use for "something opened here". Coral now only appears
+   on Apply.                                                                  */
 
 .suggestion {
   padding: var(--space-md);
@@ -1802,7 +1845,7 @@
 }
 
 .weight--v2 .weight__row {
-  grid-template-columns: 1fr auto auto auto;
+  grid-template-columns: 1fr auto auto;
   padding: var(--space-sm) var(--space-md);
   border-top-color: var(--border-hairline);
 }

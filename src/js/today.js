@@ -43,6 +43,7 @@ import {
   isDayEditable,
 } from "./core/day.js";
 import { getDay, putDay, allDays } from "./core/days.js";
+import { dateCalendar } from "./ui/date-calendar.js";
 import { allWeights } from "./core/weights.js";
 import { weeklyWeights, weeklyGains, rollingGain, weeklyAdherence } from "./core/trend.js";
 import { evaluate, applySuggestion } from "./core/adjust.js";
@@ -69,8 +70,10 @@ let viewDate;
 let openPicker = null;
 let addOpen = false; // the "add a block" panel under the checklist
 
-// How far back the adherence dot strip reaches — roughly six plan weeks.
-const STRIP_DAYS = 42;
+// How many days the adherence dot strip shows — the last week at a glance, up
+// near the header. Older days are reached through the calendar popover beside
+// it, not by growing this strip.
+const STRIP_DAYS = 7;
 
 export function renderToday(mountEl) {
   mount = mountEl;
@@ -120,11 +123,11 @@ function render() {
       "section",
       { class: "screen today" },
       dateHeader(profile, day, editable),
+      adherenceStrip(profile, day),
       suggestion ? suggestionCard(suggestion, profile) : null,
       totalCard(day),
       backfillPrompt(),
       checklist(day, editable),
-      adherenceStrip(profile, day),
       editable ? addBlockSection(day) : null,
       editable ? appetiteSection(day) : null,
     ),
@@ -270,11 +273,12 @@ function dateHeader(profile, day, editable) {
 }
 
 /**
- * A dot per day over roughly the last six weeks, coloured by that day's intake
- * status, with untouched days left blank. It surfaces the clusters a single
- * adherence percentage averages away. Tapping a dot views that day — it follows
- * the stepper, it doesn't lead it. Facts only: the dots reuse the intake-status
- * scale the day total already uses, with no separate "alarm" colour.
+ * A dot per day over the last week, coloured by that day's intake status, with
+ * untouched days left blank. It sits just under the header as a quick "how has
+ * the week gone" glance. Tapping a dot views that day; the calendar button
+ * beside the label reaches any older day (still read-only). Facts only: the
+ * dots reuse the intake-status scale the day total already uses, with no
+ * separate "alarm" colour.
  */
 function adherenceStrip(profile, viewedDay) {
   const today = todayISO();
@@ -289,10 +293,26 @@ function adherenceStrip(profile, viewedDay) {
   }
   if (dots.length < 2) return null;
 
+  // The "older days" route: a compact calendar popover, capped at today, seeded
+  // on the day currently in view. Picking a date just moves viewDate — the same
+  // thing a dot tap does.
+  const cal = dateCalendar({ value: viewedDay.date, max: today });
+  cal.onChange((iso) => {
+    viewDate = iso;
+    openPicker = null;
+    addOpen = false;
+    render();
+  });
+
   return el(
     "div",
     { class: "daystrip" },
-    el("p", { class: "group__label" }, "Last six weeks"),
+    el(
+      "div",
+      { class: "daystrip__head" },
+      el("span", { class: "group__label" }, "7 days"),
+      cal.node,
+    ),
     el(
       "div",
       { class: "daystrip__row" },
@@ -327,7 +347,7 @@ function totalCard(day) {
   const blockWord = blocksLeft === 1 ? "block" : "blocks";
 
   let remaining;
-  if (blocksLeft === 0 && toGo === 0) remaining = "All blocks done.";
+  if (blocksLeft === 0 && toGo === 0) remaining = "All done.";
   else if (toGo === 0) remaining = `Target met · ${blocksLeft} ${blockWord} left`;
   else remaining = `${NUM.format(toGo)} kcal to go · ${blocksLeft} ${blockWord} left`;
 
@@ -501,17 +521,13 @@ function blockRow(day, block, editable, bonus = false, timeState = "plain") {
   const done = Boolean(day.completed[block.id]);
   const kcal = blockValue(day, block.id).kcal;
   const pickerOpen = openPicker === block.id;
-  // The cue is a today-only affordance: "now" on the current block, the nominal
-  // time on the rest. Nothing on a past day being reviewed (timeState "plain"),
-  // and nothing for a hand-added bonus block with no time.
+  // The cue is a today-only affordance: the nominal time sits after the block
+  // name as a quiet chip. The current block used to read "now" here, but that
+  // word crowded the name off a phone row — it's marked by a coral edge on the
+  // row instead (block-row--now). Nothing on a past day being reviewed
+  // (timeState "plain"), and nothing for a hand-added bonus block with no time.
   const timeText =
-    timeState === "plain"
-      ? null
-      : timeState === "now"
-        ? "now"
-        : block.time
-          ? fmtTime(block.time)
-          : null;
+    timeState === "plain" || !block.time ? null : fmtTime(block.time);
 
   const main = el(
     "button",
@@ -533,14 +549,8 @@ function blockRow(day, block, editable, bonus = false, timeState = "plain") {
       el(
         "span",
         { class: "block-row__name" },
-        timeText
-          ? el(
-              "span",
-              { class: `block-row__time${timeState === "now" ? " is-now" : ""}` },
-              timeText,
-            )
-          : null,
-        block.name,
+        el("span", { class: "block-row__label" }, block.name),
+        timeText ? el("span", { class: "block-row__time" }, timeText) : null,
         bonus ? el("span", { class: "block-row__tag" }, "bonus") : null,
       ),
       el("span", { class: "block-row__desc" }, resolveDesc(day, block)),
@@ -598,7 +608,7 @@ function blockRow(day, block, editable, bonus = false, timeState = "plain") {
         (done ? " is-done" : "") +
         (bonus ? " block-row--bonus" : "") +
         (timeState === "past" ? " block-row--past" : "") +
-        (block.id === "B2" ? " block-row--shake" : ""),
+        (timeState === "now" ? " block-row--now" : ""),
     },
     el("div", { class: "block-row__lead" }, main, swap, drop),
     block.rotation && pickerOpen && editable ? rotationPicker(day, block) : null,
