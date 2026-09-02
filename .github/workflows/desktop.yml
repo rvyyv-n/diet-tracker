@@ -7,15 +7,14 @@ name: Desktop (Windows)
 # touching the app or the desktop project, on demand, and on publishing a
 # GitHub Release (where it attaches the installer as a release asset).
 on:
+  # Only native-project changes smoke-test the build on push. A JS/CSS-only
+  # change doesn't need a full Rust rebuild here — it ships through Pages, and
+  # the next release build picks it up via sync-desktop-assets.sh.
   push:
     branches: [main]
     paths:
       - "desktop/**"
-      - "src/**"
-      - "index.html"
-      - "manifest.json"
-      - "sw.js"
-      - "assets/**"
+      - "assets/icon.svg"
       - ".github/workflows/desktop.yml"
   workflow_dispatch: {}
   release:
@@ -62,6 +61,13 @@ jobs:
       - name: Sync the web app into desktop/dist
         run: bash desktop/scripts/sync-desktop-assets.sh
 
+      - name: Clear any stale bundle output from the restored cache
+        # The Cargo cache includes desktop/src-tauri/target, so a previous
+        # release's installer (named from its version) can be restored into
+        # bundle/nsis/ and then swept up by the glob below. Wipe it so only
+        # this build's installer is uploaded / attached.
+        run: rm -rf desktop/src-tauri/target/release/bundle
+
       - name: Build the installer
         working-directory: desktop/src-tauri
         run: cargo tauri build
@@ -70,10 +76,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rise-windows-installer
-          path: desktop/src-tauri/target/release/bundle/nsis/*.exe
+          path: desktop/src-tauri/target/release/bundle/nsis/Rise_*_x64-setup.exe
 
       - name: Attach the installer to the GitHub Release
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: desktop/src-tauri/target/release/bundle/nsis/*.exe
+          files: desktop/src-tauri/target/release/bundle/nsis/Rise_*_x64-setup.exe

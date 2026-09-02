@@ -315,21 +315,21 @@ well-trodden ground, so this wasn't held up waiting on a device.
   Deferred out of v1.0.0 as non-blocking; carried into 1.5 as a release chore,
   still non-blocking. Do this when a device's in hand.
 
-## 1.5 — planned
+## 1.5 — built, beta out
 
 The incremental release after v1. Numbered **1.5**, not 1.1, to keep the version
 line clean; v2 is the whole-number jump for the bulk redesign. Character: small
-features and a design-polish pass, owner-driven. Everything below lands on the
-`release-1.5` branch and merges to `main` in one go at release time.
+features and a design-polish pass, owner-driven.
 
-**Build status.** Passes 8–12 are built on `release-1.5`. Pass 12 shipped as the
-deep-link floor only — the two in-place updaters (Tauri updater plugin, Android
-FileProvider install) were deliberately left out; see that pass. Pass 13's code
-prep is done (version bumped to 1.5.0 in `core/appinfo.js`,
-`android/app/build.gradle.kts`, `desktop/src-tauri/tauri.conf.json` and the
-README; `sw.js` precache list extended and `CACHE_NAME` → `rise-v11`). Still
-open, all owner actions: merge to `main`, tag `v1.5.0`, publish the Release, and
-verify the update check against the real `v1.5.0` tag from an installed build.
+**Status.** Passes 8–13 are built and merged to `main`. Deployed to Pages and cut
+as the prerelease **`v1.5.0-beta.1`** (APK + Windows installer attached, black
+icon). Pass 12 shipped as the deep-link floor only — the two in-place updaters
+(Tauri updater plugin, Android FileProvider install) were left out on purpose;
+see that pass. Still open before the final `v1.5.0`: verify the update check
+against a real `v1.5.0` tag from an installed build, and the Android PWA device
+check below (non-blocking). The `v1.5.0-beta.1` prerelease is kept as a
+historical artifact — a prerelease is excluded from `releases/latest`, so it
+never reaches the update check.
 
 **Decisions taken up front.** Settled with the user before these passes were
 written — implement them, don't reopen.
@@ -547,6 +547,12 @@ them.
 
 **pass 13 — the 1.5 release**
 
+*Done as a beta: passes 8–13 merged to `main`, deployed to Pages, cut as
+`v1.5.0-beta.1` (prerelease). The `desktop/src-tauri/Cargo.toml` version was
+synced to 1.5.0 too, and `desktop.yml` was fixed to clear stale bundle output
+before building (a cached older installer was being swept into the release by
+the `*.exe` glob). Left for the final `v1.5.0`: the real-tag verification below.*
+
 - Version bump to **1.5.0** in all four places it is written:
   `src/js/core/appinfo.js` (`APP_VERSION` — the single JS source of truth since
   pass 12; feeds the About block and the update compare), and it replaced the
@@ -557,10 +563,10 @@ them.
 - `sw.js` — add every new module to the precache list (passes 11 and 12 each add
   at least one) and bump `CACHE_NAME` past `rise-v10`. A new file missing from
   that list is the failure that only shows up offline.
-- If the Tauri updater went in (pass 12), `desktop.yml` has to sign and attach
-  the `.nsis.zip` + `.sig` alongside the setup.exe, and the update manifest has
-  to be published before the Release is — an installed copy polls it, so a
-  manifest that lags the tag is a broken update for the window in between.
+- The Tauri updater did **not** go in (pass 12 shipped the deep-link floor), so
+  `desktop.yml` attaches only the `setup.exe`. If the updater is added later,
+  it also has to sign and attach the `.nsis.zip` + `.sig` and publish the update
+  manifest before the Release.
 - **Verify the update check against the real tag**, from an installed 1.5 build,
   before calling the release done. This is the one thing that cannot be repaired
   after the fact: if 1.5 can't see v1.5.0, it won't see v2 either.

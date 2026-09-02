@@ -6,16 +6,17 @@
 Screen" (mobile) or "Install app" (desktop) for the standalone, offline PWA.
 
 ```
-status: v1.0.0 released · 1.5 built on `release-1.5`, not yet cut
+status: v1.0.0 released · 1.5 on main, out as the v1.5.0-beta.1 prerelease
 built:  today checklist + phase ladder, weight trend + adjustment engine,
         settings/about, json export/import, pwa shell (installable, offline),
         durable storage, deployed to github pages, android apk, windows
         installer
 1.5:    manual add-on / bonus blocks + drop-a-block on today, one-tap daily
-        appetite check, first-run intro splash, header polish, in-app update
-        check (deep-link floor: apk/installer get a link to the next release,
-        no in-place install yet)
-next:   cut the 1.5 release; android pwa install check on a device (non-blocking)
+        appetite check, first-run intro splash, header polish, black app icon,
+        in-app update check (deep-link floor: apk/installer get a link to the
+        next release, no in-place install yet)
+next:   verify the update check against a real v1.5.0 tag, then cut v1.5.0;
+        android pwa install check on a device (non-blocking)
 ```
 
 ## the idea

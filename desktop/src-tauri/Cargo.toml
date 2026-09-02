@@ -1,6 +1,8 @@
 [package]
 name = "rise"
-version = "1.0.0"
+# Keep in step with `version` in tauri.conf.json (Tauri reads the config one for
+# the installer; this one is here for Cargo's sake). A release bumps both.
+version = "1.5.0"
 description = "Rise: Diet Tracker — desktop shell"
 edition = "2021"
 

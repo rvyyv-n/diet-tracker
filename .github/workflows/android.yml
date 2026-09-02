@@ -5,15 +5,14 @@ name: Android
 # the Android project, on demand, and on publishing a GitHub Release (where
 # it attaches the signed APK as a release asset).
 on:
+  # Only native-project changes smoke-test the build on push. A JS/CSS-only
+  # change doesn't need a full APK rebuild here — it ships through Pages, and
+  # the next release build copies the current web tree into assets/ anyway.
   push:
     branches: [main]
     paths:
       - "android/**"
-      - "src/**"
-      - "index.html"
-      - "manifest.json"
-      - "sw.js"
-      - "assets/**"
+      - "assets/icon.svg"
       - ".github/workflows/android.yml"
   workflow_dispatch: {}
   release:
