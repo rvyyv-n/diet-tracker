@@ -611,8 +611,9 @@ reasons: it is roughly the size of passes 8–13 again, which is not what "small
 features and a design-polish pass" meant; and holding 1.5 open to fit it would
 leave the update check unverified against a real tag for the whole of that time.
 
-**Status.** Pass 14 (rotations) and pass 15 (the past — date stepper + adherence
-dot strip on Today) are built on `release-1.6`. Passes 16–20 remain.
+**Status.** Passes 14–16 are built on `release-1.6`: rotations; the past (date
+stepper + adherence dot strip on Today); and the week (a weekly review card and
+a most-skipped-block readout, both on Weight, above Trend). Passes 17–20 remain.
 
 Character: nothing here is a new capability. Every pass either removes a daily
 tap, exposes data the app already stores but never shows, or repairs something

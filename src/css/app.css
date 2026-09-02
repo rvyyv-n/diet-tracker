@@ -359,6 +359,20 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* weekly review card (pass 16) — the week-over-week change tucked after the
+   weigh-in figure, and a muted all-time fact under a hairline. Descriptive
+   only: no colour used as an alarm here. */
+.review__delta {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.review__note {
+  padding-top: var(--space-sm);
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+
 
 /* ------------------------------------------------------- intake status ---
    The deliberate weight-gain inversion (tokens.css / docs/design-system.md):

@@ -10,11 +10,20 @@ import { el } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { dateCalendar } from "./ui/date-calendar.js";
 import { loadProfile } from "./core/profile.js";
-import { TARGET_RATE_KG_PER_WEEK } from "./core/plan.js";
+import { TARGET_RATE_KG_PER_WEEK, blockById } from "./core/plan.js";
 import { todayISO, humanDate, planWeek } from "./core/dates.js";
 import { allWeights, getWeight, logWeight } from "./core/weights.js";
 import { allDays } from "./core/days.js";
-import { weeklyWeights, weeklyGains, rollingGain, weeklyAdherence } from "./core/trend.js";
+import {
+  weeklyWeights,
+  weeklyGains,
+  rollingGain,
+  weeklyAdherence,
+  weeklyKcal,
+  mostSkippedBlock,
+} from "./core/trend.js";
+
+const NUM = new Intl.NumberFormat("en-US"); // 2,565
 
 let mount;
 let editing = null; // ISO date of the history row being edited, or null
@@ -58,6 +67,7 @@ function render() {
       ),
       entryCard(),
       statsCard(latest, latestGain, thisWeekAdherence),
+      group("Weekly review", reviewCard(series, rolling, start)),
       group("Trend", chartCard(series)),
       group("History", historyCard(series)),
     ),
@@ -243,6 +253,80 @@ function statRow(key, value) {
     { class: "summary__row" },
     el("span", { class: "summary__key" }, key),
     el("span", { class: "summary__val" }, value),
+  );
+}
+
+/**
+ * A read of the last *completed* plan week: average intake, adherence, that
+ * week's weigh-in and its change from the week before, and whether the 4-week
+ * rolling pace sat in the 0.25–0.4 kg/wk band. All of it is already computed in
+ * trend.js and shown nowhere else. Reporting only — the adjustment engine keeps
+ * its own suggestion card on Today, and the two must not argue.
+ *
+ * A muted line beneath adds the most-skipped block across all recorded days.
+ * Both are descriptive per insight_copy_states_facts: no exhortation, no red.
+ */
+function reviewCard(series, rolling, start) {
+  const thisWeek = planWeek(start, todayISO());
+  const kcalSeries = weeklyKcal(allDays(), start);
+  const adhSeries = weeklyAdherence(allDays(), start);
+  const wk = kcalSeries.filter((k) => k.week < thisWeek).at(-1)?.week ?? null;
+
+  if (wk == null) {
+    return el(
+      "div",
+      { class: "card" },
+      el("p", { class: "screen__intro" }, "Your first full plan week will show its review here."),
+    );
+  }
+
+  const avgKcal = kcalSeries.find((k) => k.week === wk)?.avgKcal ?? null;
+  const pct = adhSeries.find((a) => a.week === wk)?.pct ?? null;
+  const wkWeight = series.find((s) => s.week === wk) ?? null;
+  const prevWeight = series.filter((s) => s.week < wk).at(-1) ?? null;
+  const delta = wkWeight && prevWeight ? round2(wkWeight.kg - prevWeight.kg) : null;
+  const roll = rolling.find((r) => r.week === wk)?.avgKgPerWeek ?? null;
+  const band = TARGET_RATE_KG_PER_WEEK;
+  const inBand = roll == null ? null : roll >= band.min && roll <= band.max;
+
+  return el(
+    "div",
+    { class: "card summary" },
+    statRow("Week", `${wk}`),
+    statRow("Average intake", avgKcal == null ? "—" : `${NUM.format(avgKcal)} kcal/day`),
+    statRow("Adherence", pct == null ? "—" : `${pct}%`),
+    statRow(
+      "Weigh-in",
+      wkWeight == null
+        ? "—"
+        : el(
+            "span",
+            {},
+            `${wkWeight.kg} kg`,
+            delta == null
+              ? null
+              : el("span", { class: "review__delta" }, ` (${delta >= 0 ? "+" : ""}${delta})`),
+          ),
+    ),
+    statRow(
+      "4-week pace",
+      roll == null
+        ? "—"
+        : el("span", { class: inBand ? "is-on-track" : "is-partial" }, `${roll.toFixed(2)} kg/wk`),
+    ),
+    skipNote(),
+  );
+}
+
+/** The block skipped most across every recorded day — a fact, not a nag. */
+function skipNote() {
+  const worst = mostSkippedBlock(allDays());
+  if (!worst) return null;
+  const name = blockById(worst.blockId)?.name ?? worst.blockId;
+  return el(
+    "p",
+    { class: "review__note" },
+    `Most often skipped: ${name} — ${worst.missed} of ${worst.of} days it was on the plan.`,
   );
 }
 

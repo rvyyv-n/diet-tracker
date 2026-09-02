@@ -13,7 +13,8 @@
  */
 
 import { planWeek } from "./dates.js";
-import { dayTotals } from "./day.js";
+import { dayTotals, dayAddOns } from "./day.js";
+import { activeBlocks } from "./plan.js";
 
 const DEFAULT_WINDOW = 4;
 
@@ -80,6 +81,58 @@ export function weeklyAdherence(days, startISO) {
       pct: a.total ? Math.round((a.done / a.total) * 100) : 0,
       dayCount: a.dayCount,
     }));
+}
+
+/**
+ * Average calories per recorded day, per plan week. Mirrors weeklyAdherence:
+ * `days` is days.allDays(), weeks with no recorded day are omitted, and the
+ * kcal figure is dayTotals(day).kcal — completed blocks only, bonus blocks
+ * folded in the same way the day total shows them.
+ */
+export function weeklyKcal(days, startISO) {
+  const byWeek = new Map();
+  for (const day of days) {
+    const wk = planWeek(startISO, day.date);
+    const acc = byWeek.get(wk) ?? { kcal: 0, dayCount: 0 };
+    acc.kcal += dayTotals(day).kcal;
+    acc.dayCount += 1;
+    byWeek.set(wk, acc);
+  }
+  return [...byWeek.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([week, a]) => ({
+      week,
+      avgKcal: a.dayCount ? Math.round(a.kcal / a.dayCount) : 0,
+      dayCount: a.dayCount,
+    }));
+}
+
+/**
+ * The plan block skipped most across every recorded day: how many days it was
+ * on the plan but left unticked (`missed`), and how many days it was on the
+ * plan at all (`of`). Bonus blocks are ignored — they are never "expected".
+ * Returns null when nothing has ever been skipped. `days` is days.allDays().
+ *
+ * plan-spec.md marks B2 as the highest skip risk; this is the readout that
+ * says whether that risk is materialising for this user. A fact, per
+ * insight_copy_states_facts — the caller must not dress it as a verdict.
+ */
+export function mostSkippedBlock(days) {
+  const stat = new Map(); // blockId -> { missed, of }
+  for (const day of days) {
+    for (const block of activeBlocks(dayAddOns(day))) {
+      const s = stat.get(block.id) ?? { missed: 0, of: 0 };
+      s.of += 1;
+      if (!day.completed?.[block.id]) s.missed += 1;
+      stat.set(block.id, s);
+    }
+  }
+  let worst = null;
+  for (const [blockId, s] of stat) {
+    if (s.missed === 0) continue;
+    if (!worst || s.missed > worst.missed) worst = { blockId, missed: s.missed, of: s.of };
+  }
+  return worst;
 }
 
 function round2(n) {
