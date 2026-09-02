@@ -65,32 +65,16 @@ animations_last:
   decision: "motion polish and any component-framework adoption come last, after every feature phase"
   why: "effects applied to surfaces that aren't final have to be ported twice; keeping them last lets them be scoped per surface"
 design_export_gate:
-  decision: "no implementation begins until the owner supplies the full Claude Design export"
+  decision: "SATISFIED 2026-09-03 — but never invent a token value; anything the export marks PROPOSED needs sign-off before it is load-bearing"
   why: "design-system.md already forbids inventing tokens silently — building against assumed values is how the app drifts from the system"
 ```
 
 ### phase 0 — the design system
 
-Everything downstream renders through this, so it lands first. It is a
-**reconciliation, not a from-scratch build**: `src/css/tokens.css` is already
-324 lines carrying the base palette, semantic aliases, spacing, radii,
-elevation, a full type scale, motion tokens, and the `--night-*` dark ramp from
-pass 19. `docs/design-system.md` is a 75-line print-oriented summary whose
-"What's missing" list has largely been answered in code and never written back.
+**Pass 21 is done** — see `CHANGELOG.md`. The export landed, proved to be the
+same source system already implemented, and `design-system.md` now documents
+what ships. One pass remains before phase 4 is unblocked.
 
-- [x] **pass 21 — reconcile the doc to the code and the export.** *(done)* The
-  export arrived 2026-09-03 (`docs/design-export-prompt.md` is the prompt that
-  produced it) and proved to be the same source system: base palette, spacing,
-  radii, elevation, motion, font stacks and the whole display/title/body type
-  scale were byte-identical to `tokens.css`, so this was additive rather than a
-  rewrite. `design-system.md` rewritten around what ships, with a **deliberate
-  departures** table recording the six places Rise knowingly differs. Applied:
-  metric roles moved off mono to serif (hero) + sans (inline), which dropped
-  JetBrains Mono and 43KB of woff2 from the precache; `--text-link` coral-500 →
-  coral-700 (a live ~3.0:1 AA failure); `--icon-button-size` 36 → 44px; a
-  `--night-sunken` step; dark elevation re-expressed as outline + inner
-  highlight; and `--duration-entry` / `--transition-entry` for phase-2 sheets.
-  `sw.js` `CACHE_NAME` → `rise-v14`.
 - [ ] **pass 22 — close the genuine gaps.** Three things are truly missing
   rather than merely undocumented: **form controls** are not systematised,
   there is no documented **focus-visible** standard (51 interactive-state rules
