@@ -399,6 +399,41 @@
   padding-block: 0;
 }
 
+/* title + a step arrow either side, kept together as the date wraps. The row
+   above stays baseline-aligned so "Back to today" still sits on the title's
+   baseline; the arrows centre on the (much taller) serif via align-self. */
+.today__nav {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+}
+
+.today__step {
+  flex: none;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-height);
+  height: var(--control-height);
+  color: var(--text-muted);
+  background: transparent;
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.today__step:active { background: var(--surface-cream-strong); color: var(--color-primary); }
+.today__step:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.today__step:disabled {
+  color: var(--text-muted-soft);
+  border-color: var(--border-hairline-soft);
+  cursor: default;
+}
+.today__step svg { width: 18px; height: 18px; }
+
 .today__closed {
   width: 100%;
   font: var(--text-body-sm);
@@ -820,6 +855,45 @@
   font-weight: var(--weight-medium);
   border-color: var(--color-primary);
   background: rgba(204, 120, 92, 0.06);
+}
+
+/* adherence dot strip (pass 15) --------------------------------------------
+   One dot per day over ~6 weeks under the checklist, coloured by that day's
+   intake status; a day with nothing ticked stays blank. Tapping a dot views
+   that day. Not an alarm — same intake-status scale as the day total, no red
+   used as a warning beyond what that scale already means. */
+
+.daystrip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.daystrip__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.daystrip__dot {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  border-radius: var(--radius-pill);
+  background: var(--surface-cream-strong);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  cursor: pointer;
+  transition: var(--transition-control), transform 0.12s var(--ease-standard);
+}
+.daystrip__dot:active { transform: scale(0.82); }
+.daystrip__dot:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.daystrip__dot.is-on-track { background: var(--intake-on-track); border-color: transparent; }
+.daystrip__dot.is-partial { background: var(--intake-partial); border-color: transparent; }
+.daystrip__dot.is-low { background: var(--intake-low); border-color: transparent; }
+/* the day currently on screen — a ring in the canvas colour then a muted halo */
+.daystrip__dot.is-viewing {
+  box-shadow: 0 0 0 2px var(--surface-canvas), 0 0 0 3px var(--text-muted);
 }
 
 /* --------------------------------------------------- date controls ---

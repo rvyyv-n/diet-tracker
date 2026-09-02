@@ -22,6 +22,8 @@ import {
   phaseById,
   phaseTarget,
   rotationOptions,
+  defaultPhaseForWeek,
+  phaseAddOns,
   PHASES,
   ADDON_IDS,
 } from "./core/plan.js";
@@ -58,13 +60,17 @@ const STATUS_CLASS = {
 };
 
 // --- module state ----------------------------------------------------------
-// `viewDate` is the day on screen — today, unless the user tapped through to
-// backfill yesterday. `openPicker` is the block id whose rotation picker is
-// expanded, or null. Both reset on each renderToday() entry.
+// `viewDate` is the day on screen — today, unless the user stepped back with the
+// header arrows or the dot strip to look at (or backfill) an earlier day.
+// `openPicker` is the block id whose rotation picker is expanded, or null. All
+// reset on each renderToday() entry.
 let mount;
 let viewDate;
 let openPicker = null;
 let addOpen = false; // the "add a block" panel under the checklist
+
+// How far back the adherence dot strip reaches — roughly six plan weeks.
+const STRIP_DAYS = 42;
 
 export function renderToday(mountEl) {
   mount = mountEl;
@@ -77,16 +83,22 @@ export function renderToday(mountEl) {
 // --- data ----------------------------------------------------------------
 
 /**
- * The viewed day's record, or a fresh one at the profile's current phase +
- * add-ons. A fresh day's rotations are seeded from the last recorded day
- * (pass 14 — sticky rotations), not the hardcoded defaults, so most days need
- * no re-picking at all.
+ * The viewed day's record, or a fresh one. Rotations are seeded from the last
+ * recorded day (pass 14 — sticky rotations), not the hardcoded defaults, so
+ * most days need no re-picking. For a day that was never recorded, the phase is
+ * the default for *that day's* plan week rather than today's — stepping back to
+ * an unrecorded week-1 day should show the ramp-up blocks, not this week's.
  */
 function loadViewDay(profile) {
   const stored = getDay(viewDate);
   if (stored) return stored;
   const last = allDays().at(-1);
-  return newDay(viewDate, profile.currentPhaseId, profile.addOns, last?.rotations);
+  const today = todayISO();
+  if (viewDate === today) {
+    return newDay(today, profile.currentPhaseId, profile.addOns, last?.rotations);
+  }
+  const phaseId = defaultPhaseForWeek(planWeek(profile.startDate || viewDate, viewDate));
+  return newDay(viewDate, phaseId, phaseAddOns(phaseId), last?.rotations);
 }
 
 /** Persist a changed day, then repaint. */
@@ -112,10 +124,35 @@ function render() {
       totalCard(day),
       backfillPrompt(),
       checklist(day, editable),
+      adherenceStrip(profile, day),
       editable ? addBlockSection(day) : null,
       editable ? appetiteSection(day) : null,
     ),
   );
+}
+
+/**
+ * Move `viewDate` one day earlier or later, clamped to the plan start date and
+ * to today — history stays a read-only window (past days outside the edit
+ * window render exactly as they do now), and there is no stepping into the
+ * future. Closes any open picker / add panel so the new day starts clean.
+ */
+function stepDay(profile, delta) {
+  const start = profile.startDate || todayISO();
+  const next = addDays(viewDate, delta);
+  if (next < start || next > todayISO()) return;
+  viewDate = next;
+  openPicker = null;
+  addOpen = false;
+  render();
+}
+
+/** Jump straight back to today from any earlier day. */
+function backToToday() {
+  viewDate = todayISO();
+  openPicker = null;
+  addOpen = false;
+  render();
 }
 
 /**
@@ -192,7 +229,9 @@ function dismissSuggestion(suggestion, profile) {
 
 function phaseBanner(profile, day) {
   const phase = phaseById(day.phaseId);
-  const week = planWeek(profile.startDate || todayISO(), todayISO());
+  // The week of the day being viewed, not always today's — the stepper and the
+  // dot strip can put an earlier day on screen.
+  const week = planWeek(profile.startDate || day.date, day.date);
   const weekText = day.phaseId === 1 ? `Week ${week} of 2` : `Week ${week}`;
   return el("p", { class: "phase-banner" }, `${phase.name} · ${weekText}`);
 }
@@ -220,7 +259,24 @@ function phaseLadder(day) {
 }
 
 function dateHeader(profile, day, editable) {
-  const isToday = day.date === todayISO();
+  const today = todayISO();
+  const isToday = day.date === today;
+  const start = profile.startDate || today;
+  const atStart = day.date <= start;
+
+  const stepBtn = (dir, label, disabled) =>
+    el(
+      "button",
+      {
+        class: "today__step",
+        type: "button",
+        "aria-label": label,
+        disabled: disabled ? "" : null,
+        onclick: disabled ? null : () => stepDay(profile, dir),
+      },
+      icon(dir < 0 ? "chevron-left" : "chevron-right", { size: 20, stroke: 2 }),
+    );
+
   return el(
     "div",
     { class: "screen-head" },
@@ -228,29 +284,75 @@ function dateHeader(profile, day, editable) {
       "div",
       { class: "today__daterow" },
       el(
-        "h1",
-        { class: `screen__title screen__title--lg${isToday ? "" : " screen__title--date"}` },
-        isToday ? "Today" : longDate(day.date),
+        "div",
+        { class: "today__nav" },
+        stepBtn(-1, "Previous day", atStart),
+        el(
+          "h1",
+          { class: `screen__title screen__title--lg${isToday ? "" : " screen__title--date"}` },
+          isToday ? "Today" : longDate(day.date),
+        ),
+        stepBtn(1, "Next day", isToday),
       ),
       isToday
         ? null
         : el(
             "button",
-            {
-              class: "btn btn--text",
-              type: "button",
-              onclick: () => {
-                viewDate = todayISO();
-                openPicker = null;
-                render();
-              },
-            },
+            { class: "btn btn--text", type: "button", onclick: backToToday },
             "Back to today",
           ),
     ),
     phaseBanner(profile, day),
     phaseLadder(day),
     editable ? null : el("span", { class: "today__closed" }, "This day is closed."),
+  );
+}
+
+/**
+ * A dot per day over roughly the last six weeks, coloured by that day's intake
+ * status, with untouched days left blank. It surfaces the clusters a single
+ * adherence percentage averages away. Tapping a dot views that day — it follows
+ * the stepper, it doesn't lead it. Facts only: the dots reuse the intake-status
+ * scale the day total already uses, with no separate "alarm" colour.
+ */
+function adherenceStrip(profile, viewedDay) {
+  const today = todayISO();
+  const start = profile.startDate || today;
+  const dots = [];
+  for (let i = STRIP_DAYS - 1; i >= 0; i -= 1) {
+    const date = addDays(today, -i);
+    if (date < start) continue;
+    const rec = getDay(date);
+    const touched = rec && dayTotals(rec).done > 0;
+    dots.push({ date, status: touched ? intakeStatus(rec) : null });
+  }
+  if (dots.length < 2) return null;
+
+  return el(
+    "div",
+    { class: "daystrip" },
+    el("p", { class: "group__label" }, "Last six weeks"),
+    el(
+      "div",
+      { class: "daystrip__row" },
+      ...dots.map((d) =>
+        el("button", {
+          class:
+            "daystrip__dot" +
+            (d.status ? ` is-${d.status}` : " is-blank") +
+            (d.date === viewedDay.date ? " is-viewing" : ""),
+          type: "button",
+          "aria-label": d.status ? longDate(d.date) : `${longDate(d.date)} — no entry`,
+          "aria-current": d.date === viewedDay.date ? "date" : null,
+          onclick: () => {
+            viewDate = d.date;
+            openPicker = null;
+            addOpen = false;
+            render();
+          },
+        }),
+      ),
+    ),
   );
 }
 

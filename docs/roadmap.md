@@ -602,7 +602,7 @@ reliably give; recorded below as before.
 
 **After 1.5** — the QoL set in 1.6 below, then v2 for the bulk redesign.
 
-## 1.6 — planned
+## 1.6 — in progress
 
 The quality-of-life release. Scoped after the `v1.5.0-beta.1` beta by reading the
 roadmap and the README against what the mainstream trackers do, then picked from
@@ -610,6 +610,9 @@ a ballot by the user. Numbered **1.6** rather than folded into 1.5 for two
 reasons: it is roughly the size of passes 8–13 again, which is not what "small
 features and a design-polish pass" meant; and holding 1.5 open to fit it would
 leave the update check unverified against a real tag for the whole of that time.
+
+**Status.** Pass 14 (rotations) and pass 15 (the past — date stepper + adherence
+dot strip on Today) are built on `release-1.6`. Passes 16–20 remain.
 
 Character: nothing here is a new capability. Every pass either removes a daily
 tap, exposes data the app already stores but never shows, or repairs something
