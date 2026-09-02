@@ -671,8 +671,12 @@
      A3's "mass" shake option at 1,050 — without a floor, that one row's wider
      number eats into .block-row__body's space and crushes the name/desc
      column next to it (pass 14). tabular-nums keeps digits aligned inside
-     this width; the width itself has to be fixed for the same reason. */
-  min-width: 88px;
+     this width; the width itself has to be fixed for the same reason.
+     Re-measured for the sans metric face (pass 21): the old 88px was sized for
+     "1,050" in mono at 20px; the same string in Inter tabular at 16px is ~15px
+     narrower, and leaving the floor at 88 just hands that band back as dead
+     space in front of the name column this floor exists to protect. */
+  min-width: 72px;
   display: flex;
   align-items: baseline;
   justify-content: flex-end;
@@ -1256,7 +1260,8 @@
 .wc-axis { stroke: var(--border-hairline); stroke-width: 1; }
 .wc-label {
   fill: var(--text-muted-soft);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
   font-size: 10px;
   text-anchor: middle;
 }

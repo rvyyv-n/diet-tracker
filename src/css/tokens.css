@@ -26,8 +26,6 @@
 @font-face{font-family:"Newsreader";src:local("Newsreader"),url("../../assets/fonts/newsreader-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:"Inter";src:local("Inter"),url("../../assets/fonts/inter-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:"Inter";src:local("Inter Medium"),url("../../assets/fonts/inter-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
-@font-face{font-family:"JetBrains Mono";src:local("JetBrains Mono"),url("../../assets/fonts/jetbrains-mono-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"JetBrains Mono";src:local("JetBrains Mono Medium"),url("../../assets/fonts/jetbrains-mono-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
 
 
 :root{
@@ -48,6 +46,7 @@ color-scheme:light;
    floating-panel surface and two hairlines. Only the dark-theme alias block
    near the end of this file reads these. */
 --night-canvas:#171614;--night-soft:#1e1c19;--night-card:#232120;--night-strong:#2c2a26;--night-overlay:#262320;
+--night-sunken:#0f0e0d;
 --night-line:#34312c;--night-line-soft:#2a2723;
 --night-ink:#f7f5f0;--night-ink-strong:#e8e4dc;--night-ink-body:#d3cec4;--night-ink-muted:#9a968c;--night-ink-faint:#6f6b62;
 /* accents + status */
@@ -67,7 +66,10 @@ color-scheme:light;
 --text-muted:var(--ink-500);
 --text-muted-soft:var(--ink-400);
 --text-on-primary:var(--white);
---text-link:var(--coral-500);
+/* coral-500 as text measures ~3.0:1 on canvas and fails AA for normal-sized
+   text; coral-700 is ~4.7:1 and passes. Links are body-sized, so they take the
+   deep coral. Coral-500 stays correct as a FILL behind --text-on-primary. */
+--text-link:var(--coral-700);
 
 --surface-canvas:var(--cream-50);
 --surface-soft:var(--cream-100);
@@ -76,6 +78,9 @@ color-scheme:light;
 /* the surface a floating panel (listbox, calendar) sits on. Same as the canvas
    in light; the dark theme lifts it so a panel reads above the page. */
 --surface-overlay:var(--surface-canvas);
+/* a recessed well — search fields, code panels. The inverse of --surface-overlay:
+   that one lifts a panel off the page, this one presses a field into it. */
+--surface-sunken:var(--cream-250);
 
 --border-hairline:var(--cream-250);
 --border-hairline-soft:var(--cream-150);
@@ -125,7 +130,10 @@ color-scheme:light;
 --pad-callout:var(--space-xxl);
 --container-max:1200px;
 --control-height:40px;
---icon-button-size:36px;
+/* 36px in the source system, which its own readme admits is 'slightly under
+   WCAG 44'. Fine for a marketing page's decorative arrow; not for a one-handed
+   kitchen app. 36px is acceptable only in a mouse-driven desktop toolbar. */
+--icon-button-size:44px;
 
 /* APP LAYER — the source system is desktop/marketing and fixes controls at
    40px, below the 44px iOS / 48px Android minimum. This app is used one-handed
@@ -155,7 +163,11 @@ color-scheme:light;
 
 --font-serif-display:Copernicus,"Tiempos Headline",Newsreader,Georgia,"Times New Roman",serif;
 --font-sans:StyreneB,Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
---font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+/* No longer vendored. Numbers moved to the serif/sans metric roles, so the only
+   caller left is --text-code, for debug output this app does not currently
+   render. It falls back to the platform mono face; if a real code surface
+   ever appears, re-vendor the woff2 and re-add it to sw.js PRECACHE_URLS. */
+--font-mono:ui-monospace,SFMono-Regular,"JetBrains Mono",Menlo,monospace;
 
 --weight-regular:400;--weight-medium:500;
 
@@ -193,9 +205,15 @@ color-scheme:light;
 --text-button:var(--weight-medium) var(--type-button-size)/var(--type-button-line) var(--font-sans);
 --text-nav:var(--weight-medium) var(--type-nav-size)/var(--type-nav-line) var(--font-sans);
 
-/* APP LAYER — numbers are the point of this app; mono, tabular, large. */
---text-metric:var(--weight-medium) 40px/1.05 var(--font-mono);
---text-metric-sm:var(--weight-medium) 20px/1.2 var(--font-mono);
+/* APP LAYER — numbers are the point of this app, so they are typed rather than
+   set in mono. A standalone hero figure (the day's kcal total) takes the serif
+   display face: it is the loudest thing on the screen and should read as the
+   screen's headline, not as terminal output. Figures embedded in rows, tables
+   and chart axes take the sans face. Both are tabular — every call site also
+   declares font-variant-numeric, which is where column alignment actually comes
+   from, so mono was paying a width penalty for a benefit already in hand. */
+--text-metric:var(--weight-regular) 36px/1.1 var(--font-serif-display);
+--text-metric-sm:var(--weight-medium) 16px/1.2 var(--font-sans);
 
 /* APP LAYER — the top-level screen title (Today / Weight / Settings / setup).
    The source system reserves display-lg (48px) for marketing heroes, but the
@@ -212,7 +230,9 @@ color-scheme:light;
 --ease-standard:cubic-bezier(.4,0,.2,1);
 --duration-fast:120ms;
 --duration-base:180ms;
+--duration-entry:220ms;   /* sheet / modal / popover open */
 --transition-control:background-color var(--duration-fast) var(--ease-standard),border-color var(--duration-fast) var(--ease-standard),color var(--duration-fast) var(--ease-standard);
+--transition-entry:transform var(--duration-entry) var(--ease-standard),opacity var(--duration-entry) var(--ease-standard);
 }
 
 
@@ -259,6 +279,7 @@ body{margin:0;background:var(--surface-canvas);color:var(--text-body);font:var(-
   --surface-card:var(--night-card);
   --surface-cream-strong:var(--night-strong);
   --surface-overlay:var(--night-overlay);
+  --surface-sunken:var(--night-sunken);
 
   --border-hairline:var(--night-line);
   --border-hairline-soft:var(--night-line-soft);
@@ -272,8 +293,10 @@ body{margin:0;background:var(--surface-canvas);color:var(--text-body);font:var(-
   --chart-cone-fill:rgba(204,120,92,.16);
   --divider-strong:rgba(247,245,240,.16);
 
-  --shadow-hover:0 1px 3px rgba(0,0,0,.4);
-  --shadow-float:0 8px 24px rgba(0,0,0,.55);
+  /* a black shadow on a near-black surface is invisible, so dark elevation is
+     carried by a hairline outline and an inner top highlight instead. */
+  --shadow-hover:0 0 0 1px var(--night-line);
+  --shadow-float:inset 0 1px 0 rgba(255,255,255,.04),0 8px 24px rgba(0,0,0,.5);
 }
 
 @media (prefers-color-scheme:dark){
@@ -295,6 +318,7 @@ body{margin:0;background:var(--surface-canvas);color:var(--text-body);font:var(-
     --surface-card:var(--night-card);
     --surface-cream-strong:var(--night-strong);
     --surface-overlay:var(--night-overlay);
+    --surface-sunken:var(--night-sunken);
 
     --border-hairline:var(--night-line);
     --border-hairline-soft:var(--night-line-soft);
@@ -308,8 +332,10 @@ body{margin:0;background:var(--surface-canvas);color:var(--text-body);font:var(-
     --chart-cone-fill:rgba(204,120,92,.16);
     --divider-strong:rgba(247,245,240,.16);
 
-    --shadow-hover:0 1px 3px rgba(0,0,0,.4);
-    --shadow-float:0 8px 24px rgba(0,0,0,.55);
+    /* a black shadow on a near-black surface is invisible, so dark elevation is
+       carried by a hairline outline and an inner top highlight instead. */
+    --shadow-hover:0 0 0 1px var(--night-line);
+    --shadow-float:inset 0 1px 0 rgba(255,255,255,.04),0 8px 24px rgba(0,0,0,.5);
   }
 }
 h1,h2,h3{margin:0;color:var(--text-ink);font-family:var(--font-serif-display);font-weight:var(--weight-regular)}

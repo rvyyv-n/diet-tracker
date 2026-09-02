@@ -10,7 +10,7 @@
  * project (not just edited), add it here and bump CACHE_NAME so clients refetch.
  */
 
-const CACHE_NAME = "rise-v13";
+const CACHE_NAME = "rise-v14";
 
 const PRECACHE_URLS = [
   "./",
@@ -23,8 +23,6 @@ const PRECACHE_URLS = [
 
   "assets/fonts/inter-400.woff2",
   "assets/fonts/inter-500.woff2",
-  "assets/fonts/jetbrains-mono-400.woff2",
-  "assets/fonts/jetbrains-mono-500.woff2",
   "assets/fonts/newsreader-400.woff2",
 
   "src/js/app.js",

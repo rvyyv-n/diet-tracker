@@ -69,7 +69,7 @@ design_export_gate:
   why: "design-system.md already forbids inventing tokens silently — building against assumed values is how the app drifts from the system"
 ```
 
-### phase 0 — the design system  ⛔ blocked on the Claude Design export
+### phase 0 — the design system
 
 Everything downstream renders through this, so it lands first. It is a
 **reconciliation, not a from-scratch build**: `src/css/tokens.css` is already
@@ -78,16 +78,30 @@ elevation, a full type scale, motion tokens, and the `--night-*` dark ramp from
 pass 19. `docs/design-system.md` is a 75-line print-oriented summary whose
 "What's missing" list has largely been answered in code and never written back.
 
-- [ ] **pass 21 — reconcile the doc to the code and the export.** Rewrite
-  `design-system.md` to describe the interface system that actually exists, then
-  fold in the export. Where the export disagrees with `tokens.css`, the export
-  wins; edit only the base palette block, per that file's own rebrand note.
+- [x] **pass 21 — reconcile the doc to the code and the export.** *(done)* The
+  export arrived 2026-09-03 (`docs/design-export-prompt.md` is the prompt that
+  produced it) and proved to be the same source system: base palette, spacing,
+  radii, elevation, motion, font stacks and the whole display/title/body type
+  scale were byte-identical to `tokens.css`, so this was additive rather than a
+  rewrite. `design-system.md` rewritten around what ships, with a **deliberate
+  departures** table recording the six places Rise knowingly differs. Applied:
+  metric roles moved off mono to serif (hero) + sans (inline), which dropped
+  JetBrains Mono and 43KB of woff2 from the precache; `--text-link` coral-500 →
+  coral-700 (a live ~3.0:1 AA failure); `--icon-button-size` 36 → 44px; a
+  `--night-sunken` step; dark elevation re-expressed as outline + inner
+  highlight; and `--duration-entry` / `--transition-entry` for phase-2 sheets.
+  `sw.js` `CACHE_NAME` → `rise-v14`.
 - [ ] **pass 22 — close the genuine gaps.** Three things are truly missing
   rather than merely undocumented: **form controls** are not systematised,
   there is no documented **focus-visible** standard (51 interactive-state rules
   exist in `app.css`, but no stated rule), and there are no **desktop
   breakpoints** — only `600px` and `360px`, neither of which is a wide layout.
-  Phase 4 cannot start until the breakpoint scale exists.
+  Phase 4 cannot start until the breakpoint scale exists. The export supplies
+  candidate values for all three (§10, §8, §15) but marks them `PROPOSED` and
+  unvalidated against a real screen — the "Still open" list at the foot of
+  `design-system.md` is the working queue. Note the focus ring is a genuine
+  *conflict*, not a gap: the export proposes a canvas-gap + coral double ring,
+  Rise ships a 3px coral wash at 15% alpha.
 
 ### phase 1 — off-plan food and recipes
 
@@ -185,7 +199,7 @@ release on their own; the desktop layout is the natural 2.1.
 
 - [ ] **pass 35.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
   (+ `versionCode` 4), `tauri.conf.json`, `Cargo.toml`, and `README.md`. `sw.js`
-  `CACHE_NAME` → `rise-v14`, with every module added across phases 1–4 appended
+  `CACHE_NAME` → `rise-v15` or later (pass 21 already took `v14`), with every module added across phases 1–4 appended
   to `PRECACHE_URLS` — a missed entry is an offline break that only shows up
   after install.
 
