@@ -611,13 +611,17 @@ reasons: it is roughly the size of passes 8–13 again, which is not what "small
 features and a design-polish pass" meant; and holding 1.5 open to fit it would
 leave the update check unverified against a real tag for the whole of that time.
 
-**Status.** Passes 14–17 are built on `release-1.6`: rotations; the past (date
-stepper + adherence dot strip on Today); the week (a weekly review card and a
-most-skipped-block readout, both on Weight, above Trend); and the data round
-trip (paste-JSON import beside Choose file, a "last export" freshness line, and
-a one-slot undo snapshot taken before every import and reset — surfaced on
-Settings, and on the welcome screen after a reset since that routes away).
-Passes 18–20 remain.
+**Status.** Passes 14–17 are built on `release-1.6`: rotations; the past (an
+adherence dot strip on Today — the date stepper that pass 15 also specified was
+built, then cut at the user's request; see that pass); the week (a weekly review
+card and a most-skipped-block readout, both on Weight, above Trend); and the
+data round trip (paste-JSON import beside Choose file, a "last export" freshness
+line, and a one-slot undo snapshot taken before every import and reset —
+surfaced on Settings, and on the welcome screen after a reset since that routes
+away). A follow-up commit also trimmed the icon tab bar, which left a visible
+empty band above and below the glyph on a tall phone. **Passes 18–20 are not
+started** — pass 18 was begun once and reverted unbuilt; the roadmap and the
+branch are clean at that point.
 
 Character: nothing here is a new capability. Every pass either removes a daily
 tap, exposes data the app already stores but never shows, or repairs something
