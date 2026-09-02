@@ -2,9 +2,9 @@
 
 ## Architectural Decisions & Constraints
 
-Settled with the user before the passes were written — implement them, don't
-reopen. The one-line `why` is what keeps each closed; full reasoning is in
-`docs/legacy/roadmap-full-history.md`.
+Settled with the user and shipped — standing constraints on future work, not
+open questions. The one-line `why` is what keeps each closed; full reasoning is
+in `docs/legacy/roadmap-full-history.md`.
 
 ```yaml
 block_times_home:
@@ -24,35 +24,10 @@ insight_copy_states_facts:
   why: "both sit one design slip from the guilt mechanic the never-nag principle rules out"
 ```
 
-## 1.6 — Active Build Passes
+## Not doing
 
-Passes 14–20 are built — see `CHANGELOG.md`. Pass 19 (dark mode) shipped
-`prefers-color-scheme` + a `[data-theme]` override, `profile.themePref`, the
-Appearance toggle, and the About-block refactor. Pass 20 bumped the version to
-`1.6.0` across the five files and refreshed the `sw.js` precache
-(`CACHE_NAME` → `rise-v13`); `schema wgt v1` is unchanged.
-
-A review pass after 20 also landed: the Today adherence strip moved above the
-header and shrank to 7 days with a calendar popover for older days; the current
-block is now marked by a coral row edge instead of an inline "now" label (that
-edge moved off the shake); the setup form title matches the tab-screen titles;
-and the Weight history rows stack the week-over-week change under the date,
-colour-coded by direction.
-
-Manifest note: `manifest.json` has no per-scheme `theme_color` field, so the
-dark counterpart lives only in `index.html` (media-scoped `<meta>` tags); the
-manifest keeps the light value.
-
-Remaining — owner actions:
-- [ ] Fast-forward `main` to `release-1.6`, tag `v1.6.0`, publish the Release
-  (triggers the APK + installer builds).
-- [ ] Verify the in-app update check against the real `v1.6.0` tag once it
-  exists.
-
-## Not doing (1.6)
-
-Raised on the ballot or since, and deliberately excluded — don't re-propose
-without a reason that wasn't already weighed:
+Raised on a release ballot or since, and deliberately excluded — don't
+re-propose without a reason that wasn't already weighed:
 
 - **Mark the rest done** (one tap to tick all remaining blocks) and a general
   **undo toast** — on the ballot, not taken.
@@ -68,6 +43,9 @@ without a reason that wasn't already weighed:
   the list.
 
 ## later
+- [ ] **Verify the in-app update check** picks up `v1.6.0` — on a v1.5.x
+  install, that Settings → Check for updates now offers 1.6.0 and links the
+  right asset. One-off, do it when a device is in hand.
 - [ ] **Android PWA verification** — the browser-installed path (install /
   standalone / persistence) on a real Android device, from the Pages URL.
   Non-blocking, carried since v1.0.0; do it when a device is in hand.
