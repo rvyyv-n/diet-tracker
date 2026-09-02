@@ -121,7 +121,9 @@ developing, hard-reload or bump `CACHE_NAME` in `sw.js` to pick up changes.
 
 ## roadmap
 
-full detail in [docs/roadmap.md](docs/roadmap.md).
+what's left is in [docs/roadmap.md](docs/roadmap.md); the history of shipped
+passes is in [docs/CHANGELOG.md](docs/CHANGELOG.md) (full pass-by-pass detail in
+`docs/legacy/roadmap-full-history.md`).
 
 **v1** — the three screens above, offline, packaged to run on android, iphone
 and desktop with no local server, and shipped as a github release.

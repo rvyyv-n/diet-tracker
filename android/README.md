@@ -3,7 +3,7 @@
 A minimal WebView wrapper around the same web app that runs on GitHub Pages.
 Chosen over a Bubblewrap TWA so the installed app carries no dependency on
 the Pages URL staying up — it's self-contained and offline from first
-launch (see `docs/roadmap.md`, "next").
+launch (see `docs/legacy/roadmap-full-history.md`, "next").
 
 ## How it's built
 

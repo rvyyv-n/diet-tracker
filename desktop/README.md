@@ -6,7 +6,7 @@ double-clickable Windows installer alongside the browser-installed PWA.
 ## Why this exists alongside the PWA
 
 Chrome/Edge's "Install app" already gives a standalone, offline-capable
-window that auto-updates — see `docs/roadmap.md` pass 6. This installer adds
+window that auto-updates — see `docs/legacy/roadmap-full-history.md` pass 6. This installer adds
 one thing the PWA can't: a normal "download and run setup.exe" experience
 that doesn't require opening a browser and finding the install menu first.
 
