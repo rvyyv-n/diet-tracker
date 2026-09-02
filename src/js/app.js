@@ -16,6 +16,7 @@ import { icon } from "./ui/icons.js";
 import { isAvailable } from "./core/storage.js";
 import { requestPersistence } from "./core/persist.js";
 import { autoCheckForUpdate } from "./core/updates.js";
+import { initTheme } from "./core/theme.js";
 import { snapshotInfo, restoreSnapshot } from "./core/backup.js";
 import { loadProfile, saveProfile, isComplete } from "./core/profile.js";
 import { defaultPhaseForWeek, phaseAddOns, normaliseAddOns } from "./core/plan.js";
@@ -183,6 +184,10 @@ function syncPhase(profile) {
     addOns.every((id, i) => id === profile.addOns[i]);
   if (!unchanged) saveProfile({ ...profile, currentPhaseId: phaseId, addOns });
 }
+
+// Re-apply the stored theme (index.html already set it pre-paint for a pinned
+// choice) and start following the OS while the pref is "system".
+initTheme();
 
 route();
 

@@ -33,6 +33,9 @@ export const DEFAULT_PROFILE = {
   dismissedSuggestion: null, // { ruleId, date } — hushes that rule for ~a week,
   //                            set on Dismiss and after Apply (see today.js)
   introSeen: false,       // the first-run splash has been shown once (pass 11).
+  themePref: "system",    // "system" | "light" | "dark" — the appearance choice
+  //                         (pass 19); applied by core/theme.js, "system"
+  //                         follows prefers-color-scheme.
 };                        // merged over defaults on load, so no schema bump.
 
 export function loadProfile() {

@@ -32,6 +32,8 @@
 
 :root{
 
+color-scheme:light;
+
 /* ------------------------------------------------------- base palette ---
    Edit THIS block to rebrand. Nothing else should hold a literal colour.   */
 
@@ -41,8 +43,13 @@
 --ink-900:#141413;--ink-800:#252523;--ink-700:#3d3d3a;--ink-500:#6c6a64;--ink-400:#8e8b82;
 /* cream surfaces */
 --cream-50:#faf9f5;--cream-100:#f5f0e8;--cream-150:#ebe6df;--cream-200:#efe9de;--cream-250:#e6dfd8;--cream-300:#e8e0d2;
-/* night surfaces */
---night-900:#181715;--night-800:#1f1e1b;--night-700:#252320;--night-fg:#faf9f5;--night-fg-soft:#a09d96;
+/* night surfaces + ink — the dark theme's palette (pass 19). Mirrors the cream
+   ramp and the ink ramp step for step: canvas < soft < card < strong, plus a
+   floating-panel surface and two hairlines. Only the dark-theme alias block
+   near the end of this file reads these. */
+--night-canvas:#171614;--night-soft:#1e1c19;--night-card:#232120;--night-strong:#2c2a26;--night-overlay:#262320;
+--night-line:#34312c;--night-line-soft:#2a2723;
+--night-ink:#f7f5f0;--night-ink-strong:#e8e4dc;--night-ink-body:#d3cec4;--night-ink-muted:#9a968c;--night-ink-faint:#6f6b62;
 /* accents + status */
 --teal-500:#5db8a6;--amber-500:#e8a55a;--green-500:#5db872;--gold-500:#d4a017;--red-500:#c64545;
 --white:#ffffff;
@@ -60,21 +67,18 @@
 --text-muted:var(--ink-500);
 --text-muted-soft:var(--ink-400);
 --text-on-primary:var(--white);
---text-on-dark:var(--night-fg);
---text-on-dark-soft:var(--night-fg-soft);
 --text-link:var(--coral-500);
 
 --surface-canvas:var(--cream-50);
 --surface-soft:var(--cream-100);
 --surface-card:var(--cream-200);
 --surface-cream-strong:var(--cream-300);
---surface-dark:var(--night-900);
---surface-dark-soft:var(--night-800);
---surface-dark-elevated:var(--night-700);
+/* the surface a floating panel (listbox, calendar) sits on. Same as the canvas
+   in light; the dark theme lifts it so a panel reads above the page. */
+--surface-overlay:var(--surface-canvas);
 
 --border-hairline:var(--cream-250);
 --border-hairline-soft:var(--cream-150);
---border-on-dark:#302d29;
 
 --accent-teal:var(--teal-500);
 --accent-amber:var(--amber-500);
@@ -84,6 +88,12 @@
 
 /* focus ring — coral at 15% alpha, per the text-input-focused spec */
 --focus-ring:0 0 0 3px rgba(204,120,92,.15);
+
+/* coral washes that were inline literals before pass 19. Tokenised so the dark
+   theme can raise their alpha — at 6–10% they vanish on a night surface. */
+--surface-primary-tint:rgba(204,120,92,.08);   /* .is-picked row backgrounds */
+--chart-cone-fill:rgba(204,120,92,.1);         /* the weight trend target cone */
+--divider-strong:rgba(20,20,19,.12);           /* a rule that must show on cream-strong */
 
 
 /* ============================ APP LAYER ==================================
@@ -213,6 +223,95 @@
 
 html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 body{margin:0;background:var(--surface-canvas);color:var(--text-body);font:var(--text-body-md);text-wrap:pretty}
+
+
+/* ============================================================================
+   DARK THEME (pass 19)
+   ----------------------------------------------------------------------------
+   The semantic aliases in :root above are the light theme. Dark re-points the
+   same names at the --night-* ramp and lifts a few coral washes; because every
+   screen reads the aliases and never a raw colour, nothing else has to change.
+
+   Two entry points, and the declaration list is repeated verbatim between them
+   because CSS can't share one across a media-query boundary — KEEP THEM IN
+   SYNC:
+     • :root[data-theme="dark"]      — the user pinned Dark in Settings
+     • prefers-color-scheme: dark    — the OS, unless Light/Dark is pinned
+   index.html sets data-theme before first paint; src/js/core/theme.js keeps it
+   and <meta name="theme-color"> in step, and runs the cross-fade on a switch.
+   ========================================================================== */
+
+:root[data-theme="dark"]{
+  color-scheme:dark;
+
+  --color-primary-active:#d98b6f;
+  --color-primary-disabled:#5a4038;
+
+  --text-ink:var(--night-ink);
+  --text-body-strong:var(--night-ink-strong);
+  --text-body:var(--night-ink-body);
+  --text-muted:var(--night-ink-muted);
+  --text-muted-soft:var(--night-ink-faint);
+  --text-link:#e0906f;
+
+  --surface-canvas:var(--night-canvas);
+  --surface-soft:var(--night-soft);
+  --surface-card:var(--night-card);
+  --surface-cream-strong:var(--night-strong);
+  --surface-overlay:var(--night-overlay);
+
+  --border-hairline:var(--night-line);
+  --border-hairline-soft:var(--night-line-soft);
+
+  --status-success:#63c17d;
+  --status-warning:#e0af3a;
+  --status-error:#d76a6a;
+
+  --focus-ring:0 0 0 3px rgba(204,120,92,.28);
+  --surface-primary-tint:rgba(204,120,92,.18);
+  --chart-cone-fill:rgba(204,120,92,.16);
+  --divider-strong:rgba(247,245,240,.16);
+
+  --shadow-hover:0 1px 3px rgba(0,0,0,.4);
+  --shadow-float:0 8px 24px rgba(0,0,0,.55);
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]){
+    color-scheme:dark;
+
+    --color-primary-active:#d98b6f;
+    --color-primary-disabled:#5a4038;
+
+    --text-ink:var(--night-ink);
+    --text-body-strong:var(--night-ink-strong);
+    --text-body:var(--night-ink-body);
+    --text-muted:var(--night-ink-muted);
+    --text-muted-soft:var(--night-ink-faint);
+    --text-link:#e0906f;
+
+    --surface-canvas:var(--night-canvas);
+    --surface-soft:var(--night-soft);
+    --surface-card:var(--night-card);
+    --surface-cream-strong:var(--night-strong);
+    --surface-overlay:var(--night-overlay);
+
+    --border-hairline:var(--night-line);
+    --border-hairline-soft:var(--night-line-soft);
+
+    --status-success:#63c17d;
+    --status-warning:#e0af3a;
+    --status-error:#d76a6a;
+
+    --focus-ring:0 0 0 3px rgba(204,120,92,.28);
+    --surface-primary-tint:rgba(204,120,92,.18);
+    --chart-cone-fill:rgba(204,120,92,.16);
+    --divider-strong:rgba(247,245,240,.16);
+
+    --shadow-hover:0 1px 3px rgba(0,0,0,.4);
+    --shadow-float:0 8px 24px rgba(0,0,0,.55);
+  }
+}
 h1,h2,h3{margin:0;color:var(--text-ink);font-family:var(--font-serif-display);font-weight:var(--weight-regular)}
 p{margin:0}
 a{color:var(--text-link);text-decoration:none}

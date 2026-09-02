@@ -31,6 +31,7 @@ import {
   discardSnapshot,
 } from "./core/backup.js";
 import { loadProfile } from "./core/profile.js";
+import { setThemePref, THEME_PREFS } from "./core/theme.js";
 import { phaseById } from "./core/plan.js";
 import { humanDate, todayISO } from "./core/dates.js";
 import { APP_VERSION, REPO_URL } from "./core/appinfo.js";
@@ -82,6 +83,7 @@ function render() {
       el("p", { class: "phase-banner" }, recordSubtitle()),
     ),
     profileGroup(),
+    appearanceGroup(),
     dataGroup(),
     actionsGroup(),
     aboutBlock(),
@@ -139,6 +141,49 @@ function profileGroup() {
           el("span", { class: "set2-profile__meta" }, meta || "Tap to edit details"),
         ),
         el("span", { class: "set2-row__chev", "aria-hidden": "true" }, icon("chevron-right", { size: 16, stroke: 2 })),
+      ),
+    ),
+  );
+}
+
+/**
+ * The theme toggle (pass 19). "System" — the default — follows the OS
+ * `prefers-color-scheme`; "Light" / "Dark" pin it. The choice is stored on the
+ * profile and applied by core/theme.js, which also runs the cross-fade, so this
+ * only has to render the current state and forward the tap.
+ */
+function appearanceGroup() {
+  const pref = loadProfile().themePref || "system";
+  const labels = { system: "System", light: "Light", dark: "Dark" };
+  return el(
+    "div",
+    { class: "group" },
+    el("span", { class: "group__label" }, "Appearance"),
+    el(
+      "div",
+      { class: "card set2-card set2-appearance" },
+      el(
+        "div",
+        { class: "set2-appearance__head" },
+        el("span", { class: "set2-appearance__name" }, "Theme"),
+        el("span", { class: "set2-appearance__hint" }, "System follows your device."),
+      ),
+      el(
+        "div",
+        { class: "seg seg--full", role: "group", "aria-label": "Theme" },
+        ...THEME_PREFS.map((id) =>
+          el(
+            "button",
+            {
+              class: `seg__btn${pref === id ? " is-on" : ""}`,
+              type: "button",
+              "data-act": "theme-set",
+              "data-pref": id,
+              "aria-pressed": pref === id ? "true" : "false",
+            },
+            labels[id],
+          ),
+        ),
       ),
     ),
   );
@@ -456,6 +501,10 @@ function onAction(event) {
   switch (act) {
     case "edit-setup":
       onEditSetup();
+      break;
+    case "theme-set":
+      setThemePref(target.getAttribute("data-pref"));
+      render();
       break;
     case "export-download":
       exportDownload(target);

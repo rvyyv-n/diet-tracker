@@ -175,6 +175,18 @@
   background: var(--surface-card);
 }
 
+/* the segmented control stretched to its container's width — the theme toggle
+   on Settings (pass 19). The compact inline .seg still serves the unit toggles
+   on the setup form. */
+.seg--full {
+  display: flex;
+}
+.seg--full .seg__btn {
+  flex: 1;
+  text-align: center;
+  padding-block: var(--space-xs);
+}
+
 /* Feet + inches: two controls plus their unit labels, on one row. Stone +
    pounds (the weight unit) takes the same shape. */
 .height-ftin,
@@ -720,7 +732,7 @@
 }
 .rotation__opt:active { background: var(--surface-cream-strong); }
 .rotation__opt:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-.rotation__opt.is-picked { background: rgba(204, 120, 92, 0.06); }
+.rotation__opt.is-picked { background: var(--surface-primary-tint); }
 
 .rotation__radio {
   flex: none;
@@ -782,7 +794,7 @@
      gap, effectively invisible between Swap and this row's own background.
      An ink tint (--text-ink at low opacity) stays visible regardless of the
      exact cream shade beneath it. */
-  border-left: var(--border-width-hairline) solid rgba(20, 20, 19, 0.12);
+  border-left: var(--border-width-hairline) solid var(--divider-strong);
   cursor: pointer;
   transition: var(--transition-control);
 }
@@ -861,7 +873,7 @@
   color: var(--text-ink);
   font-weight: var(--weight-medium);
   border-color: var(--color-primary);
-  background: rgba(204, 120, 92, 0.06);
+  background: var(--surface-primary-tint);
 }
 
 /* adherence dot strip (pass 15) --------------------------------------------
@@ -975,7 +987,7 @@
   top: calc(100% + 4px);
   left: 0;
   z-index: 20;
-  background: var(--surface-canvas);
+  background: var(--surface-overlay);
   border: var(--border-width-hairline) solid var(--border-hairline);
   border-radius: var(--radius-control);
   box-shadow: var(--shadow-float);
@@ -1006,7 +1018,7 @@
 .lb__opt.is-picked {
   color: var(--text-ink);
   font-weight: var(--weight-medium);
-  background: rgba(204, 120, 92, 0.08);
+  background: var(--surface-primary-tint);
 }
 
 /* calendar --------------------------------------------------------- */
@@ -1201,7 +1213,7 @@
   width: 100%;
   height: auto;
 }
-.wc-cone { fill: rgba(204, 120, 92, 0.1); }
+.wc-cone { fill: var(--chart-cone-fill); }
 .wc-line {
   fill: none;
   stroke: var(--text-body);
@@ -1416,8 +1428,9 @@
    ----------------------------------------------------------------------------
    Reuses .group / .ack / .set-panel / .set-confirm / .btn--danger above.
    New: icon-led list rows (Lucide 0.469, inlined SVG), a collapsed Export row
-   with a small secondary action beneath, an icon-above-label tab bar, and a
-   dark-navy About block using --surface-dark for the first time.
+   with a small secondary action beneath, an icon-above-label tab bar, an
+   Appearance group with a full-width theme toggle (pass 19), and a quiet About
+   block at the foot.
    ========================================================================== */
 
 .settings2 { gap: var(--space-lg); }
@@ -1433,6 +1446,35 @@
 }
 .set2-card > * + * {
   border-top: var(--border-width-hairline) solid var(--border-hairline);
+}
+
+
+/* --------------------------------------------------------- appearance ---
+   The theme toggle (pass 19): a name + one muted hint stacked over a
+   full-width System / Light / Dark segmented control. Its own padded block
+   rather than a .set2-row, since the control wants the whole card width. */
+
+.set2-appearance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+}
+
+.set2-appearance__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.set2-appearance__name {
+  font: var(--text-title-sm);
+  color: var(--text-ink);
+}
+
+.set2-appearance__hint {
+  font: var(--text-body-sm);
+  color: var(--text-muted);
 }
 
 
@@ -1626,9 +1668,11 @@
 
 
 /* -------------------------------------------------------------- about ---
-   Dark navy, inset at the very bottom — the one place a utility screen can
-   use --surface-dark without becoming a marketing band. Sentence per line, no
-   wrapped paragraphs. Mono for the version and the signature.                */
+   A quiet recessed block at the very bottom. It was a dark-navy panel that
+   leaned on --surface-dark as a one-off contrast device; pass 19's real dark
+   theme made that read as an unconverted patch, so it is now an ordinary soft
+   card that inverts with everything else. Sentence per line, no wrapped
+   paragraphs. Mono for the version and the signature.                        */
 
 .about2 {
   display: flex;
@@ -1637,11 +1681,8 @@
   /* pull up against the section gap so it sits closer to the reset row */
   margin-top: calc(-1 * var(--space-xs));
   padding: var(--space-lg) var(--space-md);
-  background: var(--surface-dark);
-  /* the cream cards above carry a 1px hairline; without a border of its own the
-     dark fill sat 1px proud on each side and read as a slightly wider block.
-     Match their box exactly with the on-dark hairline token. */
-  border: var(--border-width-hairline) solid var(--border-on-dark);
+  background: var(--surface-soft);
+  border: var(--border-width-hairline) solid var(--border-hairline);
   border-radius: var(--radius-card);
 }
 
@@ -1653,19 +1694,19 @@
 
 .about2__name {
   font: var(--text-code);
-  color: var(--text-on-dark);
+  color: var(--text-body-strong);
   font-variant-numeric: tabular-nums;
 }
 
 .about2__schema {
   font: var(--text-code);
   font-size: 12px;
-  color: var(--text-on-dark-soft);
+  color: var(--text-muted-soft);
 }
 
 .about2__line {
   font: var(--text-body-sm);
-  color: var(--text-on-dark-soft);
+  color: var(--text-muted);
 }
 
 .about2__links {
@@ -1676,18 +1717,18 @@
 }
 
 .about2__link {
-  color: var(--color-primary);
+  color: var(--text-link);
   text-decoration: none;
   transition: var(--transition-control);
 }
 .about2__link:active { color: var(--color-primary-active); text-decoration: underline; text-underline-offset: 3px; }
 .about2__link:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
 
-.about2__sep { color: var(--text-on-dark-soft); }
+.about2__sep { color: var(--text-muted-soft); }
 
 .about2__sig {
   font: var(--text-body-sm);
-  color: var(--text-on-dark-soft);
+  color: var(--text-muted-soft);
 }
 
 
@@ -1946,4 +1987,31 @@
 }
 .tab-switching {
   animation: tab-crossfade 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* theme cross-fade (pass 19) — core/theme.js adds .theme-fading to <html> for
+   one switch (a tap on the Settings toggle, or an OS light/dark flip while the
+   pref is "system"). Everything eases its colours together over one
+   --duration-base, then the class comes off. The blanket reduced-motion rule
+   in tokens.css zeroes transition-duration, but this selector is more specific
+   AND !important, so it would win — the media block below opts it back out. */
+:root.theme-fading,
+:root.theme-fading *,
+:root.theme-fading *::before,
+:root.theme-fading *::after {
+  transition:
+    background-color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
+    color var(--duration-base) var(--ease-standard),
+    fill var(--duration-base) var(--ease-standard),
+    stroke var(--duration-base) var(--ease-standard) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root.theme-fading,
+  :root.theme-fading *,
+  :root.theme-fading *::before,
+  :root.theme-fading *::after {
+    transition: none !important;
+  }
 }
