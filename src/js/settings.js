@@ -101,8 +101,11 @@ function render() {
  * card below shows phase / height / rate, not counts).
  */
 function recordSubtitle() {
-  const { days, weights } = countRecords(exportAll());
-  return `${days} day${days === 1 ? "" : "s"} logged · ${weights} weigh-in${weights === 1 ? "" : "s"}`;
+  const { days, weights, recipes } = countRecords(exportAll());
+  return (
+    `${days} day${days === 1 ? "" : "s"} logged · ${weights} weigh-in${weights === 1 ? "" : "s"}` +
+    (recipes ? ` · ${recipes} recipe${recipes === 1 ? "" : "s"}` : "")
+  );
 }
 
 /**
@@ -342,6 +345,7 @@ function importPanel() {
     `${counts.profiles} profile${counts.profiles === 1 ? "" : "s"}`,
     `${counts.days} day${counts.days === 1 ? "" : "s"}`,
     `${counts.weights} weigh-in${counts.weights === 1 ? "" : "s"}`,
+    `${counts.recipes} recipe${counts.recipes === 1 ? "" : "s"}`,
   ];
   const meta =
     (obj.exportedAt ? `Exported ${humanDate(obj.exportedAt.slice(0, 10))}` : "No export date") +
@@ -445,6 +449,12 @@ function updatePanel(status) {
 
 function resetConfirm() {
   const c = countRecords(exportAll());
+  const items = [
+    `${c.days} day record${c.days === 1 ? "" : "s"}`,
+    `${c.weights} weigh-in${c.weights === 1 ? "" : "s"}`,
+  ];
+  if (c.recipes) items.push(`${c.recipes} recipe${c.recipes === 1 ? "" : "s"}`);
+  const listed = items.slice(0, -1).join(", ") + " and " + items[items.length - 1];
   return el(
     "div",
     { class: "set-confirm" },
@@ -452,8 +462,7 @@ function resetConfirm() {
     el(
       "p",
       { class: "set-confirm__body" },
-      `This removes your profile, ${c.days} day record${c.days === 1 ? "" : "s"} and ` +
-        `${c.weights} weigh-in${c.weights === 1 ? "" : "s"} from this browser, and starts the ` +
+      `This removes your profile, ${listed} from this browser, and starts the ` +
         "plan over at week 1. It cannot be undone.",
     ),
     el(

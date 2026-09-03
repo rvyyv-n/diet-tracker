@@ -2,10 +2,11 @@
  * backup.js — the whole of the app's state as one JSON object, for export and
  * import on the Settings screen.
  *
- * Everything the app knows lives in three localStorage records: `wgt:profile`,
- * `wgt:days` and `wgt:weights`. This module reads all three into one envelope
- * and writes them back from one. It does not own any UI — settings.js drives it
- * — and it never clears storage; a replace overwrites the three keys in place.
+ * Everything the app knows lives in four localStorage records: `wgt:profile`,
+ * `wgt:days`, `wgt:weights` and `wgt:recipes` (the pass-26 recipe book). This
+ * module reads all four into one envelope and writes them back from one. It
+ * does not own any UI — settings.js drives it — and it never clears storage; a
+ * replace overwrites the four keys in place.
  *
  * `wgt:update` (the update check's state) is deliberately NOT bundled: it is
  * device state, not user data, and carrying it between browsers would be
@@ -14,7 +15,7 @@
  * pre-change undo slot) added in pass 17 — both are strictly local.
  */
 
-import { load, save, remove, SCHEMA_VERSION } from "./storage.js";
+import { load, save, remove, SCHEMA_VERSION, migrateRecord } from "./storage.js";
 
 /** One object holding every record, stamped so an import can check its age. */
 export function exportAll() {
@@ -25,6 +26,7 @@ export function exportAll() {
     profile: load("profile", {}),
     days: load("days", { days: {} }),
     weights: load("weights", { weights: {} }),
+    recipes: load("recipes", { recipes: [] }),
   };
 }
 
@@ -43,15 +45,23 @@ export function assertImportable(obj) {
   }
 }
 
-/** Overwrite the three records from a parsed export object. */
+/**
+ * Overwrite the three records from a parsed export object. Each record is run
+ * through storage.js's migration ladder first (migrateRecord), not written
+ * straight through — a backup made on an older build carries records at that
+ * build's schema version, and save() stamps the CURRENT version onto whatever
+ * it's given, so skipping this step would mark them migrated when they never
+ * were (see migrateRecord's doc comment in storage.js).
+ */
 export function importAll(obj) {
   assertImportable(obj);
-  save("profile", obj.profile ?? {});
-  save("days", obj.days ?? { days: {} });
-  save("weights", obj.weights ?? { weights: {} });
+  save("profile", migrateRecord(obj.profile, "profile", {}));
+  save("days", migrateRecord(obj.days, "days", { days: {} }));
+  save("weights", migrateRecord(obj.weights, "weights", { weights: {} }));
+  save("recipes", migrateRecord(obj.recipes, "recipes", { recipes: [] }));
 }
 
-/** Counts for the import preview: profiles, day records, weigh-ins. */
+/** Counts for the import preview: profiles, day records, weigh-ins, recipes. */
 export function countRecords(obj) {
   const hasProfile =
     obj?.profile && obj.profile.heightCm != null && obj.profile.startWeightKg != null;
@@ -59,6 +69,7 @@ export function countRecords(obj) {
     profiles: hasProfile ? 1 : 0,
     days: Object.keys(obj?.days?.days ?? {}).length,
     weights: Object.keys(obj?.weights?.weights ?? {}).length,
+    recipes: (Array.isArray(obj?.recipes?.recipes) ? obj.recipes.recipes : []).length,
   };
 }
 

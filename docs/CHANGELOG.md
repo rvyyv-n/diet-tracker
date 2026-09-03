@@ -7,6 +7,80 @@ where the build is, and what each completed pass did. numbers for the plan itsel
 *Status — building on `release-2`. Not released.* The phased plan lives in `roadmap.md`.
 
 - **pass 21 — the design system reconciliation:** The full Claude Design export arrived (`design-export-prompt.md` is the prompt that produced it) and proved to be the *same* source system already implemented, so palette, spacing, radii, elevation, motion, font stacks and the display/title/body type scale were byte-identical to `tokens.css` — this was additive, not a rewrite. `design-system.md` rewritten around what actually ships, gaining a **deliberate departures** table (the six places Rise knowingly differs from the export, with reasons) and a **Still open** queue of unconfirmed `PROPOSED` values. Token changes: metric roles left mono for serif (hero figure) + sans (inline), every call site already declaring `tabular-nums` — which dropped JetBrains Mono and 43KB of woff2 from the precache and re-measured `.block-row__kcal` `min-width` 88px → 72px to match the narrower face; `--text-link` coral-500 → coral-700, fixing a live ~3.0:1 AA failure on body-sized links; `--icon-button-size` 36px → 44px; new `--night-sunken`; dark elevation re-expressed as hairline outline + inner top highlight, since a black shadow is invisible on a near-black surface; and `--duration-entry` / `--transition-entry` for phase-2 sheets. `sw.js` `CACHE_NAME` → `rise-v14`. Two of the export's three flags (font CDN, icon CDN) were already solved in Rise and were dismissed as stale. Held against the export: the 44px tab bar (pass 18, device-tested), the pass-19 night ramp, coral toggles, and `--surface-overlay`'s existing meaning.
+- **pass 23 — the schema migration:** `storage.js` `SCHEMA_VERSION` 1 → 2, the
+  first real bump since pass 1 — every field added since (`bonus` pass 8,
+  `appetite` pass 9, the `shake2` slot pass 14) had shipped through an
+  accessor-level `?? []` fallback rather than a version bump, so the
+  `MIGRATIONS` ladder in `storage.js` had never actually run. `migrate()` steps
+  now receive the record's `name` alongside its data, since `SCHEMA_VERSION` is
+  one number shared across `profile` / `days` / `weights`, and a step has to
+  pass through anything it doesn't own unchanged. The v2 step backfills
+  `extras: []` onto every stored day that predates the field — `newDay()` has
+  seeded it on new days since it was reserved for v2, but older users' history
+  never got it — so pass 24 can sum `day.extras` directly instead of leaning on
+  a fallback at the read site. No new storage keys yet: the recipe book (pass
+  26) and grocery state (pass 28) are new records, not shape changes to an
+  existing one, so they need no migration — they'll simply start existing.
+- **pass 24 + 25 — extras, model and entry surface, together:** Built as one
+  pass since the model had no real caller to validate its shape against
+  otherwise. `core/extras.js` mirrors `day.js`'s style (pure, day in / day
+  out): `addExtra` (name / kcal / protein, blank names rejected, bad numbers
+  sanitised to 0, `crypto.randomUUID()` id), `removeExtra`, `dayExtras`.
+  `day.js` `dayTotals()` now sums `extras` into kcal/protein and folds its
+  count into `done` (extras genuinely touch a day, same as bonus blocks) —
+  `total`, the adherence denominator, is untouched, so `intakeStatus()` picks
+  up off-plan eating for free without it counting as adherence. On Today, a
+  new **Extras** section renders under the checklist: existing entries as
+  removable rows (reusing `.block-row__kcal` / `.block-row__drop` rather than
+  a parallel treatment), then a "Log food" trigger opening a panel with a
+  segmented pick/type toggle — pick a `FOOD_DB` entry through the existing
+  `ui/listbox.js` (kcal/protein come along with it), or quick-type a one-off
+  (Add stays disabled until a name is typed). Both paths respect
+  `isDayEditable`, same as blocks. Verified live via the browser preview: both
+  entry paths correctly moved the day total and protein line, removal worked,
+  and the row survived a full page reload.
+  **Found and fixed in passing:** `backup.js` `importAll()` wrote records
+  straight through `save()`, bypassing `load()`'s migration entirely — since
+  `save()` stamps the *current* `SCHEMA_VERSION` onto whatever it's given,
+  importing a pre-pass-23 backup would have marked its un-migrated day records
+  as already current, silently skipping the `extras` backfill forever.
+  `storage.js` gained `migrateRecord()` (the same ladder `load()` uses, callable
+  on a record from anywhere) and `importAll()` now runs every record through it
+  before saving.
+- **pass 26 — the recipe book:** `core/recipes.js`, a new standalone record
+  (`wgt:recipes -> { recipes: [...] }`, mirroring `weights.js`) for named,
+  reusable off-plan items — `{ id, name, kcal, proteinG, createdAt, lastUsedAt,
+  useCount }`. Not day data and not on the profile: a recipe outlives any one
+  day and never touches adherence. Two operations tie it into the app, both on
+  Today's Extras section. **Save** on a logged extra's row (the rotation-Swap
+  strip, `.block-row__swap`, reused rather than a new treatment) writes it to
+  the book; it's hidden once that name is already saved. A new **Recipes** tab
+  in the "Log food" panel lists the book as `.extras__row` cards with a button
+  face — one tap logs that recipe as an extra on the day — each with the shared
+  × to drop it from the book (not the day). Inserting calls `touchRecipe()`,
+  which bumps `useCount` and stamps `lastUsedAt`, so `allRecipes()` floats what
+  you actually repeat to the top — the "history" the roadmap asked for, without
+  a full insertion log. Names dedupe case-insensitively (`recipeKey`):
+  re-saving "Chai" over "chai" updates that entry's numbers instead of adding a
+  twin. The Recipes tab is the default when the book is non-empty (repeat meal
+  = one tap); the toggle falls back to the pass-25 pick/type pair when it's
+  empty. No schema bump — a new record just starts existing at the current
+  `SCHEMA_VERSION`, exactly as the pass-23 note predicted.
+- **pass 27 — the backup round trip covers recipes:** `backup.js` `exportAll()`
+  now reads `wgt:recipes` into the envelope and `importAll()` writes it back
+  through `migrateRecord()` like the other three records, so the
+  `backup_round_trip` constraint holds — an export then import no longer
+  silently drops the recipe book. `countRecords()` gains a `recipes` count;
+  Settings surfaces it in the import preview (always) and in the record
+  subtitle and reset confirmation (only when non-zero, to keep the common
+  wording clean). The pre-import / pre-reset undo snapshot covers recipes for
+  free — it is just `exportAll()`. **Found and fixed in passing:**
+  `core/extras.js` (added pass 25) was never appended to `sw.js`
+  `PRECACHE_URLS`, so an offline or installed client would fail to load it —
+  precisely the "a missed entry is an offline break that only shows up after
+  install" the roadmap warns about. Added it alongside `core/recipes.js`;
+  `CACHE_NAME` -> `rise-v15`.
+- **pass 22 — closing the genuine design-system gaps:** Three items the "Still open" queue flagged as truly missing, not merely undocumented. **Focus ring:** adopted the export's canvas-gap + coral double ring, replacing the 3px 15%-alpha coral wash — `--border-focus: var(--coral-500); --focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--border-focus)`. The dark-theme override was deleted outright rather than re-specified: `--surface-canvas` already flips per theme, so the one declaration resolves correctly in both, and every one of the 21 existing `:focus-visible` call sites in `app.css` picked up the new ring for free since they all read the token, never a literal. **Breakpoints:** the 5-token scale landed as reference-only constants (`--bp-compact` 360 · `--bp-medium` 600 · `--bp-expanded` 840 · `--bp-desktop` 1024 · `--bp-wide` 1440, plus `--gutter-*`, `--panel-nav-width`, `--panel-detail-width`, `--container-app`) — correctly not wired into media queries yet, since a custom property can't drive `@media`; that wiring is phase 4's job. **Form controls:** no code change. `design-system.md` documents the existing `.field` / `.seg` system as already coherent and defers checkbox/radio/toggle/slider until a feature actually needs one, on the standing rule that unused component CSS rots. Phase 4 is now unblocked.
 
 ## v1.6.0 — shipped
 

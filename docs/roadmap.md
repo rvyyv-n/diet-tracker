@@ -69,54 +69,27 @@ design_export_gate:
   why: "design-system.md already forbids inventing tokens silently — building against assumed values is how the app drifts from the system"
 ```
 
-### phase 0 — the design system
+### phase 0 — the design system ✅ done
 
-**Pass 21 is done** — see `CHANGELOG.md`. The export landed, proved to be the
-same source system already implemented, and `design-system.md` now documents
-what ships. One pass remains before phase 4 is unblocked.
+**Passes 21–22 are done** — see `CHANGELOG.md`. The export landed, proved to be
+the same source system already implemented, and `design-system.md` now
+documents what ships. Pass 22 closed the three genuine gaps: the focus ring
+adopted the export's canvas-gap + coral double ring (displacing the old 15%-
+alpha wash), the five-token breakpoint scale landed as reference constants in
+`tokens.css`, and form controls were confirmed already coherent and documented
+as-is. **Phase 4 is unblocked.**
 
-- [ ] **pass 22 — close the genuine gaps.** Three things are truly missing
-  rather than merely undocumented: **form controls** are not systematised,
-  there is no documented **focus-visible** standard (51 interactive-state rules
-  exist in `app.css`, but no stated rule), and there are no **desktop
-  breakpoints** — only `600px` and `360px`, neither of which is a wide layout.
-  Phase 4 cannot start until the breakpoint scale exists. The export supplies
-  candidate values for all three (§10, §8, §15) but marks them `PROPOSED` and
-  unvalidated against a real screen — the "Still open" list at the foot of
-  `design-system.md` is the working queue. Note the focus ring is a genuine
-  *conflict*, not a gap: the export proposes a canvas-gap + coral double ring,
-  Rise ships a 3px coral wash at 15% alpha.
+### phase 1 — off-plan food and recipes ✅ done
 
-### phase 1 — off-plan food and recipes
-
-The flagship item, and the one with the most groundwork already laid:
-`day.extras` is reserved and initialised in `newDay()`, and `FOOD_DB` in
-`plan.js` already carries 20 entries with portions.
-
-- [ ] **pass 23 — the schema migration.** Do this *before* the feature, not
-  alongside it. v2 adds three new shapes (extras in use, a recipe book, grocery
-  state) to a store still on `schema wgt v1`. A dedicated migration pass with a
-  version bump is cheap insurance against corrupting 1.6 users' history, and it
-  gives every later pass a stable place to land its data.
-- [ ] **pass 24 — extras in the model.** New `core/extras.js` of pure functions
-  mirroring `day.js` style (add / remove / update; day in, new day out). Wire
-  `dayTotals()` to sum `extras` into kcal and protein **without growing
-  `total`** — extras take the `bonus` semantics exactly: they move intake, never
-  the adherence denominator. `intakeStatus()` then picks them up for free, which
-  is correct, since eating off-plan really does raise intake.
-- [ ] **pass 25 — the entry surface.** Two paths into an extra: quick-type
-  (name / kcal / protein) and pick-from-`FOOD_DB` through the existing
-  `ui/listbox.js`. Renders under the daily checklist on Today. Must respect
-  `isDayEditable` — the `past_days_stay_closed` constraint applies to extras
-  exactly as it does to blocks.
-- [ ] **pass 26 — the recipe book.** Named, reusable entries with history.
-  These are *not* day data, so they live under their own storage key rather than
-  on the day or the profile. Saving an extra as a recipe, and inserting a recipe
-  as an extra, are the two operations.
-- [ ] **pass 27 — extend the backup round trip.** The `backup_round_trip`
-  constraint makes this non-optional: export and import must cover recipes and
-  the new day shape, or pass 17's repaired round trip silently starts dropping
-  data.
+**Passes 23–27 are done** — see `CHANGELOG.md`. `SCHEMA_VERSION` went to 2 and
+the migration ladder ran for the first time, backfilling `extras: []` onto old
+days (23); `core/extras.js` and the Today entry surface landed and `dayTotals()`
+took on bonus semantics for extras (24–25); `core/recipes.js` added the
+reusable recipe book, ordered by what you actually repeat, with Save on a
+logged extra and a one-tap Recipes tab as its two operations (26); and the
+backup round trip was extended to carry `wgt:recipes`, closing the
+`backup_round_trip` gap (27). Pass 27 also caught `core/extras.js` missing from
+the service-worker precache and fixed it (`CACHE_NAME` → `rise-v15`).
 
 **Not doing in v2:** re-introducing `src/js/data/food-source.js`. The roadmap
 holds it for "when the network path is needed", and v2 does not need it —

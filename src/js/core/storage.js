@@ -11,17 +11,33 @@
 const NAMESPACE = "wgt";
 
 /** Bump when a record's shape changes, and add a matching migration step. */
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 const key = (name) => `${NAMESPACE}:${name}`;
 
 /**
  * Migrations run in order, each upgrading a record by exactly one version.
- * To add one: write `2: (data) => ({ ...data, newField: default })` and raise
- * SCHEMA_VERSION to 2. Keep each step small and independent.
+ * SCHEMA_VERSION is one number shared by every named record (profile, days,
+ * weights, ...), so a step receives `name` and must pass through anything it
+ * doesn't own unchanged — only branch for the record whose shape actually
+ * moved. To add one: write `3: (data, name) => name === "days" ? ... : data`
+ * and raise SCHEMA_VERSION to 3. Keep each step small and independent.
  */
 const MIGRATIONS = {
-  // 2: (data) => ({ ...data, goalNote: "" }),
+  // v2 (pass 23): `extras` has been seeded on every NEW day (see
+  // core/day.js newDay()) since it was reserved for v2, but never backfilled
+  // onto days recorded before that line landed, so an existing user's older
+  // day records are missing the key outright. Pass 24 makes extras
+  // load-bearing (dayTotals() starts summing it), so every stored day needs
+  // the key before that ships — this migration guarantees it up front rather
+  // than leaning on a `?? []` at every future read site.
+  2: (data, name) => {
+    if (name !== "days") return data;
+    const days = Object.fromEntries(
+      Object.entries(data.days ?? {}).map(([iso, day]) => [iso, { extras: [], ...day }])
+    );
+    return { ...data, days };
+  },
 };
 
 function migrate(data, name) {
@@ -33,10 +49,25 @@ function migrate(data, name) {
       console.warn(`No migration to v${version + 1} for "${name}"; using defaults.`);
       return null;
     }
-    out = step(out);
+    out = step(out, name);
     version += 1;
   }
   return { ...out, schemaVersion: SCHEMA_VERSION };
+}
+
+/**
+ * Run a record through the same migration ladder `load()` uses, for a record
+ * that came from somewhere other than localStorage — namely an imported
+ * backup (backup.js). That path matters because `save()` always stamps the
+ * CURRENT SCHEMA_VERSION onto whatever it's given: writing an old backup's
+ * record straight through `save()` without migrating it first would mark
+ * un-migrated data as already current, so the real migration would never run
+ * on it. Falls back like `load()` does — bad input or a version this build
+ * doesn't understand yields `fallback`, never a throw.
+ */
+export function migrateRecord(data, name, fallback = {}) {
+  if (!data || typeof data !== "object") return fallback;
+  return migrate(data, name) ?? fallback;
 }
 
 /**
@@ -64,7 +95,7 @@ export function load(name, fallback) {
   if (parsed === null || typeof parsed !== "object") return fallback;
   if ((parsed.schemaVersion ?? 1) > SCHEMA_VERSION) return fallback;
 
-  return migrate(parsed, name) ?? fallback;
+  return migrateRecord(parsed, name, fallback);
 }
 
 /** Write a record, stamping it with the current schema version. */

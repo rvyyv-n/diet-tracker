@@ -848,6 +848,124 @@
   border-radius: var(--radius-card);
 }
 
+/* off-plan extras (pass 25) ------------------------------------------------
+   A logged extra reads as a lighter block-row: reuses .block-row__kcal and
+   .block-row__drop rather than inventing a parallel kcal/remove treatment.
+   The entry panel reuses .addblock / .addblock__panel wholesale — same
+   "closed panel, + trigger" register as adding a plan block — and adds only
+   what's genuinely new: the pick/type mode toggle and the two small forms. */
+
+.extras {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.extras__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.extras__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: var(--touch-target);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface-card);
+  border: var(--border-width-hairline) dashed var(--border-hairline);
+  border-radius: var(--radius-card);
+}
+
+.extras__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font: var(--text-title-sm);
+  color: var(--text-ink);
+}
+
+.extras__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+.extras__modeseg {
+  align-self: flex-start;
+}
+
+.extras__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.extras__row-fields {
+  display: flex;
+  gap: var(--space-sm);
+}
+.extras__row-fields .field {
+  flex: 1;
+  min-width: 0;
+}
+
+/* recipe book (pass 26) -----------------------------------------------------
+   A logged extra can be saved to a small reusable book: the Save control on
+   its row is the rotation Swap strip (.block-row__swap), reused rather than a
+   new treatment. The "Log food" panel gains a Recipes tab whose rows are
+   .extras__row cards with a button face — one tap inserts the recipe as an
+   extra — and the shared × to drop it from the book. */
+
+.extras__save[disabled] {
+  color: var(--text-muted-soft);
+  cursor: default;
+}
+
+.extras__recipes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+/* Padding moves onto the button face so the whole row is the tap target and
+   the × sits flush; overflow clips the stretched × to the card radius. */
+.extras__pick-row {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.extras__pick {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: var(--touch-target);
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.extras__pick:active { background: var(--surface-cream-strong); }
+.extras__pick:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.extras__empty {
+  margin: 0;
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+
 /* appetite check (pass 9) ----------------------------------------------
    A three-way tap scale, low on Today under a .group__label. Entirely
    optional — no prompt, no red state for a blank day. */

@@ -3,7 +3,7 @@
  *
  * Every day lives in ONE stored record, keyed by date inside a `days` map:
  *
- *   wgt:days  ->  { days: { "2026-08-29": <day>, ... }, schemaVersion: 1 }
+ *   wgt:days  ->  { days: { "2026-08-29": <day>, ... }, schemaVersion: N }
  *
  * One record rather than one-key-per-day is deliberate. `storage.js` exposes no
  * way to enumerate keys, and the adjustment engine (a later pass) has to read

@@ -22,6 +22,7 @@ import {
   normaliseAddOns,
 } from "./plan.js";
 import { addDays } from "./dates.js";
+import { dayExtras, extrasTotals } from "./extras.js";
 
 /**
  * Intake status cut-offs, as a fraction of the phase's kcal target. The naming
@@ -52,9 +53,10 @@ export function newDay(date, phaseId, addOns = phaseAddOns(phaseId), rotations =
     completed: {}, // block id -> true; an absent key means not done
     rotations: { ...defaultRotations(), ...rotations },
     appetite: null, // optional per-day appetite check, one of APPETITE_VALUES
-    extras: [], // off-plan foods: { name, kcal, proteinG }. Reserved for the v2
-    //             custom-recipe feature; nothing reads it yet. It lives on the
-    //             day (not its own record) because it changes that day's total.
+    extras: [], // off-plan foods: { id, name, kcal, proteinG } (core/extras.js
+    //             owns the shape and the transforms). It lives on the day, not
+    //             its own record, because it changes that day's total — see
+    //             dayTotals() below.
   };
 }
 
@@ -152,13 +154,17 @@ export function blockValue(day, blockId) {
 }
 
 /**
- * Totals for the day: calories and protein from completed blocks, and how many
- * blocks are done.
+ * Totals for the day: calories and protein from completed blocks and logged
+ * extras, and how many things are done.
  *
- * `total` is the plan block count only — bonus blocks add kcal / protein when
- * ticked but never grow the denominator (pass 8). `planDone` counts completed
- * plan blocks (0..total) and is what adherence reads; `done` also counts ticked
- * bonus blocks, so it can exceed `total`.
+ * `total` is the plan block count only — bonus blocks and extras add kcal /
+ * protein the moment they're logged but never grow the denominator (bonus:
+ * pass 8; extras: pass 24, the identical semantics — eating off-plan raises
+ * intake, but it isn't part of the plan adherence measures). `planDone` counts
+ * completed plan blocks (0..total) and is what adherence reads; `done` also
+ * counts ticked bonus blocks and logged extras, so it can exceed `total` — it
+ * answers "was this day touched at all" (see the adherence strip in
+ * today.js), not an adherence figure.
  */
 export function dayTotals(day) {
   const active = activeBlocks(dayAddOns(day));
@@ -180,7 +186,16 @@ export function dayTotals(day) {
     proteinG += v.proteinG;
     bonusDone += 1;
   }
-  return { kcal, proteinG, planDone, done: planDone + bonusDone, total: active.length };
+  const extras = extrasTotals(day);
+  kcal += extras.kcal;
+  proteinG += extras.proteinG;
+  return {
+    kcal,
+    proteinG,
+    planDone,
+    done: planDone + bonusDone + dayExtras(day).length,
+    total: active.length,
+  };
 }
 
 /**

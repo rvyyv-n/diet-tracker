@@ -26,6 +26,7 @@ import {
   phaseAddOns,
   PHASES,
   ADDON_IDS,
+  FOOD_DB,
 } from "./core/plan.js";
 import {
   newDay,
@@ -42,8 +43,11 @@ import {
   intakeStatus,
   isDayEditable,
 } from "./core/day.js";
+import { dayExtras, addExtra, removeExtra } from "./core/extras.js";
+import { allRecipes, saveRecipe, deleteRecipe, touchRecipe, recipeKey } from "./core/recipes.js";
 import { getDay, putDay, allDays } from "./core/days.js";
 import { dateCalendar } from "./ui/date-calendar.js";
+import { listbox } from "./ui/listbox.js";
 import { allWeights } from "./core/weights.js";
 import { weeklyWeights, weeklyGains, rollingGain, weeklyAdherence } from "./core/trend.js";
 import { evaluate, applySuggestion } from "./core/adjust.js";
@@ -69,6 +73,12 @@ let mount;
 let viewDate;
 let openPicker = null;
 let addOpen = false; // the "add a block" panel under the checklist
+let extrasOpen = false; // the "log food" panel under the extras list
+let extrasMode = "pick"; // "recipe" (from the book) | "pick" (FOOD_DB) | "type" (quick-type)
+let extrasModeTouched = false; // has the user picked an extras tab this screen
+//   visit? until they do, the panel opens on "recipe" when the book is
+//   non-empty — repeating a saved meal should be one tap, not two.
+let extrasFoodId = null; // the FOOD_DB id picked in "pick" mode
 
 // How many days the adherence dot strip shows — the last week at a glance, up
 // near the header. Older days are reached through the calendar popover beside
@@ -80,6 +90,8 @@ export function renderToday(mountEl) {
   viewDate = todayISO();
   openPicker = null;
   addOpen = false;
+  extrasOpen = false;
+  extrasModeTouched = false;
   render();
 }
 
@@ -128,6 +140,7 @@ function render() {
       totalCard(day),
       backfillPrompt(),
       checklist(day, editable),
+      extrasSection(day, editable),
       editable ? addBlockSection(day) : null,
       editable ? appetiteSection(day) : null,
     ),
@@ -139,6 +152,7 @@ function backToToday() {
   viewDate = todayISO();
   openPicker = null;
   addOpen = false;
+  extrasOpen = false;
   render();
 }
 
@@ -301,6 +315,7 @@ function adherenceStrip(profile, viewedDay) {
     viewDate = iso;
     openPicker = null;
     addOpen = false;
+    extrasOpen = false;
     render();
   });
 
@@ -329,6 +344,7 @@ function adherenceStrip(profile, viewedDay) {
             viewDate = d.date;
             openPicker = null;
             addOpen = false;
+            extrasOpen = false;
             render();
           },
         }),
@@ -484,6 +500,335 @@ function addBlockSection(day) {
           ),
         )
       : null,
+  );
+}
+
+/**
+ * Off-plan food logged against the viewed day (pass 25). Renders under the
+ * checklist: a list of what's already logged, each removable, then the entry
+ * affordance itself when the day is editable — same "closed panel with a +
+ * trigger" register as addBlockSection, so the screen doesn't gain a second
+ * visual language for "add something". Two entry paths sit behind a segmented
+ * toggle: pick a FOOD_DB entry (kcal/protein come along with it) or quick-type
+ * one off (name / kcal / protein by hand). Both call core/extras.js addExtra,
+ * which takes the bonus semantics exactly — kcal/protein move, the adherence
+ * denominator doesn't.
+ */
+function extrasSection(day, editable) {
+  const extras = dayExtras(day);
+  if (!extras.length && !editable) return null;
+  // The set of name keys already in the recipe book — so an extra that's
+  // already saved doesn't offer "Save" again (saveRecipe would just update it,
+  // but the affordance would be noise). Built once, not per row.
+  const savedKeys = editable
+    ? new Set(allRecipes().map((r) => recipeKey(r.name)))
+    : null;
+  return el(
+    "div",
+    { class: "extras" },
+    extras.length
+      ? el(
+          "ul",
+          { class: "extras__list" },
+          ...extras.map((extra) => extraRow(day, extra, editable, savedKeys)),
+        )
+      : null,
+    editable ? extrasAddPanel(day) : null,
+  );
+}
+
+function extraRow(day, extra, editable, savedKeys) {
+  const canSave = editable && savedKeys && !savedKeys.has(recipeKey(extra.name));
+  return el(
+    "li",
+    { class: "extras__row" },
+    el("span", { class: "extras__name" }, extra.name),
+    el(
+      "span",
+      { class: "block-row__kcal" },
+      NUM.format(extra.kcal),
+      el("span", { class: "block-row__unit" }, "kcal"),
+    ),
+    canSave
+      ? el(
+          "button",
+          {
+            // The recessed strip from the rotation Swap control — same register
+            // as the other secondary row action, so the row doesn't grow a
+            // third visual language.
+            class: "block-row__swap extras__save",
+            type: "button",
+            "aria-label": `Save ${extra.name} to the recipe book`,
+            onclick: (event) => {
+              saveRecipe({ name: extra.name, kcal: extra.kcal, proteinG: extra.proteinG });
+              // No re-render: the day didn't change. Acknowledge in place, the
+              // way Settings' export button does. The next render drops the
+              // button anyway (savedKeys will contain it now).
+              const btn = event.currentTarget;
+              btn.textContent = "Saved";
+              btn.disabled = true;
+            },
+          },
+          "Save",
+        )
+      : null,
+    editable
+      ? el(
+          "button",
+          {
+            class: "block-row__drop",
+            type: "button",
+            "aria-label": `Remove ${extra.name}`,
+            onclick: () => commit(removeExtra(day, extra.id)),
+          },
+          "×",
+        )
+      : null,
+  );
+}
+
+/** The "+ Log food" trigger and its panel — closed by default, same register
+ *  as addBlockSection's "+ Add a block". Behind the toggle: the recipe book
+ *  (when it has anything), the FOOD_DB list, and quick-type. */
+function extrasAddPanel(day) {
+  const hasRecipes = allRecipes().length > 0;
+  // Default to the book when it's non-empty and the user hasn't chosen a tab
+  // this visit — a repeat meal is the common case and should be one tap.
+  if (!extrasModeTouched && hasRecipes) extrasMode = "recipe";
+  const modes = hasRecipes ? ["recipe", "pick", "type"] : ["pick", "type"];
+  if (!modes.includes(extrasMode)) extrasMode = modes[0];
+
+  return el(
+    "div",
+    { class: "addblock" },
+    el(
+      "button",
+      {
+        class: "addblock__trigger",
+        type: "button",
+        onclick: () => {
+          extrasOpen = !extrasOpen;
+          render();
+        },
+      },
+      el("span", { class: "addblock__icon", "aria-hidden": "true" }, extrasOpen ? "−" : "+"),
+      extrasOpen ? "Close" : "Log food",
+    ),
+    extrasOpen
+      ? el(
+          "div",
+          { class: "addblock__panel extras__panel" },
+          extrasModeToggle(modes),
+          extrasMode === "recipe"
+            ? extrasRecipeForm(day)
+            : extrasMode === "pick"
+              ? extrasPickForm(day)
+              : extrasTypeForm(day),
+        )
+      : null,
+  );
+}
+
+function extrasModeToggle(modes) {
+  const label = { recipe: "Recipes", pick: "From the list", type: "Type it in" };
+  return el(
+    "div",
+    { class: "seg extras__modeseg" },
+    ...modes.map((mode) =>
+      el(
+        "button",
+        {
+          class: `seg__btn${extrasMode === mode ? " is-on" : ""}`,
+          type: "button",
+          onclick: () => {
+            if (extrasMode === mode) return;
+            extrasMode = mode;
+            extrasModeTouched = true;
+            render();
+          },
+        },
+        label[mode],
+      ),
+    ),
+  );
+}
+
+/**
+ * The recipe book as an insert list (pass 26): one tap on a row logs that
+ * recipe as an extra on the day and bumps its recency (touchRecipe) so the
+ * book stays ordered by what's actually eaten. The × drops a recipe from the
+ * book — not from the day. Rows reuse .extras__row so a saved recipe and a
+ * logged extra read the same.
+ */
+function extrasRecipeForm(day) {
+  const recipes = allRecipes();
+  if (!recipes.length) {
+    return el("p", { class: "extras__empty" }, "No saved recipes yet.");
+  }
+  return el(
+    "div",
+    { class: "extras__recipes" },
+    ...recipes.map((recipe) =>
+      el(
+        "div",
+        { class: "extras__row extras__pick-row" },
+        el(
+          "button",
+          {
+            class: "extras__pick",
+            type: "button",
+            onclick: () => {
+              extrasOpen = false;
+              touchRecipe(recipe.id);
+              commit(
+                addExtra(day, {
+                  name: recipe.name,
+                  kcal: recipe.kcal,
+                  proteinG: recipe.proteinG,
+                }),
+              );
+            },
+          },
+          el("span", { class: "extras__name" }, recipe.name),
+          el(
+            "span",
+            { class: "block-row__kcal" },
+            NUM.format(recipe.kcal),
+            el("span", { class: "block-row__unit" }, "kcal"),
+          ),
+        ),
+        el(
+          "button",
+          {
+            class: "block-row__drop",
+            type: "button",
+            "aria-label": `Remove ${recipe.name} from the recipe book`,
+            onclick: () => {
+              deleteRecipe(recipe.id);
+              render();
+            },
+          },
+          "×",
+        ),
+      ),
+    ),
+  );
+}
+
+/** Pick a FOOD_DB entry through the existing listbox control; its kcal /
+ *  protein come along unedited, so this path is one tap once a food is
+ *  chosen. */
+function extrasPickForm(day) {
+  if (extrasFoodId == null || !FOOD_DB.some((f) => f.id === extrasFoodId)) {
+    extrasFoodId = FOOD_DB[0]?.id ?? null;
+  }
+  const food = FOOD_DB.find((f) => f.id === extrasFoodId) ?? null;
+  const lb = listbox({
+    options: FOOD_DB.map((f) => ({ value: f.id, label: `${f.name} — ${f.portion}` })),
+    value: extrasFoodId,
+    ariaLabel: "Food",
+    onChange: (v) => {
+      extrasFoodId = v;
+    },
+  });
+
+  return el(
+    "div",
+    { class: "extras__form" },
+    el("div", { class: "field" }, el("span", { class: "field__label" }, "Food"), lb.node),
+    food
+      ? el(
+          "p",
+          { class: "field__hint" },
+          `${NUM.format(food.kcal)} kcal · ${Math.round(food.proteinG)} g protein`,
+        )
+      : null,
+    el(
+      "button",
+      {
+        class: "btn btn--primary btn--full",
+        type: "button",
+        disabled: food ? null : "",
+        onclick: () => {
+          if (!food) return;
+          extrasOpen = false;
+          commit(addExtra(day, { name: food.name, kcal: food.kcal, proteinG: food.proteinG }));
+        },
+      },
+      "Add",
+    ),
+  );
+}
+
+/** Quick-type a one-off item by hand: name, kcal, protein. Add stays disabled
+ *  until a name is typed — kcal/protein of "" sanitise to 0 in addExtra, which
+ *  is a fine default for something like a black coffee. */
+function extrasTypeForm(day) {
+  const nameIn = el("input", {
+    class: "field__input",
+    type: "text",
+    placeholder: "e.g. Chocolate bar",
+    maxlength: "60",
+    oninput: () => {
+      addBtn.disabled = !nameIn.value.trim();
+    },
+  });
+  const kcalIn = el("input", {
+    class: "field__input",
+    type: "number",
+    inputmode: "numeric",
+    min: "0",
+    step: "1",
+    placeholder: "0",
+  });
+  const proteinIn = el("input", {
+    class: "field__input",
+    type: "number",
+    inputmode: "decimal",
+    min: "0",
+    step: "0.1",
+    placeholder: "0",
+  });
+  const addBtn = el(
+    "button",
+    {
+      class: "btn btn--primary btn--full",
+      type: "button",
+      disabled: "",
+      onclick: () => {
+        extrasOpen = false;
+        commit(addExtra(day, { name: nameIn.value, kcal: kcalIn.value, proteinG: proteinIn.value }));
+      },
+    },
+    "Add",
+  );
+
+  return el(
+    "div",
+    { class: "extras__form" },
+    el(
+      "div",
+      { class: "field" },
+      el("span", { class: "field__label" }, "Food"),
+      el("div", { class: "field__control" }, nameIn),
+    ),
+    el(
+      "div",
+      { class: "extras__row-fields" },
+      el(
+        "div",
+        { class: "field" },
+        el("span", { class: "field__label" }, "Kcal"),
+        el("div", { class: "field__control" }, kcalIn),
+      ),
+      el(
+        "div",
+        { class: "field" },
+        el("span", { class: "field__label" }, "Protein (g)"),
+        el("div", { class: "field__control" }, proteinIn),
+      ),
+    ),
+    addBtn,
   );
 }
 
