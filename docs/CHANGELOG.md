@@ -80,6 +80,48 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   precisely the "a missed entry is an offline break that only shows up after
   install" the roadmap warns about. Added it alongside `core/recipes.js`;
   `CACHE_NAME` -> `rise-v15`.
+- **pass 28 — compound recipes and the recipe editor:** A recipe grows an
+  `items` list — each ingredient a `{ name, kcal, proteinG }` snapshot picked
+  from `plan.js`'s `FOOD_DB` or quick-typed — and the recipe's own `kcal` /
+  `proteinG` become the sum of them (kept denormalised so callers and a backup
+  file don't re-add every read). `core/recipes.js` gains `recipeTotals`,
+  `getRecipe`, `createRecipe`, `updateRecipe` and `recipeKey`-guarded rename
+  (the editor blocks a name collision up front, `updateRecipe` is the
+  backstop); `saveRecipe` is now a thin wrapper that stores a logged extra as a
+  one-item recipe, so the dedupe and sanitise rules live in one place. On
+  Today, the Recipes tab gains a **recipe editor** that expands in place — a
+  name field, the ingredient list with add / remove, a pick/type
+  add-ingredient sub-form mirroring the extras entry, and a running total —
+  opened blank from a "New recipe" trigger or on an existing recipe (where
+  Delete also lives, so a destructive tap isn't sitting on every list row).
+  Inserting a compound recipe still logs **one** extra under the recipe's name.
+  `storage.js` `SCHEMA_VERSION` 2 → 3 with a `MIGRATIONS[3]` step that
+  backfills `items: [{ name, kcal, proteinG }]` onto every stored recipe from
+  its flat values (pass 23's rule: bump the version, don't lean on a read-site
+  `?? []`); the step passes `profile` / `days` / `weights` through untouched.
+  `backup.js` already carries the whole `wgt:recipes` record, so the round trip
+  needed no change. `sw.js` `CACHE_NAME` → `rise-v16`. Verified live in the
+  browser preview: migration backfill, create / rename / delete, the
+  one-extra-per-insert rule, and the rename-collision backstop.
+  **Found and fixed in passing:** the "From the list" picker in both the new
+  recipe editor and the existing pass-25 extras entry captured the `listbox`
+  selection at build time and never re-rendered on change — picking any option
+  but the first then hitting Add logged the *first* food; both `onChange`
+  handlers now `render()`, matching the calendar popover. Two `disabled`
+  toggles in the editor assigned `el.disabled = ""` (falsy — never disables);
+  switched to a real boolean. The reused `.block-row__drop` / `.block-row__swap`
+  strips rendered sharp-cornered inside a free-standing `.extras__row` (which,
+  unlike a plan `.block-row`, is padded and doesn't clip) — scoped them to
+  `--radius-control` and dropped the now-orphaned divider in that context.
+- **pass 29 — most-logged meals readout:** On the Weight tab's weekly review
+  card, beside the most-skipped-block line (pass 16), a muted line naming the
+  recipe(s) with the highest `useCount` — "Most logged: Chai — 12 times".
+  `core/recipes.js` `topLoggedRecipes(minCount = 2)` returns the book
+  most-logged first, name as the tiebreak; the line is all-time (the book keeps
+  only a running `useCount`, no per-use log) and stays hidden until a recipe
+  has been logged at least twice, so a new book is quiet. A tie at the top
+  names both. A fact, like the skip line — never a "you always reach for X"
+  verdict (`insight_copy_states_facts`).
 - **pass 22 — closing the genuine design-system gaps:** Three items the "Still open" queue flagged as truly missing, not merely undocumented. **Focus ring:** adopted the export's canvas-gap + coral double ring, replacing the 3px 15%-alpha coral wash — `--border-focus: var(--coral-500); --focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--border-focus)`. The dark-theme override was deleted outright rather than re-specified: `--surface-canvas` already flips per theme, so the one declaration resolves correctly in both, and every one of the 21 existing `:focus-visible` call sites in `app.css` picked up the new ring for free since they all read the token, never a literal. **Breakpoints:** the 5-token scale landed as reference-only constants (`--bp-compact` 360 · `--bp-medium` 600 · `--bp-expanded` 840 · `--bp-desktop` 1024 · `--bp-wide` 1440, plus `--gutter-*`, `--panel-nav-width`, `--panel-detail-width`, `--container-app`) — correctly not wired into media queries yet, since a custom property can't drive `@media`; that wiring is phase 4's job. **Form controls:** no code change. `design-system.md` documents the existing `.field` / `.seg` system as already coherent and defers checkbox/radio/toggle/slider until a feature actually needs one, on the standing rule that unused component CSS rots. Phase 4 is now unblocked.
 
 ## v1.6.0 — shipped

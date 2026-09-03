@@ -16,6 +16,7 @@ import { TARGET_RATE_KG_PER_WEEK, blockById } from "./core/plan.js";
 import { todayISO, humanDate, planWeek } from "./core/dates.js";
 import { allWeights, getWeight, logWeight } from "./core/weights.js";
 import { allDays } from "./core/days.js";
+import { topLoggedRecipes } from "./core/recipes.js";
 import {
   weeklyWeights,
   weeklyGains,
@@ -252,8 +253,9 @@ function statRow(key, value) {
  * trend.js and shown nowhere else. Reporting only — the adjustment engine keeps
  * its own suggestion card on Today, and the two must not argue.
  *
- * A muted line beneath adds the most-skipped block across all recorded days.
- * Both are descriptive per insight_copy_states_facts: no exhortation, no red.
+ * Two muted lines beneath add the most-skipped block across all recorded days
+ * and, once there's a repeat, the most-logged recipe from the book. All are
+ * descriptive per insight_copy_states_facts: no exhortation, no red.
  */
 function reviewCard(series, rolling, start) {
   const thisWeek = planWeek(start, todayISO());
@@ -304,6 +306,7 @@ function reviewCard(series, rolling, start) {
         : el("span", { class: inBand ? "is-on-track" : "is-partial" }, `${roll.toFixed(2)} kg/wk`),
     ),
     skipNote(),
+    loggedNote(),
   );
 }
 
@@ -316,6 +319,28 @@ function skipNote() {
     "p",
     { class: "review__note" },
     `Most often skipped: ${name} — ${worst.missed} of ${worst.of} days it was on the plan.`,
+  );
+}
+
+/**
+ * The recipe logged most from the book (pass 29). All-time, not week-scoped —
+ * the book keeps only a running `useCount`. Nothing until a recipe has been
+ * used at least twice, so it stays quiet for a brand-new book. A tie at the
+ * top names both. A fact, like skipNote() — never "you always reach for X".
+ */
+function loggedNote() {
+  const ranked = topLoggedRecipes(2);
+  if (!ranked.length) return null;
+  const top = ranked[0].useCount;
+  const names = ranked.filter((r) => r.useCount === top).map((r) => r.name);
+  const list =
+    names.length <= 2
+      ? names.join(" and ")
+      : `${names.slice(0, 2).join(", ")} and ${names.length - 2} more`;
+  return el(
+    "p",
+    { class: "review__note" },
+    `Most logged: ${list} — ${top} time${top === 1 ? "" : "s"}.`,
   );
 }
 

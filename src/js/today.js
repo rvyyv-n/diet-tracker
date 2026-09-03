@@ -44,7 +44,17 @@ import {
   isDayEditable,
 } from "./core/day.js";
 import { dayExtras, addExtra, removeExtra } from "./core/extras.js";
-import { allRecipes, saveRecipe, deleteRecipe, touchRecipe, recipeKey } from "./core/recipes.js";
+import {
+  allRecipes,
+  getRecipe,
+  saveRecipe,
+  createRecipe,
+  updateRecipe,
+  deleteRecipe,
+  touchRecipe,
+  recipeKey,
+  recipeTotals,
+} from "./core/recipes.js";
 import { getDay, putDay, allDays } from "./core/days.js";
 import { dateCalendar } from "./ui/date-calendar.js";
 import { listbox } from "./ui/listbox.js";
@@ -79,6 +89,11 @@ let extrasModeTouched = false; // has the user picked an extras tab this screen
 //   visit? until they do, the panel opens on "recipe" when the book is
 //   non-empty — repeating a saved meal should be one tap, not two.
 let extrasFoodId = null; // the FOOD_DB id picked in "pick" mode
+// The recipe editor (pass 28), open over the Recipes tab, or null. `id` null is
+// a new recipe; `items` is the working ingredient list; `addMode` / `addFoodId`
+// drive its own pick/type add-ingredient sub-form.
+let recipeEditor = null;
+let recipeEditorError = null; // a message shown under the editor after a failed save
 
 // How many days the adherence dot strip shows — the last week at a glance, up
 // near the header. Older days are reached through the calendar popover beside
@@ -92,6 +107,8 @@ export function renderToday(mountEl) {
   addOpen = false;
   extrasOpen = false;
   extrasModeTouched = false;
+  recipeEditor = null;
+  recipeEditorError = null;
   render();
 }
 
@@ -588,15 +605,15 @@ function extraRow(day, extra, editable, savedKeys) {
 }
 
 /** The "+ Log food" trigger and its panel — closed by default, same register
- *  as addBlockSection's "+ Add a block". Behind the toggle: the recipe book
- *  (when it has anything), the FOOD_DB list, and quick-type. */
+ *  as addBlockSection's "+ Add a block". Behind the toggle: the recipe book,
+ *  the FOOD_DB list, and quick-type. The Recipes tab is always present (pass
+ *  28 — it's the way in to the recipe editor, even with an empty book). */
 function extrasAddPanel(day) {
-  const hasRecipes = allRecipes().length > 0;
-  // Default to the book when it's non-empty and the user hasn't chosen a tab
-  // this visit — a repeat meal is the common case and should be one tap.
-  if (!extrasModeTouched && hasRecipes) extrasMode = "recipe";
-  const modes = hasRecipes ? ["recipe", "pick", "type"] : ["pick", "type"];
-  if (!modes.includes(extrasMode)) extrasMode = modes[0];
+  const modes = ["recipe", "pick", "type"];
+  // First open this visit defaults to the book when it has anything — a repeat
+  // meal is the common case and should be one tap; otherwise the food list.
+  if (!extrasModeTouched && allRecipes().length) extrasMode = "recipe";
+  if (!modes.includes(extrasMode)) extrasMode = "pick";
 
   return el(
     "div",
@@ -644,6 +661,9 @@ function extrasModeToggle(modes) {
             if (extrasMode === mode) return;
             extrasMode = mode;
             extrasModeTouched = true;
+            // Leaving the Recipes tab drops any half-finished editor.
+            recipeEditor = null;
+            recipeEditorError = null;
             render();
           },
         },
@@ -653,65 +673,377 @@ function extrasModeToggle(modes) {
   );
 }
 
-/**
- * The recipe book as an insert list (pass 26): one tap on a row logs that
- * recipe as an extra on the day and bumps its recency (touchRecipe) so the
- * book stays ordered by what's actually eaten. The × drops a recipe from the
- * book — not from the day. Rows reuse .extras__row so a saved recipe and a
- * logged extra read the same.
- */
+// --- the recipe book (Recipes tab) --------------------------------------
+
+/** The Recipes tab: the editor when one is open (pass 28), else the insert
+ *  list with a "New recipe" trigger above it. */
 function extrasRecipeForm(day) {
+  return recipeEditor ? recipeEditorPanel() : recipeList(day);
+}
+
+/**
+ * The book as an insert list: one tap on a row logs that recipe as an extra on
+ * the day and bumps its recency (touchRecipe) so the book stays ordered by
+ * what's actually eaten. "Edit" opens the editor (where delete also lives, so
+ * a destructive tap isn't sitting on every row). Rows reuse .extras__row so a
+ * saved recipe and a logged extra read the same.
+ */
+function recipeList(day) {
   const recipes = allRecipes();
-  if (!recipes.length) {
-    return el("p", { class: "extras__empty" }, "No saved recipes yet.");
-  }
   return el(
     "div",
     { class: "extras__recipes" },
-    ...recipes.map((recipe) =>
+    el(
+      "button",
+      {
+        class: "addblock__trigger",
+        type: "button",
+        onclick: () => openRecipeEditor(null),
+      },
+      el("span", { class: "addblock__icon", "aria-hidden": "true" }, "+"),
+      "New recipe",
+    ),
+    ...(recipes.length
+      ? recipes.map((recipe) => recipePickRow(day, recipe))
+      : [el("p", { class: "extras__empty" }, "No saved recipes yet.")]),
+  );
+}
+
+function recipePickRow(day, recipe) {
+  return el(
+    "div",
+    { class: "extras__row extras__pick-row" },
+    el(
+      "button",
+      {
+        class: "extras__pick",
+        type: "button",
+        onclick: () => {
+          extrasOpen = false;
+          touchRecipe(recipe.id);
+          commit(
+            addExtra(day, { name: recipe.name, kcal: recipe.kcal, proteinG: recipe.proteinG }),
+          );
+        },
+      },
+      el("span", { class: "extras__name" }, recipe.name),
       el(
-        "div",
-        { class: "extras__row extras__pick-row" },
-        el(
-          "button",
-          {
-            class: "extras__pick",
-            type: "button",
-            onclick: () => {
-              extrasOpen = false;
-              touchRecipe(recipe.id);
-              commit(
-                addExtra(day, {
-                  name: recipe.name,
-                  kcal: recipe.kcal,
-                  proteinG: recipe.proteinG,
-                }),
-              );
-            },
-          },
-          el("span", { class: "extras__name" }, recipe.name),
-          el(
-            "span",
-            { class: "block-row__kcal" },
-            NUM.format(recipe.kcal),
-            el("span", { class: "block-row__unit" }, "kcal"),
-          ),
-        ),
-        el(
-          "button",
-          {
-            class: "block-row__drop",
-            type: "button",
-            "aria-label": `Remove ${recipe.name} from the recipe book`,
-            onclick: () => {
-              deleteRecipe(recipe.id);
-              render();
-            },
-          },
-          "×",
-        ),
+        "span",
+        { class: "block-row__kcal" },
+        NUM.format(recipe.kcal),
+        el("span", { class: "block-row__unit" }, "kcal"),
       ),
     ),
+    el(
+      "button",
+      {
+        class: "block-row__swap extras__edit",
+        type: "button",
+        "aria-label": `Edit ${recipe.name}`,
+        onclick: () => openRecipeEditor(recipe.id),
+      },
+      "Edit",
+    ),
+  );
+}
+
+function openRecipeEditor(id) {
+  recipeEditorError = null;
+  if (id == null) {
+    recipeEditor = { id: null, name: "", items: [], addMode: "pick", addFoodId: null };
+  } else {
+    const recipe = getRecipe(id);
+    if (!recipe) return;
+    recipeEditor = {
+      id: recipe.id,
+      name: recipe.name,
+      items: (recipe.items ?? []).map((it) => ({ ...it })),
+      addMode: "pick",
+      addFoodId: null,
+    };
+  }
+  render();
+}
+
+function closeRecipeEditor() {
+  recipeEditor = null;
+  recipeEditorError = null;
+  render();
+}
+
+function saveRecipeEditor() {
+  const ed = recipeEditor;
+  const result =
+    ed.id == null
+      ? createRecipe({ name: ed.name, items: ed.items })
+      : updateRecipe(ed.id, { name: ed.name, items: ed.items });
+  if (!result) {
+    recipeEditorError =
+      ed.id != null
+        ? `Couldn't save — another recipe may already be called "${ed.name.trim()}".`
+        : "Couldn't save — give it a name and at least one ingredient.";
+    render();
+    return;
+  }
+  recipeEditor = null;
+  recipeEditorError = null;
+  render();
+}
+
+/**
+ * The recipe editor (pass 28): a name field, the working ingredient list, an
+ * add-ingredient sub-form (pick from FOOD_DB or quick-type, mirroring the
+ * extras entry), and the running total. Save routes to createRecipe (new) or
+ * updateRecipe (existing, which also renames). Delete only shows when editing
+ * an existing recipe.
+ */
+function recipeEditorPanel() {
+  const ed = recipeEditor;
+  const totals = recipeTotals(ed.items);
+  const canSave = () => Boolean(ed.name.trim()) && ed.items.length > 0;
+
+  const nameInput = el("input", {
+    class: "field__input",
+    type: "text",
+    value: ed.name,
+    placeholder: "e.g. Morning shake",
+    maxlength: "60",
+    oninput: () => {
+      ed.name = nameInput.value;
+      saveBtn.disabled = !canSave();
+    },
+  });
+
+  const saveBtn = el(
+    "button",
+    {
+      class: "btn btn--primary btn--full",
+      type: "button",
+      disabled: canSave() ? null : "",
+      onclick: saveRecipeEditor,
+    },
+    ed.id == null ? "Save recipe" : "Save changes",
+  );
+
+  return el(
+    "div",
+    { class: "recipe-editor" },
+    el(
+      "div",
+      { class: "field" },
+      el("span", { class: "field__label" }, "Name"),
+      el("div", { class: "field__control" }, nameInput),
+    ),
+    el(
+      "div",
+      { class: "recipe-editor__items" },
+      ...(ed.items.length
+        ? ed.items.map((item, i) => recipeItemRow(item, i))
+        : [el("p", { class: "field__hint" }, "Add an ingredient below.")]),
+    ),
+    el(
+      "p",
+      { class: "recipe-editor__total" },
+      `Total ${NUM.format(Math.round(totals.kcal))} kcal · ${Math.round(totals.proteinG)} g protein`,
+    ),
+    el(
+      "div",
+      { class: "recipe-editor__add" },
+      recipeAddModeToggle(),
+      ed.addMode === "pick" ? recipeAddPickForm() : recipeAddTypeForm(),
+    ),
+    recipeEditorError ? el("p", { class: "recipe-editor__error" }, recipeEditorError) : null,
+    el(
+      "div",
+      { class: "recipe-editor__actions" },
+      saveBtn,
+      el("button", { class: "btn btn--text", type: "button", onclick: closeRecipeEditor }, "Cancel"),
+      ed.id != null
+        ? el(
+            "button",
+            {
+              class: "btn btn--text recipe-editor__delete",
+              type: "button",
+              onclick: () => {
+                deleteRecipe(ed.id);
+                closeRecipeEditor();
+              },
+            },
+            "Delete recipe",
+          )
+        : null,
+    ),
+  );
+}
+
+function recipeItemRow(item, index) {
+  return el(
+    "div",
+    { class: "extras__row recipe-editor__item" },
+    el("span", { class: "extras__name" }, item.name),
+    el(
+      "span",
+      { class: "block-row__kcal" },
+      NUM.format(Math.round(Number(item.kcal) || 0)),
+      el("span", { class: "block-row__unit" }, "kcal"),
+    ),
+    el(
+      "button",
+      {
+        class: "block-row__drop",
+        type: "button",
+        "aria-label": `Remove ${item.name}`,
+        onclick: () => {
+          recipeEditor.items = recipeEditor.items.filter((_, i) => i !== index);
+          recipeEditorError = null;
+          render();
+        },
+      },
+      "×",
+    ),
+  );
+}
+
+function recipeAddModeToggle() {
+  return el(
+    "div",
+    { class: "seg extras__modeseg" },
+    ...[
+      ["pick", "From the list"],
+      ["type", "Type it in"],
+    ].map(([mode, label]) =>
+      el(
+        "button",
+        {
+          class: `seg__btn${recipeEditor.addMode === mode ? " is-on" : ""}`,
+          type: "button",
+          onclick: () => {
+            if (recipeEditor.addMode === mode) return;
+            recipeEditor.addMode = mode;
+            render();
+          },
+        },
+        label,
+      ),
+    ),
+  );
+}
+
+function addRecipeItem(item) {
+  recipeEditor.items = [...recipeEditor.items, item];
+  recipeEditorError = null;
+  render();
+}
+
+function recipeAddPickForm() {
+  const ed = recipeEditor;
+  if (ed.addFoodId == null || !FOOD_DB.some((f) => f.id === ed.addFoodId)) {
+    ed.addFoodId = FOOD_DB[0]?.id ?? null;
+  }
+  const food = FOOD_DB.find((f) => f.id === ed.addFoodId) ?? null;
+  const lb = listbox({
+    options: FOOD_DB.map((f) => ({ value: f.id, label: `${f.name} — ${f.portion}` })),
+    value: ed.addFoodId,
+    ariaLabel: "Ingredient",
+    onChange: (v) => {
+      ed.addFoodId = v;
+      // Re-render so the kcal/protein hint and the Add button's captured food
+      // follow the new pick — same as the calendar popover's onChange.
+      render();
+    },
+  });
+
+  return el(
+    "div",
+    { class: "extras__form" },
+    el("div", { class: "field" }, el("span", { class: "field__label" }, "Ingredient"), lb.node),
+    food
+      ? el(
+          "p",
+          { class: "field__hint" },
+          `${NUM.format(food.kcal)} kcal · ${Math.round(food.proteinG)} g protein`,
+        )
+      : null,
+    el(
+      "button",
+      {
+        class: "btn btn--secondary btn--full",
+        type: "button",
+        disabled: food ? null : "",
+        onclick: () => {
+          if (!food) return;
+          addRecipeItem({ name: food.name, kcal: food.kcal, proteinG: food.proteinG });
+        },
+      },
+      "Add ingredient",
+    ),
+  );
+}
+
+function recipeAddTypeForm() {
+  const nameIn = el("input", {
+    class: "field__input",
+    type: "text",
+    placeholder: "e.g. Honey",
+    maxlength: "60",
+    oninput: () => {
+      addBtn.disabled = !nameIn.value.trim();
+    },
+  });
+  const kcalIn = el("input", {
+    class: "field__input",
+    type: "number",
+    inputmode: "numeric",
+    min: "0",
+    step: "1",
+    placeholder: "0",
+  });
+  const proteinIn = el("input", {
+    class: "field__input",
+    type: "number",
+    inputmode: "decimal",
+    min: "0",
+    step: "0.1",
+    placeholder: "0",
+  });
+  const addBtn = el(
+    "button",
+    {
+      class: "btn btn--secondary btn--full",
+      type: "button",
+      disabled: "",
+      onclick: () =>
+        addRecipeItem({ name: nameIn.value, kcal: kcalIn.value, proteinG: proteinIn.value }),
+    },
+    "Add ingredient",
+  );
+
+  return el(
+    "div",
+    { class: "extras__form" },
+    el(
+      "div",
+      { class: "field" },
+      el("span", { class: "field__label" }, "Ingredient"),
+      el("div", { class: "field__control" }, nameIn),
+    ),
+    el(
+      "div",
+      { class: "extras__row-fields" },
+      el(
+        "div",
+        { class: "field" },
+        el("span", { class: "field__label" }, "Kcal"),
+        el("div", { class: "field__control" }, kcalIn),
+      ),
+      el(
+        "div",
+        { class: "field" },
+        el("span", { class: "field__label" }, "Protein (g)"),
+        el("div", { class: "field__control" }, proteinIn),
+      ),
+    ),
+    addBtn,
   );
 }
 
@@ -729,6 +1061,9 @@ function extrasPickForm(day) {
     ariaLabel: "Food",
     onChange: (v) => {
       extrasFoodId = v;
+      // Re-render so the kcal/protein hint and the Add button's captured food
+      // follow the new pick — same as the calendar popover's onChange.
+      render();
     },
   });
 

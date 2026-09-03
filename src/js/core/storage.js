@@ -11,7 +11,7 @@
 const NAMESPACE = "wgt";
 
 /** Bump when a record's shape changes, and add a matching migration step. */
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 const key = (name) => `${NAMESPACE}:${name}`;
 
@@ -37,6 +37,21 @@ const MIGRATIONS = {
       Object.entries(data.days ?? {}).map(([iso, day]) => [iso, { extras: [], ...day }])
     );
     return { ...data, days };
+  },
+
+  // v3 (pass 28): a recipe gains an `items` list — the ingredients it's built
+  // from — and its kcal / protein become the sum of them. Recipes saved by
+  // pass 26 are flat ({ name, kcal, proteinG }); give each a single item
+  // mirroring its own totals so pass 28 can read `recipe.items` directly
+  // rather than falling back at the call site (same reasoning as the v2 step).
+  3: (data, name) => {
+    if (name !== "recipes") return data;
+    const recipes = (Array.isArray(data.recipes) ? data.recipes : []).map((r) =>
+      Array.isArray(r.items)
+        ? r
+        : { ...r, items: [{ name: r.name, kcal: r.kcal ?? 0, proteinG: r.proteinG ?? 0 }] }
+    );
+    return { ...data, recipes };
   },
 };
 

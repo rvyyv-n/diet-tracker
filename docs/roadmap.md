@@ -37,7 +37,7 @@ re-propose without a reason that wasn't already weighed:
 - **Free-text day notes** — conflict with the pass-9 decision against prose.
 - **7-day appetite strip** and a **read-only plan reference sheet** — both held;
   the reference sheet overlaps the v2 grocery checklist and is now scheduled
-  with it in phase 2.
+  with it in phase 3.
 - **A contextual "you're short and it's late — add a shake" nudge** — follows
   plan-spec.md's own appetite tactic, but held as the closest thing to a nag on
   the list.
@@ -59,7 +59,7 @@ desktop layout. Three standing decisions shape the ordering:
 
 ```yaml
 vanilla_through_v2:
-  decision: "stay vanilla ES modules for the design-system and feature phases; the build/framework call is deferred to phase 5"
+  decision: "stay vanilla ES modules for the design-system and feature phases; the build/framework call is deferred to phase 6"
   why: "a framework migration before any user-visible feature is a rewrite of 3,000 working lines that also touches sw.js precaching, the Android WebViewAssetLoader path, and the Tauri build"
 animations_last:
   decision: "motion polish and any component-framework adoption come last, after every feature phase"
@@ -77,7 +77,7 @@ documents what ships. Pass 22 closed the three genuine gaps: the focus ring
 adopted the export's canvas-gap + coral double ring (displacing the old 15%-
 alpha wash), the five-token breakpoint scale landed as reference constants in
 `tokens.css`, and form controls were confirmed already coherent and documented
-as-is. **Phase 4 is unblocked.**
+as-is. **Phase 5 (the desktop layout) is unblocked.**
 
 ### phase 1 — off-plan food and recipes ✅ done
 
@@ -97,16 +97,29 @@ holds it for "when the network path is needed", and v2 does not need it —
 `FOOD_DB` plus user recipes covers the feature. Revisit only if online food
 lookup is ever actually wanted.
 
-### phase 2 — grocery checklist with weekly reset
+### phase 2 — the recipe book, expanded ✅ done
+
+**Passes 28–29 are done** — see `CHANGELOG.md`. `SCHEMA_VERSION` went to 3 with
+a `MIGRATIONS[3]` step backfilling `items: [{ name, kcal, proteinG }]` onto every
+stored recipe (28); `core/recipes.js` grew `recipeTotals` / `getRecipe` /
+`createRecipe` / `updateRecipe` and the Recipes tab gained an expand-in-place
+**recipe editor** for compound recipes, rename and delete, still logging one
+extra per insert (28); and the Weight tab's weekly review card gained a
+most-logged-recipe line beside the most-skipped-block readout (29). Pass 28 also
+fixed a pre-existing `listbox` staleness in the extras "From the list" picker and
+rounded the reused `.block-row__drop` strip inside free-standing `.extras__row`
+cards. `sw.js` `CACHE_NAME` → `rise-v16`.
+
+### phase 3 — grocery checklist with weekly reset
 
 Cheapest real feature on the list: `GROCERY_LIST` already exists in `plan.js`
 with four sections, under a comment reading "Resettable weekly in the UI."
 
-- [ ] **pass 28 — grocery state and the reset.** Store checked items against a
+- [ ] **pass 30 — grocery state and the reset.** Store checked items against a
   week anchor (`{ weekStart, checked: {} }`); on load, if the current week has
   rolled past `weekStart`, clear the checks. Week arithmetic goes through
   `core/dates.js`, not new date code.
-- [ ] **pass 29 — the screen.** A fourth tab is the honest home for it; the tab
+- [ ] **pass 31 — the screen.** A fourth tab is the honest home for it; the tab
   bar is 44px and takes a fourth icon without structural changes. Ships
   alongside the held **plan reference sheet**, which the "Not doing" list parks
   until it can be designed *with* the grocery checklist — this is that moment.
@@ -116,47 +129,47 @@ volume". Should quantities scale with the user's current phase, or stay a fixed
 list? Scaling is more correct and more work; a fixed list is honest if it is
 labelled as a Phase 2 baseline.
 
-### phase 3 — configurable overview metrics
+### phase 4 — configurable overview metrics
 
-- [ ] **pass 30.** Let the user show/hide readouts on the day total (the
+- [ ] **pass 32.** Let the user show/hide readouts on the day total (the
   protein line is the motivating case). Stored as `profile.overviewMetrics`;
   the Settings surface follows the segmented-group pattern established by
   Appearance in pass 19. Small and self-contained — sequenced here as a
   breather between two heavy phases.
 
-### phase 4 — the desktop layout
+### phase 5 — the desktop layout
 
 The largest item, and a deliberate structural pass — the roadmap is explicit
 that media queries bolted onto the mobile CSS do not count. Depends on phase 0
 delivering a breakpoint scale.
 
-- [ ] **pass 31 — routing.** `app.js` `route()` currently swaps a single
+- [ ] **pass 33 — routing.** `app.js` `route()` currently swaps a single
   `activeTab`. A wide layout shows all three screens at once, so simultaneous
   rendering is a real change to the routing model, not a CSS problem. Do this
   before any layout work.
-- [ ] **pass 32 — side nav and wide layout.** The bottom tab bar becomes a side
+- [ ] **pass 34 — side nav and wide layout.** The bottom tab bar becomes a side
   nav above the desktop breakpoint. Chief beneficiary is the Tauri desktop
   build, which today ships the phone layout stretched wide.
 
-**If v2 runs long, this is the cut line.** Phases 0–3 are a coherent, shippable
+**If v2 runs long, this is the cut line.** Phases 0–4 are a coherent, shippable
 release on their own; the desktop layout is the natural 2.1.
 
-### phase 5 — motion, and the framework question  (last, by decision)
+### phase 6 — motion, and the framework question  (last, by decision)
 
-- [ ] **pass 33 — the framework call.** With every surface final, decide
+- [ ] **pass 35 — the framework call.** With every surface final, decide
   whether the reactbits.dev components justify a build step. Options in
   ascending cost: port the effects to vanilla, add Vite for bundling only, or
   adopt a component framework. Deferring to here means the decision is made with
   full knowledge of what v2 actually became.
-- [ ] **pass 34 — motion polish.** Subtle, not showy; scoped per surface.
+- [ ] **pass 36 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.
 
-### phase 6 — the 2.0 release
+### phase 7 — the 2.0 release
 
-- [ ] **pass 35.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
+- [ ] **pass 37.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
   (+ `versionCode` 4), `tauri.conf.json`, `Cargo.toml`, and `README.md`. `sw.js`
-  `CACHE_NAME` → `rise-v15` or later (pass 21 already took `v14`), with every module added across phases 1–4 appended
+  `CACHE_NAME` → `rise-v16` or later (pass 27 took `v15`), with every module added across phases 1–6 appended
   to `PRECACHE_URLS` — a missed entry is an offline break that only shows up
   after install.
 

@@ -891,6 +891,18 @@
   color: var(--text-ink);
 }
 
+/* .block-row__swap / .block-row__drop are edge strips on a plan .block-row,
+   which clips them (overflow: hidden), so their outer corners follow the card.
+   A free-standing .extras__row is padded and does not clip, so the same strips
+   floated as sharp-cornered rectangles (see the pass-28 recipe rows). Round
+   them to --radius-control and drop the now-orphaned divider — the row's own
+   gap separates them. .extras__pick-row keeps the clipped edge treatment. */
+.extras__row:not(.extras__pick-row) .block-row__swap,
+.extras__row:not(.extras__pick-row) .block-row__drop {
+  border-left: none;
+  border-radius: var(--radius-control);
+}
+
 .extras__panel {
   display: flex;
   flex-direction: column;
@@ -964,6 +976,60 @@
   margin: 0;
   font: var(--text-body-sm);
   color: var(--text-muted);
+}
+
+/* recipe editor (pass 28) ------------------------------------------------
+   Name a recipe and manage its ingredient list, expand-in-place over the
+   Recipes tab. Reuses .field, .extras__row, .seg and the .btn kit; adds
+   only layout and the ingredient add-box. */
+
+.recipe-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.recipe-editor__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+/* Ingredient rows are the same dashed .extras__row card as a logged extra. */
+
+.recipe-editor__total {
+  margin: 0;
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.recipe-editor__add {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  background: var(--surface-soft);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-card);
+}
+
+.recipe-editor__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs) var(--space-sm);
+}
+
+.recipe-editor__delete {
+  margin-left: auto;
+  color: var(--status-error);
+}
+
+.recipe-editor__error {
+  margin: 0;
+  font: var(--text-body-sm);
+  color: var(--status-error);
 }
 
 /* appetite check (pass 9) ----------------------------------------------
