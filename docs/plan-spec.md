@@ -152,6 +152,11 @@ should explain *why* it's suggesting something, not just assert it.
 
 ## Weekly grocery list (Phase 2)
 
+These quantities are the Phase 2 baseline. The app (Plan tab) scales each one to
+the user's current phase by the ratio of the phase kcal targets and rounds to a
+buyable step; unmeasured staples (flour, honey, "potatoes, onions, tomatoes")
+are shown as-is.
+
 ```yaml
 dairy_eggs: ["7-8 L full-fat milk", "2 dozen eggs", "1.5 kg yogurt", "250 g clarified butter"]
 pantry:     ["1 kg peanut butter", "500 g oats", "2 kg rice", "wholemeal flour", "1 L oil", "honey"]

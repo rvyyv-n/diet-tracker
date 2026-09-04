@@ -148,12 +148,56 @@ export const FOOD_DB = [
   { id: "potato_boiled", name: "Boiled potato", portion: "150 g", kcal: 130, proteinG: 3 },
 ];
 
-/** Weekly grocery list at Phase 2 volume. Resettable weekly in the UI. */
+/**
+ * Weekly grocery list. Quantities are the Phase 2 baseline (the list's origin in
+ * docs/plan-spec.md); the Plan screen scales them to the active phase with
+ * scaleGroceryQty() so the list tracks what's actually being eaten. Each item is
+ * `{ name, qty, unit, step }`:
+ *   - `qty: null` is an unmeasured staple — shown by name, never scaled.
+ *   - `unit` is null for a plain count (eggs, bananas).
+ *   - `step` is the rounding granularity for the scaled figure, so it lands on a
+ *     quantity you can actually buy.
+ * Resettable weekly in the UI (see core/grocery.js).
+ */
 export const GROCERY_LIST = [
-  { section: "Dairy & eggs", items: ["7–8 L full-fat milk", "2 dozen eggs", "1.5 kg yogurt", "250 g clarified butter"] },
-  { section: "Pantry", items: ["1 kg peanut butter", "500 g oats", "2 kg rice", "wholemeal flour", "1 L oil", "honey"] },
-  { section: "Protein", items: ["1.5 kg chicken", "500 g minced beef", "1 kg dried lentils", "1 kg dried chickpeas"] },
-  { section: "Produce", items: ["2 dozen bananas", "500 g dates", "250 g almonds", "potatoes, onions, tomatoes"] },
+  {
+    section: "Dairy & eggs",
+    items: [
+      { name: "Full-fat milk", qty: 7.5, unit: "L", step: 0.5 },
+      { name: "Eggs", qty: 24, unit: null, step: 6 },
+      { name: "Yogurt", qty: 1.5, unit: "kg", step: 0.25 },
+      { name: "Clarified butter", qty: 250, unit: "g", step: 50 },
+    ],
+  },
+  {
+    section: "Pantry",
+    items: [
+      { name: "Peanut butter", qty: 1, unit: "kg", step: 0.25 },
+      { name: "Oats", qty: 500, unit: "g", step: 100 },
+      { name: "Rice", qty: 2, unit: "kg", step: 0.5 },
+      { name: "Wholemeal flour", qty: null },
+      { name: "Oil", qty: 1, unit: "L", step: 0.5 },
+      { name: "Honey", qty: null },
+    ],
+  },
+  {
+    section: "Protein",
+    items: [
+      { name: "Chicken", qty: 1.5, unit: "kg", step: 0.25 },
+      { name: "Minced beef", qty: 500, unit: "g", step: 100 },
+      { name: "Dried lentils", qty: 1, unit: "kg", step: 0.25 },
+      { name: "Dried chickpeas", qty: 1, unit: "kg", step: 0.25 },
+    ],
+  },
+  {
+    section: "Produce",
+    items: [
+      { name: "Bananas", qty: 24, unit: null, step: 6 },
+      { name: "Dates", qty: 500, unit: "g", step: 100 },
+      { name: "Almonds", qty: 250, unit: "g", step: 50 },
+      { name: "Potatoes, onions, tomatoes", qty: null },
+    ],
+  },
 ];
 
 /**
@@ -234,6 +278,21 @@ export function phaseTarget(phaseId) {
   return phase
     ? { kcal: phase.kcal, proteinG: phase.proteinG }
     : { kcal: 0, proteinG: 0 };
+}
+
+/**
+ * A GROCERY_LIST item's quantity scaled from the Phase 2 baseline to `phaseId`,
+ * by the ratio of the two phases' kcal targets and rounded to the item's `step`
+ * (never below one step). Phase 2 returns the baseline unchanged; an unmeasured
+ * staple (`qty: null`) stays null.
+ */
+export function scaleGroceryQty(item, phaseId) {
+  if (item.qty == null) return null;
+  const base = phaseTarget(2).kcal;
+  const target = phaseTarget(phaseId).kcal || base;
+  const step = item.step || 1;
+  const scaled = Math.round((item.qty * target) / base / step) * step;
+  return Math.max(step, Math.round(scaled * 100) / 100);
 }
 
 /** Rotation options for a slot: "breakfast" | "lunch" | "dinner" | "shake". */

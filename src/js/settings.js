@@ -30,12 +30,13 @@ import {
   restoreSnapshot,
   discardSnapshot,
 } from "./core/backup.js";
-import { loadProfile } from "./core/profile.js";
+import { loadProfile, saveProfile, OVERVIEW_METRICS, overviewMetricShown } from "./core/profile.js";
 import { setThemePref, THEME_PREFS } from "./core/theme.js";
 import { phaseById } from "./core/plan.js";
 import { humanDate, todayISO } from "./core/dates.js";
 import { APP_VERSION, REPO_URL } from "./core/appinfo.js";
 import { checkForUpdate, updateStatus, detectBuild } from "./core/updates.js";
+import { publish } from "./core/broadcast.js";
 
 const APP_NAME = "Rise";
 
@@ -70,6 +71,16 @@ export function renderSettings(mountEl, opts = {}) {
   render();
 }
 
+/**
+ * Repaint in place, keeping what renderSettings() resets — a pending confirm, a
+ * typed-in backup paste, the update-check phase — and keeping the onEditSetup /
+ * onReset callbacks bound. Called by the router when a sibling pane moved the
+ * data; see core/broadcast.js.
+ */
+export function repaintSettings() {
+  if (mount) render();
+}
+
 // --- render ------------------------------------------------------------
 
 function render() {
@@ -84,12 +95,14 @@ function render() {
     ),
     profileGroup(),
     appearanceGroup(),
+    overviewGroup(),
     dataGroup(),
     actionsGroup(),
     aboutBlock(),
   );
   section.addEventListener("click", onAction);
   mount.replaceChildren(section);
+  publish("settings");
 }
 
 /**
@@ -188,6 +201,61 @@ function appearanceGroup() {
           ),
         ),
       ),
+    ),
+  );
+}
+
+/**
+ * Show/hide the optional readouts on Today's day-total card (pass 32). Reuses
+ * the Appearance block's name + hint + full-width segment, one row per metric
+ * (OVERVIEW_METRICS); a hairline separates stacked rows in the shared card.
+ * The choice is stored on the profile (profile.overviewMetrics) and read back
+ * by today.js — this only renders state and forwards the tap.
+ */
+function overviewGroup() {
+  const profile = loadProfile();
+  const rows = {
+    protein: { name: "Protein line", hint: "Protein logged against the daily target." },
+    remaining: { name: "Remaining line", hint: "How much kcal and how many blocks are still to go." },
+  };
+  return el(
+    "div",
+    { class: "group" },
+    el("span", { class: "group__label" }, "Overview"),
+    el(
+      "div",
+      { class: "card set2-card" },
+      ...OVERVIEW_METRICS.map((id) => {
+        const shown = overviewMetricShown(profile, id);
+        return el(
+          "div",
+          { class: "set2-appearance set2-overview__row" },
+          el(
+            "div",
+            { class: "set2-appearance__head" },
+            el("span", { class: "set2-appearance__name" }, rows[id].name),
+            el("span", { class: "set2-appearance__hint" }, rows[id].hint),
+          ),
+          el(
+            "div",
+            { class: "seg seg--full", role: "group", "aria-label": rows[id].name },
+            ...[true, false].map((want) =>
+              el(
+                "button",
+                {
+                  class: `seg__btn${want === shown ? " is-on" : ""}`,
+                  type: "button",
+                  "data-act": "overview-set",
+                  "data-metric": id,
+                  "data-shown": want ? "1" : "",
+                  "aria-pressed": want === shown ? "true" : "false",
+                },
+                want ? "Show" : "Hide",
+              ),
+            ),
+          ),
+        );
+      }),
     ),
   );
 }
@@ -515,6 +583,14 @@ function onAction(event) {
       setThemePref(target.getAttribute("data-pref"));
       render();
       break;
+    case "overview-set": {
+      const id = target.getAttribute("data-metric");
+      const shown = target.getAttribute("data-shown") === "1";
+      const p = loadProfile();
+      saveProfile({ ...p, overviewMetrics: { ...p.overviewMetrics, [id]: shown } });
+      render();
+      break;
+    }
     case "export-download":
       exportDownload(target);
       break;

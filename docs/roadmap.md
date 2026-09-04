@@ -35,9 +35,8 @@ re-propose without a reason that wasn't already weighed:
   round trip first (see `backup_round_trip`).
 - **Streak count** — the classic guilt mechanic the never-nag principle rules out.
 - **Free-text day notes** — conflict with the pass-9 decision against prose.
-- **7-day appetite strip** and a **read-only plan reference sheet** — both held;
-  the reference sheet overlaps the v2 grocery checklist and is now scheduled
-  with it in phase 3.
+- **7-day appetite strip** — held. (The plan reference sheet that used to sit
+  here shipped in phase 3, pass 31 — see below.)
 - **A contextual "you're short and it's late — add a shake" nudge** — follows
   plan-spec.md's own appetite tactic, but held as the closest thing to a nag on
   the list.
@@ -110,32 +109,33 @@ fixed a pre-existing `listbox` staleness in the extras "From the list" picker an
 rounded the reused `.block-row__drop` strip inside free-standing `.extras__row`
 cards. `sw.js` `CACHE_NAME` → `rise-v16`.
 
-### phase 3 — grocery checklist with weekly reset
+### phase 3 — grocery checklist with weekly reset ✅ done
 
-Cheapest real feature on the list: `GROCERY_LIST` already exists in `plan.js`
-with four sections, under a comment reading "Resettable weekly in the UI."
+**Passes 30–31 are done** — see `CHANGELOG.md`. The owner resolved the open
+question in favour of **scaling**: `plan.js` `GROCERY_LIST` became structured
+`{ name, qty, unit, step }` items (null `qty` = unmeasured staple) and a new
+`scaleGroceryQty` selector multiplies the Phase 2 baseline by the active phase's
+kcal ratio (30). `core/grocery.js` is a new standalone record
+(`wgt:grocery -> { weekStart, checked }`) anchored on the week's Monday via a new
+`core/dates.js` `startOfWeekISO` — a read past that Monday reads the ticks as
+empty, so the list resets itself weekly with no write until the next toggle; no
+schema bump, as the pass-23 note predicted (30). A fourth **Plan** tab
+(`clipboard-list` glyph; `?tab=plan` via the existing `launchTab()`) carries the
+aisle-grouped checklist plus a read-only **plan reference sheet** — phase
+targets, the active phase's meals with rotations, and the `FOOD_DB` table (31).
+`core/backup.js` carries `wgt:grocery` through the round trip (kept out of the
+record count); `sw.js` `CACHE_NAME` → `rise-v17`, with `plan-view.js` and
+`core/grocery.js` precached.
 
-- [ ] **pass 30 — grocery state and the reset.** Store checked items against a
-  week anchor (`{ weekStart, checked: {} }`); on load, if the current week has
-  rolled past `weekStart`, clear the checks. Week arithmetic goes through
-  `core/dates.js`, not new date code.
-- [ ] **pass 31 — the screen.** A fourth tab is the honest home for it; the tab
-  bar is 44px and takes a fourth icon without structural changes. Ships
-  alongside the held **plan reference sheet**, which the "Not doing" list parks
-  until it can be designed *with* the grocery checklist — this is that moment.
+### phase 4 — configurable overview metrics ✅ done
 
-**Open question for the owner:** `GROCERY_LIST` is hardcoded "at Phase 2
-volume". Should quantities scale with the user's current phase, or stay a fixed
-list? Scaling is more correct and more work; a fixed list is honest if it is
-labelled as a Phase 2 baseline.
-
-### phase 4 — configurable overview metrics
-
-- [ ] **pass 32.** Let the user show/hide readouts on the day total (the
-  protein line is the motivating case). Stored as `profile.overviewMetrics`;
-  the Settings surface follows the segmented-group pattern established by
-  Appearance in pass 19. Small and self-contained — sequenced here as a
-  breather between two heavy phases.
+**Pass 32 is done** — see `CHANGELOG.md`. `profile.overviewMetrics` (a
+`{ [id]: false }` map of hidden readouts, no schema bump — it merges over the
+defaults like `themePref`) now gates the day-total card's protein line and
+"remaining" line; `today.js` `totalCard()` renders each only when
+`overviewMetricShown()` is true, and a new **Overview** group in Settings draws
+one Show / Hide `.seg` per metric, reusing the pass-19 Appearance block. No new
+module, so `PRECACHE_URLS` was untouched; `sw.js` `CACHE_NAME` → `rise-v18`.
 
 ### phase 5 — the desktop layout
 
@@ -143,13 +143,19 @@ The largest item, and a deliberate structural pass — the roadmap is explicit
 that media queries bolted onto the mobile CSS do not count. Depends on phase 0
 delivering a breakpoint scale.
 
-- [ ] **pass 33 — routing.** `app.js` `route()` currently swaps a single
-  `activeTab`. A wide layout shows all three screens at once, so simultaneous
-  rendering is a real change to the routing model, not a CSS problem. Do this
-  before any layout work.
+**Pass 33 is done** — see `CHANGELOG.md`. The routing model now holds a list of
+panes rather than one `activeTab`, and `core/broadcast.js` keeps simultaneous
+panes in step. Nothing on screen changed; the phone still mounts exactly one.
+
 - [ ] **pass 34 — side nav and wide layout.** The bottom tab bar becomes a side
   nav above the desktop breakpoint. Chief beneficiary is the Tauri desktop
-  build, which today ships the phone layout stretched wide.
+  build, which today ships the phone layout stretched wide. The routing work is
+  done, so this is a `setPanes()` caller driven by a `--bp-desktop` media query
+  plus the CSS for it — `--panel-detail-width` and the `--bp-wide` three-panel
+  note in `tokens.css` are the shape to aim at. Two open calls to make then:
+  what the side nav does when tapped in a two-pane layout (swap the main pane,
+  presumably, rather than collapse to one), and whether `?tab=` should be able
+  to name more than one pane.
 
 **If v2 runs long, this is the cut line.** Phases 0–4 are a coherent, shippable
 release on their own; the desktop layout is the natural 2.1.
@@ -169,7 +175,7 @@ release on their own; the desktop layout is the natural 2.1.
 
 - [ ] **pass 37.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
   (+ `versionCode` 4), `tauri.conf.json`, `Cargo.toml`, and `README.md`. `sw.js`
-  `CACHE_NAME` → `rise-v16` or later (pass 27 took `v15`), with every module added across phases 1–6 appended
+  `CACHE_NAME` → `rise-v20` or later (pass 33 took `v19`), with every module added across phases 1–6 appended
   to `PRECACHE_URLS` — a missed entry is an offline break that only shows up
   after install.
 

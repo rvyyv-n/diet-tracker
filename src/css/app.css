@@ -61,6 +61,20 @@
   padding-bottom: calc(56px + env(safe-area-inset-bottom));
 }
 
+/* One mounted screen (pass 33). The router now renders each screen into its own
+   pane rather than sharing the content element, so several can be on display at
+   once. With a single pane — every layout that ships today — this is a
+   pass-through: it inherits the column flex .screen already expected from
+   .app-content, so the phone renders exactly as it did before. `min-width: 0`
+   is what stops a wide sibling from refusing to shrink once pass 34 puts two of
+   these in a row. */
+.pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 
 /* -------------------------------------------------------------- screen --- */
 
@@ -1524,6 +1538,207 @@
 .weight__row-delta.is-loss { color: var(--status-error); }
 
 
+/* ---------------------------------------------------------------- plan ---
+   The Plan tab (pass 30–31): a weekly grocery checklist that self-clears each
+   Monday, over a read-only reference sheet built from plan.js. Same rules as
+   the rest — press + focus states only, hairline borders, coral only where it
+   marks the current thing.                                                   */
+
+.planscreen { gap: var(--space-md); }
+
+/* groceries ------------------------------------------------------------- */
+
+.grocery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* a plain fact: when the list rolls over, and how far through it you are */
+.grocery__status {
+  font: var(--text-caption);
+  color: var(--text-muted-soft);
+}
+
+.grocery__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
+/* aisle heading — the .group__label register, one notch quieter */
+.planscreen__subhead {
+  font: var(--text-caption-upper);
+  letter-spacing: var(--type-caption-upper-track);
+  text-transform: uppercase;
+  color: var(--text-muted-soft);
+}
+
+.grocery__list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* one tickable item — the whole row is the target, so the tap area is wide
+   even though the row is shorter than a checklist block. */
+.grocery__row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 44px;
+  padding: var(--space-xs) 0;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.grocery__row:first-child { border-top: none; }
+.grocery__row:active { background: var(--surface-cream-strong); }
+.grocery__row:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+/* the tick box is .block-row__tick, reused from the checklist */
+
+.grocery__label {
+  flex: 1;
+  min-width: 0;
+  font: var(--text-body-md);
+  color: var(--text-ink);
+}
+.grocery__row.is-checked .grocery__label {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.grocery__reset {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* the reference sheet -------------------------------------------------- */
+
+.planref {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.planref__block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+/* phase targets — three rungs, the current one picked out like .phase-ladder */
+.planref__targets {
+  display: flex;
+  flex-direction: column;
+}
+.planref__target {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-xxs) 0;
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+.planref__target:first-child { border-top: none; }
+.planref__target.is-now {
+  color: var(--text-ink);
+  font-weight: var(--weight-medium);
+}
+.planref__target-fig {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
+/* one meal block, with its rotation options nested beneath */
+.planref__meal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  padding: var(--space-xs) 0;
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+}
+.planref__meal:first-of-type { border-top: none; }
+
+.planref__meal-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.planref__meal-name {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  font: var(--text-title-sm);
+  color: var(--text-ink);
+}
+.planref__meal-time {
+  font: var(--text-caption);
+  font-weight: var(--weight-regular);
+  color: var(--text-muted-soft);
+  font-variant-numeric: tabular-nums;
+}
+.planref__meal-fig {
+  flex: none;
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.planref__meal-desc {
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+
+.planref__opts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: var(--space-md);
+}
+.planref__opt {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  font: var(--text-body-sm);
+  color: var(--text-body);
+}
+.planref__opt-kcal {
+  flex: none;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* the food table */
+.planref__foods {
+  display: flex;
+  flex-direction: column;
+}
+.planref__food {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--space-xs) 0;
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+}
+.planref__food:first-child { border-top: none; }
+.planref__food-name {
+  font: var(--text-body-sm);
+  color: var(--text-ink);
+}
+.planref__food-meta {
+  font: var(--text-caption);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+
 /* ============================================================================
    settings.css — the Settings / About screen (pass 4).
    ----------------------------------------------------------------------------
@@ -1706,6 +1921,12 @@
 .set2-appearance__hint {
   font: var(--text-body-sm);
   color: var(--text-muted);
+}
+
+/* Overview (pass 32): the same padded name + hint + segment block as
+   Appearance, but several stacked in one card — a hairline between them. */
+.set2-overview__row + .set2-overview__row {
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
 }
 
 
@@ -2211,8 +2432,9 @@
   transform: scale(0.92);
 }
 
-/* content crossfade on a tab change — app.js toggles .tab-switching to
-   re-trigger it */
+/* pane entry crossfade — app.js toggles .tab-switching on a pane as it mounts
+   to re-trigger it (pass 33 moved this from the shared content element onto the
+   individual pane, so one arriving pane does not re-animate its siblings) */
 @keyframes tab-crossfade {
   from { opacity: 0.65; transform: translateY(3px); }
   to { opacity: 1; transform: translateY(0); }

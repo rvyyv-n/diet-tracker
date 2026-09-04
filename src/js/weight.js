@@ -17,6 +17,7 @@ import { todayISO, humanDate, planWeek } from "./core/dates.js";
 import { allWeights, getWeight, logWeight } from "./core/weights.js";
 import { allDays } from "./core/days.js";
 import { topLoggedRecipes } from "./core/recipes.js";
+import { publish } from "./core/broadcast.js";
 import {
   weeklyWeights,
   weeklyGains,
@@ -40,6 +41,15 @@ export function renderWeight(mountEl) {
   entryDate = todayISO();
   justSaved = false;
   render();
+}
+
+/**
+ * Repaint in place, keeping the state renderWeight() resets — a history row
+ * open for editing, the date the entry form is filing to. Called by the router
+ * when a sibling pane moved the data; see core/broadcast.js.
+ */
+export function repaintWeight() {
+  if (mount) render();
 }
 
 function render() {
@@ -77,6 +87,7 @@ function render() {
       group("History", historyCard(series)),
     ),
   );
+  publish("weight");
 }
 
 /** An uppercase tracked label above a card — the shared Settings/Weight shape. */

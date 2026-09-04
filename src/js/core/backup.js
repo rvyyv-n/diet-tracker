@@ -2,11 +2,14 @@
  * backup.js — the whole of the app's state as one JSON object, for export and
  * import on the Settings screen.
  *
- * Everything the app knows lives in four localStorage records: `wgt:profile`,
- * `wgt:days`, `wgt:weights` and `wgt:recipes` (the pass-26 recipe book). This
- * module reads all four into one envelope and writes them back from one. It
- * does not own any UI — settings.js drives it — and it never clears storage; a
- * replace overwrites the four keys in place.
+ * Everything the app knows lives in five localStorage records: `wgt:profile`,
+ * `wgt:days`, `wgt:weights`, `wgt:recipes` (the pass-26 recipe book) and
+ * `wgt:grocery` (the pass-30 grocery ticks). This module reads all five into one
+ * envelope and writes them back from one. It does not own any UI — settings.js
+ * drives it — and it never clears storage; a replace overwrites the five keys in
+ * place. `wgt:grocery` is carried for a clean round trip but is NOT surfaced in
+ * countRecords() / the import preview: a week of ticks that self-clears on
+ * Monday isn't a "record" the user counts.
  *
  * `wgt:update` (the update check's state) is deliberately NOT bundled: it is
  * device state, not user data, and carrying it between browsers would be
@@ -27,6 +30,7 @@ export function exportAll() {
     days: load("days", { days: {} }),
     weights: load("weights", { weights: {} }),
     recipes: load("recipes", { recipes: [] }),
+    grocery: load("grocery", { weekStart: null, checked: {} }),
   };
 }
 
@@ -46,7 +50,7 @@ export function assertImportable(obj) {
 }
 
 /**
- * Overwrite the three records from a parsed export object. Each record is run
+ * Overwrite the stored records from a parsed export object. Each record is run
  * through storage.js's migration ladder first (migrateRecord), not written
  * straight through — a backup made on an older build carries records at that
  * build's schema version, and save() stamps the CURRENT version onto whatever
@@ -59,6 +63,7 @@ export function importAll(obj) {
   save("days", migrateRecord(obj.days, "days", { days: {} }));
   save("weights", migrateRecord(obj.weights, "weights", { weights: {} }));
   save("recipes", migrateRecord(obj.recipes, "recipes", { recipes: [] }));
+  save("grocery", migrateRecord(obj.grocery, "grocery", { weekStart: null, checked: {} }));
 }
 
 /** Counts for the import preview: profiles, day records, weigh-ins, recipes. */

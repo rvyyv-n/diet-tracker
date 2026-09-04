@@ -122,6 +122,82 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   has been logged at least twice, so a new book is quiet. A tie at the top
   names both. A fact, like the skip line — never a "you always reach for X"
   verdict (`insight_copy_states_facts`).
+- **pass 30 + 31 — the grocery checklist and the Plan tab:** Phase 3, built as
+  one pass. `plan.js` `GROCERY_LIST` went from strings to structured
+  `{ name, qty, unit, step }` items (a null `qty` is an unmeasured staple —
+  flour, honey — shown by name and never scaled), and a new `scaleGroceryQty`
+  selector multiplies each Phase 2 baseline quantity by the active phase's
+  kcal ratio (over the existing `phaseTarget`) and rounds to the item's `step`,
+  so the list tracks what's actually being eaten rather than a fixed sheet —
+  the roadmap's open question, resolved by the owner in favour of scaling.
+  `core/grocery.js` is a new standalone record (`wgt:grocery ->
+  { weekStart, checked }`, mirroring `weights.js`): `weekStart` is the Monday
+  (new `core/dates.js` `startOfWeekISO`) the ticks belong to, and any read past
+  that Monday reads the ticks as empty, so the list resets itself weekly with
+  no need for the app to be open on the day — the stale record isn't rewritten
+  until the next toggle, so opening the app in a new week costs no write. No
+  schema bump: a new record just starts existing at `SCHEMA_VERSION` 3, as the
+  pass-23 note predicted. A fourth **Plan** tab (`app.js` `TABS`, a new
+  `clipboard-list` glyph in `ui/icons.js`; `?tab=plan` works through the
+  existing `launchTab()`) carries the checklist — aisle-grouped tick rows, a
+  factual "N of 20 ticked" line, a "Clear ticks" action shown only when
+  something is ticked — above a read-only **plan reference sheet** built from
+  `plan.js`: the three phase targets with the active one picked out, the active
+  phase's meals with their times and rotation options, and the `FOOD_DB` table.
+  `core/backup.js` now carries `wgt:grocery` through the export/import round
+  trip (kept out of the record count — a week of ticks that self-clears isn't a
+  "record" the user counts). `sw.js` `CACHE_NAME` → `rise-v17`, with
+  `plan-view.js` and `core/grocery.js` added to `PRECACHE_URLS`.
+- **pass 32 — configurable overview metrics:** Phase 4. The two optional
+  readouts on Today's day-total card — the protein line and the "N kcal to go ·
+  N blocks left" line (which also carries "Target met…" and "All done.") — are
+  now each behind a Settings toggle. The kcal figure and its target are not
+  toggleable; they are the screen's reason to exist. Stored as
+  `profile.overviewMetrics`, a `{ [id]: false }` map naming only the readouts
+  the user has *hidden* — so the default is `{}` (everything shown), an absent
+  id reads as shown, and a metric added in a later pass defaults visible for
+  existing users. No schema bump: `loadProfile()` already spreads the stored
+  record over `DEFAULT_PROFILE`, the same mechanism `themePref` rode in on at
+  pass 19. `core/profile.js` gains `OVERVIEW_METRICS` (the id list, in render
+  order) and `overviewMetricShown(profile, id)` (`!== false`); `today.js`
+  `totalCard()` takes the profile and renders each line only when its metric is
+  shown, so a hidden line leaves no node rather than empty space. Settings gains
+  an **Overview** group between Appearance and Data — one row per metric,
+  reusing the pass-19 Appearance block (name + hint over a full-width segment)
+  with a Show / Hide `.seg` and a hairline between the stacked rows. The toggle
+  is the existing segmented control, not the switch the design export specifies
+  and `design-system.md` defers, so the export gate stays closed and no tokens
+  moved. No new module, so `PRECACHE_URLS` is unchanged; `sw.js` `CACHE_NAME` →
+  `rise-v18`. The backup round trip carries `overviewMetrics` for free — it is
+  part of the profile record `exportAll()` already reads.
+- **pass 33 — the routing model:** Phase 5, and deliberately invisible — not one
+  pixel moved. `app.js`'s single `activeTab` became a list of **panes**, because
+  the desktop layout needs several screens rendering at once and that is a
+  routing change, not a CSS one. Three things were actually in the way, and only
+  the first was the obvious one. `setPanes(ids)` now diffs the requested screens
+  against what is already up: arrivals are rendered, departures are dropped, and
+  **a pane that survives is moved rather than re-rendered** — every screen keeps
+  its view state (Today's viewed day, an open rotation picker, a half-typed
+  extras form) in module scope and resets it on `render*()` entry, so blindly
+  re-entering a surviving pane would have thrown that away on every layout
+  change. Each pane gets its own `.pane` element, since all four screens render
+  by calling `replaceChildren` on the node they are handed and would otherwise
+  overwrite each other. And the third gap only exists once screens share a
+  display: a block ticked on Today has to move Weight's adherence readout *now*,
+  where before, reopening the screen was enough. New `core/broadcast.js` carries
+  that signal — each screen publishes its own id at the end of its `render()`,
+  the router repaints every mounted pane that is not in the fresh set, publishes
+  are coalesced into one microtask, and any publish raised while the queue drains
+  is dropped, which is what stops two panes repainting each other forever.
+  Publishing on *render* rather than per write is what keeps it to one line per
+  screen — today.js alone commits from a dozen places. Each screen gained a
+  `repaint*()` export beside its `render*()`: same paint, without the state
+  reset. The tab bar's "current" test became membership rather than equality, so
+  it can already light more than one entry. Verified in the browser: a single
+  pane on launch, tab taps swapping it, two panes up together, a surviving pane
+  keeping its exact DOM node across a reorder, and Today's checklist moving
+  Weight's "this week's adherence" (50% → 63% → 50%) live in a two-pane layout.
+  `sw.js` `CACHE_NAME` → `rise-v19`, with `core/broadcast.js` precached.
 - **pass 22 — closing the genuine design-system gaps:** Three items the "Still open" queue flagged as truly missing, not merely undocumented. **Focus ring:** adopted the export's canvas-gap + coral double ring, replacing the 3px 15%-alpha coral wash — `--border-focus: var(--coral-500); --focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--border-focus)`. The dark-theme override was deleted outright rather than re-specified: `--surface-canvas` already flips per theme, so the one declaration resolves correctly in both, and every one of the 21 existing `:focus-visible` call sites in `app.css` picked up the new ring for free since they all read the token, never a literal. **Breakpoints:** the 5-token scale landed as reference-only constants (`--bp-compact` 360 · `--bp-medium` 600 · `--bp-expanded` 840 · `--bp-desktop` 1024 · `--bp-wide` 1440, plus `--gutter-*`, `--panel-nav-width`, `--panel-detail-width`, `--container-app`) — correctly not wired into media queries yet, since a custom property can't drive `@media`; that wiring is phase 4's job. **Form controls:** no code change. `design-system.md` documents the existing `.field` / `.seg` system as already coherent and defers checkbox/radio/toggle/slider until a feature actually needs one, on the standing rule that unused component CSS rots. Phase 4 is now unblocked.
 
 ## v1.6.0 — shipped

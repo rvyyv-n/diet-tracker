@@ -3,9 +3,27 @@
  *
  * Before the profile is complete it shows the first-run form (loaded on demand).
  * After that it renders a shell — a content area plus a bottom tab bar (Today |
- * Weight) — and swaps the content when a tab is tapped. No history API; the
- * active tab is module state and resets to Today on a fresh route(), unless the
- * launch URL carries a `?tab=` (the manifest shortcuts land that way).
+ * Plan | Weight | Settings). No history API; the visible screens are module
+ * state and reset to Today on a fresh route(), unless the launch URL carries a
+ * `?tab=` (the manifest shortcuts land that way).
+ *
+ * Pass 33 replaced the single `activeTab` with a list of mounted **panes**.
+ * Nothing on screen changed — the phone still mounts exactly one — but the
+ * routing model can now hold several screens at once, which is what the desktop
+ * layout needs and is not something CSS can be asked to fake. Three pieces make
+ * that work, and each was a real gap rather than a rename:
+ *
+ *   1. `setPanes()` diffs the requested ids against what is already up, so a
+ *      pane that survives a layout change is *moved*, not re-rendered. Every
+ *      screen keeps its view state (Today's viewed day, an open picker) in
+ *      module scope and resets it on `render*()` entry, so re-entering a
+ *      surviving pane would silently throw that away.
+ *   2. Each pane gets its own element. The screens all render by calling
+ *      `replaceChildren` on the node they were handed, so sharing one content
+ *      element would have them overwrite each other.
+ *   3. Panes repaint each other through core/broadcast.js. With one screen on
+ *      display, reopening it was enough to pick up a change; side by side, a
+ *      block ticked on Today has to move Weight's adherence readout now.
  *
  * It also keeps the plan phase and add-on list in step with the calendar — see
  * syncPhase().
@@ -21,19 +39,59 @@ import { snapshotInfo, restoreSnapshot } from "./core/backup.js";
 import { loadProfile, saveProfile, isComplete } from "./core/profile.js";
 import { defaultPhaseForWeek, phaseAddOns, normaliseAddOns } from "./core/plan.js";
 import { todayISO, planWeek } from "./core/dates.js";
-import { renderToday } from "./today.js";
-import { renderWeight } from "./weight.js";
-import { renderSettings } from "./settings.js";
+import { subscribe } from "./core/broadcast.js";
+import { renderToday, repaintToday } from "./today.js";
+import { renderPlan, repaintPlan } from "./plan-view.js";
+import { renderWeight, repaintWeight } from "./weight.js";
+import { renderSettings, repaintSettings } from "./settings.js";
 
 const mount = document.getElementById("app");
 
-const TABS = [
-  { id: "today", label: "Today", icon: "square-check-big" },
-  { id: "weight", label: "Weight", icon: "trending-up" },
-  { id: "settings", label: "Settings", icon: "sliders-horizontal" },
+/**
+ * Every screen the router can mount, in nav order. `open` renders a screen
+ * fresh into a pane; `repaint` refreshes one that is already up without
+ * resetting its view state. Adding a screen means adding a row here — the tab
+ * bar, the `?tab=` whitelist and setPanes() all read from it.
+ */
+const SCREENS = [
+  {
+    id: "today",
+    label: "Today",
+    icon: "square-check-big",
+    open: (paneEl) => renderToday(paneEl),
+    repaint: repaintToday,
+  },
+  {
+    id: "plan",
+    label: "Plan",
+    icon: "clipboard-list",
+    open: (paneEl) => renderPlan(paneEl),
+    repaint: repaintPlan,
+  },
+  {
+    id: "weight",
+    label: "Weight",
+    icon: "trending-up",
+    open: (paneEl) => renderWeight(paneEl),
+    repaint: repaintWeight,
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    icon: "sliders-horizontal",
+    open: (paneEl) => renderSettings(paneEl, { onEditSetup: editSetup, onReset: route }),
+    repaint: repaintSettings,
+  },
 ];
 
-let activeTab = "today";
+const screenById = (id) => SCREENS.find((s) => s.id === id) ?? null;
+
+// The screens on display, in order. One entry on a phone; pass 34's wide layout
+// is the first caller to ask for more than one.
+let panes = [];
+// id -> the element that screen is rendered into. Its keys mirror `panes`, and
+// its values are what lets a pane survive a layout change without re-rendering.
+const mounted = new Map();
 let contentEl = null;
 let tabbarEl = null;
 
@@ -44,7 +102,7 @@ let tabbarEl = null;
  */
 function launchTab() {
   const wanted = new URLSearchParams(location.search).get("tab");
-  return TABS.some((t) => t.id === wanted) ? wanted : "today";
+  return screenById(wanted) ? wanted : "today";
 }
 
 // --- routing -------------------------------------------------------------
@@ -82,8 +140,7 @@ function route() {
     return;
   }
   syncPhase(profile);
-  activeTab = launchTab();
-  renderShell();
+  renderShell([launchTab()]);
 }
 
 function editSetup() {
@@ -94,8 +151,7 @@ function editSetup() {
       // rate or start date moved.
       onComplete: () => {
         syncPhase(loadProfile());
-        activeTab = "settings";
-        renderShell();
+        renderShell(["settings"]);
       },
       edit: true,
     }),
@@ -104,18 +160,84 @@ function editSetup() {
 
 // --- shell --------------------------------------------------------------
 
-function renderShell() {
+function renderShell(startPanes) {
   contentEl = el("div", { class: "app-content" });
   tabbarEl = el("nav", { class: "tabbar tabbar--icons", "aria-label": "Sections" });
   mount.replaceChildren(contentEl, tabbarEl);
-  paintTabbar();
-  showTab(activeTab);
+  // The old shell's panes went with its DOM; forget them so setPanes() treats
+  // everything as an arrival rather than re-inserting a detached element.
+  mounted.clear();
+  panes = [];
+  setPanes(startPanes);
 }
+
+/**
+ * Put exactly `ids` on display. Panes already up are kept and reordered, panes
+ * that left are dropped, and only genuine arrivals are rendered. That asymmetry
+ * is the point of the whole pass — see the pane note in the file header.
+ *
+ * An empty or entirely unknown list is ignored rather than blanking the app.
+ */
+function setPanes(ids) {
+  const next = ids.filter((id) => screenById(id));
+  if (!next.length) return;
+
+  for (const [id, paneEl] of mounted) {
+    if (!next.includes(id)) {
+      paneEl.remove();
+      mounted.delete(id);
+    }
+  }
+
+  const arriving = [];
+  const ordered = next.map((id) => {
+    let paneEl = mounted.get(id);
+    if (!paneEl) {
+      paneEl = el("div", { class: "pane", "data-screen": id });
+      mounted.set(id, paneEl);
+      arriving.push(id);
+    }
+    return paneEl;
+  });
+
+  contentEl.replaceChildren(...ordered);
+  panes = next;
+  paintTabbar();
+
+  // Render after insertion, so a screen that measures itself sees a laid-out
+  // node rather than a detached one.
+  arriving.forEach((id) => {
+    const paneEl = mounted.get(id);
+    crossfade(paneEl);
+    screenById(id).open(paneEl);
+  });
+}
+
+/** Re-trigger the entry crossfade: drop the class, force a reflow, add it back. */
+function crossfade(paneEl) {
+  paneEl.classList.remove("tab-switching");
+  void paneEl.offsetWidth;
+  paneEl.classList.add("tab-switching");
+}
+
+/**
+ * A screen has repainted itself, so the others may now be showing stale
+ * numbers. `fresh` is the set of ids that already caught up; everything else on
+ * display is repainted in place. With one pane up this does nothing at all,
+ * which is the phone's entire experience of pass 33.
+ */
+subscribe((fresh) => {
+  for (const id of mounted.keys()) {
+    if (!fresh.has(id)) screenById(id).repaint();
+  }
+});
 
 function paintTabbar() {
   tabbarEl.replaceChildren(
-    ...TABS.map((tab) => {
-      const current = tab.id === activeTab;
+    ...SCREENS.map((screen) => {
+      // "Current" is membership now, not equality — in a multi-pane layout more
+      // than one nav item is legitimately on screen.
+      const current = panes.includes(screen.id);
       return el(
         "button",
         {
@@ -123,28 +245,15 @@ function paintTabbar() {
           type: "button",
           "aria-current": current ? "page" : null,
           onclick: () => {
-            if (tab.id === activeTab) return;
-            activeTab = tab.id;
-            paintTabbar();
-            showTab(activeTab);
+            if (panes.length === 1 && panes[0] === screen.id) return;
+            setPanes([screen.id]);
           },
         },
-        el("span", { class: "tabbar__icon", "aria-hidden": "true" }, icon(tab.icon)),
-        el("span", { class: "tabbar__label" }, tab.label),
+        el("span", { class: "tabbar__icon", "aria-hidden": "true" }, icon(screen.icon)),
+        el("span", { class: "tabbar__label" }, screen.label),
       );
     }),
   );
-}
-
-function showTab(id) {
-  // Re-trigger the crossfade: drop the class, force a reflow, add it back.
-  contentEl.classList.remove("tab-switching");
-  void contentEl.offsetWidth;
-  contentEl.classList.add("tab-switching");
-
-  if (id === "weight") renderWeight(contentEl);
-  else if (id === "settings") renderSettings(contentEl, { onEditSetup: editSetup, onReset: route });
-  else renderToday(contentEl);
 }
 
 function renderStorageOff() {

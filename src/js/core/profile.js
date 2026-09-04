@@ -36,6 +36,9 @@ export const DEFAULT_PROFILE = {
   themePref: "system",    // "system" | "light" | "dark" — the appearance choice
   //                         (pass 19); applied by core/theme.js, "system"
   //                         follows prefers-color-scheme.
+  overviewMetrics: {},    // { [metricId]: false } for a readout the user hid on
+  //                         Today's day-total card (pass 32). An absent id reads
+  //                         as shown, so a metric added later defaults visible.
 };                        // merged over defaults on load, so no schema bump.
 
 export function loadProfile() {
@@ -47,6 +50,19 @@ export function loadProfile() {
 
 export function saveProfile(profile) {
   return save(RECORD, profile);
+}
+
+/**
+ * The optional readouts on Today's day-total card, in render order (pass 32).
+ * The kcal figure and its target are not in the list — they always show. The
+ * id list lives here; the label / hint copy lives at the two render sites
+ * (today.js gates the lines, settings.js draws the toggles).
+ */
+export const OVERVIEW_METRICS = ["protein", "remaining"];
+
+/** Whether a day-total readout is shown — hidden only if explicitly set false. */
+export function overviewMetricShown(profile, id) {
+  return profile.overviewMetrics?.[id] !== false;
 }
 
 /** A profile is complete once it has everything the engine needs to compute. */

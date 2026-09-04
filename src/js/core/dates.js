@@ -27,6 +27,18 @@ export function addDays(iso, delta) {
   return toISO(new Date(y, m - 1, d + delta));
 }
 
+/**
+ * The Monday of the week `iso` falls in, as a local "YYYY-MM-DD" string. Weeks
+ * start Monday here because the grocery list resets weekly and "resets Monday"
+ * is the plainest thing to tell someone; it is not tied to the plan's own week
+ * count (which runs off the profile start date — see planWeek).
+ */
+export function startOfWeekISO(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dow = new Date(y, m - 1, d).getDay(); // 0 Sun … 6 Sat
+  return addDays(iso, -((dow + 6) % 7)); // days back to Monday
+}
+
 /** Whole days from `startISO` to `endISO`; negative if `endISO` is earlier. */
 export function daysBetween(startISO, endISO) {
   const [ay, am, ad] = startISO.split("-").map(Number);

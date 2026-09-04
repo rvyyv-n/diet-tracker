@@ -15,7 +15,7 @@
 
 import { el } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
-import { loadProfile, saveProfile } from "./core/profile.js";
+import { loadProfile, saveProfile, overviewMetricShown } from "./core/profile.js";
 import {
   activeBlocks,
   blockById,
@@ -62,6 +62,7 @@ import { allWeights } from "./core/weights.js";
 import { weeklyWeights, weeklyGains, rollingGain, weeklyAdherence } from "./core/trend.js";
 import { evaluate, applySuggestion } from "./core/adjust.js";
 import { todayISO, addDays, planWeek, daysBetween } from "./core/dates.js";
+import { publish } from "./core/broadcast.js";
 
 const NUM = new Intl.NumberFormat("en-US"); // 1,890
 
@@ -112,6 +113,17 @@ export function renderToday(mountEl) {
   render();
 }
 
+/**
+ * Repaint in place, keeping the view state renderToday() resets — the viewed
+ * day, an open rotation picker, a half-filled extras form. This is what the
+ * router calls when a *sibling* pane changed the data underneath this one, so
+ * it must never feel like the screen was reopened. A no-op until the screen has
+ * been mounted at least once.
+ */
+export function repaintToday() {
+  if (mount) render();
+}
+
 // --- data ----------------------------------------------------------------
 
 /**
@@ -154,7 +166,7 @@ function render() {
       dateHeader(profile, day, editable),
       adherenceStrip(profile, day),
       suggestion ? suggestionCard(suggestion, profile) : null,
-      totalCard(day),
+      totalCard(day, profile),
       backfillPrompt(),
       checklist(day, editable),
       extrasSection(day, editable),
@@ -162,6 +174,7 @@ function render() {
       editable ? appetiteSection(day) : null,
     ),
   );
+  publish("today");
 }
 
 /** Jump straight back to today from any earlier day. */
@@ -370,7 +383,13 @@ function adherenceStrip(profile, viewedDay) {
   );
 }
 
-function totalCard(day) {
+/**
+ * The day-total card. The kcal figure and its target always show; the
+ * "remaining" line and the protein line are each behind a Settings toggle
+ * (pass 32 — profile.overviewMetrics), gated here so a hidden line leaves no
+ * node rather than empty space.
+ */
+function totalCard(day, profile) {
   const totals = dayTotals(day);
   const target = phaseTarget(day.phaseId);
   const status = intakeStatus(day);
@@ -393,12 +412,16 @@ function totalCard(day) {
       el("span", { class: `daytotal__kcal ${STATUS_CLASS[status]}` }, NUM.format(totals.kcal)),
       el("span", { class: "daytotal__target" }, `/ ${NUM.format(target.kcal)} kcal`),
     ),
-    el("p", { class: "daytotal__remaining" }, remaining),
-    el(
-      "p",
-      { class: "daytotal__protein" },
-      `Protein ${Math.round(totals.proteinG)} / ${target.proteinG} g`,
-    ),
+    overviewMetricShown(profile, "remaining")
+      ? el("p", { class: "daytotal__remaining" }, remaining)
+      : null,
+    overviewMetricShown(profile, "protein")
+      ? el(
+          "p",
+          { class: "daytotal__protein" },
+          `Protein ${Math.round(totals.proteinG)} / ${target.proteinG} g`,
+        )
+      : null,
   );
 }
 
