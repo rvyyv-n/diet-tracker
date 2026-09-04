@@ -6,7 +6,7 @@
  * trend.js; this file is entry + display only. Copy convention: sentence case.
  */
 
-import { el } from "./ui/dom.js";
+import { el, groupLabel } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { dateCalendar } from "./ui/date-calendar.js";
 import { weightInput } from "./ui/weight-input.js";
@@ -82,22 +82,17 @@ function render() {
       ),
       entryCard(),
       statsCard(latest, latestGain, thisWeekAdherence),
-      group("Weekly review", reviewCard(series, rolling, start)),
-      group("Trend", chartCard(series)),
-      group("History", historyCard(series)),
+      group("Weekly review", "square-check-big", reviewCard(series, rolling, start)),
+      group("Trend", "trending-up", chartCard(series)),
+      group("History", "calendar-days", historyCard(series)),
     ),
   );
   publish("weight");
 }
 
 /** An uppercase tracked label above a card — the shared Settings/Weight shape. */
-function group(label, card) {
-  return el(
-    "div",
-    { class: "group" },
-    el("span", { class: "group__label" }, label),
-    card,
-  );
+function group(label, glyph, card) {
+  return el("div", { class: "group" }, groupLabel(label, glyph), card);
 }
 
 /**

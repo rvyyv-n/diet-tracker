@@ -1722,9 +1722,44 @@
   color: var(--text-ink);
   font-weight: var(--weight-medium);
 }
+
+/* The rung marker (pass 39). Every phase gets a dot; only the live one is
+   filled with coral, which makes "where am I on the ladder" a glance rather
+   than a weight-and-colour comparison across two lines of type. Coral as a
+   state marker, not as decoration — the same job it does on the focus ring. */
+.planref__target-dot {
+  flex: none;
+  align-self: center;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 1px var(--text-muted-soft);
+}
+.planref__target.is-now .planref__target-dot {
+  background: var(--color-primary);
+  box-shadow: none;
+}
+
+/* The figures. kcal is the headline number so it takes full ink; protein is
+   the secondary one and takes the teal accent, which is what gives the ladder
+   its colour. Same "·" -drawn-in-CSS trick as the food table. */
 .planref__target-fig {
   flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xxs);
   font-variant-numeric: tabular-nums;
+}
+.planref__target-kcal {
+  color: var(--text-body);
+  font-weight: var(--weight-medium);
+}
+.planref__target.is-now .planref__target-kcal { color: var(--text-ink); }
+.planref__target-protein { color: var(--accent-teal); }
+.planref__target-protein::before {
+  content: "·";
+  margin-right: var(--space-xxs);
+  color: var(--text-muted-soft);
 }
 
 /* one meal block, with its rotation options nested beneath */
@@ -1888,11 +1923,24 @@
   gap: var(--space-xs);
 }
 
+/* The eyebrow above a card. Flex since pass 39, so it can carry a leading
+   glyph — see groupLabel() in ui/dom.js. inline-flex rather than flex because
+   .daystrip__head lays this out beside the calendar button and a block-level
+   label there would eat the whole row. */
 .group__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
   font: var(--text-caption-upper);
   letter-spacing: var(--type-caption-upper-track);
   text-transform: uppercase;
   color: var(--text-muted);
+}
+/* One notch softer than the label, so the word stays the thing being read. */
+.group__label-icon {
+  flex: none;
+  display: inline-flex;
+  color: var(--text-muted-soft);
 }
 
 /* ---------------------------------------------------------------- ack ---
@@ -2234,8 +2282,12 @@
   border-top: var(--border-width-hairline) solid var(--border-hairline);
 }
 
+/* Zero on the start side so the icon lines up with the card's other rows, but
+   NOT on the end side: the trail word ("Up to date") was landing hard against
+   the card's content edge with nothing to breathe against. The row background
+   still fills the full width, so the inset shows on the text alone. */
 .set2-actions .set2-row {
-  padding-inline: 0;
+  padding-inline: 0 var(--space-xs);
   min-height: 48px;
 }
 
@@ -2705,21 +2757,24 @@
      240px of dead space the four nav items leave. Reference, not a control:
      nothing here is tappable, the type is caption-sized, and the only colour
      is the intake status the rest of the app already speaks. */
+  /* Pass 39 makes it an actual card rather than a bordered strip taped to the
+     bottom of the column. The app says "grouped reference" with an eyebrow over
+     a card everywhere else — Settings, Weight, Plan — and the nav foot was the
+     one place saying it with a hairline instead, which is why it read as
+     bolted on. `margin-top: auto` still pins it to the bottom; the auto is on
+     the top edge only, the sides are the nav's own gutter. */
   .tabbar__glance {
     display: flex;
     flex-direction: column;
     gap: var(--space-xxs);
-    margin-top: auto;
+    margin: auto var(--space-sm) var(--space-sm);
     padding: var(--space-sm);
-    border-top: var(--border-width-hairline) solid var(--border-hairline);
+    border-radius: var(--radius-card);
+    background: var(--surface-card);
   }
-  .tabbar__glance-label {
-    font: var(--text-caption-upper);
-    letter-spacing: var(--type-caption-upper-track);
-    text-transform: uppercase;
-    color: var(--text-muted-soft);
-    padding-bottom: var(--space-xxs);
-  }
+  /* The label is a .group__label now (see navGlance) and inherits the eyebrow
+     treatment from there; this only adds the gap to the rows beneath it. */
+  .tabbar__glance .group__label { padding-bottom: var(--space-xxs); }
   .tabbar__glance-row {
     display: flex;
     align-items: baseline;

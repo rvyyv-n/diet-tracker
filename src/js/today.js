@@ -13,7 +13,7 @@
  * Copy convention: sentence case, matching welcome.js.
  */
 
-import { el } from "./ui/dom.js";
+import { el, groupLabel } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { loadProfile, saveProfile, overviewMetricShown } from "./core/profile.js";
 import {
@@ -355,7 +355,7 @@ function adherenceStrip(profile, viewedDay) {
     el(
       "div",
       { class: "daystrip__head" },
-      el("span", { class: "group__label" }, "7 days"),
+      groupLabel("7 days", "calendar-days"),
       cal.node,
     ),
     el(
@@ -1208,7 +1208,7 @@ function appetiteSection(day) {
   return el(
     "div",
     { class: "appetite" },
-    el("p", { class: "group__label" }, "Appetite"),
+    groupLabel("Appetite", "gauge", "p"),
     el(
       "div",
       { class: "appetite__chips" },

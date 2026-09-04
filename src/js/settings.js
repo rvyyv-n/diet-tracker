@@ -14,7 +14,7 @@
  * Copy convention: sentence case, matching the rest of the app.
  */
 
-import { el } from "./ui/dom.js";
+import { el, groupLabel } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { SCHEMA_VERSION, clear as clearStorage } from "./core/storage.js";
 import {
@@ -142,7 +142,7 @@ function profileGroup() {
   return el(
     "div",
     { class: "group" },
-    el("span", { class: "group__label" }, "Profile"),
+    groupLabel("Profile", "user"),
     el(
       "div",
       { class: "card set2-card" },
@@ -174,7 +174,7 @@ function appearanceGroup() {
   return el(
     "div",
     { class: "group" },
-    el("span", { class: "group__label" }, "Appearance"),
+    groupLabel("Appearance", "palette"),
     el(
       "div",
       { class: "card set2-card set2-appearance" },
@@ -221,7 +221,7 @@ function overviewGroup() {
   return el(
     "div",
     { class: "group" },
-    el("span", { class: "group__label" }, "Overview"),
+    groupLabel("Overview", "layout-dashboard"),
     el(
       "div",
       { class: "card set2-card" },
@@ -265,7 +265,7 @@ function dataGroup() {
   return el(
     "div",
     { class: "group" },
-    el("span", { class: "group__label" }, "Data"),
+    groupLabel("Data", "database"),
     el(
       "div",
       { class: "card set2-card" },

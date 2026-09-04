@@ -36,7 +36,7 @@
  * syncPhase().
  */
 
-import { el } from "./ui/dom.js";
+import { el, groupLabel } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { isAvailable } from "./core/storage.js";
 import { requestPersistence } from "./core/persist.js";
@@ -292,7 +292,7 @@ function navGlance() {
   return el(
     "div",
     { class: "tabbar__glance" },
-    el("span", { class: "tabbar__glance-label" }, "Today"),
+    groupLabel("Today", "gauge"),
     row(
       "Intake",
       `${NUM.format(totals.kcal)}${target ? ` / ${NUM.format(target)}` : ""}`,

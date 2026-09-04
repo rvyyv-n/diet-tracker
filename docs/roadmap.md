@@ -220,6 +220,39 @@ new reason:
 - [ ] **pass 40 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.
+- [ ] **pass 40b — the interactive desktop side nav.** *(feature request)* The
+  side nav that pass 35 introduced is a static 240px column: it is always there,
+  it always costs the same width, and on the Tauri desktop build that is 240px
+  of chrome the user never asked for. Make it interactable.
+
+  Three parts, in order:
+
+  1. **A collapsed rail.** The nav shrinks to an icon-only rail (roughly
+     `--touch-target` wide) that keeps the four destinations reachable. The
+     content column reclaims the difference. The glance block collapses with it
+     — it has no legible icon-only form, so it hides rather than truncates.
+  2. **Expand on hover.** Pointing at the rail floats the full 240px nav back
+     over the content rather than pushing it, so the layout underneath never
+     reflows and text never rewraps mid-hover. Hover only — this whole feature
+     is gated behind `@media (hover: hover) and (pointer: fine)`, so a touch
+     device and the phone layout are untouched by all of it.
+  3. **A user toggle, persisted.** A control in the nav switches between
+     *always visible* and *show on hover*, stored on the profile beside
+     `themePref` (and so carried by backup/restore for free). Default is
+     *always visible*, which is exactly today's behaviour — nobody is opted
+     into a moving sidebar without asking.
+
+  The animation is the reason this sits in phase 7 rather than beside pass 35:
+  it needs the `--duration-*` / `--ease-*` tokens settled first, and a nav that
+  slides has to honour `prefers-reduced-motion` by snapping instead. Animate
+  `transform` and `opacity` only — animating `width` on a fixed-position column
+  relayouts the whole page every frame.
+
+  Two things to get right, since both are easy to miss: the hover-expanded nav
+  must not trap focus differently from the pinned one (keyboard tabbing into a
+  collapsed rail has to expand it), and the expanded overlay needs to sit above
+  the content without covering anything interactive at the content column's
+  left edge — check the Plan sheet's disclosure rows, which start closest to it.
 
 ### phase 8 — the 2.0 release
 

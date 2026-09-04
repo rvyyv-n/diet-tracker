@@ -68,6 +68,51 @@ const PATHS = {
     '<path d="M12 3v18"></path>' +
     '<rect width="18" height="18" x="3" y="3" rx="2"></rect>' +
     '<path d="M3 9h18"></path><path d="M3 15h18"></path>',
+  // Section marks for the .group__label eyebrows across every screen, and the
+  // Plan screen's grocery aisles (pass 39). Same rule as the three above: one
+  // glyph per landmark, decorative, never the only carrier of meaning.
+  palette:
+    '<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>' +
+    '<circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>' +
+    '<circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>' +
+    '<circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>' +
+    '<path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 ' +
+    "0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 " +
+    '1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>',
+  "layout-dashboard":
+    '<rect width="7" height="9" x="3" y="3" rx="1"></rect>' +
+    '<rect width="7" height="5" x="14" y="3" rx="1"></rect>' +
+    '<rect width="7" height="9" x="14" y="12" rx="1"></rect>' +
+    '<rect width="7" height="5" x="3" y="16" rx="1"></rect>',
+  database:
+    '<ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>' +
+    '<path d="M3 5V19A9 3 0 0 0 21 19V5"></path>' +
+    '<path d="M3 12A9 3 0 0 0 21 12"></path>',
+  "calendar-days":
+    '<path d="M8 2v4"></path><path d="M16 2v4"></path>' +
+    '<rect width="18" height="18" x="3" y="4" rx="2"></rect>' +
+    '<path d="M3 10h18"></path>' +
+    '<path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M16 14h.01"></path>' +
+    '<path d="M8 18h.01"></path><path d="M12 18h.01"></path><path d="M16 18h.01"></path>',
+  "shopping-cart":
+    '<circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle>' +
+    '<path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>',
+  gauge: ["m12 14 4-4", "M3.34 19a10 10 0 1 1 17.32 0"],
+  egg: [
+    "M12 22c6.23-.05 7.87-5.57 7.5-10-.36-4.34-3.95-9.96-7.5-10-3.55.04-7.14 5.66-7.5 10-.37 4.43 1.27 9.95 7.5 10z",
+  ],
+  archive:
+    '<rect width="20" height="5" x="2" y="3" rx="1"></rect>' +
+    '<path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"></path>' +
+    '<path d="M10 12h4"></path>',
+  drumstick: [
+    "M15.45 15.4c-2.13.65-4.3.32-5.7-1.1-2.29-2.27-1.76-6.5 1.17-9.42 2.93-2.93 7.15-3.46 9.43-1.18 1.41 1.41 1.74 3.57 1.1 5.71-1.4-.51-3.26-.02-4.64 1.36-1.38 1.38-1.87 3.23-1.36 4.63z",
+    "m11.25 15.6-2.16 2.16a2.5 2.5 0 1 1-4.56 1.73 2.49 2.49 0 0 1-1.41-4.24 2.5 2.5 0 0 1 3.14-.32l2.16-2.16",
+  ],
+  leaf: [
+    "M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z",
+    "M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12",
+  ],
   "clipboard-list":
     '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>' +
     '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>' +

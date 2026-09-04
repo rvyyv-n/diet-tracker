@@ -11,7 +11,7 @@
  * Copy convention: sentence case, matching the rest of the app.
  */
 
-import { el } from "./ui/dom.js";
+import { el, groupLabel } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { loadProfile } from "./core/profile.js";
 import {
@@ -77,21 +77,16 @@ function render() {
         el("h1", { class: "screen__title screen__title--lg" }, "Plan"),
         el("p", { class: "phase-banner" }, `${phase.name} · Week ${week}`),
       ),
-      group("Groceries", groceryCard(phaseId)),
-      group("The plan", referenceCard(phaseId, addOns)),
+      group("Groceries", "shopping-cart", groceryCard(phaseId)),
+      group("The plan", "clipboard-list", referenceCard(phaseId, addOns)),
     ),
   );
   publish("plan");
 }
 
 /** An uppercase tracked label above a card — the shared Settings/Weight shape. */
-function group(label, card) {
-  return el(
-    "div",
-    { class: "group" },
-    el("span", { class: "group__label" }, label),
-    card,
-  );
+function group(label, glyph, card) {
+  return el("div", { class: "group" }, groupLabel(label, glyph), card);
 }
 
 // --- groceries ----------------------------------------------------------
@@ -143,11 +138,23 @@ function groceryCard(phaseId) {
   return card;
 }
 
+/**
+ * Aisle -> glyph. Keyed by the `section` string in GROCERY_LIST, so an aisle
+ * added there without an entry here simply renders its subhead without an icon
+ * rather than throwing — subhead() already treats a missing glyph as "no icon".
+ */
+const AISLE_GLYPH = {
+  "Dairy & eggs": "egg",
+  Pantry: "archive",
+  Protein: "drumstick",
+  Produce: "leaf",
+};
+
 function grocerySection(sec, phaseId, checks) {
   return el(
     "div",
     { class: "grocery__section" },
-    el("p", { class: "planscreen__subhead" }, sec.section),
+    subhead(sec.section, AISLE_GLYPH[sec.section]),
     el(
       "ul",
       { class: "grocery__list" },
@@ -238,11 +245,18 @@ function targetsBlock(phaseId) {
         el(
           "li",
           { class: `planref__target${p.id === phaseId ? " is-now" : ""}` },
+          // The rung dot: the only thing on the ladder that says which phase is
+          // live, now that the figures beside it carry colour of their own.
+          el("span", { class: "planref__target-dot", "aria-hidden": "true" }),
           el("span", { class: "planref__target-name" }, p.name),
+          // Three cells rather than one joined string, so kcal and protein can
+          // take different weights and colours. The "·" between them is drawn
+          // in CSS, as it is in the food table.
           el(
             "span",
             { class: "planref__target-fig" },
-            `${NUM.format(p.kcal)} kcal · ${p.proteinG} g`,
+            el("span", { class: "planref__target-kcal" }, `${NUM.format(p.kcal)} kcal`),
+            el("span", { class: "planref__target-protein" }, `${p.proteinG} g`),
           ),
         ),
       ),
