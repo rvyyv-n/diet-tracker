@@ -264,6 +264,26 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   unregister + cache-delete cycle until this was forced past. `CACHE_NAME` →
   `rise-v23`. Verified in the browser at 1280 (all four fixes) and 390 (no
   regression — the row-cap media query and food-table grid are desktop-only).
+- **pass 37 — the row-padding cap, reverted:** A second annotated round on the
+  same screens showed the pass-35/36 fix looking worse than the problem it
+  solved: capping a row's content to the 580px measure kept "Up to date" close
+  to its label, but visually it now sat marooned in the middle of a 960px
+  Settings card with a dead stretch of empty space after it before the true
+  edge, and the same thing made the Plan meal figures and chevrons drift
+  inward instead of sitting flush at the card's trailing edge. Fixed by
+  deleting the whole cap block — `.set2-row`, `.set2-actions .set2-row`,
+  `.set2-profile`, `.weight--v2 .weight__row`, `.grocery__row`,
+  `.planref__target`, `.planref__meal-head` and `.planref__opt` all go back to
+  a plain full-bleed `space-between`, so labels sit at the row's left edge and
+  values/chevrons sit at its right edge, however far apart that puts them.
+  Also fixed while re-checking these rows: `.planref__targets` is a `<ul>` with
+  no reset, so it had been inheriting the browser's default 40px
+  `padding-inline-start` as an unexplained gap before "Ramp-up" — this was
+  never a desktop-only bug, just never previously screenshotted at a width
+  where it stood out. `sw.js` `CACHE_NAME` → `rise-v24`. Verified in the
+  browser at 1280 (Settings trail text and Plan figures/chevrons now flush to
+  the true right edge, Targets flush to the true left edge) and 390 (no
+  change, since the deleted rules only applied above 1024px).
 - **pass 22 — closing the genuine design-system gaps:** Three items the "Still open" queue flagged as truly missing, not merely undocumented. **Focus ring:** adopted the export's canvas-gap + coral double ring, replacing the 3px 15%-alpha coral wash — `--border-focus: var(--coral-500); --focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--border-focus)`. The dark-theme override was deleted outright rather than re-specified: `--surface-canvas` already flips per theme, so the one declaration resolves correctly in both, and every one of the 21 existing `:focus-visible` call sites in `app.css` picked up the new ring for free since they all read the token, never a literal. **Breakpoints:** the 5-token scale landed as reference-only constants (`--bp-compact` 360 · `--bp-medium` 600 · `--bp-expanded` 840 · `--bp-desktop` 1024 · `--bp-wide` 1440, plus `--gutter-*`, `--panel-nav-width`, `--panel-detail-width`, `--container-app`) — correctly not wired into media queries yet, since a custom property can't drive `@media`; that wiring is phase 4's job. **Form controls:** no code change. `design-system.md` documents the existing `.field` / `.seg` system as already coherent and defers checkbox/radio/toggle/slider until a feature actually needs one, on the standing rule that unused component CSS rots. Phase 4 is now unblocked.
 
 ## v1.6.0 — shipped

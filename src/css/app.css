@@ -1657,10 +1657,15 @@
   gap: var(--space-xs);
 }
 
-/* phase targets — three rungs, the current one picked out like .phase-ladder */
+/* phase targets — three rungs, the current one picked out like .phase-ladder.
+   It's a <ul>, so without this reset the browser's default 40px
+   padding-inline-start shows up as an unexplained gap before "Ramp-up". */
 .planref__targets {
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 .planref__target {
   display: flex;
@@ -2646,33 +2651,6 @@
     border-top-color: transparent;
     border-left-color: var(--color-primary);
     background: var(--surface-card);
-  }
-
-  /* ---- label / value rows: cap the content, not the row ----
-     A 960px column tears a `space-between` row apart: "Check for updates" ended
-     up some 700px from its own "Up to date", and the same happened to every
-     weigh-in, grocery item and phase target. The cap is `--app-max-width` — the
-     measure these rows were designed and tested at — and it is applied as
-     trailing padding rather than a max-width so the row keeps its full-bleed
-     hairline and, where it is a button, its full-width tap area. `max()` means
-     a card narrower than the measure just keeps its normal padding.
-
-     Today's checklist rows are deliberately NOT in this list: they are the
-     app's primary tap targets and a full-width row is the right shape for
-     them. Nor is the food table, which has real columns to spread instead. */
-  .set2-row,
-  .set2-actions .set2-row,
-  .set2-profile,
-  .weight--v2 .weight__row,
-  .grocery__row,
-  .planref__target,
-  .planref__meal-head,
-  .planref__opt {
-    padding-right: max(var(--row-pad-right, 0px), 100% - var(--app-max-width));
-  }
-  .set2-row,
-  .set2-profile {
-    --row-pad-right: var(--space-md);
   }
 
   /* ---- the food table becomes a table ----
