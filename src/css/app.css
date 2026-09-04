@@ -418,17 +418,34 @@
 }
 
 /* weekly review card (pass 16) — the week-over-week change tucked after the
-   weigh-in figure, and a muted all-time fact under a hairline. Descriptive
-   only: no colour used as an alarm here. */
+   weigh-in figure, and a muted all-time fact under a hairline.
+   Pass 38 colours the figures: the week's adherence, its weigh-in change and
+   the 4-week pace each carry an intake-status class, so the card can be read
+   at a glance instead of parsed. The status classes are declared after this
+   block and win the colour; --text-muted here is only the fallback for a
+   delta rendered without one. The copy stays descriptive — the colour reports
+   where the week landed, it does not exhort. */
 .review__delta {
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 .review__note {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
   padding-top: var(--space-sm);
   border-top: var(--border-width-hairline) solid var(--border-hairline);
   font: var(--text-body-sm);
   color: var(--text-muted);
+}
+/* The note glyphs sit with the first line of text, not centred on the block,
+   so a note that wraps to two lines keeps its mark against line one. */
+.review__note-icon {
+  flex: none;
+  align-self: flex-start;
+  display: inline-flex;
+  padding-top: 2px;
+  color: var(--text-muted-soft);
 }
 
 
@@ -1593,17 +1610,37 @@
   gap: var(--space-xxs);
 }
 
-/* aisle heading — the .group__label register, one notch quieter */
+/* Section mark — the aisle headings and the reference sheet's three sections.
+   It was 12px in --text-muted-soft, which put it below the rows it introduced
+   and left the sheet reading as one undifferentiated run. Now caption size in
+   full ink, with room above it, so a section announces itself; the glyph
+   beside it (reference sheet only) does the rest. */
 .planscreen__subhead {
-  font: var(--text-caption-upper);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xxs);
+  font: var(--text-caption);
   letter-spacing: var(--type-caption-upper-track);
   text-transform: uppercase;
-  color: var(--text-muted-soft);
+  color: var(--text-ink);
+}
+/* The glyph stays muted: the label carries the section, the icon only marks
+   it. Coral is reserved for action and acknowledgement, never decoration. */
+.planscreen__subhead-icon {
+  flex: none;
+  display: inline-flex;
+  color: var(--text-muted);
 }
 
+/* Another <ul> — same reset as .planref__targets, or the browser's default
+   padding-inline-start indents every aisle's rows by 40px. */
 .grocery__list {
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 /* one tickable item — the whole row is the target, so the tap area is wide
@@ -1645,10 +1682,13 @@
 
 /* the reference sheet -------------------------------------------------- */
 
+/* The three sections sit in one card, so the gap between them is the only
+   thing separating Targets from Meals from the food table — --space-md read as
+   another row gap once the subheads gained weight. */
 .planref {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 .planref__block {
@@ -1765,7 +1805,8 @@
   display: flex;
   flex-direction: column;
   margin: var(--space-xxs) 0 var(--space-xs);
-  padding-left: var(--space-sm);
+  padding: 0 0 0 var(--space-sm);
+  list-style: none;
   border-left: var(--border-width-hairline) solid var(--border-hairline);
 }
 .planref__opt {
@@ -1789,10 +1830,13 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* the food table */
+/* the food table — a <ul>, so it needs the same reset as the other two */
 .planref__foods {
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 .planref__food {
   display: flex;
@@ -2560,6 +2604,9 @@
    desktop side nav — on a phone the bar is four icons wide and a title there
    would cost a tab. */
 .tabbar__brand { display: none; }
+/* Same deal as the wordmark: the phone's bar is four icons edge to edge and
+   has nowhere to put this. It only exists on the desktop nav column. */
+.tabbar__glance { display: none; }
 
 
 /* ==================================================== desktop shell (35) ===
@@ -2652,6 +2699,48 @@
     border-left-color: var(--color-primary);
     background: var(--surface-card);
   }
+
+  /* ---- the nav's foot: today at a glance ----
+     `margin-top: auto` pushes it to the bottom of the column, which is the
+     240px of dead space the four nav items leave. Reference, not a control:
+     nothing here is tappable, the type is caption-sized, and the only colour
+     is the intake status the rest of the app already speaks. */
+  .tabbar__glance {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xxs);
+    margin-top: auto;
+    padding: var(--space-sm);
+    border-top: var(--border-width-hairline) solid var(--border-hairline);
+  }
+  .tabbar__glance-label {
+    font: var(--text-caption-upper);
+    letter-spacing: var(--type-caption-upper-track);
+    text-transform: uppercase;
+    color: var(--text-muted-soft);
+    padding-bottom: var(--space-xxs);
+  }
+  .tabbar__glance-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+  .tabbar__glance-key {
+    font: var(--text-body-sm);
+    color: var(--text-muted);
+  }
+  .tabbar__glance-val {
+    font: var(--text-caption);
+    color: var(--text-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Stated at two classes on purpose. The bare .is-* status rules are declared
+     far earlier in the file, so at equal specificity this later rule would win
+     and the intake colour would silently never appear. */
+  .tabbar__glance-val.is-on-track { color: var(--intake-on-track); }
+  .tabbar__glance-val.is-partial { color: var(--intake-partial); }
+  .tabbar__glance-val.is-low { color: var(--intake-low); }
 
   /* ---- the food table becomes a table ----
      The one list that wants the width rather than a cap. On a phone it is a

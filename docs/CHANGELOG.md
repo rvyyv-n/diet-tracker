@@ -284,6 +284,53 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   browser at 1280 (Settings trail text and Plan figures/chevrons now flush to
   the true right edge, Targets flush to the true left edge) and 390 (no
   change, since the deleted rules only applied above 1024px).
+- **pass 38 — the Plan sheet's section marks, and colour on the week:** A third
+  annotated round, this one asking for prominence rather than alignment. The
+  reference sheet's subheads (`Targets`, `Meals`, `Food table`, and the grocery
+  aisle headings that share the class) were 12px `--text-caption-upper` in
+  `--text-muted-soft` — quieter than the rows they introduced, which is what
+  made the sheet read as one undifferentiated run. They move to 13px
+  `--text-caption` in full `--text-ink`, keeping the uppercase tracking so the
+  eyebrow register survives, and the three fixed sections each gain a muted
+  Lucide glyph (`target`, `utensils`, `table` — new to `icons.js`, drawn from
+  the same 0.469 set as the rest). The glyph stays `--text-muted`: coral is
+  reserved for action and acknowledgement and does not become decoration. The
+  card's inter-section gap went `--space-md` → `--space-lg`, since at the old
+  value a heavier subhead just read as another row.
+  **Two more `<ul>` padding bugs**, the same one pass 37 fixed on
+  `.planref__targets`: `.planref__foods` and `.grocery__list` were also lists
+  with no reset, so the food table and every grocery aisle carried the
+  browser's default 40px `padding-inline-start` — the food table's names sat
+  40px right of the section head that introduced them. All three lists now
+  share the `margin: 0; padding: 0; list-style: none` reset, and
+  `.planref__opts` had its `padding-left` restated as a full `padding`
+  shorthand so it zeroes the other three sides explicitly.
+  **The week gets colour.** `weight.js` grew two shared classifiers,
+  `paceClass()` and `adherenceClass()`, and both the stats card and the weekly
+  review now put an intake-status class on their figures: adherence, the
+  4-week gain, the 4-week pace and the week-over-week weigh-in change. The
+  gain inversion in `tokens.css` applies throughout — *under* the target band
+  is the failure that reads red, over it is only off-pace and reads amber. The
+  pass-16 note that this card uses "no colour as an alarm" is updated rather
+  than quietly broken: the colour reports where the week landed, and the copy
+  stays descriptive. One thing caught in review: a weigh-in delta of about
+  -0.001 kg formats as "+0.00 kg", and colouring *that* red looked like a
+  rendering fault rather than a flat week — so `weighInDelta()` decides its
+  class from the formatted string, and anything that rounds away to zero stays
+  muted. The two review notes gained small muted glyphs to match the Plan
+  subheads.
+  **The side nav's dead space is used.** Below 1024px nothing changes; above
+  it, the four nav items left ~240px of empty column, so `navGlance()` pins a
+  reference block to its foot with today's intake against target (carrying the
+  intake-status colour), plan blocks remaining, and the latest weigh-in.
+  Nothing in it is tappable and the type is caption-sized — it answers the
+  three questions the app is otherwise navigated to for. It repaints off the
+  same `subscribe()` broadcast the screens do, so ticking a block on Today
+  moves it immediately. `sw.js` `CACHE_NAME` → `rise-v25`. Verified in the
+  browser at 1280 (subheads and food rows now share one left edge at x=298,
+  all three glyphs drawn, review figures carrying the right status colours,
+  glance pinned to the nav foot) and 390 (glance `display: none`, no
+  horizontal overflow, list resets applying identically).
 - **pass 22 — closing the genuine design-system gaps:** Three items the "Still open" queue flagged as truly missing, not merely undocumented. **Focus ring:** adopted the export's canvas-gap + coral double ring, replacing the 3px 15%-alpha coral wash — `--border-focus: var(--coral-500); --focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--border-focus)`. The dark-theme override was deleted outright rather than re-specified: `--surface-canvas` already flips per theme, so the one declaration resolves correctly in both, and every one of the 21 existing `:focus-visible` call sites in `app.css` picked up the new ring for free since they all read the token, never a literal. **Breakpoints:** the 5-token scale landed as reference-only constants (`--bp-compact` 360 · `--bp-medium` 600 · `--bp-expanded` 840 · `--bp-desktop` 1024 · `--bp-wide` 1440, plus `--gutter-*`, `--panel-nav-width`, `--panel-detail-width`, `--container-app`) — correctly not wired into media queries yet, since a custom property can't drive `@media`; that wiring is phase 4's job. **Form controls:** no code change. `design-system.md` documents the existing `.field` / `.seg` system as already coherent and defers checkbox/radio/toggle/slider until a feature actually needs one, on the standing rule that unused component CSS rots. Phase 4 is now unblocked.
 
 ## v1.6.0 — shipped

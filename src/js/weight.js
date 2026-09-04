@@ -223,16 +223,33 @@ function entryCard() {
   );
 }
 
-function statsCard(latest, latestGain, adherencePct) {
+/**
+ * The intake-status class for a weekly gain, against the plan's target rate.
+ * Gaining is the goal here, so the inversion in tokens.css applies: *under* the
+ * band is the failure state and the one that reads red. Over the band is not a
+ * failure, only off-pace, so it takes the partial amber.
+ */
+function paceClass(kgPerWeek) {
+  if (kgPerWeek == null) return "";
   const band = TARGET_RATE_KG_PER_WEEK;
-  const gainClass =
-    latestGain == null
-      ? ""
-      : latestGain < band.min
-        ? "is-low"
-        : latestGain > band.max
-          ? "is-partial"
-          : "is-on-track";
+  if (kgPerWeek < band.min) return "is-low";
+  if (kgPerWeek > band.max) return "is-partial";
+  return "is-on-track";
+}
+
+/**
+ * Adherence as a status. The thresholds are the same ones the day strip reads
+ * by: a week where most of the plan was eaten is on track, a thin week is low.
+ */
+function adherenceClass(pct) {
+  if (pct == null) return "";
+  if (pct >= 80) return "is-on-track";
+  if (pct >= 55) return "is-partial";
+  return "is-low";
+}
+
+function statsCard(latest, latestGain, adherencePct) {
+  const gainClass = paceClass(latestGain);
 
   return el(
     "div",
@@ -244,7 +261,12 @@ function statsCard(latest, latestGain, adherencePct) {
         ? "—"
         : el("span", { class: gainClass }, `${latestGain.toFixed(2)} kg/wk`),
     ),
-    statRow("This week's adherence", adherencePct == null ? "—" : `${adherencePct}%`),
+    statRow(
+      "This week's adherence",
+      adherencePct == null
+        ? "—"
+        : el("span", { class: adherenceClass(adherencePct) }, `${adherencePct}%`),
+    ),
   );
 }
 
@@ -288,15 +310,16 @@ function reviewCard(series, rolling, start) {
   const prevWeight = series.filter((s) => s.week < wk).at(-1) ?? null;
   const kgDelta = wkWeight && prevWeight ? wkWeight.kg - prevWeight.kg : null;
   const roll = rolling.find((r) => r.week === wk)?.avgKgPerWeek ?? null;
-  const band = TARGET_RATE_KG_PER_WEEK;
-  const inBand = roll == null ? null : roll >= band.min && roll <= band.max;
 
   return el(
     "div",
     { class: "card summary" },
     statRow("Week", `${wk}`),
     statRow("Average intake", avgKcal == null ? "—" : `${NUM.format(avgKcal)} kcal/day`),
-    statRow("Adherence", pct == null ? "—" : `${pct}%`),
+    statRow(
+      "Adherence",
+      pct == null ? "—" : el("span", { class: adherenceClass(pct) }, `${pct}%`),
+    ),
     statRow(
       "Weigh-in",
       wkWeight == null
@@ -305,20 +328,32 @@ function reviewCard(series, rolling, start) {
             "span",
             {},
             formatWeight(wkWeight.kg, unit),
-            kgDelta == null
-              ? null
-              : el("span", { class: "review__delta" }, ` (${formatWeightDelta(kgDelta, unit)})`),
+            kgDelta == null ? null : weighInDelta(kgDelta),
           ),
     ),
     statRow(
       "4-week pace",
-      roll == null
-        ? "—"
-        : el("span", { class: inBand ? "is-on-track" : "is-partial" }, `${roll.toFixed(2)} kg/wk`),
+      roll == null ? "—" : el("span", { class: paceClass(roll) }, `${roll.toFixed(2)} kg/wk`),
     ),
     skipNote(),
     loggedNote(),
   );
+}
+
+/**
+ * The week-over-week change, coloured by the same inversion the rest of the
+ * screen uses: gaining is the goal, so a loss is the low state.
+ *
+ * The class is decided from the *formatted* figure, not the raw kg. A delta of
+ * -0.001 kg formats as "+0.00 kg" at the display precision, and colouring that
+ * red reads as a rendering fault rather than a flat week. Anything that rounds
+ * away to zero stays muted, which is the honest answer: nothing moved.
+ */
+function weighInDelta(kgDelta) {
+  const text = formatWeightDelta(kgDelta, unit);
+  const moved = /[1-9]/.test(text);
+  const cls = !moved ? "" : kgDelta > 0 ? "is-on-track" : "is-low";
+  return el("span", { class: `review__delta${cls ? " " + cls : ""}` }, ` (${text})`);
 }
 
 /** The block skipped most across every recorded day — a fact, not a nag. */
@@ -329,6 +364,7 @@ function skipNote() {
   return el(
     "p",
     { class: "review__note" },
+    el("span", { class: "review__note-icon", "aria-hidden": "true" }, icon("square-check-big", { size: 14 })),
     `Most often skipped: ${name} — ${worst.missed} of ${worst.of} days it was on the plan.`,
   );
 }
@@ -351,6 +387,7 @@ function loggedNote() {
   return el(
     "p",
     { class: "review__note" },
+    el("span", { class: "review__note-icon", "aria-hidden": "true" }, icon("utensils", { size: 14 })),
     `Most logged: ${list} — ${top} time${top === 1 ? "" : "s"}.`,
   );
 }

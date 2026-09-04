@@ -53,6 +53,21 @@ const PATHS = {
   ],
   check: ["M20 6 9 17l-5-5"],
   user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>',
+  // The Plan screen's section marks (pass 38). Each section gets one so the
+  // three subheads read as landmarks rather than three more lines of text.
+  target:
+    '<circle cx="12" cy="12" r="10"></circle>' +
+    '<circle cx="12" cy="12" r="6"></circle>' +
+    '<circle cx="12" cy="12" r="2"></circle>',
+  utensils: [
+    "M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2",
+    "M7 2v20",
+    "M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7",
+  ],
+  table:
+    '<path d="M12 3v18"></path>' +
+    '<rect width="18" height="18" x="3" y="3" rx="2"></rect>' +
+    '<path d="M3 9h18"></path><path d="M3 15h18"></path>',
   "clipboard-list":
     '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>' +
     '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>' +

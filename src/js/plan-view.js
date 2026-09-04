@@ -193,6 +193,28 @@ function groceryLine(item, phaseId) {
 
 // --- the reference sheet ---------------------------------------------------
 
+/**
+ * A section mark on the reference sheet. The label was a 12px muted-soft line
+ * that disappeared between the rows it was meant to introduce; it now sits at
+ * caption size in full ink with a muted glyph beside it, so the three sections
+ * read as landmarks when the sheet is scrolled. The icon is decorative — the
+ * label already says what the section is — so it is hidden from the tree.
+ */
+function subhead(label, glyph) {
+  return el(
+    "p",
+    { class: "planscreen__subhead" },
+    glyph
+      ? el(
+          "span",
+          { class: "planscreen__subhead-icon", "aria-hidden": "true" },
+          icon(glyph, { size: 16 }),
+        )
+      : null,
+    label,
+  );
+}
+
 function referenceCard(phaseId, addOns) {
   return el(
     "div",
@@ -208,7 +230,7 @@ function targetsBlock(phaseId) {
   return el(
     "div",
     { class: "planref__block" },
-    el("p", { class: "planscreen__subhead" }, "Targets"),
+    subhead("Targets", "target"),
     el(
       "ul",
       { class: "planref__targets" },
@@ -242,7 +264,7 @@ function mealsBlock(addOns) {
   return el(
     "div",
     { class: "planref__block" },
-    el("p", { class: "planscreen__subhead" }, "Meals"),
+    subhead("Meals", "utensils"),
     ...activeBlocks(addOns).map((b) => (b.rotation ? rotationMeal(b) : fixedMeal(b))),
   );
 }
@@ -330,7 +352,7 @@ function foodsBlock() {
   return el(
     "div",
     { class: "planref__block" },
-    el("p", { class: "planscreen__subhead" }, "Food table"),
+    subhead("Food table", "table"),
     el(
       "ul",
       { class: "planref__foods" },

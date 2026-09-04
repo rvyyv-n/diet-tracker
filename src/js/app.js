@@ -44,9 +44,13 @@ import { autoCheckForUpdate } from "./core/updates.js";
 import { initTheme } from "./core/theme.js";
 import { snapshotInfo, restoreSnapshot } from "./core/backup.js";
 import { loadProfile, saveProfile, isComplete } from "./core/profile.js";
-import { defaultPhaseForWeek, phaseAddOns, normaliseAddOns } from "./core/plan.js";
+import { defaultPhaseForWeek, phaseAddOns, normaliseAddOns, phaseTarget } from "./core/plan.js";
 import { todayISO, planWeek } from "./core/dates.js";
 import { subscribe } from "./core/broadcast.js";
+import { getDay, allDays } from "./core/days.js";
+import { newDay, dayTotals, intakeStatus } from "./core/day.js";
+import { allWeights } from "./core/weights.js";
+import { formatWeight } from "./core/units.js";
 import { renderToday, repaintToday } from "./today.js";
 import { renderPlan, repaintPlan } from "./plan-view.js";
 import { renderWeight, repaintWeight } from "./weight.js";
@@ -251,7 +255,57 @@ subscribe((fresh) => {
   for (const id of mounted.keys()) {
     if (!fresh.has(id)) screenById(id).repaint();
   }
+  // The nav's glance reads the same day record the screens do, so it goes
+  // stale on the same events — repaint it whoever wrote.
+  if (tabbarEl) paintTabbar();
 });
+
+/**
+ * The desktop side nav's foot: today's intake against target, how much of the
+ * plan is left, and the latest weigh-in. The column is 240px of empty space
+ * below four nav items at 1024px and up, and these are the three numbers the
+ * app is otherwise navigated to for — so the nav answers them without a trip.
+ *
+ * Hidden at phone widths, where the nav is a four-icon bar with no room (see
+ * .tabbar__glance). It repaints with the nav, so it follows the same
+ * broadcast the screens do and never shows a stale total.
+ */
+function navGlance() {
+  const profile = loadProfile();
+  if (!isComplete(profile)) return null;
+
+  const today = todayISO();
+  const day = getDay(today) ?? newDay(today, profile.currentPhaseId, profile.addOns);
+  const totals = dayTotals(day);
+  const target = phaseTarget(day.phaseId).kcal;
+  const left = Math.max(0, totals.total - totals.planDone);
+  const latest = allWeights().at(-1) ?? null;
+
+  const row = (label, value, cls) =>
+    el(
+      "div",
+      { class: "tabbar__glance-row" },
+      el("span", { class: "tabbar__glance-key" }, label),
+      el("span", { class: `tabbar__glance-val${cls ? " " + cls : ""}` }, value),
+    );
+
+  return el(
+    "div",
+    { class: "tabbar__glance" },
+    el("span", { class: "tabbar__glance-label" }, "Today"),
+    row(
+      "Intake",
+      `${NUM.format(totals.kcal)}${target ? ` / ${NUM.format(target)}` : ""}`,
+      `is-${intakeStatus(day)}`,
+    ),
+    row("Blocks left", left === 0 ? "None" : `${left}`),
+    latest
+      ? row("Weight", formatWeight(latest.kg, profile.weightUnit || "kg"))
+      : null,
+  );
+}
+
+const NUM = new Intl.NumberFormat();
 
 function paintTabbar() {
   tabbarEl.replaceChildren(
@@ -277,6 +331,7 @@ function paintTabbar() {
         el("span", { class: "tabbar__label" }, screen.label),
       );
     }),
+    navGlance(),
   );
 }
 
