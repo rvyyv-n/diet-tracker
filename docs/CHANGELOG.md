@@ -238,6 +238,32 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   instead. Nothing moves, grows or animates on hover; motion stays with
   `:active`. `sw.js` `CACHE_NAME` → `rise-v21`; no new modules, so
   `PRECACHE_URLS` was untouched.
+- **pass 36 — desktop polish from annotated review:** Four fixes from a
+  screenshot pass at 1280px. The food table gained real grid columns
+  (`.planref__food-portion` / `-kcal` / `-protein` as separate cells instead of
+  one run-on meta string) so figures line up down the page instead of trailing
+  the name on a single line. Pre-bed's meal row now shares
+  `mealDisclosure()` with every other meal instead of a bespoke layout, so it
+  gets the same chevron and single trailing kcal figure (protein dropped from
+  the head, as the other rows already do). The weight history row's kg value
+  is centred (`align-items: center`) rather than baseline-aligned. And the
+  pass-35 row-padding cap — `padding-right: max(var(--row-pad-right, 0px), 100%
+  - var(--app-max-width))`, which keeps full-bleed rows from stretching past
+  the 580px measure they were designed at — turned out to be silently losing
+  to two later, higher-specificity rules: `.weight--v2 .weight__row { padding:
+  … }` and `.set2-actions .set2-row { padding-inline: 0 }`, both `0,2,0`
+  against the cap rule's plain `0,1,0`. Equal-or-lower specificity loses
+  regardless of source order, so the desktop cap was a no-op on both rows —
+  visible as the "Up to date" trail text sitting flush against the Settings
+  card edge. Fixed by scoping the cap selector to match:
+  `.weight--v2 .weight__row` and `.set2-actions .set2-row` alongside the
+  existing entries. `sw.js` `install` also rewritten to fetch each precache URL
+  with `{ cache: "reload" }` instead of a bare `cache.addAll()` — the browser's
+  own HTTP cache could satisfy `addAll()`'s internal fetches with a pre-edit
+  file even right after a `CACHE_NAME` bump, so a stale file could survive an
+  unregister + cache-delete cycle until this was forced past. `CACHE_NAME` →
+  `rise-v23`. Verified in the browser at 1280 (all four fixes) and 390 (no
+  regression — the row-cap media query and food-table grid are desktop-only).
 - **pass 22 — closing the genuine design-system gaps:** Three items the "Still open" queue flagged as truly missing, not merely undocumented. **Focus ring:** adopted the export's canvas-gap + coral double ring, replacing the 3px 15%-alpha coral wash — `--border-focus: var(--coral-500); --focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--border-focus)`. The dark-theme override was deleted outright rather than re-specified: `--surface-canvas` already flips per theme, so the one declaration resolves correctly in both, and every one of the 21 existing `:focus-visible` call sites in `app.css` picked up the new ring for free since they all read the token, never a literal. **Breakpoints:** the 5-token scale landed as reference-only constants (`--bp-compact` 360 · `--bp-medium` 600 · `--bp-expanded` 840 · `--bp-desktop` 1024 · `--bp-wide` 1440, plus `--gutter-*`, `--panel-nav-width`, `--panel-detail-width`, `--container-app`) — correctly not wired into media queries yet, since a custom property can't drive `@media`; that wiring is phase 4's job. **Form controls:** no code change. `design-system.md` documents the existing `.field` / `.seg` system as already coherent and defers checkbox/radio/toggle/slider until a feature actually needs one, on the standing rule that unused component CSS rots. Phase 4 is now unblocked.
 
 ## v1.6.0 — shipped

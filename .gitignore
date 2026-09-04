@@ -62,3 +62,6 @@ desktop.ini
 
 # Project brief — kept local for now
 CLAUDE.md
+
+# dev-only, untracked
+dev-seed.html

@@ -247,19 +247,16 @@ function mealsBlock(addOns) {
   );
 }
 
-/** A block whose meal never varies: name, time, figure, one description line. */
+/**
+ * A block whose meal never varies. It reads as a rotation with exactly one
+ * option: same head, same figure, same chevron, and the one description sits in
+ * the same disclosure the rotations use. Before, it was the only row on the
+ * sheet showing its description unprompted and the only one quoting protein
+ * beside its kcal, which made Pre-bed look like a different kind of thing
+ * rather than the same thing with nothing to choose between.
+ */
 function fixedMeal(b) {
-  return el(
-    "div",
-    { class: "planref__meal" },
-    el(
-      "div",
-      { class: "planref__meal-head" },
-      mealName(b),
-      el("span", { class: "planref__meal-fig" }, `${NUM.format(b.kcal)} kcal · ${b.proteinG} g`),
-    ),
-    el("p", { class: "planref__meal-desc" }, b.desc),
-  );
+  return mealDisclosure(b, `${NUM.format(b.kcal)} kcal`, [{ desc: b.desc, kcal: b.kcal }]);
 }
 
 /** A block with a rotation: a disclosure button over the option list. */
@@ -269,6 +266,15 @@ function rotationMeal(b) {
   const lo = Math.min(...kcals);
   const hi = Math.max(...kcals);
   const range = lo === hi ? `${NUM.format(lo)} kcal` : `${NUM.format(lo)}–${NUM.format(hi)} kcal`;
+  return mealDisclosure(b, range, opts);
+}
+
+/**
+ * The shared meal row: a head that expands to a list of options. `fig` is the
+ * figure shown beside the chevron — a range for a rotation, the single number
+ * for a fixed meal.
+ */
+function mealDisclosure(b, fig, opts) {
   const open = openMeal === b.id;
 
   return el(
@@ -286,7 +292,7 @@ function rotationMeal(b) {
         },
       },
       mealName(b),
-      el("span", { class: "planref__meal-fig" }, range),
+      el("span", { class: "planref__meal-fig" }, fig),
       el(
         "span",
         { class: "planref__meal-chev", "aria-hidden": "true" },
@@ -333,10 +339,15 @@ function foodsBlock() {
           "li",
           { class: "planref__food" },
           el("span", { class: "planref__food-name" }, f.name),
+          // Three separate cells, not one joined sentence: the desktop layout
+          // spreads them into aligned columns, and the "·" separators that
+          // hold them together on a phone are drawn in CSS.
           el(
             "span",
             { class: "planref__food-meta" },
-            `${f.portion} · ${NUM.format(f.kcal)} kcal · ${Math.round(f.proteinG)} g`,
+            el("span", { class: "planref__food-portion" }, f.portion),
+            el("span", { class: "planref__food-kcal" }, `${NUM.format(f.kcal)} kcal`),
+            el("span", { class: "planref__food-protein" }, `${Math.round(f.proteinG)} g`),
           ),
         ),
       ),

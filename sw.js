@@ -10,7 +10,7 @@
  * project (not just edited), add it here and bump CACHE_NAME so clients refetch.
  */
 
-const CACHE_NAME = "rise-v21";
+const CACHE_NAME = "rise-v23";
 
 const PRECACHE_URLS = [
   "./",
@@ -67,7 +67,12 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then((cache) =>
+        // addAll() alone can be satisfied from the browser's HTTP cache, which
+        // defeats bumping CACHE_NAME right after editing a file that was just
+        // fetched. cache: "reload" forces each precache fetch past that layer.
+        Promise.all(PRECACHE_URLS.map((url) => fetch(url, { cache: "reload" }).then((res) => cache.put(url, res)))),
+      )
       .then(() => self.skipWaiting()),
   );
 });

@@ -1497,7 +1497,10 @@
 .weight__row {
   display: grid;
   grid-template-columns: auto 1fr auto auto auto;
-  align-items: baseline;
+  /* Centred, not baseline: the left cell is two lines (date over the change)
+     and the reading is one, so a shared baseline pinned the reading to the date
+     and left it sitting high against the pair. */
+  align-items: center;
   gap: var(--space-sm);
   border-top: var(--border-width-hairline) solid var(--border-hairline);
 }
@@ -1719,7 +1722,13 @@
   transition: transform var(--duration-base) var(--ease-standard);
 }
 .planref__meal.is-open .planref__meal-chev { transform: rotate(180deg); }
+/* The name takes the slack, which is what puts the figure and the chevron
+   together at the trailing edge. With space-between doing the work instead, the
+   figure drifted to the middle of the row as the row got wider — fine at 390px,
+   obviously wrong at 960 where it ended up nowhere near either end. */
 .planref__meal-name {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: baseline;
   gap: var(--space-xs);
@@ -1792,10 +1801,21 @@
   font: var(--text-body-sm);
   color: var(--text-ink);
 }
+/* Portion / kcal / protein are three cells so the desktop layout can align them
+   into columns. On a phone they read as one line, and the "·" between them is
+   drawn here rather than baked into the text. */
 .planref__food-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xxs);
   font: var(--text-caption);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
+}
+.planref__food-meta > span + span::before {
+  content: "·";
+  margin-right: var(--space-xxs);
+  color: var(--text-muted-soft);
 }
 
 
@@ -2626,6 +2646,58 @@
     border-top-color: transparent;
     border-left-color: var(--color-primary);
     background: var(--surface-card);
+  }
+
+  /* ---- label / value rows: cap the content, not the row ----
+     A 960px column tears a `space-between` row apart: "Check for updates" ended
+     up some 700px from its own "Up to date", and the same happened to every
+     weigh-in, grocery item and phase target. The cap is `--app-max-width` — the
+     measure these rows were designed and tested at — and it is applied as
+     trailing padding rather than a max-width so the row keeps its full-bleed
+     hairline and, where it is a button, its full-width tap area. `max()` means
+     a card narrower than the measure just keeps its normal padding.
+
+     Today's checklist rows are deliberately NOT in this list: they are the
+     app's primary tap targets and a full-width row is the right shape for
+     them. Nor is the food table, which has real columns to spread instead. */
+  .set2-row,
+  .set2-actions .set2-row,
+  .set2-profile,
+  .weight--v2 .weight__row,
+  .grocery__row,
+  .planref__target,
+  .planref__meal-head,
+  .planref__opt {
+    padding-right: max(var(--row-pad-right, 0px), 100% - var(--app-max-width));
+  }
+  .set2-row,
+  .set2-profile {
+    --row-pad-right: var(--space-md);
+  }
+
+  /* ---- the food table becomes a table ----
+     The one list that wants the width rather than a cap. On a phone it is a
+     name over a run-on meta line, which at 960px left five sixths of the row
+     empty. Here the three cells become columns: name takes the slack, portion
+     sits to its right, and the two figures are right-aligned so the digits line
+     up down the page (every cell already declares tabular-nums). The "·"
+     separators are for the phone's single line and come off. */
+  .planref__food {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(120px, auto) 100px 72px;
+    align-items: baseline;
+    column-gap: var(--space-lg);
+    padding: var(--space-sm) 0;
+  }
+  .planref__food-meta {
+    display: contents;
+  }
+  .planref__food-meta > span + span::before {
+    content: none;
+  }
+  .planref__food-kcal,
+  .planref__food-protein {
+    text-align: right;
   }
 }
 
