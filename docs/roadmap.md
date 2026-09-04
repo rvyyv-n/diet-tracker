@@ -137,7 +137,7 @@ defaults like `themePref`) now gates the day-total card's protein line and
 one Show / Hide `.seg` per metric, reusing the pass-19 Appearance block. No new
 module, so `PRECACHE_URLS` was untouched; `sw.js` `CACHE_NAME` → `rise-v18`.
 
-### phase 5 — the desktop layout
+### phase 5 — the desktop layout ✅ done (one open call held over)
 
 The largest item, and a deliberate structural pass — the roadmap is explicit
 that media queries bolted onto the mobile CSS do not count. Depends on phase 0
@@ -147,18 +147,22 @@ delivering a breakpoint scale.
 panes rather than one `activeTab`, and `core/broadcast.js` keeps simultaneous
 panes in step. Nothing on screen changed; the phone still mounts exactly one.
 
-- [ ] **pass 35 — side nav and wide layout.** The bottom tab bar becomes a side
-  nav above the desktop breakpoint. Chief beneficiary is the Tauri desktop
-  build, which today ships the phone layout stretched wide. The routing work is
-  done, so this is a `setPanes()` caller driven by a `--bp-desktop` media query
-  plus the CSS for it — `--panel-detail-width` and the `--bp-wide` three-panel
-  note in `tokens.css` are the shape to aim at. Two open calls to make then:
-  what the side nav does when tapped in a two-pane layout (swap the main pane,
-  presumably, rather than collapse to one), and whether `?tab=` should be able
-  to name more than one pane. Fold in the **hover** item from
-  `design-system.md`'s *Still open* list while here — it is already recorded
-  there as belonging with desktop, scoped to
-  `(hover:hover) and (pointer:fine)` so touch keeps the two-state model.
+**Pass 35 is done** — see `CHANGELOG.md`. The bottom tab bar becomes a left
+side nav above 1024px, the column widens from `--app-max-width` to
+`--container-app`, and hover landed scoped to
+`(hover: hover) and (pointer: fine)`. The three open calls were settled with
+the owner before building: **one main pane at 1024px** (two panes there leave
+each screen ~450px, narrower than the phone they were designed for), a nav tap
+**swaps that pane**, and `?tab=` **stays a single value**. That makes pass 35 a
+pure CSS pass with no new `setPanes()` caller — the multi-pane routing from
+pass 33 is untouched and waits for `--bp-wide`.
+
+- [ ] **Open call — the second pane at `--bp-wide` (1440px).** Deferred out of
+  pass 35 rather than dropped. At 1440 a 240px nav plus two 600px panes fits
+  without squeezing either, which is the width where the pass-33 routing
+  finally earns its keep. Undecided, and needs a real 1440px display to judge:
+  which pairs are worth showing (Today + Weight is the obvious one), and
+  whether the pairing is a user choice or fixed. Ask before building.
 
 **If v2 runs long, this is the cut line.** Phases 0–4 are a coherent, shippable
 release on their own; the desktop layout is the natural 2.1.
@@ -169,7 +173,7 @@ Scoped with the owner after phase 5 was designed. Everything here is polish
 over surfaces that already work, which is exactly why it sits **after** the
 desktop layout and **before** motion: the `animations_last` reasoning applies
 to static polish too. Empty states in particular have to be checked at wide
-widths, and doing them before pass 34 means doing them twice.
+widths, and doing them before pass 35 would have meant doing them twice.
 
 Two things were weighed and **excluded**, so don't re-propose them without a
 new reason:
@@ -179,7 +183,7 @@ new reason:
   new migration surface, a rewritten backup format, and an export that stops
   being human-readable JSON. Not worth it for a text-first recipe book.
 - **Hover states.** Already on `design-system.md`'s open list and already noted
-  there as belonging with desktop. It folds into pass 34, not here.
+  there as belonging with desktop. It folded into pass 35, not here — shipped.
 
 - [ ] **pass 36 — empty and first-week states.** Closes the "Empty, loading and
   error states" item on `design-system.md`'s *Still open* list. Four surfaces
@@ -221,7 +225,7 @@ new reason:
 
 - [ ] **pass 41.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
   (+ `versionCode` 4), `tauri.conf.json`, `Cargo.toml`, and `README.md`. `sw.js`
-  `CACHE_NAME` → `rise-v21` or later (pass 34 took `v20`), with every module added across phases 1–7 appended
+  `CACHE_NAME` → `rise-v22` or later (pass 35 took `v21`), with every module added across phases 1–7 appended
   to `PRECACHE_URLS` — a missed entry is an offline break that only shows up
   after install.
 

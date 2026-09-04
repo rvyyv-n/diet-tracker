@@ -2,8 +2,9 @@
  * app.js — entry point, router and app shell.
  *
  * Before the profile is complete it shows the first-run form (loaded on demand).
- * After that it renders a shell — a content area plus a bottom tab bar (Today |
- * Plan | Weight | Settings). No history API; the visible screens are module
+ * After that it renders a shell — a content area plus a nav (Today | Plan |
+ * Weight | Settings), a bottom tab bar on a phone and a left side nav above the
+ * desktop breakpoint. No history API; the visible screens are module
  * state and reset to Today on a fresh route(), unless the launch URL carries a
  * `?tab=` (the manifest shortcuts land that way).
  *
@@ -24,6 +25,12 @@
  *   3. Panes repaint each other through core/broadcast.js. With one screen on
  *      display, reopening it was enough to pick up a change; side by side, a
  *      block ticked on Today has to move Weight's adherence readout now.
+ *
+ * Pass 35 turned the bar into that side nav, and deliberately did *not* mount a
+ * second pane to do it: at 1024px two panes leave each screen about 450px wide,
+ * narrower than the phone they were designed for. The desktop layout is
+ * therefore pure CSS over one pane, and a nav tap still swaps that pane. The
+ * multi-pane machinery stays exactly as pass 33 left it, waiting for --bp-wide.
  *
  * It also keeps the plan phase and add-on list in step with the calendar — see
  * syncPhase().
@@ -46,6 +53,16 @@ import { renderWeight, repaintWeight } from "./weight.js";
 import { renderSettings, repaintSettings } from "./settings.js";
 
 const mount = document.getElementById("app");
+
+/**
+ * Mark the shell as carrying the nav, or not. Above the desktop breakpoint the
+ * nav is a fixed left column, so the shell has to reserve a gutter for it — but
+ * only when it is actually there. The first-run intro, the setup form and the
+ * storage-off notice have no nav and keep the plain centred column.
+ */
+function setTabbedShell(on) {
+  mount.classList.toggle("app-shell--tabbed", on);
+}
 
 /**
  * Every screen the router can mount, in nav order. `open` renders a screen
@@ -86,8 +103,9 @@ const SCREENS = [
 
 const screenById = (id) => SCREENS.find((s) => s.id === id) ?? null;
 
-// The screens on display, in order. One entry on a phone; pass 34's wide layout
-// is the first caller to ask for more than one.
+// The screens on display, in order. Every layout that ships today asks for
+// exactly one, including desktop; a three-panel --bp-wide layout would be the
+// first real caller for more.
 let panes = [];
 // id -> the element that screen is rendered into. Its keys mirror `panes`, and
 // its values are what lets a pane survive a layout change without re-rendering.
@@ -108,6 +126,7 @@ function launchTab() {
 // --- routing -------------------------------------------------------------
 
 function route() {
+  setTabbedShell(false);
   if (!isAvailable()) {
     renderStorageOff();
     return;
@@ -144,6 +163,7 @@ function route() {
 }
 
 function editSetup() {
+  setTabbedShell(false);
   import("./welcome.js").then((m) =>
     m.renderWelcome(mount, {
       // Editing is launched from Settings, so return there — not to Today, which
@@ -164,6 +184,7 @@ function renderShell(startPanes) {
   contentEl = el("div", { class: "app-content" });
   tabbarEl = el("nav", { class: "tabbar tabbar--icons", "aria-label": "Sections" });
   mount.replaceChildren(contentEl, tabbarEl);
+  setTabbedShell(true);
   // The old shell's panes went with its DOM; forget them so setPanes() treats
   // everything as an arrival rather than re-inserting a detached element.
   mounted.clear();
@@ -234,6 +255,9 @@ subscribe((fresh) => {
 
 function paintTabbar() {
   tabbarEl.replaceChildren(
+    // Shown only by the desktop side nav (see .tabbar__brand); on a phone the
+    // bar is four icons edge to edge and has no room for a title.
+    el("span", { class: "tabbar__brand" }, "Rise"),
     ...SCREENS.map((screen) => {
       // "Current" is membership now, not equality — in a multi-pane layout more
       // than one nav item is legitimately on screen.

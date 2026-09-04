@@ -6,7 +6,10 @@
    System — components/core/Button.jsx and components/forms/TextInput.jsx.
 
    Note from that system: there is NO hover styling anywhere. Controls use press
-   states (:active) and a coral focus ring only. Do not add :hover rules.
+   states (:active) and a coral focus ring only. Pass 35 added the single
+   exception, at the very bottom of this file: a
+   `(hover: hover) and (pointer: fine)` block for the desktop build. Do not add
+   a :hover rule outside it.
    ========================================================================== */
 
 
@@ -66,8 +69,9 @@
    once. With a single pane — every layout that ships today — this is a
    pass-through: it inherits the column flex .screen already expected from
    .app-content, so the phone renders exactly as it did before. `min-width: 0`
-   is what stops a wide sibling from refusing to shrink once pass 34 puts two of
-   these in a row. */
+   is what stops a wide sibling from refusing to shrink whenever two of these
+   end up in a row — not at 1024px, where pass 35 deliberately mounts one, but
+   at the --bp-wide layout still to be decided. */
 .pane {
   flex: 1;
   display: flex;
@@ -2524,4 +2528,160 @@
   :root.theme-fading *::after {
     transition: none !important;
   }
+}
+
+
+/* The nav wordmark exists in the markup at every width but only shows on the
+   desktop side nav — on a phone the bar is four icons wide and a title there
+   would cost a tab. */
+.tabbar__brand { display: none; }
+
+
+/* ==================================================== desktop shell (35) ===
+   Above --bp-desktop (1024px — repeated as a literal, since a custom property
+   cannot drive an @media condition) the bottom tab bar becomes a left side
+   nav and the content column widens from --app-max-width to --container-app.
+   The chief beneficiary is the Tauri desktop build, which until now shipped
+   the phone layout stretched across a monitor.
+
+   Only one pane is mounted at this breakpoint — the routing model has held a
+   list since pass 33, but the layout call was made deliberately: a second pane
+   at 1024px leaves each screen ~450px wide, which is narrower than the phone
+   they were designed for. So this is a pure CSS pass; setPanes() keeps its
+   single-id callers and a nav tap still swaps the one main pane.
+
+   Scoped to .app-shell--tabbed so the first-run and setup screens, which have
+   no nav, keep the plain centred column rather than reserving a gutter for a
+   bar that isn't there.                                                      */
+
+@media (min-width: 1024px) {
+  .app-shell--tabbed {
+    max-width: none;
+    padding:
+      calc(var(--space-xl) + env(safe-area-inset-top))
+      calc(var(--gutter-desktop) + env(safe-area-inset-right))
+      var(--space-xl)
+      calc(var(--panel-nav-width) + var(--gutter-desktop) + env(safe-area-inset-left));
+  }
+
+  /* the reading column, centred in whatever is left beside the nav */
+  .app-shell--tabbed .app-content {
+    width: 100%;
+    max-width: var(--container-app);
+    margin: 0 auto;
+    /* nothing is fixed over the bottom any more, so the phone's bar clearance
+       goes away and only ordinary end-of-page breathing room is left */
+    padding-bottom: var(--space-xl);
+  }
+
+  .tabbar {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    /* undo the 600px rule, which centres a capped bar on the phone column */
+    width: var(--panel-nav-width);
+    transform: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-xxs);
+    background: var(--surface-soft);
+    border-top: none;
+    border-right: var(--border-width-hairline) solid var(--border-hairline);
+    padding:
+      calc(var(--space-lg) + env(safe-area-inset-top))
+      var(--space-sm)
+      var(--space-lg)
+      calc(var(--space-sm) + env(safe-area-inset-left));
+  }
+
+  /* The wordmark. Hidden on the phone, where the bar is four icons wide and a
+     title would cost a tab; on the nav column it is what stops the panel
+     reading as a floating list of buttons. */
+  .tabbar__brand {
+    display: block;
+    font: var(--text-display-sm);
+    letter-spacing: var(--type-display-sm-track);
+    color: var(--text-ink);
+    padding: 0 var(--space-sm) var(--space-lg);
+  }
+
+  /* Icon beside label, not above it — the stack exists to buy label width at
+     390px, and a 240px column has width to spare. Rows sit at their natural
+     height instead of splitting the bar between them. */
+  .tabbar--icons .tabbar__btn {
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--space-sm);
+    min-height: 44px;
+    padding: var(--space-xs) var(--space-sm);
+    border-top: none;
+    border-left: 2px solid transparent;
+    border-radius: var(--radius-md);
+  }
+  .tabbar--icons .tabbar__label {
+    font: var(--text-nav);
+  }
+  .tabbar__btn.is-active {
+    border-top-color: transparent;
+    border-left-color: var(--color-primary);
+    background: var(--surface-card);
+  }
+}
+
+
+/* ======================================================= hover states (35) ==
+   The one place the "no hover anywhere" note at the top of this file is
+   relaxed, and only where a pointer actually exists: (hover: hover) and
+   (pointer: fine) keeps every touch device on the shipped two-state model
+   (rest + press), while the Tauri desktop build gets the feedback whose
+   absence reads as a broken app. Recorded in design-system.md's departures
+   table before it was built.
+
+   The rule throughout: hover is one step *below* the element's press state,
+   so a press still reads as a press. Nothing moves, grows or animates on
+   hover — motion belongs to :active.                                         */
+
+@media (hover: hover) and (pointer: fine) {
+  /* nav */
+  .tabbar__btn:hover { color: var(--text-ink); background: var(--surface-soft); }
+  .tabbar__btn.is-active:hover { background: var(--surface-card); }
+
+  /* buttons — a filled control has no lighter token between its rest coral
+     and its coral-700 press, and inventing a coral-600 is exactly what
+     design-system.md forbids, so the fill is dimmed rather than re-coloured.
+     The press still reads as a press: it is a different hue, not 4% darker. */
+  .btn--primary:hover,
+  .btn--danger:hover { filter: brightness(0.96); }
+  .btn--secondary:hover { background: var(--surface-soft); }
+  .btn--text:hover { color: var(--text-body-strong); }
+  .seg__btn:hover { background: var(--surface-soft); }
+
+  /* tap rows — press is --surface-cream-strong, so hover takes --surface-card */
+  .backfill:hover,
+  .block-row__main:hover,
+  .rotation__opt:hover,
+  .extras__pick:hover,
+  .appetite__chip:hover,
+  .grocery__row:hover,
+  .lb__opt:hover,
+  .cal__cell:not(.is-blank):hover,
+  .set2-row:hover,
+  .set2-profile:hover,
+  .planref__meal-head--btn:hover,
+  .weight__row-edit:hover { background: var(--surface-card); }
+  .set2-row--static:hover { background: transparent; }
+
+  /* small icon triggers — press is --surface-card, so hover takes soft */
+  .block-row__swap:hover,
+  .block-row__drop:hover,
+  .lb__trigger:hover,
+  .cal__trigger:hover,
+  .cal__nav:hover { background: var(--surface-soft); }
+
+  /* text-only triggers have no fill to step, so they step one shade toward
+     their own press colour instead */
+  .addblock__trigger:hover { color: var(--text-ink); }
+  .set2-sub:hover { color: var(--text-body-strong); }
+  .about2__link:hover { text-decoration: underline; text-underline-offset: 3px; }
 }

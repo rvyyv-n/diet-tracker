@@ -198,6 +198,46 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   keeping its exact DOM node across a reorder, and Today's checklist moving
   Weight's "this week's adherence" (50% → 63% → 50%) live in a two-pane layout.
   `sw.js` `CACHE_NAME` → `rise-v19`, with `core/broadcast.js` precached.
+- **pass 35 — the side nav and the desktop layout:** Above 1024px
+  (`--bp-desktop`, repeated as a literal since a custom property cannot drive an
+  `@media` condition) the bottom tab bar becomes a left side nav at
+  `--panel-nav-width`, and the reading column widens from `--app-max-width`
+  (580px) to `--container-app` (960px), centred in what is left. The nav gains a
+  "Rise" wordmark, hidden at phone widths where the bar is four icons edge to
+  edge; its rows put the icon *beside* the label rather than above it, since the
+  stack only ever existed to buy label width at 390px; and the active marker
+  moves from a coral top border to a coral left border plus a card-surface fill.
+  Three calls were settled with the owner first, and the first is why this pass
+  is almost entirely CSS: **one main pane at 1024px**, because two panes there
+  leave each screen about 450px — narrower than the phone they were designed
+  for; a nav tap **swaps that pane**; and `?tab=` **stays a single value**. So
+  `setPanes()` gained no new caller and the pass-33 multi-pane routing is
+  untouched, waiting for a `--bp-wide` layout that is now a recorded open call
+  rather than a to-do. The one piece of JS is `setTabbedShell()`: the desktop
+  shell reserves a left gutter for the nav, and the first-run intro, the setup
+  form and the storage-off notice have no nav, so they must not reserve one —
+  they keep the plain centred column via an `.app-shell--tabbed` class the
+  router sets and clears. Verified in the browser at 1280 and 390: side nav with
+  the active screen marked, a nav tap swapping the pane and moving the marker,
+  no horizontal overflow on any of the four screens at 960px, the phone
+  unchanged (fixed bottom bar, wordmark hidden), and the setup screen still a
+  centred 580px column at desktop width.
+- **hover, at last (pass 35):** Closes the **Hover** item on
+  `design-system.md`'s *Still open* list, scoped to
+  `(hover: hover) and (pointer: fine)` exactly as agreed there, so every touch
+  device keeps the shipped two-state model and only the Tauri desktop build
+  gains the third state. It is the single documented exception to the "there is
+  NO hover styling anywhere" note at the top of `app.css`, and the note now says
+  so. The rule new components have to follow: **hover is one step below the
+  element's press state**, never a new colour — a row pressing to
+  `--surface-cream-strong` hovers to `--surface-card`, an icon trigger pressing
+  to `--surface-card` hovers to `--surface-soft`. Filled coral buttons are the
+  exception to the exception: there is no token between coral-500 and the
+  coral-700 press, and inventing a coral-600 is precisely what the
+  design-export gate forbids, so they dim with `filter: brightness(0.96)`
+  instead. Nothing moves, grows or animates on hover; motion stays with
+  `:active`. `sw.js` `CACHE_NAME` → `rise-v21`; no new modules, so
+  `PRECACHE_URLS` was untouched.
 - **pass 22 — closing the genuine design-system gaps:** Three items the "Still open" queue flagged as truly missing, not merely undocumented. **Focus ring:** adopted the export's canvas-gap + coral double ring, replacing the 3px 15%-alpha coral wash — `--border-focus: var(--coral-500); --focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--border-focus)`. The dark-theme override was deleted outright rather than re-specified: `--surface-canvas` already flips per theme, so the one declaration resolves correctly in both, and every one of the 21 existing `:focus-visible` call sites in `app.css` picked up the new ring for free since they all read the token, never a literal. **Breakpoints:** the 5-token scale landed as reference-only constants (`--bp-compact` 360 · `--bp-medium` 600 · `--bp-expanded` 840 · `--bp-desktop` 1024 · `--bp-wide` 1440, plus `--gutter-*`, `--panel-nav-width`, `--panel-detail-width`, `--container-app`) — correctly not wired into media queries yet, since a custom property can't drive `@media`; that wiring is phase 4's job. **Form controls:** no code change. `design-system.md` documents the existing `.field` / `.seg` system as already coherent and defers checkbox/radio/toggle/slider until a feature actually needs one, on the standing rule that unused component CSS rots. Phase 4 is now unblocked.
 
 ## v1.6.0 — shipped

@@ -6,7 +6,7 @@
  * it was opened. The wide layout shows several screens at once, and then a
  * block ticked on Today leaves Weight's adherence readout and Plan's phase
  * targets visibly wrong on the same display. Nothing about that is a CSS
- * problem, which is why it lands here rather than in pass 34.
+ * problem, which is why it lands here rather than in the layout pass.
  *
  * Each screen publishes its own id at the end of its `render()`; app.js
  * subscribes and repaints the other mounted panes. Publishing on *render*

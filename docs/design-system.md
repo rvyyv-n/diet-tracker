@@ -142,7 +142,7 @@ and kept on purpose.
 | Night ramp | Rename to `night-950…600`, new hex | **Keep pass-19 values and names** | Rise's ramp is richer (five ink steps, two hairlines) and device-tested; only `#2C2A26` differed meaningfully. Adopted just the new *sunken* step. |
 | Toggle "on" | coral | **coral** | Confirmed deliberate: green already means "at/above target" here, so a green switch would collide with a live semantic. |
 | Hover | Not documented (marketing policy) | **Scoped to `(hover:hover) and (pointer:fine)`** | Touch keeps the shipped two-state model; the Tauri desktop build gets hover, where withholding it reads as broken. |
-| Container max | 960px app column | **`--app-max-width: 580px`** | Rise had already made this call, tighter. 960px returns as the desktop *panel* width in phase 4. |
+| Container max | 960px app column | **`--app-max-width: 580px`** | Rise had already made this call, tighter. 960px returned as the desktop main-column width in pass 35 (`--container-app`), where 580px would have wasted a monitor. |
 | `--surface-overlay` | a modal scrim | **the surface a floating panel sits on** | Name collision with the export. Rise's meaning is load-bearing in `listbox`/`calendar`; a scrim token gets a distinct name when modals land. |
 
 ## Form controls
@@ -206,7 +206,11 @@ Apply it as `outline: none; box-shadow: var(--focus-ring);` on `:focus-visible`
 > browser. Media queries must repeat the literals; the tokens exist so the scale
 > has one authoritative home to check them against.
 
-360 and 600 ship today. The rest land with phase 4.
+360, 600 and 1024 ship today; 1024 is where pass 35 turns the bottom tab bar
+into a side nav (`--panel-nav-width`) and widens the column to
+`--container-app`. 840 and 1440 are still reference-only — 1440 is where a
+second pane would become defensible, and the routing model has been ready for
+it since pass 33.
 
 ## Still open — do not invent, ask first
 
@@ -215,6 +219,14 @@ Apply it as `outline: none; box-shadow: var(--focus-ring);` on `:focus-visible`
 - **Empty, loading and error states**, including skeleton styling.
 - **Dark-mode chart band opacity** (10% → 18%) — an unverified guess with no
   real chart screen checked against it.
-- **Hover.** Agreed in principle to scope to `(hover:hover) and (pointer:fine)`
-  so touch keeps the two-state model and the Tauri desktop build gets hover.
-  Not yet implemented — it belongs with phase 4, where desktop becomes real.
+
+Closed since: **hover** shipped in pass 35, scoped to
+`(hover: hover) and (pointer: fine)` exactly as agreed, so touch keeps the
+two-state model. The rule it follows is worth repeating, since new components
+have to obey it: **hover is one step below the element's press state**, never a
+new colour. A row whose `:active` is `--surface-cream-strong` hovers to
+`--surface-card`; a small icon trigger whose `:active` is `--surface-card`
+hovers to `--surface-soft`. Filled coral buttons are the exception — there is
+no token between coral-500 and the coral-700 press and inventing a coral-600 is
+exactly what this document forbids, so they dim with `filter: brightness(0.96)`
+instead. Nothing moves, grows or animates on hover; motion stays with `:active`.
