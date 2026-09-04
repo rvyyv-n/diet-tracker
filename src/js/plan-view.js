@@ -36,9 +36,15 @@ import { publish } from "./core/broadcast.js";
 const NUM = new Intl.NumberFormat("en-US"); // 3,110
 
 let mount;
+// The block id whose rotation options are expanded in the reference sheet, or
+// null for all closed. One at a time: the point of the disclosure is that the
+// sheet stays an index you can scan, and letting every block open at once
+// rebuilds the wall it was added to remove.
+let openMeal = null;
 
 export function renderPlan(mountEl) {
   mount = mountEl;
+  openMeal = null;
   render();
 }
 
@@ -222,49 +228,94 @@ function targetsBlock(phaseId) {
   );
 }
 
-/** The day's blocks in time order, with each rotation's options. */
+/**
+ * The day's blocks in time order. A block with a rotation lists four options,
+ * each a full ingredient sentence that wraps to two or three lines on a phone
+ * — printed flat that was ~25 unbroken lines of text, which is what made this
+ * sheet unreadable. Two changes fix it: the options collapse behind the block
+ * (closed by default, one open at a time), and each option is a bounded row
+ * with a hairline above it rather than another paragraph in a run. The block
+ * header carries the kcal range, so the sheet still answers "how big is
+ * breakfast" without being opened.
+ */
 function mealsBlock(addOns) {
   return el(
     "div",
     { class: "planref__block" },
     el("p", { class: "planscreen__subhead" }, "Meals"),
-    ...activeBlocks(addOns).map((b) =>
+    ...activeBlocks(addOns).map((b) => (b.rotation ? rotationMeal(b) : fixedMeal(b))),
+  );
+}
+
+/** A block whose meal never varies: name, time, figure, one description line. */
+function fixedMeal(b) {
+  return el(
+    "div",
+    { class: "planref__meal" },
+    el(
+      "div",
+      { class: "planref__meal-head" },
+      mealName(b),
+      el("span", { class: "planref__meal-fig" }, `${NUM.format(b.kcal)} kcal · ${b.proteinG} g`),
+    ),
+    el("p", { class: "planref__meal-desc" }, b.desc),
+  );
+}
+
+/** A block with a rotation: a disclosure button over the option list. */
+function rotationMeal(b) {
+  const opts = rotationOptions(b.rotation);
+  const kcals = opts.map((o) => o.kcal);
+  const lo = Math.min(...kcals);
+  const hi = Math.max(...kcals);
+  const range = lo === hi ? `${NUM.format(lo)} kcal` : `${NUM.format(lo)}–${NUM.format(hi)} kcal`;
+  const open = openMeal === b.id;
+
+  return el(
+    "div",
+    { class: `planref__meal${open ? " is-open" : ""}` },
+    el(
+      "button",
+      {
+        class: "planref__meal-head planref__meal-head--btn",
+        type: "button",
+        "aria-expanded": open ? "true" : "false",
+        onclick: () => {
+          openMeal = open ? null : b.id;
+          render();
+        },
+      },
+      mealName(b),
+      el("span", { class: "planref__meal-fig" }, range),
       el(
-        "div",
-        { class: "planref__meal" },
-        el(
-          "div",
-          { class: "planref__meal-head" },
-          el(
-            "span",
-            { class: "planref__meal-name" },
-            b.name,
-            b.time ? el("span", { class: "planref__meal-time" }, fmtTime(b.time)) : null,
-          ),
-          b.rotation
-            ? null
-            : el(
-                "span",
-                { class: "planref__meal-fig" },
-                `${NUM.format(b.kcal)} kcal · ${b.proteinG} g`,
-              ),
-        ),
-        b.rotation
-          ? el(
-              "ul",
-              { class: "planref__opts" },
-              ...rotationOptions(b.rotation).map((o) =>
-                el(
-                  "li",
-                  { class: "planref__opt" },
-                  el("span", { class: "planref__opt-desc" }, o.desc),
-                  el("span", { class: "planref__opt-kcal" }, NUM.format(o.kcal)),
-                ),
-              ),
-            )
-          : el("p", { class: "planref__meal-desc" }, b.desc),
+        "span",
+        { class: "planref__meal-chev", "aria-hidden": "true" },
+        icon("chevron-down", { size: 16 }),
       ),
     ),
+    open
+      ? el(
+          "ul",
+          { class: "planref__opts" },
+          ...opts.map((o) =>
+            el(
+              "li",
+              { class: "planref__opt" },
+              el("span", { class: "planref__opt-desc" }, o.desc),
+              el("span", { class: "planref__opt-kcal" }, NUM.format(o.kcal)),
+            ),
+          ),
+        )
+      : null,
+  );
+}
+
+function mealName(b) {
+  return el(
+    "span",
+    { class: "planref__meal-name" },
+    b.name,
+    b.time ? el("span", { class: "planref__meal-time" }, fmtTime(b.time)) : null,
   );
 }
 

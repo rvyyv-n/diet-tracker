@@ -18,6 +18,7 @@
  * Returns { node, get, set, setOptions }.
  */
 import { el } from "./dom.js";
+import { icon } from "./icons.js";
 import { attachPopover } from "./popover.js";
 
 const TYPEAHEAD_RESET_MS = 800;
@@ -39,7 +40,7 @@ export function listbox({ options, value = null, placeholder = "—", ariaLabel,
       "aria-label": ariaLabel,
     },
     valueEl,
-    el("span", { class: "lb__caret", "aria-hidden": "true" }, "▾"),
+    el("span", { class: "lb__caret", "aria-hidden": "true" }, icon("chevron-down", { size: 14 })),
   );
 
   const panel = el("div", { class: "lb__panel", hidden: "" });

@@ -515,7 +515,11 @@ function addBlockSection(day) {
           render();
         },
       },
-      el("span", { class: "addblock__icon", "aria-hidden": "true" }, addOpen ? "−" : "+"),
+      el(
+        "span",
+        { class: "addblock__icon", "aria-hidden": "true" },
+        icon(addOpen ? "minus" : "plus", { size: 12, stroke: 2 }),
+      ),
       addOpen ? "Close" : "Add a block",
     ),
     addOpen
@@ -651,7 +655,11 @@ function extrasAddPanel(day) {
           render();
         },
       },
-      el("span", { class: "addblock__icon", "aria-hidden": "true" }, extrasOpen ? "−" : "+"),
+      el(
+        "span",
+        { class: "addblock__icon", "aria-hidden": "true" },
+        icon(extrasOpen ? "minus" : "plus", { size: 12, stroke: 2 }),
+      ),
       extrasOpen ? "Close" : "Log food",
     ),
     extrasOpen
@@ -670,7 +678,7 @@ function extrasAddPanel(day) {
 }
 
 function extrasModeToggle(modes) {
-  const label = { recipe: "Recipes", pick: "From the list", type: "Type it in" };
+  const label = { recipe: "Recipes", pick: "Foods", type: "Custom" };
   return el(
     "div",
     { class: "seg extras__modeseg" },
@@ -932,8 +940,8 @@ function recipeAddModeToggle() {
     "div",
     { class: "seg extras__modeseg" },
     ...[
-      ["pick", "From the list"],
-      ["type", "Type it in"],
+      ["pick", "Foods"],
+      ["type", "Custom"],
     ].map(([mode, label]) =>
       el(
         "button",

@@ -30,6 +30,18 @@ const PATHS = {
     "M3 21v-5h5",
   ],
   "chevron-right": ["m9 18 6-6-6-6"],
+  "chevron-left": ["m15 18-6-6 6-6"],
+  "chevron-down": ["m6 9 6 6 6-6"],
+  // The year steppers in the calendar popover. Lucide's double chevrons, so
+  // the month and year controls read as the same family at a glance.
+  "chevrons-left": ["m11 17-5-5 5-5", "m18 17-5-5 5-5"],
+  "chevrons-right": ["m6 17 5-5-5-5", "m13 17 5-5-5-5"],
+  // Drawn rather than typed. A "+" / "−" text character sits on the baseline
+  // and carries its font's ascender and descender, so it renders low inside a
+  // fixed box however the box is centred — that was the misaligned plus on
+  // Today's "Add a block" and "Log food" triggers.
+  plus: ["M5 12h14", "M12 5v14"],
+  minus: ["M5 12h14"],
   "square-check-big": [
     "M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11",
     "m9 11 3 3L22 4",

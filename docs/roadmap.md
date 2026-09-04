@@ -147,7 +147,7 @@ delivering a breakpoint scale.
 panes rather than one `activeTab`, and `core/broadcast.js` keeps simultaneous
 panes in step. Nothing on screen changed; the phone still mounts exactly one.
 
-- [ ] **pass 34 — side nav and wide layout.** The bottom tab bar becomes a side
+- [ ] **pass 35 — side nav and wide layout.** The bottom tab bar becomes a side
   nav above the desktop breakpoint. Chief beneficiary is the Tauri desktop
   build, which today ships the phone layout stretched wide. The routing work is
   done, so this is a `setPanes()` caller driven by a `--bp-desktop` media query
@@ -181,7 +181,7 @@ new reason:
 - **Hover states.** Already on `design-system.md`'s open list and already noted
   there as belonging with desktop. It folds into pass 34, not here.
 
-- [ ] **pass 35 — empty and first-week states.** Closes the "Empty, loading and
+- [ ] **pass 36 — empty and first-week states.** Closes the "Empty, loading and
   error states" item on `design-system.md`'s *Still open* list. Four surfaces
   have nothing to say yet and currently say it in bare sentences: Today before
   the first tick, Weight with no weigh-ins, an empty recipe book, and an
@@ -189,12 +189,12 @@ new reason:
   single line of copy — no illustration budget, no new token invented. Copy
   states a fact and offers the next action; the never-nag principle applies
   here as much as anywhere.
-- [ ] **pass 36 — the day-total progress bar.** A hairline bar under Today's
+- [ ] **pass 37 — the day-total progress bar.** A hairline bar under Today's
   hero kcal figure, filled to the day's fraction of target and coloured by the
   `intakeStatus()` value the card already computes. Deliberately a bar and not
   a ring or a dial: it is a readout of a number that is already on screen, not
   a reward. Nothing about it may read as a score.
-- [ ] **pass 37 — the PWA icon set.** `assets/` ships one `icon.svg`, which
+- [ ] **pass 38 — the PWA icon set.** `assets/` ships one `icon.svg`, which
   means Android crops it (no maskable variant with the safe-zone padding), iOS
   falls back rather than using an `apple-touch-icon`, and there is no
   monochrome variant for themed icons. Small, self-contained asset work, and
@@ -208,20 +208,20 @@ new reason:
 
 ### phase 7 — motion, and the framework question  (last, by decision)
 
-- [ ] **pass 38 — the framework call.** With every surface final, decide
+- [ ] **pass 39 — the framework call.** With every surface final, decide
   whether the reactbits.dev components justify a build step. Options in
   ascending cost: port the effects to vanilla, add Vite for bundling only, or
   adopt a component framework. Deferring to here means the decision is made with
   full knowledge of what v2 actually became.
-- [ ] **pass 39 — motion polish.** Subtle, not showy; scoped per surface.
+- [ ] **pass 40 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.
 
 ### phase 8 — the 2.0 release
 
-- [ ] **pass 40.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
+- [ ] **pass 41.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
   (+ `versionCode` 4), `tauri.conf.json`, `Cargo.toml`, and `README.md`. `sw.js`
-  `CACHE_NAME` → `rise-v20` or later (pass 33 took `v19`), with every module added across phases 1–7 appended
+  `CACHE_NAME` → `rise-v21` or later (pass 34 took `v20`), with every module added across phases 1–7 appended
   to `PRECACHE_URLS` — a missed entry is an offline break that only shows up
   after install.
 

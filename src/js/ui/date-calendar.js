@@ -13,6 +13,7 @@
  * Returns { node, get, set, onChange }.
  */
 import { el } from "./dom.js";
+import { icon } from "./icons.js";
 import { attachPopover } from "./popover.js";
 import { todayISO, humanDate, daysInMonth, MONTH_NAMES } from "../core/dates.js";
 
@@ -27,7 +28,7 @@ export function dateCalendar({ value, max = null }) {
     "button",
     { class: "cal__trigger", type: "button", "aria-haspopup": "dialog", "aria-expanded": "false" },
     valueEl,
-    el("span", { class: "cal__caret", "aria-hidden": "true" }, "▾"),
+    el("span", { class: "cal__caret", "aria-hidden": "true" }, icon("chevron-down", { size: 14 })),
   );
 
   const heading = el("span", { class: "cal__heading" });
@@ -38,11 +39,11 @@ export function dateCalendar({ value, max = null }) {
     el(
       "div",
       { class: "cal__bar" },
-      navBtn("«", "Previous year", () => shift(0, -1)),
-      navBtn("‹", "Previous month", () => shift(-1, 0)),
+      navBtn("chevrons-left", "Previous year", () => shift(0, -1)),
+      navBtn("chevron-left", "Previous month", () => shift(-1, 0)),
       heading,
-      navBtn("›", "Next month", () => shift(1, 0)),
-      navBtn("»", "Next year", () => shift(0, 1)),
+      navBtn("chevron-right", "Next month", () => shift(1, 0)),
+      navBtn("chevrons-right", "Next year", () => shift(0, 1)),
     ),
     el("div", { class: "cal__weekdays" }, ...WEEKDAYS.map((w) => el("span", {}, w))),
     grid,
@@ -52,8 +53,15 @@ export function dateCalendar({ value, max = null }) {
   const pop = attachPopover(root, trigger, panel, { onOpen: paintGrid });
   let onChange = null;
 
+  // Lucide glyphs rather than the « ‹ › » characters this used to type. Those are
+  // font-dependent, sit on the text baseline inside a 28px box, and read as a
+  // different family from every other control in the app.
   function navBtn(glyph, label, fn) {
-    const b = el("button", { class: "cal__nav", type: "button", "aria-label": label }, glyph);
+    const b = el(
+      "button",
+      { class: "cal__nav", type: "button", "aria-label": label },
+      icon(glyph, { size: 16 }),
+    );
     b.addEventListener("click", fn);
     return b;
   }

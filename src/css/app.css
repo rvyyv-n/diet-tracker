@@ -262,6 +262,22 @@
   color: var(--text-muted-soft);
 }
 
+/* Drop the native number spinner. The browser draws its own up/down stepper
+   inside type="number" — a chrome-blue, platform-styled control that matches
+   nothing else in the app and lands right on the weigh-in field. Every numeric
+   input here carries `inputmode`, so phones still raise a numeric keypad and
+   nothing is lost by removing it. */
+.field__input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.field__input[type="number"]::-webkit-outer-spin-button,
+.field__input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
 /* Native date input — kept native, aligned to the design system. Tighten the
    segment separators, tone the calendar icon down, and mute the dd/mm/yyyy
    placeholder so an empty field reads as empty rather than broken. */
@@ -1196,10 +1212,14 @@
 }
 .lb__value.is-placeholder { color: var(--text-muted-soft); }
 
+/* Both carets draw the Lucide chevron now, not a "▾" text character — the
+   typed one inherited the body font's metrics and sat low against the value
+   beside it. inline-flex centres the svg; `font-size` no longer applies. */
 .lb__caret,
 .cal__caret {
   flex: none;
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
   color: var(--text-muted);
 }
 
@@ -1671,6 +1691,30 @@
   justify-content: space-between;
   gap: var(--space-sm);
 }
+
+/* The disclosure form of the header. A full-width tap row, so it takes the
+   app's touch target rather than the text's own height. */
+.planref__meal-head--btn {
+  width: 100%;
+  min-height: var(--touch-target);
+  padding: 0;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.planref__meal-head--btn:active .planref__meal-name { color: var(--color-primary); }
+.planref__meal-head--btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.planref__meal-chev {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted-soft);
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+.planref__meal.is-open .planref__meal-chev { transform: rotate(180deg); }
 .planref__meal-name {
   display: flex;
   align-items: baseline;
@@ -1695,19 +1739,31 @@
   color: var(--text-muted);
 }
 
+/* The rotation options, revealed under an open block. Each option is a bounded
+   row with a hairline above it, not another paragraph in a run — a 2–3 line
+   ingredient sentence needs a visible edge or four of them read as one block of
+   text. The left rule ties the whole list back to its parent block. */
 .planref__opts {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding-left: var(--space-md);
+  margin: var(--space-xxs) 0 var(--space-xs);
+  padding-left: var(--space-sm);
+  border-left: var(--border-width-hairline) solid var(--border-hairline);
 }
 .planref__opt {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-sm);
+  padding: var(--space-xs) 0;
   font: var(--text-body-sm);
   color: var(--text-body);
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+}
+.planref__opt:first-child { border-top: none; }
+.planref__opt-desc {
+  /* Keeps "(1 tsp)" off a line of its own where the browser supports it. */
+  text-wrap: pretty;
 }
 .planref__opt-kcal {
   flex: none;

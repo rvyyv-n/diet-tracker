@@ -216,7 +216,7 @@ function overviewGroup() {
   const profile = loadProfile();
   const rows = {
     protein: { name: "Protein line", hint: "Protein logged against the daily target." },
-    remaining: { name: "Remaining line", hint: "How much kcal and how many blocks are still to go." },
+    remaining: { name: "Remaining line", hint: "How much kcal and how many blocks remain." },
   };
   return el(
     "div",
