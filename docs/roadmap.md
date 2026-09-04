@@ -58,7 +58,7 @@ desktop layout. Three standing decisions shape the ordering:
 
 ```yaml
 vanilla_through_v2:
-  decision: "stay vanilla ES modules for the design-system and feature phases; the build/framework call is deferred to phase 6"
+  decision: "stay vanilla ES modules for the design-system and feature phases; the build/framework call is deferred to phase 7"
   why: "a framework migration before any user-visible feature is a rewrite of 3,000 working lines that also touches sw.js precaching, the Android WebViewAssetLoader path, and the Tauri build"
 animations_last:
   decision: "motion polish and any component-framework adoption come last, after every feature phase"
@@ -155,27 +155,73 @@ panes in step. Nothing on screen changed; the phone still mounts exactly one.
   note in `tokens.css` are the shape to aim at. Two open calls to make then:
   what the side nav does when tapped in a two-pane layout (swap the main pane,
   presumably, rather than collapse to one), and whether `?tab=` should be able
-  to name more than one pane.
+  to name more than one pane. Fold in the **hover** item from
+  `design-system.md`'s *Still open* list while here — it is already recorded
+  there as belonging with desktop, scoped to
+  `(hover:hover) and (pointer:fine)` so touch keeps the two-state model.
 
 **If v2 runs long, this is the cut line.** Phases 0–4 are a coherent, shippable
 release on their own; the desktop layout is the natural 2.1.
 
-### phase 6 — motion, and the framework question  (last, by decision)
+### phase 6 — the visual pass
 
-- [ ] **pass 35 — the framework call.** With every surface final, decide
+Scoped with the owner after phase 5 was designed. Everything here is polish
+over surfaces that already work, which is exactly why it sits **after** the
+desktop layout and **before** motion: the `animations_last` reasoning applies
+to static polish too. Empty states in particular have to be checked at wide
+widths, and doing them before pass 34 means doing them twice.
+
+Two things were weighed and **excluded**, so don't re-propose them without a
+new reason:
+
+- **Recipe photos.** Images do not fit localStorage's ~5MB budget, so any real
+  version means adding IndexedDB as a second storage path beside `storage.js` —
+  new migration surface, a rewritten backup format, and an export that stops
+  being human-readable JSON. Not worth it for a text-first recipe book.
+- **Hover states.** Already on `design-system.md`'s open list and already noted
+  there as belonging with desktop. It folds into pass 34, not here.
+
+- [ ] **pass 35 — empty and first-week states.** Closes the "Empty, loading and
+  error states" item on `design-system.md`'s *Still open* list. Four surfaces
+  have nothing to say yet and currently say it in bare sentences: Today before
+  the first tick, Weight with no weigh-ins, an empty recipe book, and an
+  untouched grocery list. The treatment is one large muted Lucide glyph over a
+  single line of copy — no illustration budget, no new token invented. Copy
+  states a fact and offers the next action; the never-nag principle applies
+  here as much as anywhere.
+- [ ] **pass 36 — the day-total progress bar.** A hairline bar under Today's
+  hero kcal figure, filled to the day's fraction of target and coloured by the
+  `intakeStatus()` value the card already computes. Deliberately a bar and not
+  a ring or a dial: it is a readout of a number that is already on screen, not
+  a reward. Nothing about it may read as a score.
+- [ ] **pass 37 — the PWA icon set.** `assets/` ships one `icon.svg`, which
+  means Android crops it (no maskable variant with the safe-zone padding), iOS
+  falls back rather than using an `apple-touch-icon`, and there is no
+  monochrome variant for themed icons. Small, self-contained asset work, and
+  it is the first thing anyone sees on a home screen.
+- [ ] **Open call — meal-block glyphs.** Whether each block (Breakfast, the
+  Shakes, Lunch, Snack, Dinner, Pre-bed) gets an identifying Lucide glyph, and
+  where. The recommendation is the Plan reference sheet only: those rows are
+  read, whereas a Today checklist row is a daily tap target that already
+  carries a name, a description and a number, and a fourth element competes
+  with the thing being tapped. Undecided — ask before building.
+
+### phase 7 — motion, and the framework question  (last, by decision)
+
+- [ ] **pass 38 — the framework call.** With every surface final, decide
   whether the reactbits.dev components justify a build step. Options in
   ascending cost: port the effects to vanilla, add Vite for bundling only, or
   adopt a component framework. Deferring to here means the decision is made with
   full knowledge of what v2 actually became.
-- [ ] **pass 36 — motion polish.** Subtle, not showy; scoped per surface.
+- [ ] **pass 39 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.
 
-### phase 7 — the 2.0 release
+### phase 8 — the 2.0 release
 
-- [ ] **pass 37.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
+- [ ] **pass 40.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
   (+ `versionCode` 4), `tauri.conf.json`, `Cargo.toml`, and `README.md`. `sw.js`
-  `CACHE_NAME` → `rise-v20` or later (pass 33 took `v19`), with every module added across phases 1–6 appended
+  `CACHE_NAME` → `rise-v20` or later (pass 33 took `v19`), with every module added across phases 1–7 appended
   to `PRECACHE_URLS` — a missed entry is an offline break that only shows up
   after install.
 
