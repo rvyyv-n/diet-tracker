@@ -982,6 +982,30 @@
   border-radius: var(--radius-card);
 }
 
+/* .rotation is designed as a full-bleed recessed strip nested inside a block
+   row: no radius, a hairline only on top, and --space-xxs of vertical breathing
+   room. Bounded in .addblock__panel it is a different object — it has a border
+   and a 12px radius — and there that padding left the hover, press and picked
+   fills floating 4px short of the top and bottom edges with square corners
+   inside a rounded box. The rows reach the edge here and follow the corner.
+
+   overflow: hidden would have clipped them to the radius in one line, but a
+   .rotation__opt focus ring is a box-shadow 4px OUTSIDE the row, so the first
+   and last row would have lost half their focus ring. Rounding the rows
+   themselves costs three rules and keeps the ring whole.
+
+   The inner radius is the outer radius less the border it sits inside —
+   derived from the tokens, not a new value. */
+.rotation.addblock__panel { padding: 0; }
+.rotation.addblock__panel .rotation__opt:first-child {
+  border-start-start-radius: calc(var(--radius-card) - var(--border-width-hairline));
+  border-start-end-radius: calc(var(--radius-card) - var(--border-width-hairline));
+}
+.rotation.addblock__panel .rotation__opt:last-child {
+  border-end-start-radius: calc(var(--radius-card) - var(--border-width-hairline));
+  border-end-end-radius: calc(var(--radius-card) - var(--border-width-hairline));
+}
+
 /* off-plan extras (pass 25) ------------------------------------------------
    A logged extra reads as a lighter block-row: reuses .block-row__kcal and
    .block-row__drop rather than inventing a parallel kcal/remove treatment.

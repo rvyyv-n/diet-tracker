@@ -288,7 +288,7 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
 
 - [ ] **pass 49.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
   (+ `versionCode` 4), `tauri.conf.json`, `Cargo.toml`, and `README.md`. `sw.js`
-  `CACHE_NAME` → `rise-v31` or later (pass 44 took `v30`), with every module added across phases 1–7 appended
+  `CACHE_NAME` → `rise-v32` or later (the pass-44 fix took `v31`), with every module added across phases 1–7 appended
   to `PRECACHE_URLS` — a missed entry is an offline break that only shows up
   after install.
 
