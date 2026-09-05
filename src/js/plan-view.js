@@ -376,10 +376,35 @@ function mealDisclosure(b, fig, opts, kcal, dayKcal) {
   );
 }
 
+/**
+ * One Lucide glyph per meal block (pass 41, settling phase 6's open call).
+ * Keyed by block id rather than name so renaming a block in plan.js does not
+ * silently drop its glyph. Both shakes share `milk` — they are the same drink
+ * at two times of day, and giving the second one its own glyph would imply a
+ * difference that isn't there. A block with no entry simply renders no icon.
+ */
+const BLOCK_GLYPH = {
+  B1: "egg", // Breakfast
+  B2: "milk", // Shake
+  B3: "sandwich", // Lunch
+  A1: "cookie", // Snack
+  A3: "milk", // Shake 2
+  B4: "utensils", // Dinner
+  A2: "moon", // Pre-bed
+};
+
 function mealName(b) {
+  const glyph = BLOCK_GLYPH[b.id];
   return el(
     "span",
     { class: "planref__meal-name" },
+    glyph
+      ? el(
+          "span",
+          { class: "planref__meal-icon", "aria-hidden": "true" },
+          icon(glyph, { size: 16 }),
+        )
+      : null,
     b.name,
     b.time ? el("span", { class: "planref__meal-time" }, fmtTime(b.time)) : null,
   );

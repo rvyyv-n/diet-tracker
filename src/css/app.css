@@ -569,6 +569,31 @@
   color: var(--text-muted);
 }
 
+/* The day-total bar (pass 42). Its own margin rather than relying on the card's
+   gap, because it sits between the figure and the remaining line and wants to
+   read as part of the figure, not as a third row of the stack.
+
+   The fill takes .is-on-track / .is-partial / .is-low, which are colour rules —
+   so it sets `background` from the same tokens explicitly rather than
+   inheriting, and repeats the three selectors below. */
+.daytotal__bar {
+  display: block;
+  height: 3px;
+  margin: var(--space-xxs) 0 var(--space-xxs);
+  border-radius: var(--radius-pill);
+  background: var(--border-hairline);
+  overflow: hidden;
+}
+.daytotal__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--text-muted-soft);
+}
+.daytotal__bar-fill.is-on-track { background: var(--intake-on-track); }
+.daytotal__bar-fill.is-partial { background: var(--intake-partial); }
+.daytotal__bar-fill.is-low { background: var(--intake-low); }
+
 .daytotal__remaining {
   font: var(--text-body-md);
   color: var(--text-body-strong);
@@ -578,6 +603,38 @@
   font: var(--text-body-sm);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
+}
+
+
+/* empty states (pass 41) --------------------------------------------------
+   One large muted glyph over one line of copy, centred in the space the real
+   content would have filled. Only two surfaces use it — the weight history and
+   the recipe book — because only those two are ever genuinely empty.
+
+   The glyph is --text-muted-soft rather than a status colour: nothing here is
+   a warning, and colour in this app already means on-track/partway/under. The
+   block is padded, not min-height'd, so it never reserves more space than the
+   copy needs. */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+}
+
+.empty__icon {
+  display: inline-flex;
+  color: var(--text-muted-soft);
+}
+
+.empty__line {
+  max-width: 34ch;
+  margin: 0;
+  font: var(--text-body-sm);
+  color: var(--text-muted);
 }
 
 
@@ -1049,11 +1106,6 @@
 .extras__pick:active { background: var(--surface-cream-strong); }
 .extras__pick:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
-.extras__empty {
-  margin: 0;
-  font: var(--text-body-sm);
-  color: var(--text-muted);
-}
 
 /* recipe editor (pass 28) ------------------------------------------------
    Name a recipe and manage its ingredient list, expand-in-place over the
@@ -1848,6 +1900,16 @@
   font: var(--text-title-sm);
   color: var(--text-ink);
 }
+/* The block glyph. `align-self: center` because the row is baseline-aligned for
+   the text, and an svg box has no useful baseline — left to itself it hangs
+   below the name it sits beside. */
+.planref__meal-icon {
+  flex: none;
+  align-self: center;
+  display: inline-flex;
+  color: var(--text-muted-soft);
+}
+
 .planref__meal-time {
   font: var(--text-caption);
   font-weight: var(--weight-regular);

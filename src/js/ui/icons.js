@@ -113,6 +113,47 @@ const PATHS = {
     "M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z",
     "M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12",
   ],
+  // --- pass 41 --------------------------------------------------------------
+  // The two empty states. Drawn large and muted over a single line of copy, so
+  // each has to read at 32px rather than the 14-20px the rest of the set uses.
+  scale: [
+    "m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z",
+    "m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z",
+    "M7 21h10",
+    "M12 3v18",
+    "M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2",
+  ],
+  "book-open": [
+    "M12 7v14",
+    "M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z",
+  ],
+  // The meal-block family. Settled as Plan-sheet-only: those rows are read, so
+  // a glyph helps you find Dinner in a list of seven. A Today checklist row is
+  // a daily tap target already carrying a name, a time, a description and a
+  // number, and a fifth element competes with the thing being tapped.
+  // Breakfast reuses `egg`, Dinner reuses `utensils`.
+  milk: [
+    "M8 2h8",
+    "M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2",
+    "M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0",
+  ],
+  // Raw markup, not a path list — Lucide draws the bread as a <rect>.
+  sandwich:
+    '<path d="m2.37 11.223 8.372-6.777a2 2 0 0 1 2.516 0l8.371 6.777"/>' +
+    '<path d="M21 15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-5.25"/>' +
+    '<path d="M3 15a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h9"/>' +
+    '<path d="m6.67 15 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2"/>' +
+    '<rect width="20" height="4" x="2" y="11" rx="1"/>',
+  cookie: [
+    "M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5",
+    "M8.5 8.5v.01",
+    "M16 15.5v.01",
+    "M12 12v.01",
+    "M11 17v.01",
+    "M7 14v.01",
+  ],
+  moon: ["M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"],
+
   "clipboard-list":
     '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>' +
     '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>' +

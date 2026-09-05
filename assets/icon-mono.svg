@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- The monochrome variant, for Android's themed icons. The platform
+       recolours it and applies its own mask, so this carries no tile, no
+       background and no colour of its own — only the silhouette.
+
+       One path with two subpaths and fill-rule="evenodd": the outer egg is
+       filled, the yolk is knocked out of it. A solid oval would be a generic
+       blob at 24px; the hole is what makes it read as an egg.
+
+       Art sits inside the maskable safe zone (the centre 80%), scaled 0.7 from
+       assets/icon.svg's geometry — same as assets/icon-maskable-512.png. -->
+  <path fill="#000000" fill-rule="evenodd" d="
+    M256 124.4 A110.6 133 0 1 0 255.9 124.4 Z
+    M256 211.2 A64.4 64.4 0 1 0 255.9 211.2 Z
+  "/>
+</svg>

@@ -10,13 +10,18 @@
  * project (not just edited), add it here and bump CACHE_NAME so clients refetch.
  */
 
-const CACHE_NAME = "rise-v28";
+const CACHE_NAME = "rise-v29";
 
 const PRECACHE_URLS = [
   "./",
   "index.html",
   "manifest.json",
   "assets/icon.svg",
+  "assets/icon-mono.svg",
+  "assets/icon-192.png",
+  "assets/icon-512.png",
+  "assets/icon-maskable-512.png",
+  "assets/apple-touch-icon.png",
 
   "src/css/tokens.css",
   "src/css/app.css",

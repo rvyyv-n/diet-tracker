@@ -6,7 +6,7 @@
  * trend.js; this file is entry + display only. Copy convention: sentence case.
  */
 
-import { el, groupLabel } from "./ui/dom.js";
+import { el, groupLabel, emptyState } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { dateCalendar } from "./ui/date-calendar.js";
 import { weightInput } from "./ui/weight-input.js";
@@ -389,7 +389,7 @@ function loggedNote() {
 
 function historyCard(series) {
   if (!series.length) {
-    return el("p", { class: "screen__intro" }, "No weigh-ins yet — log your first above.");
+    return emptyState("scale", "No weigh-ins yet. Log your first above and the trend starts there.");
   }
   const reversed = [...series].reverse();
   return el(

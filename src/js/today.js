@@ -13,7 +13,7 @@
  * Copy convention: sentence case, matching welcome.js.
  */
 
-import { el, groupLabel } from "./ui/dom.js";
+import { el, groupLabel, emptyState } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { loadProfile, saveProfile, overviewMetricShown } from "./core/profile.js";
 import {
@@ -394,6 +394,30 @@ function adherenceStrip(profile, viewedDay) {
  * (pass 32 — profile.overviewMetrics), gated here so a hidden line leaves no
  * node rather than empty space.
  */
+/**
+ * The day-total progress bar (pass 42). A hairline under the hero figure,
+ * filled to the day's fraction of target and coloured by the same
+ * intakeStatus() the figure above it already uses.
+ *
+ * Deliberately a bar and not a ring or a dial: it is a second reading of a
+ * number that is already on screen in full — "1,840 / 2,900 kcal" — so it may
+ * add shape but must not add meaning. Nothing about it is allowed to read as a
+ * score, which is why there is no label, no percentage text, and no end-state
+ * flourish when it fills.
+ *
+ * Clamped at 100%: over target the bar simply stops full rather than
+ * overflowing its track. Going over is not an error in a gain tracker, and the
+ * figure above already says by how much. Hidden from the accessibility tree
+ * for the same reason it is decorative — a screen reader gets the real numbers.
+ */
+function dayBar(kcal, targetKcal, status) {
+  if (!targetKcal) return null;
+  const pct = Math.max(0, Math.min(100, (kcal / targetKcal) * 100));
+  const fill = el("span", { class: `daytotal__bar-fill ${STATUS_CLASS[status]}` });
+  fill.style.width = `${pct}%`;
+  return el("span", { class: "daytotal__bar", "aria-hidden": "true" }, fill);
+}
+
 function totalCard(day, profile) {
   const totals = dayTotals(day);
   const target = phaseTarget(day.phaseId);
@@ -417,6 +441,7 @@ function totalCard(day, profile) {
       el("span", { class: `daytotal__kcal ${STATUS_CLASS[status]}` }, NUM.format(totals.kcal)),
       el("span", { class: "daytotal__target" }, `/ ${NUM.format(target.kcal)} kcal`),
     ),
+    dayBar(totals.kcal, target.kcal, status),
     overviewMetricShown(profile, "remaining")
       ? el("p", { class: "daytotal__remaining" }, remaining)
       : null,
@@ -758,7 +783,12 @@ function recipeList(day) {
     ),
     ...(recipes.length
       ? recipes.map((recipe) => recipePickRow(day, recipe))
-      : [el("p", { class: "extras__empty" }, "No saved recipes yet.")]),
+      : [
+          emptyState(
+            "book-open",
+            "No saved recipes yet. Build one above, or save a food you've logged.",
+          ),
+        ]),
   );
 }
 

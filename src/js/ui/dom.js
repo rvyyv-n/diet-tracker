@@ -43,3 +43,26 @@ export function groupLabel(label, glyph, tag = "span") {
     label,
   );
 }
+
+/**
+ * The empty state (pass 41): one large muted glyph over a line of copy, and
+ * nothing else. No illustration budget, no invented token.
+ *
+ * Only two surfaces in the app are ever genuinely empty — the weight history
+ * before the first weigh-in, and the recipe book before the first save. Today's
+ * checklist always renders the day's blocks and the grocery list always renders
+ * its aisles, so neither gets one of these: they are at zero progress, not
+ * empty, and covering real rows with a glyph would be a regression.
+ *
+ * The copy states a fact and points at the action that fills the surface. The
+ * action is always already on screen just above, so this never grows a button —
+ * a second one would compete with the real one.
+ */
+export function emptyState(glyph, line) {
+  return el(
+    "div",
+    { class: "empty" },
+    el("span", { class: "empty__icon", "aria-hidden": "true" }, icon(glyph, { size: 32 })),
+    el("p", { class: "empty__line" }, line),
+  );
+}
