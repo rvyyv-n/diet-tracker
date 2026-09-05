@@ -10,13 +10,14 @@
  * project (not just edited), add it here and bump CACHE_NAME so clients refetch.
  */
 
-const CACHE_NAME = "rise-v29";
+const CACHE_NAME = "rise-v30";
 
 const PRECACHE_URLS = [
   "./",
   "index.html",
   "manifest.json",
   "assets/icon.svg",
+  "assets/icon-dark.svg",
   "assets/icon-mono.svg",
   "assets/icon-192.png",
   "assets/icon-512.png",
@@ -99,6 +100,16 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  // Untracked dev scratch files (dev-seed.html and friends) go straight to the
+  // network, never the cache. Everything below is cache-first, which is right
+  // for the app — it is what makes it work offline — but it means an edited
+  // file keeps serving its old copy until CACHE_NAME is bumped. For the app
+  // that is a deliberate, documented step; for a dev tool you are actively
+  // editing it is a trap, and it cost a debugging session once: a syntax error
+  // in dev-seed.html was fixed and the page kept running the broken cached
+  // copy, which looked exactly like the fix not working.
+  if (url.pathname.split("/").pop().startsWith("dev-")) return;
 
   event.respondWith(
     caches.match(request).then((cached) => {

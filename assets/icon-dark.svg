@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- The dark-theme favicon, chosen by the media query on index.html's icon
+       link. It is not a recolour of assets/icon.svg — it is the same mark with
+       the tile taken away.
+
+       The reason: the tile in assets/icon.svg is black, and a black tile sits on
+       a dark browser tab strip as a slightly-darker hole. Recolouring it cream
+       instead was tried and is worse — on cream the white egg vanishes and all
+       that survives at 16px is a pale square with an orange dot. Dropping the
+       tile keeps the actual mark, and the egg and yolk are both light enough to
+       read on any dark chrome unaided.
+
+       With the tile gone the art no longer needs the tile's padding, so it is
+       scaled 1.2 about the centre to fill the box — measured as the largest
+       scale that does not clip (1.2 spans y 22-495; 1.32 runs off the top).
+       Scaling via transform rather than baked numbers keeps the geometry a
+       visible delta from assets/icon.svg, which is still the canonical source
+       and what tools/make-icons.py mirrors. -->
+  <g transform="translate(256 256) scale(1.2) translate(-256 -256)">
+    <ellipse cx="256" cy="258" rx="158" ry="190" fill="#FFFFFF" stroke="#E6DFD8" stroke-width="14"/>
+    <circle cx="256" cy="286" r="92" fill="#E8A55A"/>
+    <circle cx="256" cy="286" r="60" fill="#E0913F"/>
+  </g>
+</svg>
