@@ -185,7 +185,7 @@ new reason:
 - **Hover states.** Already on `design-system.md`'s open list and already noted
   there as belonging with desktop. It folded into pass 35, not here — shipped.
 
-- [ ] **pass 36 — empty and first-week states.** Closes the "Empty, loading and
+- [ ] **pass 41 — empty and first-week states.** Closes the "Empty, loading and
   error states" item on `design-system.md`'s *Still open* list. Four surfaces
   have nothing to say yet and currently say it in bare sentences: Today before
   the first tick, Weight with no weigh-ins, an empty recipe book, and an
@@ -193,12 +193,12 @@ new reason:
   single line of copy — no illustration budget, no new token invented. Copy
   states a fact and offers the next action; the never-nag principle applies
   here as much as anywhere.
-- [ ] **pass 37 — the day-total progress bar.** A hairline bar under Today's
+- [ ] **pass 42 — the day-total progress bar.** A hairline bar under Today's
   hero kcal figure, filled to the day's fraction of target and coloured by the
   `intakeStatus()` value the card already computes. Deliberately a bar and not
   a ring or a dial: it is a readout of a number that is already on screen, not
   a reward. Nothing about it may read as a score.
-- [ ] **pass 38 — the PWA icon set.** `assets/` ships one `icon.svg`, which
+- [ ] **pass 43 — the PWA icon set.** `assets/` ships one `icon.svg`, which
   means Android crops it (no maskable variant with the safe-zone padding), iOS
   falls back rather than using an `apple-touch-icon`, and there is no
   monochrome variant for themed icons. Small, self-contained asset work, and
@@ -212,15 +212,15 @@ new reason:
 
 ### phase 7 — motion, and the framework question  (last, by decision)
 
-- [ ] **pass 39 — the framework call.** With every surface final, decide
+- [ ] **pass 44 — the framework call.** With every surface final, decide
   whether the reactbits.dev components justify a build step. Options in
   ascending cost: port the effects to vanilla, add Vite for bundling only, or
   adopt a component framework. Deferring to here means the decision is made with
   full knowledge of what v2 actually became.
-- [ ] **pass 40 — motion polish.** Subtle, not showy; scoped per surface.
+- [ ] **pass 45 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.
-- [ ] **pass 40b — the interactive desktop side nav.** *(feature request)* The
+- [ ] **pass 46 — the interactive desktop side nav.** *(feature request)* The
   side nav that pass 35 introduced is a static 240px column: it is always there,
   it always costs the same width, and on the Tauri desktop build that is 240px
   of chrome the user never asked for. Make it interactable.
@@ -254,7 +254,7 @@ new reason:
   the content without covering anything interactive at the content column's
   left edge — check the Plan sheet's disclosure rows, which start closest to it.
 
-- [ ] **pass 40c — split Recipes out of Plan.** *(theoretical — do not build
+- [ ] **pass 47 — split Recipes out of Plan.** *(theoretical — do not build
   without a decision)* The Plan tab currently carries three unrelated things:
   the weekly grocery checklist, the phase target ladder, and a full reference
   sheet (meals, rotations, and a twenty-row food table). That is a long scroll
@@ -285,9 +285,9 @@ new reason:
 
 ### phase 8 — the 2.0 release
 
-- [ ] **pass 41.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
+- [ ] **pass 48.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
   (+ `versionCode` 4), `tauri.conf.json`, `Cargo.toml`, and `README.md`. `sw.js`
-  `CACHE_NAME` → `rise-v22` or later (pass 35 took `v21`), with every module added across phases 1–7 appended
+  `CACHE_NAME` → `rise-v29` or later (the pass-40 cleanup took `v28`), with every module added across phases 1–7 appended
   to `PRECACHE_URLS` — a missed entry is an offline break that only shows up
   after install.
 

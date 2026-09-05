@@ -1860,10 +1860,6 @@
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
-.planref__meal-desc {
-  font: var(--text-body-sm);
-  color: var(--text-muted);
-}
 
 /* The rotation options, revealed under an open block. Each option is a bounded
    row with a hairline above it, not another paragraph in a run — a 2–3 line
@@ -2231,39 +2227,6 @@
 }
 .set2-row__chev svg { width: 100%; height: 100%; }
 
-
-/* --------------------------------------------------------- stacked item ---
-   Export: the row copies; the file download sits under it as a small
-   secondary action, indented to the name left edge (16 pad + 20 icon + 12
-   gap). Kept at 44px so it stays a real tap target.                         */
-
-.set2-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.set2-sub {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  align-self: flex-start;
-  min-height: 44px;
-  margin-left: calc(var(--space-md) + 32px);
-  padding: 0 var(--space-xs) var(--space-xs) 0;
-  font: var(--text-body-sm);
-  color: var(--text-muted);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.set2-sub span { text-decoration: underline; text-underline-offset: 3px; }
-.set2-sub:active { color: var(--text-ink); }
-.set2-sub:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-control); }
-
-.set2-sub__icon { display: flex; width: 15px; height: 15px; }
-.set2-sub__icon svg { width: 100%; height: 100%; }
-
 /* small secondary button, for a row that acts */
 .btn--sm {
   min-height: 44px;
@@ -2276,13 +2239,6 @@
   flex: none;
   display: flex;
   gap: var(--space-xs);
-}
-
-/* a quiet full-width line inside a card — the "Last export" freshness note */
-.set2-note {
-  padding: var(--space-xs) var(--space-md) var(--space-sm);
-  font: var(--text-body-sm);
-  color: var(--text-muted);
 }
 
 /* the paste-in import textarea */
@@ -2979,6 +2935,5 @@
     color: var(--text-ink);
     background: var(--surface-card);
   }
-  .set2-sub:hover { color: var(--text-body-strong); }
   .about2__link:hover { text-decoration: underline; text-underline-offset: 3px; }
 }

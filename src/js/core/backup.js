@@ -97,26 +97,14 @@ export function parseBackup(text) {
 }
 
 // --- backup freshness -------------------------------------------------------
-// When the data was last written out, so Settings can show it and nudge once
-// it goes stale. Its own record, never in exportAll() — an imported backup must
-// not claim it was just exported on the machine that received it.
-
-const STALE_AFTER_DAYS = 14;
+// When the data was last written out. Recorded but not currently surfaced —
+// pass 40 removed the freshness line from Settings. Its own record, never in
+// exportAll() — an imported backup must not claim it was just exported on the
+// machine that received it.
 
 /** Record that a fresh export just happened. */
 export function noteExport() {
   save("backup", { lastExportedAt: new Date().toISOString() });
-}
-
-/**
- * `{ at, ageDays, stale }` for the last export, or null if there has never
- * been one. `stale` is true past STALE_AFTER_DAYS.
- */
-export function exportFreshness() {
-  const at = load("backup", {}).lastExportedAt ?? null;
-  if (!at) return null;
-  const ageDays = Math.floor((Date.now() - new Date(at).getTime()) / 86_400_000);
-  return { at, ageDays: Math.max(0, ageDays), stale: ageDays >= STALE_AFTER_DAYS };
 }
 
 // --- the undo slot -------------------------------------------------------
