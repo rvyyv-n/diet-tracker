@@ -97,14 +97,23 @@ export function parseBackup(text) {
 }
 
 // --- backup freshness -------------------------------------------------------
-// When the data was last written out. Recorded but not currently surfaced —
-// pass 40 removed the freshness line from Settings. Its own record, never in
-// exportAll() — an imported backup must not claim it was just exported on the
-// machine that received it.
+// When the data was last written out. Its own record, never in exportAll() —
+// an imported backup must not claim it was just exported on the machine that
+// received it. Pass 40 removed a stray freshness paragraph that broke the
+// Export/Import rows' spacing; the fact itself was never the problem, so it is
+// back as that row's own subtitle (see settings.js exportItem()) rather than a
+// line of its own. No staleness flag and no "worth doing again" nudge this
+// time — that reads as the guilt mechanic the never-nag principle rules out;
+// this just states when the last export happened.
 
 /** Record that a fresh export just happened. */
 export function noteExport() {
   save("backup", { lastExportedAt: new Date().toISOString() });
+}
+
+/** The last export's timestamp, or null if this browser has never exported. */
+export function lastExportedAt() {
+  return load("backup", {}).lastExportedAt ?? null;
 }
 
 // --- the undo slot -------------------------------------------------------

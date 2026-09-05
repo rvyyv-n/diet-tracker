@@ -11,7 +11,7 @@
  * Copy convention: sentence case, matching the rest of the app.
  */
 
-import { el, groupLabel } from "./ui/dom.js";
+import { el, groupLabel, renderPreservingFocus, announce } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { loadProfile } from "./core/profile.js";
 import {
@@ -60,29 +60,36 @@ export function repaintPlan() {
 }
 
 function render() {
-  const profile = loadProfile();
-  const phaseId = profile.currentPhaseId || 2;
-  const phase = phaseById(phaseId);
-  const week = planWeek(profile.startDate || todayISO(), todayISO());
-  // The add-ons this user actually runs (the engine may have changed them), so
-  // the reference "Meals" list matches what Today shows — not the bare phase.
-  const addOns = normaliseAddOns(profile.addOns ?? []);
+  // See today.js's own note on renderPreservingFocus — a tick never leaves its
+  // row, but a keyboard user tabbing through the checklist would otherwise
+  // lose focus to <body> on every tap, since replaceChildren() below destroys
+  // the row that has it.
+  renderPreservingFocus(mount, () => {
+    const profile = loadProfile();
+    const phaseId = profile.currentPhaseId || 2;
+    const phase = phaseById(phaseId);
+    const week = planWeek(profile.startDate || todayISO(), todayISO());
+    // The add-ons this user actually runs (the engine may have changed them),
+    // so the reference "Meals" list matches what Today shows — not the bare
+    // phase.
+    const addOns = normaliseAddOns(profile.addOns ?? []);
 
-  mount.replaceChildren(
-    el(
-      "section",
-      { class: "screen planscreen" },
+    mount.replaceChildren(
       el(
-        "div",
-        { class: "screen-head" },
-        el("h1", { class: "screen__title screen__title--lg" }, "Plan"),
-        el("p", { class: "phase-banner" }, `${phase.name} · Week ${week}`),
+        "section",
+        { class: "screen planscreen" },
+        el(
+          "div",
+          { class: "screen-head" },
+          el("h1", { class: "screen__title screen__title--lg" }, "Plan"),
+          el("p", { class: "phase-banner" }, `${phase.name} · Week ${week}`),
+        ),
+        group("Groceries", "shopping-cart", groceryCard(phaseId)),
+        group("The plan", "clipboard-list", referenceCard(phaseId, addOns)),
       ),
-      group("Groceries", "shopping-cart", groceryCard(phaseId)),
-      group("The plan", "clipboard-list", referenceCard(phaseId, addOns)),
-    ),
-  );
-  publish("plan");
+    );
+    publish("plan");
+  });
 }
 
 /** An uppercase tracked label above a card — the shared Settings/Weight shape. */
@@ -98,7 +105,10 @@ function group(label, glyph, card) {
  * (insight_copy_states_facts) — no "well done", no colour. The count is over
  * items the plan still names, so a renamed entry can't inflate it.
  */
-function groceryCard(phaseId) {
+/** Ticked / total across every aisle, over items the plan still names — a
+ * renamed entry can't inflate the count. Shared by the status line and the
+ * live-region announcement so they can never disagree. */
+function groceryCounts() {
   const checks = weekChecks();
   let total = 0;
   let done = 0;
@@ -108,6 +118,17 @@ function groceryCard(phaseId) {
       if (checks[groceryKey(sec.section, item.name)]) done += 1;
     }
   }
+  return { done, total };
+}
+
+function announceGroceryProgress() {
+  const { done, total } = groceryCounts();
+  announce(`${done} of ${total} ticked.`);
+}
+
+function groceryCard(phaseId) {
+  const checks = weekChecks();
+  const { done, total } = groceryCounts();
 
   const card = el(
     "div",
@@ -128,6 +149,7 @@ function groceryCard(phaseId) {
             type: "button",
             onclick: () => {
               clearGroceryChecks();
+              announceGroceryProgress();
               render();
             },
           },
@@ -176,8 +198,10 @@ function groceryRow(section, item, phaseId, checks) {
         class: `grocery__row${on ? " is-checked" : ""}`,
         type: "button",
         "aria-pressed": String(on),
+        "data-focus-key": `grocery-${key}`,
         onclick: () => {
           toggleGrocery(key);
+          announceGroceryProgress();
           render();
         },
       },

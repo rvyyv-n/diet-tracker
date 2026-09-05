@@ -24,6 +24,7 @@ import {
   countRecords,
   parseBackup,
   noteExport,
+  lastExportedAt,
   takeSnapshot,
   snapshotInfo,
   restoreSnapshot,
@@ -351,7 +352,7 @@ function exportItem() {
       "span",
       { class: "set2-row__body" },
       el("span", { class: "set2-row__name" }, "Export data"),
-      el("span", { class: "set2-row__desc" }, "Save all records as a JSON file."),
+      el("span", { class: "set2-row__desc" }, `Save all records as a JSON file. ${exportFreshnessText()}`),
     ),
     el(
       "button",
@@ -359,6 +360,16 @@ function exportItem() {
       "Download JSON",
     ),
   );
+}
+
+/** "Never exported." / "Exported today." / "Exported 3 days ago.", stated as
+ * a fact on the Export row rather than a separate line — see backup.js. */
+function exportFreshnessText() {
+  const at = lastExportedAt();
+  if (!at) return "Never exported.";
+  const ageDays = Math.max(0, Math.floor((Date.now() - new Date(at).getTime()) / 86_400_000));
+  if (ageDays === 0) return "Exported today.";
+  return `Exported ${ageDays} day${ageDays === 1 ? "" : "s"} ago.`;
 }
 
 function importRow() {

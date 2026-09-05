@@ -13,6 +13,21 @@
    ========================================================================== */
 
 
+/* Visually hidden but present to assistive tech — the shared aria-live region
+   ui/dom.js's announce() writes to. Clipped rather than display:none, which
+   would drop it from the accessibility tree entirely. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* --------------------------------------------------------------- shell ---
    Phone-first single column: it fills the viewport up to --app-max-width, then
    centres with a gutter on wider screens. Side padding is tight on a phone and
@@ -545,6 +560,19 @@
 }
 .suggestion__actions .btn--text { padding-inline: var(--space-xs); }
 
+/* the one-time v2 "what's new" card reuses .suggestion's card shell; its own
+   list needs the usual <ul> reset (see pass 37/38's note on this) */
+.whatsnew__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  font: var(--text-body-sm);
+  color: var(--text-body);
+}
+
 /* running total --------------------------------------------------------- */
 
 .daytotal {
@@ -573,11 +601,21 @@
    gap, because it sits between the figure and the remaining line and wants to
    read as part of the figure, not as a third row of the stack.
 
+   Capped at 12rem rather than the card's full width (reusing the width
+   .today-actions already settled on for its trigger buttons, not inventing a
+   new one): full-bleed had it read as a hard rule splitting the card in two,
+   dead centre under the kcal figure, rather than a small accent belonging to
+   the number just above it. align-self: flex-start keeps it pinned to that
+   figure's left edge instead of stretching with .daytotal's flex column.
+
    The fill takes .is-on-track / .is-partial / .is-low, which are colour rules —
    so it sets `background` from the same tokens explicitly rather than
    inheriting, and repeats the three selectors below. */
 .daytotal__bar {
   display: block;
+  align-self: flex-start;
+  width: 100%;
+  max-width: 12rem;
   height: 3px;
   margin: var(--space-xxs) 0 var(--space-xxs);
   border-radius: var(--radius-pill);

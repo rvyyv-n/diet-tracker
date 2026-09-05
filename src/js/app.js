@@ -43,6 +43,7 @@ import { requestPersistence } from "./core/persist.js";
 import { autoCheckForUpdate } from "./core/updates.js";
 import { initTheme } from "./core/theme.js";
 import { snapshotInfo, restoreSnapshot } from "./core/backup.js";
+import { markWhatsNewSeen } from "./core/whatsnew.js";
 import { loadProfile, saveProfile, isComplete } from "./core/profile.js";
 import { defaultPhaseForWeek, phaseAddOns, normaliseAddOns, phaseTarget } from "./core/plan.js";
 import { todayISO, planWeek } from "./core/dates.js";
@@ -159,7 +160,19 @@ function route() {
             route();
           }
         : null;
-    import("./welcome.js").then((m) => m.renderWelcome(mount, { onComplete: route, undoReset }));
+    import("./welcome.js").then((m) =>
+      m.renderWelcome(mount, {
+        // A profile completing setup for the first time here has no "before"
+        // to compare v2 against — mark it exempt rather than ever showing the
+        // What's new card. editSetup() (re-editing an existing profile) does
+        // not go through this branch, so it never touches this flag.
+        onComplete: () => {
+          markWhatsNewSeen();
+          route();
+        },
+        undoReset,
+      }),
+    );
     return;
   }
   syncPhase(profile);

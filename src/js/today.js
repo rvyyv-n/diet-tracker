@@ -13,7 +13,7 @@
  * Copy convention: sentence case, matching welcome.js.
  */
 
-import { el, groupLabel, emptyState } from "./ui/dom.js";
+import { el, groupLabel, emptyState, renderPreservingFocus, announce } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { loadProfile, saveProfile, overviewMetricShown } from "./core/profile.js";
 import {
@@ -56,6 +56,7 @@ import {
   recipeTotals,
 } from "./core/recipes.js";
 import { getDay, putDay, allDays } from "./core/days.js";
+import { whatsNewSeen, markWhatsNewSeen } from "./core/whatsnew.js";
 import { dateCalendar } from "./ui/date-calendar.js";
 import { listbox } from "./ui/listbox.js";
 import { allWeights } from "./core/weights.js";
@@ -95,6 +96,7 @@ let extrasFoodId = null; // the FOOD_DB id picked in "pick" mode
 // drive its own pick/type add-ingredient sub-form.
 let recipeEditor = null;
 let recipeEditorError = null; // a message shown under the editor after a failed save
+let recipeDeleteConfirming = false; // Delete's own two-step, reusing Settings' .set-confirm
 
 // How many days the adherence dot strip shows — the last week at a glance, up
 // near the header. Older days are reached through the calendar popover beside
@@ -148,38 +150,62 @@ function loadViewDay(profile) {
 /** Persist a changed day, then repaint. */
 function commit(nextDay) {
   putDay(nextDay);
+  announceDayTotal(nextDay);
   render();
+}
+
+/** Tell a screen reader the one fact that changed — the new total — rather
+ * than the whole re-render. Shares totalCard()'s own wording. */
+function announceDayTotal(day) {
+  const totals = dayTotals(day);
+  const target = phaseTarget(day.phaseId);
+  const toGo = Math.max(0, target.kcal - totals.kcal);
+  const blocksLeft = Math.max(0, totals.total - totals.planDone);
+  const blockWord = blocksLeft === 1 ? "block" : "blocks";
+  let remaining;
+  if (blocksLeft === 0 && toGo === 0) remaining = "All done.";
+  else if (toGo === 0) remaining = `Target met, ${blocksLeft} ${blockWord} left.`;
+  else remaining = `${NUM.format(toGo)} kcal to go, ${blocksLeft} ${blockWord} left.`;
+  announce(`${NUM.format(totals.kcal)} of ${NUM.format(target.kcal)} kcal. ${remaining}`);
 }
 
 // --- render ------------------------------------------------------------
 
 function render() {
-  const profile = loadProfile();
-  const day = loadViewDay(profile);
-  const editable = isDayEditable(day, todayISO());
-  const suggestion = viewDate === todayISO() ? liveSuggestion(profile) : null;
+  // A tap on a checklist row never leaves that row, but a keyboard user
+  // Tab-ing through it does — replaceChildren() below destroys the very node
+  // holding focus. renderPreservingFocus() captures it by its data-focus-key
+  // (the checklist ticks, add/drop controls, and appetite chips all carry
+  // one) and refocuses the matching new node once the rebuild is done.
+  renderPreservingFocus(mount, () => {
+    const profile = loadProfile();
+    const day = loadViewDay(profile);
+    const editable = isDayEditable(day, todayISO());
+    const suggestion = viewDate === todayISO() ? liveSuggestion(profile) : null;
 
-  mount.replaceChildren(
-    el(
-      "section",
-      { class: "screen today" },
-      dateHeader(profile, day, editable),
-      adherenceStrip(profile, day),
-      suggestion ? suggestionCard(suggestion, profile) : null,
-      totalCard(day, profile),
-      backfillPrompt(),
-      checklist(day, editable),
-      extrasSection(day, editable),
-      // The two entry triggers share one strip under the checklist. Loose in
-      // the page they read as two stray pills between the block list and the
-      // appetite chips; bounded together they read as the checklist's own
-      // footer, which is what they are — both of them add a row to the list
-      // above. Appetite stays last on the screen.
-      editable ? todayActions(day) : null,
-      editable ? appetiteSection(day) : null,
-    ),
-  );
-  publish("today");
+    mount.replaceChildren(
+      el(
+        "section",
+        { class: "screen today" },
+        dateHeader(profile, day, editable),
+        whatsNewSeen() ? null : whatsNewCard(),
+        adherenceStrip(profile, day),
+        suggestion ? suggestionCard(suggestion, profile) : null,
+        totalCard(day, profile),
+        backfillPrompt(),
+        checklist(day, editable),
+        extrasSection(day, editable),
+        // The two entry triggers share one strip under the checklist. Loose in
+        // the page they read as two stray pills between the block list and the
+        // appetite chips; bounded together they read as the checklist's own
+        // footer, which is what they are — both of them add a row to the list
+        // above. Appetite stays last on the screen.
+        editable ? todayActions(day) : null,
+        editable ? appetiteSection(day) : null,
+      ),
+    );
+    publish("today");
+  });
 }
 
 /** Jump straight back to today from any earlier day. */
@@ -241,6 +267,44 @@ function suggestionCard(suggestion, profile) {
     el("p", { class: "suggestion__headline" }, suggestion.headline),
     el("p", { class: "suggestion__detail" }, suggestion.detail),
     el("div", { class: "suggestion__actions" }, ...actions),
+  );
+}
+
+/**
+ * A one-time card for a device upgrading from v1.6 into v2 — see
+ * core/whatsnew.js for why a first-run setup never sees this. Dismiss is
+ * permanent; it names where each feature lives rather than describing it, in
+ * keeping with insight_copy_states_facts.
+ */
+function whatsNewCard() {
+  return el(
+    "div",
+    { class: "card suggestion" },
+    el("p", { class: "suggestion__headline" }, "What's new in 2.0"),
+    el(
+      "ul",
+      { class: "whatsnew__list" },
+      el("li", {}, "Off-plan food and a recipe book — Log food, below the checklist."),
+      el("li", {}, "A weekly grocery checklist — the new Plan tab."),
+      el("li", {}, "Choose which numbers show on the day total — Settings → Overview."),
+      el("li", {}, "A wider layout on tablet and desktop."),
+    ),
+    el(
+      "div",
+      { class: "suggestion__actions" },
+      el(
+        "button",
+        {
+          class: "btn btn--text",
+          type: "button",
+          onclick: () => {
+            markWhatsNewSeen();
+            render();
+          },
+        },
+        "Got it",
+      ),
+    ),
   );
 }
 
@@ -766,8 +830,42 @@ function extrasRecipeForm(day) {
  * a destructive tap isn't sitting on every row). Rows reuse .extras__row so a
  * saved recipe and a logged extra read the same.
  */
+// A book past this size is worth filtering; below it, most-used-first already
+// carries the whole list.
+const RECIPE_FILTER_THRESHOLD = 8;
+
 function recipeList(day) {
   const recipes = allRecipes();
+  const showFilter = recipes.length > RECIPE_FILTER_THRESHOLD;
+
+  // Filtering happens by toggling `hidden` on the already-rendered rows
+  // directly from the input's own handler, not by calling render() — a
+  // keystroke that rebuilt the whole screen would drop the cursor out of the
+  // field it just typed into.
+  const rows = recipes.map((recipe) => ({
+    node: recipePickRow(day, recipe),
+    name: recipe.name.toLowerCase(),
+  }));
+
+  let filterField = null;
+  if (showFilter) {
+    const input = el("input", {
+      class: "field__input",
+      type: "text",
+      placeholder: "Filter recipes",
+      "aria-label": "Filter recipes",
+      oninput: (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        for (const { node, name } of rows) node.hidden = q !== "" && !name.includes(q);
+      },
+    });
+    filterField = el(
+      "div",
+      { class: "field extras__recipe-filter" },
+      el("div", { class: "field__control" }, input),
+    );
+  }
+
   return el(
     "div",
     { class: "extras__recipes" },
@@ -781,8 +879,9 @@ function recipeList(day) {
       el("span", { class: "addblock__icon", "aria-hidden": "true" }, "+"),
       "New recipe",
     ),
+    filterField,
     ...(recipes.length
-      ? recipes.map((recipe) => recipePickRow(day, recipe))
+      ? rows.map((r) => r.node)
       : [
           emptyState(
             "book-open",
@@ -832,6 +931,7 @@ function recipePickRow(day, recipe) {
 
 function openRecipeEditor(id) {
   recipeEditorError = null;
+  recipeDeleteConfirming = false;
   if (id == null) {
     recipeEditor = { id: null, name: "", items: [], addMode: "pick", addFoodId: null };
   } else {
@@ -851,6 +951,7 @@ function openRecipeEditor(id) {
 function closeRecipeEditor() {
   recipeEditor = null;
   recipeEditorError = null;
+  recipeDeleteConfirming = false;
   render();
 }
 
@@ -941,20 +1042,63 @@ function recipeEditorPanel() {
       { class: "recipe-editor__actions" },
       saveBtn,
       el("button", { class: "btn btn--text", type: "button", onclick: closeRecipeEditor }, "Cancel"),
-      ed.id != null
+      ed.id != null && !recipeDeleteConfirming
         ? el(
             "button",
             {
               class: "btn btn--text recipe-editor__delete",
               type: "button",
               onclick: () => {
-                deleteRecipe(ed.id);
-                closeRecipeEditor();
+                recipeDeleteConfirming = true;
+                render();
               },
             },
             "Delete recipe",
           )
         : null,
+    ),
+    ed.id != null && recipeDeleteConfirming ? recipeDeleteConfirm(ed) : null,
+  );
+}
+
+/**
+ * Delete's own two-step, reusing Settings' .set-confirm rather than the
+ * rejected undo-toast pattern — a recipe is real effort to rebuild and this is
+ * the app's only unconfirmed destructive tap outside Settings.
+ */
+function recipeDeleteConfirm(ed) {
+  return el(
+    "div",
+    { class: "set-confirm" },
+    el("p", { class: "set-confirm__title" }, `Delete "${ed.name.trim() || "this recipe"}"?`),
+    el("p", { class: "set-confirm__body" }, "This cannot be undone."),
+    el(
+      "div",
+      { class: "set-confirm__actions" },
+      el(
+        "button",
+        {
+          class: "btn btn--danger",
+          type: "button",
+          onclick: () => {
+            deleteRecipe(ed.id);
+            closeRecipeEditor();
+          },
+        },
+        "Delete recipe",
+      ),
+      el(
+        "button",
+        {
+          class: "btn btn--text",
+          type: "button",
+          onclick: () => {
+            recipeDeleteConfirming = false;
+            render();
+          },
+        },
+        "Cancel",
+      ),
     ),
   );
 }
@@ -1271,6 +1415,7 @@ function appetiteSection(day) {
             class: `appetite__chip${value === current ? " is-picked" : ""}`,
             type: "button",
             "aria-pressed": String(value === current),
+            "data-focus-key": `appetite-${value}`,
             onclick: () => commit(setAppetite(day, value)),
           },
           APPETITE_LABEL[value],
@@ -1299,6 +1444,7 @@ function blockRow(day, block, editable, bonus = false, timeState = "plain") {
       type: "button",
       disabled: editable ? null : "",
       "aria-pressed": String(done),
+      "data-focus-key": `block-${block.id}`,
       onclick: editable ? () => commit(toggleBlock(day, block.id)) : null,
     },
     el(
@@ -1333,6 +1479,7 @@ function blockRow(day, block, editable, bonus = false, timeState = "plain") {
           {
             class: "block-row__swap",
             type: "button",
+            "data-focus-key": `swap-${block.id}`,
             onclick: () => {
               openPicker = pickerOpen ? null : block.id;
               render();
@@ -1353,6 +1500,7 @@ function blockRow(day, block, editable, bonus = false, timeState = "plain") {
             class: "block-row__drop",
             type: "button",
             "aria-label": `Remove ${block.name}`,
+            "data-focus-key": `drop-${block.id}`,
             onclick: () => {
               openPicker = null;
               addOpen = false;

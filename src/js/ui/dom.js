@@ -66,3 +66,51 @@ export function emptyState(glyph, line) {
     el("p", { class: "empty__line" }, line),
   );
 }
+
+/**
+ * Re-render a screen while carrying keyboard focus across the rebuild.
+ * Every screen here fully replaces its subtree with replaceChildren() on
+ * every interaction — fine for a tap, but a Tab-and-Enter user loses focus to
+ * <body> the instant their own node is torn down, since it no longer exists
+ * when the callback returns. An element that wants to survive a rebuild
+ * carries a stable `data-focus-key` (the checklist ticks and grocery rows do);
+ * this captures the currently focused one's key, if any, runs `renderFn`, then
+ * refocuses whichever new node was given the same key.
+ */
+export function renderPreservingFocus(root, renderFn) {
+  const active = document.activeElement;
+  const key = active && root.contains(active) ? active.getAttribute("data-focus-key") : null;
+  renderFn();
+  if (key) {
+    root.querySelector(`[data-focus-key="${CSS.escape(key)}"]`)?.focus({ preventScroll: true });
+  }
+}
+
+// --- screen-reader announcements --------------------------------------------
+// One shared aria-live region, created once and kept OUTSIDE any screen's own
+// subtree — every screen here rebuilds its DOM wholesale on each render(), and
+// a live region that is itself destroyed and recreated with its final text
+// already in place is not reliably announced by assistive tech. Screens call
+// announce() with the one fact that changed; they do not narrate the whole
+// re-render.
+
+let liveRegion = null;
+
+function getLiveRegion() {
+  if (!liveRegion) {
+    liveRegion = el("div", { class: "sr-only", "aria-live": "polite", role: "status" });
+    document.body.appendChild(liveRegion);
+  }
+  return liveRegion;
+}
+
+/** Announce a fact to screen readers — state it, never a verdict. */
+export function announce(message) {
+  const region = getLiveRegion();
+  // Cleared first so an identical message (two ticks landing on the same
+  // total) still gets re-announced rather than being a silent no-op.
+  region.textContent = "";
+  requestAnimationFrame(() => {
+    region.textContent = message;
+  });
+}
