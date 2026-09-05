@@ -14,7 +14,7 @@
  * Copy convention: sentence case, matching the rest of the app.
  */
 
-import { el, groupLabel } from "./ui/dom.js";
+import { el, groupLabel, justOpened } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { SCHEMA_VERSION, clear as clearStorage } from "./core/storage.js";
 import {
@@ -262,6 +262,14 @@ function overviewGroup() {
 
 function dataGroup() {
   const snap = snapshotInfo();
+  // Computed here, unconditionally, rather than inside each panel builder —
+  // those only run while their own flag is truthy, and justOpened() needs a
+  // call every render (even a false one) to keep its "was open" bookkeeping
+  // honest. See its own note in ui/dom.js.
+  const undoJustOpened = justOpened("settings.undo", Boolean(snap));
+  const pasteJustOpened = justOpened("settings.paste", pasteOpen);
+  const importJustOpened = justOpened("settings.import", Boolean(pending));
+  const errorJustOpened = justOpened("settings.importError", Boolean(importError));
   return el(
     "div",
     { class: "group" },
@@ -269,12 +277,12 @@ function dataGroup() {
     el(
       "div",
       { class: "card set2-card" },
-      snap ? undoRow(snap) : null,
+      snap ? undoRow(snap, undoJustOpened) : null,
       exportItem(),
       importRow(),
-      pasteOpen ? pastePanel() : null,
-      pending ? importPanel() : null,
-      importError ? errorPanel() : null,
+      pasteOpen ? pastePanel(pasteJustOpened) : null,
+      pending ? importPanel(importJustOpened) : null,
+      importError ? errorPanel(errorJustOpened) : null,
     ),
   );
 }
@@ -284,11 +292,11 @@ function dataGroup() {
  * Import and reset both take one first; this offers the single undo and a way
  * to drop it so the doubled storage is reclaimed.
  */
-function undoRow(snap) {
+function undoRow(snap, justOpenedNow) {
   const what = snap.reason === "reset" ? "the reset" : "the import";
   return el(
     "div",
-    { class: "set-panel set-panel--undo" },
+    { class: `set-panel set-panel--undo${justOpenedNow ? " is-entering" : ""}` },
     el(
       "p",
       { class: "set-panel__body" },
@@ -304,10 +312,10 @@ function undoRow(snap) {
 }
 
 /** The paste-in import route: a textarea and a Preview button. */
-function pastePanel() {
+function pastePanel(justOpenedNow) {
   return el(
     "div",
-    { class: "set-panel" },
+    { class: `set-panel${justOpenedNow ? " is-entering" : ""}` },
     el(
       "p",
       { class: "set-panel__body" },
@@ -330,10 +338,10 @@ function pastePanel() {
   );
 }
 
-function errorPanel() {
+function errorPanel(justOpenedNow) {
   return el(
     "div",
-    { class: "set-panel" },
+    { class: `set-panel${justOpenedNow ? " is-entering" : ""}` },
     el("p", { class: "set-panel__body" }, importError),
     el(
       "div",
@@ -403,7 +411,7 @@ function importRow() {
   );
 }
 
-function importPanel() {
+function importPanel(justOpenedNow) {
   const { name, counts, obj } = pending;
   const parts = [
     `${counts.profiles} profile${counts.profiles === 1 ? "" : "s"}`,
@@ -417,7 +425,7 @@ function importPanel() {
 
   return el(
     "div",
-    { class: "set-panel" },
+    { class: `set-panel${justOpenedNow ? " is-entering" : ""}` },
     el("p", { class: "set-panel__title" }, name),
     el("p", { class: "set-panel__stats" }, parts.join(" · ")),
     el("p", { class: "set-panel__meta" }, meta),
@@ -452,6 +460,8 @@ function actionsGroup() {
   else if (status.kind === "unknown") trail = "";
   else if (status.kind === "current") trail = "Up to date";
   else trail = `${status.version} available`;
+  const updateJustOpened = justOpened("settings.update", status.kind === "available");
+  const confirmJustOpened = justOpened("settings.resetConfirm", confirming);
 
   return el(
     "div",
@@ -467,7 +477,7 @@ function actionsGroup() {
       ),
       trail ? el("span", { class: "set2-row__trail" }, trail) : null,
     ),
-    status.kind === "available" ? updatePanel(status) : null,
+    status.kind === "available" ? updatePanel(status, updateJustOpened) : null,
     el(
       "button",
       { class: "set2-row", type: "button", "data-act": "reset-open" },
@@ -478,11 +488,11 @@ function actionsGroup() {
         el("span", { class: "set2-row__name" }, "Reset all data"),
       ),
     ),
-    confirming ? resetConfirm() : null,
+    confirming ? resetConfirm(confirmJustOpened) : null,
   );
 }
 
-function updatePanel(status) {
+function updatePanel(status, justOpenedNow) {
   let action;
   if (detectBuild() === "web") {
     action = el(
@@ -505,13 +515,13 @@ function updatePanel(status) {
   }
   return el(
     "div",
-    { class: "set-panel" },
+    { class: `set-panel${justOpenedNow ? " is-entering" : ""}` },
     el("p", { class: "set-panel__body" }, `${status.version} is available.`),
     action ? el("div", { class: "set-panel__actions" }, action) : null,
   );
 }
 
-function resetConfirm() {
+function resetConfirm(justOpenedNow) {
   const c = countRecords(exportAll());
   const items = [
     `${c.days} day record${c.days === 1 ? "" : "s"}`,
@@ -521,7 +531,7 @@ function resetConfirm() {
   const listed = items.slice(0, -1).join(", ") + " and " + items[items.length - 1];
   return el(
     "div",
-    { class: "set-confirm" },
+    { class: `set-confirm${justOpenedNow ? " is-entering" : ""}` },
     el("p", { class: "set-confirm__title" }, "Erase everything?"),
     el(
       "p",

@@ -288,10 +288,10 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
 
 - [ ] **pass 49.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
   (+ `versionCode` 4), `tauri.conf.json`, `Cargo.toml`, and `README.md`. `sw.js`
-  `CACHE_NAME` → `rise-v33` or later (the pass-44 fix took `v31`, the loose-ends
-  pass took `v32`), with every module added across phases 1–7 appended
-  to `PRECACHE_URLS` — a missed entry is an offline break that only shows up
-  after install.
+  `CACHE_NAME` → `rise-v34` or later (the pass-44 fix took `v31`, the loose-ends
+  pass took `v32`, the 41c re-render fix took `v33`), with every module added
+  across phases 1–7 appended to `PRECACHE_URLS` — a missed entry is an offline
+  break that only shows up after install.
 
 ## resuming on another machine
 `git clone`, then serve the folder over http (`python -m http.server`). `file://` breaks ES-module imports. 

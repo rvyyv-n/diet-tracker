@@ -13,7 +13,7 @@
  * Copy convention: sentence case, matching welcome.js.
  */
 
-import { el, groupLabel, emptyState, renderPreservingFocus, announce } from "./ui/dom.js";
+import { el, groupLabel, emptyState, renderPreservingFocus, announce, justOpened } from "./ui/dom.js";
 import { icon } from "./ui/icons.js";
 import { loadProfile, saveProfile, overviewMetricShown } from "./core/profile.js";
 import {
@@ -596,6 +596,7 @@ function addBlockSection(day) {
     .map(blockById)
     .filter(Boolean);
   if (!available.length) return null;
+  const justOpenedNow = justOpened("today.addOpen", addOpen);
   return el(
     "div",
     { class: "addblock" },
@@ -619,7 +620,7 @@ function addBlockSection(day) {
     addOpen
       ? el(
           "div",
-          { class: "rotation addblock__panel" },
+          { class: `rotation addblock__panel${justOpenedNow ? " is-entering" : ""}` },
           ...available.map((block) =>
             el(
               "button",
@@ -984,6 +985,7 @@ function saveRecipeEditor() {
 function recipeEditorPanel() {
   const ed = recipeEditor;
   const totals = recipeTotals(ed.items);
+  const deleteConfirmJustOpened = justOpened("today.recipeDelete", recipeDeleteConfirming);
   const canSave = () => Boolean(ed.name.trim()) && ed.items.length > 0;
 
   const nameInput = el("input", {
@@ -1057,7 +1059,7 @@ function recipeEditorPanel() {
           )
         : null,
     ),
-    ed.id != null && recipeDeleteConfirming ? recipeDeleteConfirm(ed) : null,
+    ed.id != null && recipeDeleteConfirming ? recipeDeleteConfirm(ed, deleteConfirmJustOpened) : null,
   );
 }
 
@@ -1066,10 +1068,10 @@ function recipeEditorPanel() {
  * rejected undo-toast pattern — a recipe is real effort to rebuild and this is
  * the app's only unconfirmed destructive tap outside Settings.
  */
-function recipeDeleteConfirm(ed) {
+function recipeDeleteConfirm(ed, justOpenedNow) {
   return el(
     "div",
-    { class: "set-confirm" },
+    { class: `set-confirm${justOpenedNow ? " is-entering" : ""}` },
     el("p", { class: "set-confirm__title" }, `Delete "${ed.name.trim() || "this recipe"}"?`),
     el("p", { class: "set-confirm__body" }, "This cannot be undone."),
     el(
@@ -1407,7 +1409,11 @@ function appetiteSection(day) {
     groupLabel("Appetite", "gauge", "p"),
     el(
       "div",
-      { class: "appetite__chips" },
+      // Not role="radiogroup"/"radio": tapping the picked chip again clears
+      // it (see day.setAppetite), so this can legitimately have none picked —
+      // a state a radio group can't represent once one has been checked.
+      // Grouped as plain toggle buttons instead, matching Settings' .seg.
+      { class: "appetite__chips", role: "group", "aria-label": "Appetite" },
       ...APPETITE_VALUES.map((value) =>
         el(
           "button",
@@ -1429,6 +1435,10 @@ function blockRow(day, block, editable, bonus = false, timeState = "plain") {
   const done = Boolean(day.completed[block.id]);
   const kcal = blockValue(day, block.id).kcal;
   const pickerOpen = openPicker === block.id;
+  // Called for every block every render (unlike rotationPicker() below, which
+  // only runs for the one that's open) so a closed block's key clears
+  // reliably — see justOpened()'s own note on why that matters.
+  const pickerJustOpened = justOpened(`today.picker.${block.id}`, pickerOpen);
   // The cue is a today-only affordance: the nominal time sits after the block
   // name as a quiet chip. The current block used to read "now" here, but that
   // word crowded the name off a phone row — it's marked by a coral edge on the
@@ -1522,15 +1532,15 @@ function blockRow(day, block, editable, bonus = false, timeState = "plain") {
         (timeState === "now" ? " block-row--now" : ""),
     },
     el("div", { class: "block-row__lead" }, main, swap, drop),
-    block.rotation && pickerOpen && editable ? rotationPicker(day, block) : null,
+    block.rotation && pickerOpen && editable ? rotationPicker(day, block, pickerJustOpened) : null,
   );
 }
 
-function rotationPicker(day, block) {
+function rotationPicker(day, block, justOpenedNow) {
   const current = day.rotations[block.rotation];
   return el(
     "div",
-    { class: "rotation" },
+    { class: `rotation${justOpenedNow ? " is-entering" : ""}` },
     ...rotationOptions(block.rotation).map((opt) =>
       el(
         "button",

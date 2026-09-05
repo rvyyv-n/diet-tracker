@@ -2712,11 +2712,13 @@
    (the blanket rule lives in tokens.css). Press + focus states only, as ever.
    ========================================================================== */
 
-/* checklist rows and the day total ease their colour rather than snapping */
-.block-row,
-.block-row__tick {
-  transition: background-color 0.12s ease, border-color 0.12s ease;
-}
+/* .block-row / .block-row__tick used to carry a background/border-color
+   transition here, meant to ease a tick's colour change. It never ran: Today
+   rebuilds its whole subtree on every commit, so the ticked row is a freshly
+   inserted node with its final colour already set and nothing to transition
+   from. Dropped rather than faked — pass 45 (motion) owns the tick
+   acknowledgement deliberately, once there is a render model that can
+   actually carry a transition across the change. */
 .block-row__name,
 .block-row__desc,
 .block-row__kcal,
@@ -2727,14 +2729,19 @@
 }
 
 /* anything that expands in place — the rotation picker, the import preview,
-   the reset confirm — slides down a few pixels as it fades in */
+   the reset confirm — slides down a few pixels as it fades in. Gated behind
+   `.is-entering` rather than the bare class: the same full-rebuild render
+   model above recreates an already-open panel on every unrelated re-render
+   (ticking one block replays every other open panel's drop), so the caller
+   only adds this class the render its `justOpened()` (ui/dom.js) call says
+   the panel is truly newly open, not just still open. */
 @keyframes accordion-drop {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.rotation,
-.set-panel,
-.set-confirm {
+.rotation.is-entering,
+.set-panel.is-entering,
+.set-confirm.is-entering {
   animation: accordion-drop 0.16s cubic-bezier(0.16, 1, 0.3, 1);
 }
 

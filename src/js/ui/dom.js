@@ -114,3 +114,26 @@ export function announce(message) {
     region.textContent = message;
   });
 }
+
+// --- suppressing entrance-animation replay ----------------------------------
+// A picker, panel or confirm carries `accordion-drop` (app.css) to announce
+// itself as newly open. But every screen here rebuilds its whole subtree with
+// replaceChildren() on each render(), so that node is destroyed and recreated
+// even when the thing it represents was already open before this render —
+// ticking an unrelated block re-renders the whole screen and would otherwise
+// replay an already-open rotation picker's drop every time.
+//
+// `justOpened(key, isOpen)` is true only on the render where `isOpen` first
+// turns truthy for that key; the caller adds an `is-entering` class only then.
+// It must be called exactly once per render, unconditionally, from a function
+// that always runs regardless of `isOpen` — otherwise the "was open" bookkeeping
+// for a key that stops being called goes stale. A per-instance key (e.g. one
+// block's picker) tracks each instance separately, so switching straight from
+// one open thing to a different one of the same kind still counts as opening.
+const openKeys = new Set();
+export function justOpened(key, isOpen) {
+  const was = openKeys.has(key);
+  if (isOpen) openKeys.add(key);
+  else openKeys.delete(key);
+  return Boolean(isOpen) && !was;
+}
