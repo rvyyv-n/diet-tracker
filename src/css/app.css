@@ -865,6 +865,32 @@
   flex-direction: column;
 }
 
+/* The two entry triggers as one strip under the checklist (pass 40). They used
+   to sit loose in the page as two small pills with nothing bounding them,
+   which read as leftovers between the block list and the appetite chips. A
+   hairline above and the triggers side by side makes them the checklist's
+   footer instead. They wrap to a column at narrow widths rather than
+   shrinking below a comfortable tap width. */
+.today-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  padding-top: var(--space-sm);
+  border-top: var(--border-width-hairline) solid var(--border-hairline);
+}
+/* Each trigger becomes a bounded control rather than bare text — same hairline
+   and radius as the panel each one opens, so the closed and open states read
+   as the same object. .addblock keeps its column flow so the panel still drops
+   directly beneath its own trigger. */
+.today-actions > .addblock { flex: 1 1 12rem; }
+.today-actions .addblock__trigger {
+  align-self: stretch;
+  justify-content: center;
+  padding: var(--space-sm);
+  border: var(--border-width-hairline) solid var(--border-hairline);
+  border-radius: var(--radius-control);
+}
+
 .addblock__trigger {
   display: flex;
   align-items: center;
@@ -1707,11 +1733,14 @@
   padding: 0;
   list-style: none;
 }
+/* The name takes the slack (see .planref__target-name below) rather than
+   space-between distributing it. With the pass-39 rung dot there are three
+   children, and space-between pushed the middle one — the phase name — into
+   the centre of a 960px card, which is not where a label goes. */
 .planref__target {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   padding: var(--space-xxs) 0;
   border-top: var(--border-width-hairline) solid var(--border-hairline);
   font: var(--text-body-sm);
@@ -1739,6 +1768,10 @@
   background: var(--color-primary);
   box-shadow: none;
 }
+
+/* Takes every pixel the dot and the figures don't, which is what pins the
+   phase name to the left edge at any card width. */
+.planref__target-name { flex: 1; }
 
 /* The figures. kcal is the headline number so it takes full ink; protein is
    the secondary one and takes the teal accent, which is what gives the ladder
@@ -1864,6 +1897,31 @@
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
+
+/* The share rail under a meal head (pass 40): a hairline filled to the meal's
+   largest option as a fraction of the day's target. A size readout, not a
+   status one — see shareRail() in plan-view.js for why it may not take the
+   intake ramp's colours. Teal because that is already the sheet's "second
+   number" accent, the one the protein figures use. */
+.planref__share {
+  display: block;
+  height: 3px;
+  margin-top: var(--space-xxs);
+  border-radius: var(--radius-pill);
+  background: var(--border-hairline);
+  overflow: hidden;
+}
+.planref__share-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent-teal);
+}
+
+/* The food table's column key. Hidden on the phone, where the row is a name
+   over a run-on meta line and there are no columns to label; the desktop
+   grid below repeats this selector to inherit the row's exact tracks. */
+.planref__foods-head { display: none; }
 
 /* the food table — a <ul>, so it needs the same reset as the other two */
 .planref__foods {
@@ -2112,6 +2170,10 @@
    navigates) or a small secondary button (it acts) — never both.            */
 
 .set2-row {
+  /* The hover and press fills are drawn on this element, so without a radius
+     they land as a hard-edged rectangle inside a 12px-radius card — the one
+     sharp corner on the screen. */
+  border-radius: var(--radius-card);
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -2723,10 +2785,21 @@
      reading as a floating list of buttons. */
   .tabbar__brand {
     display: block;
+    width: 100%;
+    text-align: left;
     font: var(--text-display-sm);
     letter-spacing: var(--type-display-sm-track);
     color: var(--text-ink);
     padding: 0 var(--space-sm) var(--space-lg);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .tabbar__brand:active { color: var(--color-primary); }
+  .tabbar__brand:focus-visible {
+    outline: none;
+    border-radius: var(--radius-control);
+    box-shadow: var(--focus-ring);
   }
 
   /* Icon beside label, not above it — the stack exists to buy label width at
@@ -2767,7 +2840,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-xxs);
-    margin: auto var(--space-sm) var(--space-sm);
+    /* Flush with the nav buttons above it: the column already pads itself by
+       --space-sm, so any margin here inset the card further than the tabs and
+       made it read as a narrower, unrelated thing. */
+    margin: auto 0 0;
     padding: var(--space-sm);
     border-radius: var(--radius-card);
     background: var(--surface-card);
@@ -2804,6 +2880,23 @@
      sits to its right, and the two figures are right-aligned so the digits line
      up down the page (every cell already declares tabular-nums). The "·"
      separators are for the phone's single line and come off. */
+  .planref__foods-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(120px, auto) 100px 72px;
+    column-gap: var(--space-lg);
+    padding-bottom: var(--space-xs);
+    font: var(--text-caption-upper);
+    letter-spacing: var(--type-caption-upper-track);
+    text-transform: uppercase;
+    color: var(--text-muted-soft);
+  }
+  .planref__foods-head-kcal,
+  .planref__foods-head-protein { text-align: right; }
+  /* The key belongs to the first row, so that row drops its own top rule. */
+  .planref__foods > .planref__food:first-child {
+    border-top: var(--border-width-hairline) solid var(--border-hairline);
+  }
+
   .planref__food {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(120px, auto) 100px 72px;
@@ -2839,6 +2932,10 @@
 @media (hover: hover) and (pointer: fine) {
   /* nav */
   .tabbar__btn:hover { color: var(--text-ink); background: var(--surface-soft); }
+  /* The wordmark routes to Today, so it takes a hover like any other nav
+     target. Colour only — the nav buttons step their background, and a filled
+     display-sized wordmark would read as a fifth tab. */
+  .tabbar__brand:hover { color: var(--color-primary); }
   .tabbar__btn.is-active:hover { background: var(--surface-card); }
 
   /* buttons — a filled control has no lighter token between its rest coral
@@ -2876,6 +2973,12 @@
   /* text-only triggers have no fill to step, so they step one shade toward
      their own press colour instead */
   .addblock__trigger:hover { color: var(--text-ink); }
+  /* Bounded in the actions strip it has a fill to step, so it takes the tap-row
+     treatment rather than the text-only one. */
+  .today-actions .addblock__trigger:hover {
+    color: var(--text-ink);
+    background: var(--surface-card);
+  }
   .set2-sub:hover { color: var(--text-body-strong); }
   .about2__link:hover { text-decoration: underline; text-underline-offset: 3px; }
 }

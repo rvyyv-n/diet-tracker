@@ -170,7 +170,12 @@ function render() {
       backfillPrompt(),
       checklist(day, editable),
       extrasSection(day, editable),
-      editable ? addBlockSection(day) : null,
+      // The two entry triggers share one strip under the checklist. Loose in
+      // the page they read as two stray pills between the block list and the
+      // appetite chips; bounded together they read as the checklist's own
+      // footer, which is what they are — both of them add a row to the list
+      // above. Appetite stays last on the screen.
+      editable ? todayActions(day) : null,
       editable ? appetiteSection(day) : null,
     ),
   );
@@ -558,9 +563,27 @@ function addBlockSection(day) {
  * which takes the bonus semantics exactly — kcal/protein move, the adherence
  * denominator doesn't.
  */
+/**
+ * The two entry triggers, in one strip under the checklist. Loose in the page
+ * they read as stray pills between the block list and the appetite chips;
+ * bounded together they read as the checklist's own footer, which is what they
+ * are — both add a row to the list above. Appetite stays last on the screen.
+ *
+ * Null when neither has anything to offer, so an empty strip is never drawn.
+ */
+function todayActions(day) {
+  const add = addBlockSection(day);
+  const log = extrasAddPanel(day);
+  if (!add && !log) return null;
+  return el("div", { class: "today-actions" }, log, add);
+}
+
 function extrasSection(day, editable) {
   const extras = dayExtras(day);
-  if (!extras.length && !editable) return null;
+  // Only the logged rows now — the "+ Log food" trigger moved out to the
+  // actions strip beside "+ Add a block" (see render()). With nothing logged
+  // there is nothing to draw, and the strip carries the affordance.
+  if (!extras.length) return null;
   // The set of name keys already in the recipe book — so an extra that's
   // already saved doesn't offer "Save" again (saveRecipe would just update it,
   // but the affordance would be noise). Built once, not per row.
@@ -577,7 +600,6 @@ function extrasSection(day, editable) {
           ...extras.map((extra) => extraRow(day, extra, editable, savedKeys)),
         )
       : null,
-    editable ? extrasAddPanel(day) : null,
   );
 }
 

@@ -163,19 +163,19 @@ export const GROCERY_LIST = [
   {
     section: "Dairy & eggs",
     items: [
-      { name: "Full-fat milk", qty: 7.5, unit: "L", step: 0.5 },
+      { name: "Full-Fat Milk", qty: 7.5, unit: "L", step: 0.5 },
       { name: "Eggs", qty: 24, unit: null, step: 6 },
       { name: "Yogurt", qty: 1.5, unit: "kg", step: 0.25 },
-      { name: "Clarified butter", qty: 250, unit: "g", step: 50 },
+      { name: "Clarified Butter", qty: 250, unit: "g", step: 50 },
     ],
   },
   {
     section: "Pantry",
     items: [
-      { name: "Peanut butter", qty: 1, unit: "kg", step: 0.25 },
+      { name: "Peanut Butter", qty: 1, unit: "kg", step: 0.25 },
       { name: "Oats", qty: 500, unit: "g", step: 100 },
       { name: "Rice", qty: 2, unit: "kg", step: 0.5 },
-      { name: "Wholemeal flour", qty: null },
+      { name: "Wholemeal Flour", qty: null },
       { name: "Oil", qty: 1, unit: "L", step: 0.5 },
       { name: "Honey", qty: null },
     ],
@@ -184,9 +184,9 @@ export const GROCERY_LIST = [
     section: "Protein",
     items: [
       { name: "Chicken", qty: 1.5, unit: "kg", step: 0.25 },
-      { name: "Minced beef", qty: 500, unit: "g", step: 100 },
-      { name: "Dried lentils", qty: 1, unit: "kg", step: 0.25 },
-      { name: "Dried chickpeas", qty: 1, unit: "kg", step: 0.25 },
+      { name: "Minced Beef", qty: 500, unit: "g", step: 100 },
+      { name: "Dried Lentils", qty: 1, unit: "kg", step: 0.25 },
+      { name: "Dried Chickpeas", qty: 1, unit: "kg", step: 0.25 },
     ],
   },
   {
@@ -195,7 +195,7 @@ export const GROCERY_LIST = [
       { name: "Bananas", qty: 24, unit: null, step: 6 },
       { name: "Dates", qty: 500, unit: "g", step: 100 },
       { name: "Almonds", qty: 250, unit: "g", step: 50 },
-      { name: "Potatoes, onions, tomatoes", qty: null },
+      { name: "Potatoes, Onions, Tomatoes", qty: null },
     ],
   },
 ];

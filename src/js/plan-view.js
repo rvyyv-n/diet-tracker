@@ -19,6 +19,7 @@ import {
   scaleGroceryQty,
   PHASES,
   phaseById,
+  phaseTarget,
   activeBlocks,
   normaliseAddOns,
   rotationOptions,
@@ -93,7 +94,7 @@ function group(label, glyph, card) {
 
 /**
  * The list as tickable rows, grouped by aisle, with quantities scaled to the
- * current phase. The count line and the "Clear ticks" action state facts only
+ * current phase. The count line and the "Clear" action state facts only
  * (insight_copy_states_facts) — no "well done", no colour. The count is over
  * items the plan still names, so a renamed entry can't inflate it.
  */
@@ -123,14 +124,14 @@ function groceryCard(phaseId) {
         el(
           "button",
           {
-            class: "btn btn--text btn--sm",
+            class: "btn btn--secondary btn--sm",
             type: "button",
             onclick: () => {
               clearGroceryChecks();
               render();
             },
           },
-          "Clear ticks",
+          "Clear",
         ),
       ),
     );
@@ -227,7 +228,7 @@ function referenceCard(phaseId, addOns) {
     "div",
     { class: "card planref" },
     targetsBlock(phaseId),
-    mealsBlock(addOns),
+    mealsBlock(addOns, phaseId),
     foodsBlock(),
   );
 }
@@ -274,13 +275,35 @@ function targetsBlock(phaseId) {
  * header carries the kcal range, so the sheet still answers "how big is
  * breakfast" without being opened.
  */
-function mealsBlock(addOns) {
+function mealsBlock(addOns, phaseId) {
+  const dayKcal = phaseTarget(phaseId).kcal || 0;
   return el(
     "div",
     { class: "planref__block" },
     subhead("Meals", "utensils"),
-    ...activeBlocks(addOns).map((b) => (b.rotation ? rotationMeal(b) : fixedMeal(b))),
+    ...activeBlocks(addOns).map((b) =>
+      b.rotation ? rotationMeal(b, dayKcal) : fixedMeal(b, dayKcal),
+    ),
   );
+}
+
+/**
+ * The share rail under a meal head: a hairline filled to the meal's largest
+ * option as a fraction of the day's target.
+ *
+ * Deliberately a *size* readout and not a status one. Colour on this app
+ * already means one thing — on-track / partway / under, and inverted for a
+ * gain tracker — so a second meaning for colour on the same screen would
+ * misread. This says "breakfast is about a quarter of your day" and nothing
+ * about whether that is good, which is the only honest thing a plan sheet can
+ * say about a meal you have not eaten yet.
+ */
+function shareRail(kcal, dayKcal) {
+  if (!dayKcal || !kcal) return null;
+  const pct = Math.min(100, Math.round((kcal / dayKcal) * 100));
+  const fill = el("span", { class: "planref__share-fill" });
+  fill.style.width = `${pct}%`;
+  return el("span", { class: "planref__share", "aria-hidden": "true" }, fill);
 }
 
 /**
@@ -291,18 +314,18 @@ function mealsBlock(addOns) {
  * beside its kcal, which made Pre-bed look like a different kind of thing
  * rather than the same thing with nothing to choose between.
  */
-function fixedMeal(b) {
-  return mealDisclosure(b, `${NUM.format(b.kcal)} kcal`, [{ desc: b.desc, kcal: b.kcal }]);
+function fixedMeal(b, dayKcal) {
+  return mealDisclosure(b, `${NUM.format(b.kcal)} kcal`, [{ desc: b.desc, kcal: b.kcal }], b.kcal, dayKcal);
 }
 
 /** A block with a rotation: a disclosure button over the option list. */
-function rotationMeal(b) {
+function rotationMeal(b, dayKcal) {
   const opts = rotationOptions(b.rotation);
   const kcals = opts.map((o) => o.kcal);
   const lo = Math.min(...kcals);
   const hi = Math.max(...kcals);
   const range = lo === hi ? `${NUM.format(lo)} kcal` : `${NUM.format(lo)}–${NUM.format(hi)} kcal`;
-  return mealDisclosure(b, range, opts);
+  return mealDisclosure(b, range, opts, hi, dayKcal);
 }
 
 /**
@@ -310,7 +333,7 @@ function rotationMeal(b) {
  * figure shown beside the chevron — a range for a rotation, the single number
  * for a fixed meal.
  */
-function mealDisclosure(b, fig, opts) {
+function mealDisclosure(b, fig, opts, kcal, dayKcal) {
   const open = openMeal === b.id;
 
   return el(
@@ -335,6 +358,7 @@ function mealDisclosure(b, fig, opts) {
         icon("chevron-down", { size: 16 }),
       ),
     ),
+    shareRail(kcal, dayKcal),
     open
       ? el(
           "ul",
@@ -367,6 +391,19 @@ function foodsBlock() {
     "div",
     { class: "planref__block" },
     subhead("Food table", "table"),
+    // The column key. Four unlabelled columns of numbers left "160" and "8"
+    // to be told apart by magnitude alone; this names them. Desktop only —
+    // on a phone the row is a name over a run-on "250 ml · 160 kcal · 8 g"
+    // line, where the units are already in the text and a header would be
+    // labelling columns that do not exist.
+    el(
+      "div",
+      { class: "planref__foods-head", "aria-hidden": "true" },
+      el("span", {}, "Food"),
+      el("span", {}, "Amount"),
+      el("span", { class: "planref__foods-head-kcal" }, "Kcal"),
+      el("span", { class: "planref__foods-head-protein" }, "Protein"),
+    ),
     el(
       "ul",
       { class: "planref__foods" },

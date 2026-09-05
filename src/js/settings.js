@@ -24,7 +24,6 @@ import {
   countRecords,
   parseBackup,
   noteExport,
-  exportFreshness,
   takeSnapshot,
   snapshotInfo,
   restoreSnapshot,
@@ -271,7 +270,6 @@ function dataGroup() {
       { class: "card set2-card" },
       snap ? undoRow(snap) : null,
       exportItem(),
-      freshnessRow(),
       importRow(),
       pasteOpen ? pastePanel() : null,
       pending ? importPanel() : null,
@@ -302,19 +300,6 @@ function undoRow(snap) {
       el("button", { class: "btn btn--text btn--sm", type: "button", "data-act": "snapshot-dismiss" }, "Dismiss"),
     ),
   );
-}
-
-/** A quiet line under Export: when this browser's data was last written out. */
-function freshnessRow() {
-  const f = exportFreshness();
-  let text;
-  if (!f) text = "Not exported from this browser yet.";
-  else if (f.ageDays === 0) text = "Last export: today.";
-  else
-    text =
-      `Last export: ${f.ageDays} day${f.ageDays === 1 ? "" : "s"} ago` +
-      (f.stale ? " — worth doing again." : ".");
-  return el("p", { class: "set2-note" }, text);
 }
 
 /** The paste-in import route: a textarea and a Preview button. */

@@ -310,8 +310,21 @@ const NUM = new Intl.NumberFormat();
 function paintTabbar() {
   tabbarEl.replaceChildren(
     // Shown only by the desktop side nav (see .tabbar__brand); on a phone the
-    // bar is four icons edge to edge and has no room for a title.
-    el("span", { class: "tabbar__brand" }, "Rise"),
+    // bar is four icons edge to edge and has no room for a title. It is a
+    // button, not a span: a wordmark at the top of a nav reads as "home", and
+    // Today is this app's home.
+    el(
+      "button",
+      {
+        class: "tabbar__brand",
+        type: "button",
+        onclick: () => {
+          if (panes.length === 1 && panes[0] === "today") return;
+          setPanes(["today"]);
+        },
+      },
+      "Rise",
+    ),
     ...SCREENS.map((screen) => {
       // "Current" is membership now, not equality — in a multi-pane layout more
       // than one nav item is legitimately on screen.

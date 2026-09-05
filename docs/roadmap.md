@@ -254,6 +254,35 @@ new reason:
   the content without covering anything interactive at the content column's
   left edge — check the Plan sheet's disclosure rows, which start closest to it.
 
+- [ ] **pass 40c — split Recipes out of Plan.** *(theoretical — do not build
+  without a decision)* The Plan tab currently carries three unrelated things:
+  the weekly grocery checklist, the phase target ladder, and a full reference
+  sheet (meals, rotations, and a twenty-row food table). That is a long scroll
+  in which the part you open daily — the groceries — sits above a wall of
+  reference you read once a month.
+
+  The proposal is to cut the tab in two. **Plan** keeps what changes week to
+  week: the groceries and the target ladder. A new **Recipes** tab takes the
+  reference sheet, the meal rotations, and the food table, and becomes the
+  natural home for the recipe book that currently only exists inside Today's
+  "Log food" panel — which is the real argument for this, since the book is a
+  first-class feature reachable only through a disclosure inside another
+  screen.
+
+  What has to be settled before any of it is built:
+
+  - **The nav is four items and the phone bar is four icons edge to edge.** A
+    fifth tab does not fit the shipped bar. Either something merges (Plan into
+    Today?), or the phone bar changes shape, or Recipes is reachable some other
+    way. This is the blocking question, not the content split.
+  - **Where the food table belongs.** It is reference for logging an off-plan
+    extra, so it arguably follows the recipe book rather than the plan.
+  - **Whether the Plan tab still earns a tab** once it is groceries plus three
+    rungs of a ladder. It might be a card on Today instead.
+
+  Sequenced last on purpose: it moves whole screens between tabs, so doing it
+  before the visual passes would mean redoing their polish on new surfaces.
+
 ### phase 8 — the 2.0 release
 
 - [ ] **pass 41.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
