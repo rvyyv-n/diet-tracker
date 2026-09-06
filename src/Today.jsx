@@ -23,10 +23,17 @@
  * calendar popover) and `listbox()` (the food/ingredient picker). Same
  * reasoning as Weight.jsx's entry card — small, correct, self-contained —
  * rebuilt fresh every render and mounted with the same `Imperative` adapter.
+ *
+ * The hero kcal figure in `TotalCard` uses reactbits.dev's `CountUp`
+ * (`src/components/reactbits/CountUp.jsx`) — the text/number effect
+ * pass-45-plan.md called for landing here, once this screen went React. It
+ * animates on mount and re-animates smoothly whenever the total changes
+ * (ticking a block, logging food), rather than the figure just snapping.
  */
 
 import { useEffect, useRef, useState } from "react";
 import { justOpened, announce } from "./js/ui/dom.js";
+import CountUp from "./components/reactbits/CountUp.jsx";
 import { iconSvg } from "./js/ui/icons.js";
 import { loadProfile, saveProfile, overviewMetricShown } from "./js/core/profile.js";
 import {
@@ -512,7 +519,12 @@ function TotalCard({ day, profile }) {
   return (
     <div className="card daytotal">
       <div className="daytotal__figure">
-        <span className={`daytotal__kcal ${STATUS_CLASS[status]}`}>{NUM.format(totals.kcal)}</span>
+        <CountUp
+          to={totals.kcal}
+          duration={0.8}
+          separator=","
+          className={`daytotal__kcal ${STATUS_CLASS[status]}`}
+        />
         <span className="daytotal__target">/ {NUM.format(target.kcal)} kcal</span>
       </div>
       <DayBar kcal={totals.kcal} targetKcal={target.kcal} status={status} />
