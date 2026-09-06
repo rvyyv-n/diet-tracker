@@ -30,16 +30,21 @@
       } catch (e) {}
     </script>
     <title>Rise: Diet Tracker</title>
-    <link rel="manifest" href="manifest.json" />
+    <!-- manifest.json, sw.js and assets/ live in public/, copied verbatim to
+         the build output root by Vite. Root-absolute paths here are
+         deliberate: a relative path would make Vite's HTML asset scanner try
+         (and fail) to resolve them as source files instead of leaving them
+         alone as public/static passthrough. -->
+    <link rel="manifest" href="/manifest.json" />
     <!-- Dark first, plain second: a browser that honours `media` on an icon
          link (Chrome, Safari) takes the tile-less variant on a dark desktop and
          falls through to the tile below otherwise. Firefox ignores `media` and
          uses the last icon declared, which is why the plain one is last — that
          way the fallback is the shipped mark, not the dark variant on a white
          tab strip. -->
-    <link rel="icon" type="image/svg+xml" href="assets/icon-dark.svg" media="(prefers-color-scheme: dark)" />
-    <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
-    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/assets/icon-dark.svg" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <link rel="stylesheet" href="src/css/tokens.css" />
     <link rel="stylesheet" href="src/css/app.css" />
   </head>
@@ -52,7 +57,7 @@
       // Register the offline service worker. Skipped on file:// where it can't run.
       if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
         window.addEventListener("load", () => {
-          navigator.serviceWorker.register("sw.js").catch(() => {});
+          navigator.serviceWorker.register("/sw.js").catch(() => {});
         });
       }
     </script>

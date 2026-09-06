@@ -1,0 +1,46 @@
+name: Pages
+
+# Builds and deploys the web app to GitHub Pages. Pass 45 added Vite, which
+# moved manifest.json/sw.js/assets/ into public/ and made index.html reference
+# them as root-absolute paths — that only resolves correctly against a real
+# build output (dist/), not the raw repo tree. Before this workflow can take
+# effect, the repo's Pages source has to be switched from "Deploy from a
+# branch" to "GitHub Actions" in Settings → Pages, or the live site keeps
+# serving the raw tree and 404s on all three moved paths.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

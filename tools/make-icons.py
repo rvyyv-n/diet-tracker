@@ -1,5 +1,6 @@
 """
-make-icons.py — regenerate the PWA icon set from the geometry in assets/icon.svg.
+make-icons.py — regenerate the PWA icon set from the geometry in
+public/assets/icon.svg.
 
 Run:  python tools/make-icons.py
 
@@ -12,8 +13,8 @@ Everything is drawn at 4x and downsampled with LANCZOS — Pillow has no
 antialiased vector drawing, so supersampling is what keeps the ellipse edge and
 the tile corners clean.
 
-Geometry is the 512-unit viewBox of assets/icon.svg, kept in sync by hand. If
-you change the SVG, change the constants below to match.
+Geometry is the 512-unit viewBox of public/assets/icon.svg, kept in sync by
+hand. If you change the SVG, change the constants below to match.
 """
 
 from PIL import Image, ImageDraw
@@ -69,13 +70,13 @@ def render(size, *, rounded, art_scale=1.0):
 
 OUT = [
     # (filename, size, rounded, art scale)
-    ("assets/icon-192.png", 192, True, 1.0),
-    ("assets/icon-512.png", 512, True, 1.0),
+    ("public/assets/icon-192.png", 192, True, 1.0),
+    ("public/assets/icon-512.png", 512, True, 1.0),
     # Maskable: everything that must survive the mask sits inside the centre
     # 80% circle, so the art is drawn at 0.7 and the black bleeds to the edge.
-    ("assets/icon-maskable-512.png", 512, False, 0.7),
+    ("public/assets/icon-maskable-512.png", 512, False, 0.7),
     # iOS rounds it itself and does not honour transparency.
-    ("assets/apple-touch-icon.png", 180, False, 1.0),
+    ("public/assets/apple-touch-icon.png", 180, False, 1.0),
 ]
 
 if __name__ == "__main__":

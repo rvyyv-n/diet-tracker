@@ -14,6 +14,12 @@ DIST_DIR="$(cd "$SCRIPT_DIR/.." && pwd)/dist"
 rm -rf "$DIST_DIR"
 mkdir -p "$DIST_DIR"
 
-cp "$REPO_ROOT/index.html" "$REPO_ROOT/manifest.json" "$REPO_ROOT/sw.js" "$DIST_DIR/"
+# manifest.json, sw.js and assets/ moved into public/ when pass 45 added Vite
+# (it copies public/ to the build output root verbatim); src/ is still plain
+# vanilla ES modules and stays directly servable raw until a screen actually
+# goes JSX, at which point this switches to syncing the `npm run build`
+# output (dist/ at repo root) instead.
+cp "$REPO_ROOT/index.html" "$DIST_DIR/"
+cp "$REPO_ROOT/public/manifest.json" "$REPO_ROOT/public/sw.js" "$DIST_DIR/"
 cp -r "$REPO_ROOT/src" "$DIST_DIR/src"
-cp -r "$REPO_ROOT/assets" "$DIST_DIR/assets"
+cp -r "$REPO_ROOT/public/assets" "$DIST_DIR/assets"

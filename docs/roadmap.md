@@ -137,7 +137,7 @@ defaults like `themePref`) now gates the day-total card's protein line and
 one Show / Hide `.seg` per metric, reusing the pass-19 Appearance block. No new
 module, so `PRECACHE_URLS` was untouched; `sw.js` `CACHE_NAME` → `rise-v18`.
 
-### phase 5 — the desktop layout ✅ done (one open call held over)
+### phase 5 — the desktop layout ✅ done
 
 The largest item, and a deliberate structural pass — the roadmap is explicit
 that media queries bolted onto the mobile CSS do not count. Depends on phase 0
@@ -157,12 +157,13 @@ each screen ~450px, narrower than the phone they were designed for), a nav tap
 pure CSS pass with no new `setPanes()` caller — the multi-pane routing from
 pass 33 is untouched and waits for `--bp-wide`.
 
-- [ ] **Open call — the second pane at `--bp-wide` (1440px).** Deferred out of
-  pass 35 rather than dropped. At 1440 a 240px nav plus two 600px panes fits
-  without squeezing either, which is the width where the pass-33 routing
-  finally earns its keep. Undecided, and needs a real 1440px display to judge:
-  which pairs are worth showing (Today + Weight is the obvious one), and
-  whether the pairing is a user choice or fixed. Ask before building.
+**Open call settled: no second pane.** The owner decided against it — one pane
+stays the layout at every width, including 1440px and above, rather than
+mounting a second pane just because the space exists. The owner has other
+ideas for how the app should behave on higher-resolution displays, held
+deliberately for 2.1 rather than folded in here. The pass-33 multi-pane
+routing (`setPanes()`, `core/broadcast.js`) stays in place unused — nothing to
+rip out, it just never gets a second id passed to it in v2.
 
 **If v2 runs long, this is the cut line.** Phases 0–4 are a coherent, shippable
 release on their own; the desktop layout is the natural 2.1.
@@ -223,11 +224,35 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
   `replaceChildren()` → JSX/components), plus `sw.js` precaching (a Vite
   build output has hashed filenames, so `PRECACHE_URLS` and the cache-bump
   workflow both change shape), the Android WebViewAssetLoader path (which
-  currently serves the raw `src/` tree), and the Tauri build config. **Not
-  scoped or started** — this needs its own planning pass (dependency choices,
-  migration order screen-by-screen, how `justOpened()` and
-  `renderPreservingFocus()`'s jobs map onto React idioms) before any code
-  changes, and is too large to fold into a single session opportunistically.
+  currently serves the raw `src/` tree), and the Tauri build config. The
+  planning pass this needed is written up in `docs/pass-45-plan.md`
+  (dependency choices, migration order screen-by-screen, how `justOpened()`
+  and `renderPreservingFocus()`'s jobs map onto React idioms).
+
+  **Tooling scaffold is done, no screen converted yet.** Node.js wasn't
+  installed on the dev machine at all — installed it (winget, `OpenJS.NodeJS.LTS`)
+  before anything else could happen. `npm`, Vite, and `@vitejs/plugin-react`
+  are in; `manifest.json`, `sw.js`, and `assets/` moved into `public/` (Vite's
+  convention for files copied to the build output verbatim); `index.html`'s
+  references to them became root-absolute (`/manifest.json` etc.) since a
+  relative path made Vite's HTML asset scanner try to resolve them as source
+  files instead of leaving them alone. `tokens.css`'s `@font-face` URLs got
+  the same fix. `npm run build` and `npm run dev` both verified working, with
+  the app still 100% vanilla — no JSX yet, this step only proves the pipeline.
+  The Android `copyWebAssets` task and `desktop/scripts/sync-desktop-assets.sh`
+  were updated to pull the three moved paths from `public/` so the native
+  shells' raw-copy builds keep working; both still copy `src/` raw rather than
+  the Vite build output; that switch is deferred until a screen actually goes
+  JSX and raw `src/` stops being directly servable. The "resuming on another
+  machine" note at the bottom of this file now points at `npm run dev` instead
+  of `python -m http.server`, which doesn't understand `public/` and would
+  404 on all three moved paths.
+
+  **Next step:** convert `app.js` (the shell/router) to React first, mounting
+  every still-vanilla screen through a thin adapter component so behaviour
+  doesn't change yet — see the migration-order section of the plan doc. Then
+  screens convert one at a time, easiest first (Settings → Weight → Plan →
+  Today → Welcome/Intro).
 - [ ] **pass 46 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.
@@ -302,7 +327,18 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
   pass took `v32`, the 41c re-render fix took `v33`), with every module added
   across phases 1–7 appended to `PRECACHE_URLS` — a missed entry is an offline
   break that only shows up after install.
+- [ ] **Before `release-2` merges to `main` at all** (not just at 2.0 —
+  whenever that merge happens): switch the repo's Pages source from "Deploy
+  from a branch" to "GitHub Actions" in Settings → Pages. Pass 45 added
+  `.github/workflows/pages.yml`, which builds via `npm run build` and deploys
+  `dist/`, but it only takes effect once that switch is made — until then
+  Pages keeps serving the raw repo root, which 404s on `/manifest.json`,
+  `/sw.js`, and every icon the moment `public/` lands on `main`.
 
 ## resuming on another machine
-`git clone`, then serve the folder over http (`python -m http.server`). `file://` breaks ES-module imports. 
+`git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it
+understands the `public/` convention that `manifest.json`, `sw.js` and
+`assets/` now live under, which a plain `python -m http.server` does not:
+that would 404 on all three). `file://` breaks ES-module imports regardless of
+server. `npm run build` produces the real deployable output in `dist/`.
 Ensure `CLAUDE.md` is manually copied to the root, as it is gitignored.

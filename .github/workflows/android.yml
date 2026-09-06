@@ -12,7 +12,7 @@ on:
     branches: [main]
     paths:
       - "android/**"
-      - "assets/icon.svg"
+      - "public/assets/icon.svg"
       - ".github/workflows/android.yml"
   workflow_dispatch: {}
   release:
@@ -41,7 +41,7 @@ jobs:
       - name: Set up the Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install librsvg (rasterises assets/icon.svg for the launcher icon)
+      - name: Install librsvg (rasterises public/assets/icon.svg for the launcher icon)
         run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
 
       - name: Generate launcher icons
@@ -52,7 +52,7 @@ jobs:
             size="${sizes[$density]}"
             dir="android/app/src/main/res/mipmap-$density"
             mkdir -p "$dir"
-            rsvg-convert -w "$size" -h "$size" assets/icon.svg -o "$dir/ic_launcher.png"
+            rsvg-convert -w "$size" -h "$size" public/assets/icon.svg -o "$dir/ic_launcher.png"
             cp "$dir/ic_launcher.png" "$dir/ic_launcher_round.png"
           done
 

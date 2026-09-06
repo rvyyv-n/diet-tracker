@@ -98,9 +98,10 @@ browser-installed copy — use **Settings → Export/Import data** to move it.
 
 ```
 index.html        app shell — loads the stylesheet and entry script, registers the sw
-manifest.json     pwa manifest (name, icon, standalone display)
-sw.js             cache-first service worker for offline use
-assets/           the app icon and vendored typefaces
+public/           files Vite copies to the build output root untouched:
+  manifest.json     pwa manifest (name, icon, standalone display)
+  sw.js             cache-first service worker for offline use
+  assets/           the app icon and vendored typefaces
 docs/             design system, plan spec, and the build roadmap
 src/css/          design tokens, then the screen + component styles
 src/js/           app shell + router, and one module per screen
@@ -112,15 +113,11 @@ src/js/ui/        small shared controls (dom helper, icons, popover, listbox,
 
 ## running it
 
-static files, no build step. serve the folder over http and open it —
-`file://` won't work, es modules need http:
-
-```
-python -m http.server 8000
-```
-
-then open <http://localhost:8000>. the service worker caches aggressively; while
-developing, hard-reload or bump `CACHE_NAME` in `sw.js` to pick up changes.
+`npm install`, then `npm run dev` (Vite). `file://` won't work — es modules
+need http, and Vite serves over it. `npm run build` produces the deployable
+`dist/`; `npm run preview` serves that build locally to check it before a
+release. The service worker caches aggressively; while developing, hard-reload
+or bump `CACHE_NAME` in `public/sw.js` to pick up changes.
 
 ## roadmap
 

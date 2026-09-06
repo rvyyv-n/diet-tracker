@@ -14,7 +14,7 @@ on:
     branches: [main]
     paths:
       - "desktop/**"
-      - "assets/icon.svg"
+      - "public/assets/icon.svg"
       - ".github/workflows/desktop.yml"
   workflow_dispatch: {}
   release:
@@ -48,11 +48,11 @@ jobs:
           cargo install tauri-cli --version "^2" --locked
           cargo install resvg --locked
 
-      - name: Rasterise assets/icon.svg to a 1024x1024 PNG
+      - name: Rasterise public/assets/icon.svg to a 1024x1024 PNG
         # resvg is a pure-Rust SVG renderer — no native Cairo library to
         # install on Windows, unlike cairosvg (which needs libcairo-2.dll
         # and isn't a pip-installable dependency).
-        run: resvg --width 1024 --height 1024 assets/icon.svg desktop/src-tauri/icon-source.png
+        run: resvg --width 1024 --height 1024 public/assets/icon.svg desktop/src-tauri/icon-source.png
 
       - name: Generate the Tauri icon set
         working-directory: desktop/src-tauri

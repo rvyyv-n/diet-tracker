@@ -80,9 +80,17 @@ tasks.register<Delete>("cleanWebAssets") {
 
 tasks.register<Copy>("copyWebAssets") {
     dependsOn("cleanWebAssets")
+    // manifest.json, sw.js and assets/ moved into public/ when pass 45 added
+    // Vite (it copies public/ to the build output root verbatim); src/ is
+    // still plain vanilla ES modules and stays directly servable raw until a
+    // screen actually goes JSX, at which point this switches to copying the
+    // `npm run build` output (dist/) instead.
     from(webRoot) {
-        include("index.html", "manifest.json", "sw.js")
+        include("index.html")
         include("src/**")
+    }
+    from(webRoot.resolve("public")) {
+        include("manifest.json", "sw.js")
         include("assets/**")
     }
     into(webAssetsDir)
