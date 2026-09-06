@@ -1,10 +1,7 @@
 /**
  * App.jsx — entry point, router and app shell. React's first real foothold in
- * Rise (pass 45): it owns `#app` and everything routed onto it, but every
- * screen it mounts is still the pre-pass-45 vanilla renderer, run through the
- * `VanillaPane` / `VanillaFullScreen` adapters below rather than rewritten.
- * See `docs/pass-45-plan.md` for why the shell converts first and screens
- * convert one at a time afterward.
+ * Rise (pass 45), and by its last step every screen is a real React
+ * component — the vanilla per-screen renderers are gone.
  *
  * The routing shape is unchanged from the vanilla `app.js` this replaces:
  * before the profile is complete it shows the first-run form (loaded on
@@ -15,9 +12,15 @@
  * pass-33 multi-pane list — still an array for architectural continuity
  * (phase 5 decided against ever mounting a second one in v2, but the
  * plumbing that would carry it is cheap to keep).
+ *
+ * Intro and Welcome are the one place `React.lazy()` is used: the vanilla
+ * router loaded `intro.js` / `welcome.js` on demand so a returning user with
+ * a complete profile never paid for that code, and lazy-loading the React
+ * versions the same way keeps that split (see the `intro-*.js` /
+ * `welcome-*.js` chunks in a production build).
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, lazy, Suspense } from "react";
 import { iconSvg } from "./js/ui/icons.js";
 import { isAvailable } from "./js/core/storage.js";
 import { snapshotInfo, restoreSnapshot } from "./js/core/backup.js";
@@ -34,6 +37,9 @@ import Today from "./Today.jsx";
 import Plan from "./Plan.jsx";
 import Weight from "./Weight.jsx";
 import Settings from "./Settings.jsx";
+
+const Intro = lazy(() => import("./Intro.jsx"));
+const Welcome = lazy(() => import("./Welcome.jsx"));
 
 const NUM = new Intl.NumberFormat();
 
@@ -116,38 +122,48 @@ export default function App() {
   }, [view.kind]);
 
   if (view.kind === "storage-off") return <StorageOff />;
-  if (view.kind === "intro") return <IntroScreen onDone={() => {
-    saveProfile({ ...loadProfile(), introSeen: true });
-    goRoute();
-  }} />;
+  if (view.kind === "intro") {
+    return (
+      <Suspense fallback={null}>
+        <Intro
+          onDone={() => {
+            saveProfile({ ...loadProfile(), introSeen: true });
+            goRoute();
+          }}
+        />
+      </Suspense>
+    );
+  }
   if (view.kind === "welcome") {
     return (
-      <WelcomeScreen
-        edit={view.edit}
-        undoReset={
-          view.canUndoReset
-            ? () => {
-                restoreSnapshot();
-                goRoute();
-              }
-            : null
-        }
-        onComplete={() => {
-          if (view.edit) {
-            // Editing is launched from Settings, so return there — not to
-            // Today, which is where a full route() would land. Re-sync the
-            // phase in case the target rate or start date moved.
-            syncPhase(loadProfile());
-            setView({ kind: "shell", panes: ["settings"] });
-          } else {
-            // A profile completing setup for the first time here has no
-            // "before" to compare v2 against — mark it exempt rather than
-            // ever showing the What's New card.
-            markWhatsNewSeen();
-            goRoute();
+      <Suspense fallback={null}>
+        <Welcome
+          edit={view.edit}
+          undoReset={
+            view.canUndoReset
+              ? () => {
+                  restoreSnapshot();
+                  goRoute();
+                }
+              : null
           }
-        }}
-      />
+          onComplete={() => {
+            if (view.edit) {
+              // Editing is launched from Settings, so return there — not to
+              // Today, which is where a full route() would land. Re-sync the
+              // phase in case the target rate or start date moved.
+              syncPhase(loadProfile());
+              setView({ kind: "shell", panes: ["settings"] });
+            } else {
+              // A profile completing setup for the first time here has no
+              // "before" to compare v2 against — mark it exempt rather than
+              // ever showing the What's New card.
+              markWhatsNewSeen();
+              goRoute();
+            }
+          }}
+        />
+      </Suspense>
     );
   }
 
@@ -170,47 +186,6 @@ function StorageOff() {
         blocked for this site. Enable it and reload.
       </p>
     </section>
-  );
-}
-
-/**
- * Loads and mounts a full-screen vanilla module (`welcome.js` / `intro.js`) —
- * both still render by calling `replaceChildren` on the element they're
- * handed, exactly as they did under the vanilla router. `display: contents`
- * on the wrapper matters: `.app-shell` is a flex column, and its direct
- * children are what get sized as flex items — without it, the vanilla
- * screen's own root (`.welcome`, `.intro`) would be nested one level too deep
- * to participate in that layout.
- */
-function VanillaFullScreen({ load, args }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    let cancelled = false;
-    load().then((m) => {
-      if (!cancelled && ref.current) m(ref.current, args);
-    });
-    return () => {
-      cancelled = true;
-    };
-    // args is a fresh object every render by design (it closes over the
-    // current onComplete/onDone) — re-running on every change would remount
-    // the screen and drop its in-progress form state, so it's deliberately
-    // left out of the dependency list. load() is stable (module-level import).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  return <div ref={ref} style={{ display: "contents" }} />;
-}
-
-function IntroScreen({ onDone }) {
-  return <VanillaFullScreen load={() => import("./js/intro.js").then((m) => m.renderIntro)} args={{ onDone }} />;
-}
-
-function WelcomeScreen({ edit, undoReset, onComplete }) {
-  return (
-    <VanillaFullScreen
-      load={() => import("./js/welcome.js").then((m) => m.renderWelcome)}
-      args={{ onComplete, edit, undoReset }}
-    />
   );
 }
 
