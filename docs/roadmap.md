@@ -248,11 +248,39 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
   of `python -m http.server`, which doesn't understand `public/` and would
   404 on all three moved paths.
 
-  **Next step:** convert `app.js` (the shell/router) to React first, mounting
-  every still-vanilla screen through a thin adapter component so behaviour
-  doesn't change yet — see the migration-order section of the plan doc. Then
-  screens convert one at a time, easiest first (Settings → Weight → Plan →
-  Today → Welcome/Intro).
+  **Shell converted, no screen touched yet.** `src/js/app.js` is gone;
+  `src/main.jsx` + `src/App.jsx` replace it as the entry point and
+  router/shell, `index.html`'s script tag now loads `/src/main.jsx`. Every
+  screen (today/plan/weight/settings, welcome/intro) is still its original,
+  unmodified vanilla `render()`/`repaint()` pair, mounted into a plain `<div>`
+  by a `VanillaPane` (tabbed screens) / `VanillaFullScreen` (welcome/intro)
+  adapter component — React owns `#app`'s children and the routing decision,
+  nothing else changed. `computeView()` is a straight port of the old
+  `route()` branching; `VanillaPane`'s key-by-screen-id is what the old
+  `mounted` Map's "move, don't re-render" did, and its mount effect is where
+  the entry crossfade now fires instead of a manual `crossfade()` call.
+  `core/broadcast.js` needed no changes — its `subscribe()` already supported
+  many independent listeners, so each pane/the nav glance subscribes on its
+  own instead of one central dispatch loop. Verified with `npm run build`
+  (clean) and a `npm run dev` + `Invoke-WebRequest` smoke check, not the
+  preview MCP (see the standing instruction on that below).
+
+  This forced two things the plan had marked deferred, sooner than expected:
+  the app shell itself is JSX now, not just a future screen, so a WebView/Tauri
+  webview can no longer run a raw copy of `src/` at all (JSX doesn't parse
+  unbundled) — both the Android `copyWebAssets` task and
+  `desktop/scripts/sync-desktop-assets.sh` now run `npm run build` themselves
+  and copy `dist/` instead, and their CI workflows gained a Node setup + `npm
+  ci` step ahead of the native build. And `sw.js`'s `PRECACHE_URLS` could no
+  longer hand-list the JS/CSS bundle (Vite hashes those filenames per build);
+  it now precaches only the small set of static, unhashed `public/` files,
+  and leans on the existing fetch-and-cache-as-you-go handler (already there,
+  unchanged) to pick up the hashed bundle and any lazy-loaded screen chunk the
+  first time each is actually requested. `CACHE_NAME` → `rise-v34`.
+
+  **Next step:** convert screens one at a time, easiest first (Settings →
+  Weight → Plan → Today → Welcome/Intro), per the migration-order section of
+  the plan doc.
 - [ ] **pass 46 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.

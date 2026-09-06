@@ -68,31 +68,34 @@ dependencies {
 // on Pages, wrapped in a WebView so it's self-contained and offline from
 // first launch (see docs/roadmap.md, "why not a Bubblewrap TWA"). Rather
 // than keep a second copy of index.html/src/ under version control where it
-// would drift, every build copies the current repo tree into
-// app/src/main/assets right before compiling (MainActivity serves it from
-// there through WebViewAssetLoader's default android_asset root).
+// would drift, every build runs the real `npm run build` and copies its
+// output (dist/) into app/src/main/assets right before compiling
+// (MainActivity serves it from there through WebViewAssetLoader's default
+// android_asset root).
+//
+// Before pass 45's shell went React (JSX), copying src/ raw and skipping the
+// build worked because the app was plain, unbundled ES modules — a WebView
+// can run those directly. It can't run JSX unparsed, so a real build is no
+// longer optional; this task depends on npmBuild rather than reading the
+// source tree straight off disk.
 val webRoot = rootProject.file("..")
+val webDistDir = webRoot.resolve("dist")
 val webAssetsDir = layout.projectDirectory.dir("src/main/assets")
+
+val isWindows = System.getProperty("os.name").lowercase().contains("windows")
+
+tasks.register<Exec>("npmBuild") {
+    workingDir = webRoot
+    commandLine(if (isWindows) "npm.cmd" else "npm", "run", "build")
+}
 
 tasks.register<Delete>("cleanWebAssets") {
     delete(webAssetsDir)
 }
 
 tasks.register<Copy>("copyWebAssets") {
-    dependsOn("cleanWebAssets")
-    // manifest.json, sw.js and assets/ moved into public/ when pass 45 added
-    // Vite (it copies public/ to the build output root verbatim); src/ is
-    // still plain vanilla ES modules and stays directly servable raw until a
-    // screen actually goes JSX, at which point this switches to copying the
-    // `npm run build` output (dist/) instead.
-    from(webRoot) {
-        include("index.html")
-        include("src/**")
-    }
-    from(webRoot.resolve("public")) {
-        include("manifest.json", "sw.js")
-        include("assets/**")
-    }
+    dependsOn("npmBuild", "cleanWebAssets")
+    from(webDistDir)
     into(webAssetsDir)
 }
 

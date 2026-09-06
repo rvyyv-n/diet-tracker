@@ -8,14 +8,16 @@ launch (see `docs/legacy/roadmap-full-history.md`, "next").
 ## How it's built
 
 There is no second copy of the app in this folder. `app/build.gradle.kts`
-copies `index.html`, `manifest.json`, `sw.js`, `src/` and `assets/` from the
-repo root into `app/src/main/assets/` before every build (`copyWebAssets`,
-wired to `preBuild`), so the Android build always ships whatever is on
-disk — never a stale duplicate.
+runs `npm run build` (`npmBuild`) and copies its output (`dist/`) into
+`app/src/main/assets/` before every build (`copyWebAssets`, wired to
+`preBuild`), so the Android build always ships a fresh build of whatever is
+on disk — never a stale duplicate. A raw copy of `src/` isn't servable
+anymore: pass 45 put React (JSX) in the app shell, and a WebView can't parse
+JSX without a real build.
 
 `MainActivity.kt` serves that folder through `WebViewAssetLoader` on a
 virtual `https://rise.local/` origin rather than a plain `file://` URL.
-Chromium (and so WebView) blocks the ES-module imports `src/js/app.js`
+Chromium (and so WebView) blocks the ES-module imports the built bundle
 pulls in when loaded from `file://`; the asset loader sidesteps that by
 making the bundle look like it's on a normal http(s) origin, entirely
 offline and with no permissions requested.

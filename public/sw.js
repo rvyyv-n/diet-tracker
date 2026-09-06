@@ -1,16 +1,26 @@
 /**
  * sw.js — a cache-first service worker so Rise runs fully offline.
  *
- * On install every file the app needs is fetched once and stored. After that,
- * requests are served from the cache first and only fall through to the network
- * when something is missing; a fresh network response is folded back in. A
- * failed navigation falls back to the app shell.
+ * On install the static shell is fetched once and stored. After that, every
+ * request is served from the cache first and only falls through to the
+ * network when something is missing; a fresh network response is folded back
+ * in as it's seen, which is what gets the JS/CSS bundle cached too (see
+ * below). A failed navigation falls back to the app shell.
  *
- * PRECACHE_URLS is a hand-maintained list — when a source file is ADDED to the
- * project (not just edited), add it here and bump CACHE_NAME so clients refetch.
+ * PRECACHE_URLS used to hand-list every source file, back when the app shipped
+ * as plain unbundled ES modules with stable filenames. Pass 45's Vite build
+ * outputs a hashed, bundled index-*.js/css instead — a new hash on every
+ * build, so a hand-maintained list can't name them and doesn't need to: the
+ * fetch handler below already caches whatever it's asked for, and the very
+ * first navigation asks for exactly that bundle (plus, later, whichever
+ * screen chunk a route actually loads). What's still precached here is the
+ * small set of files nothing ever "requests" as a page navigation would —
+ * the shell's static, unhashed public/ assets. Bump CACHE_NAME whenever one of
+ * *these* is added or changed so clients refetch; the bundle doesn't need
+ * that treatment since a new build gets new hashes automatically.
  */
 
-const CACHE_NAME = "rise-v33";
+const CACHE_NAME = "rise-v34";
 
 const PRECACHE_URLS = [
   "./",
@@ -24,50 +34,9 @@ const PRECACHE_URLS = [
   "assets/icon-maskable-512.png",
   "assets/apple-touch-icon.png",
 
-  "src/css/tokens.css",
-  "src/css/app.css",
-
   "assets/fonts/inter-400.woff2",
   "assets/fonts/inter-500.woff2",
   "assets/fonts/newsreader-400.woff2",
-
-  "src/js/app.js",
-  "src/js/today.js",
-  "src/js/plan-view.js",
-  "src/js/weight.js",
-  "src/js/welcome.js",
-  "src/js/settings.js",
-  "src/js/intro.js",
-
-  "src/js/core/adjust.js",
-  "src/js/core/appinfo.js",
-  "src/js/core/backup.js",
-  "src/js/core/broadcast.js",
-  "src/js/core/dates.js",
-  "src/js/core/day.js",
-  "src/js/core/days.js",
-  "src/js/core/extras.js",
-  "src/js/core/grocery.js",
-  "src/js/core/persist.js",
-  "src/js/core/plan.js",
-  "src/js/core/profile.js",
-  "src/js/core/recipes.js",
-  "src/js/core/storage.js",
-  "src/js/core/theme.js",
-  "src/js/core/trend.js",
-  "src/js/core/units.js",
-  "src/js/core/updates.js",
-  "src/js/core/version.js",
-  "src/js/core/weights.js",
-  "src/js/core/whatsnew.js",
-
-  "src/js/ui/date-calendar.js",
-  "src/js/ui/date-dropdowns.js",
-  "src/js/ui/dom.js",
-  "src/js/ui/icons.js",
-  "src/js/ui/listbox.js",
-  "src/js/ui/popover.js",
-  "src/js/ui/weight-input.js",
 ];
 
 self.addEventListener("install", (event) => {

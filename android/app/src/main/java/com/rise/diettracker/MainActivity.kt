@@ -17,9 +17,10 @@ import androidx.webkit.WebViewAssetLoader
  *
  * Assets are served through WebViewAssetLoader on a virtual https:// origin
  * rather than loaded straight off a file:// URL. Chromium (and so WebView)
- * blocks cross-file fetches — including the ES-module imports src/js/app.js
- * pulls in — under file://; the loader sidesteps that by making the assets
- * look like they're coming from a normal http(s) origin, entirely offline.
+ * blocks cross-file fetches — including the ES-module imports the built
+ * bundle pulls in — under file://; the loader sidesteps that by making the
+ * assets look like they're coming from a normal http(s) origin, entirely
+ * offline.
  */
 class MainActivity : ComponentActivity() {
 

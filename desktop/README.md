@@ -22,15 +22,17 @@ itself behaves identically either way.
 ## How it's built
 
 There is no second copy of the app in this folder. `scripts/sync-desktop-assets.sh`
-copies `index.html`, `manifest.json`, `sw.js`, `src/` and `assets/` from the
-repo root into `dist/`, so the build always ships whatever is on disk. Run it
-yourself before building — it's a plain CI step rather than Tauri's
-`beforeBuildCommand` hook, since that hook's working directory didn't match
-what a relative script path assumed and silently broke the CI build.
+runs `npm run build` at the repo root and copies its output (`dist/`) into this
+folder's own `dist/`, so the build always ships a fresh build of whatever is on
+disk. A raw copy of `src/` isn't servable anymore: pass 45 put React (JSX) in
+the app shell, and Tauri's webview can't parse JSX without a real build. Run
+the script yourself before building — it's a plain CI step rather than
+Tauri's `beforeBuildCommand` hook, since that hook's working directory didn't
+match what a relative script path assumed and silently broke the CI build.
 
 Tauri serves that bundle over its own local origin (not `file://`), so —
 unlike the Android shell — no asset-loader workaround was needed for the
-ES-module imports in `src/js/app.js`.
+ES-module imports the built bundle pulls in.
 
 ## Building
 

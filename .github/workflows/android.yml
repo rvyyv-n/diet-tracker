@@ -27,6 +27,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Node
+        # copyWebAssets (app/build.gradle.kts) runs `npm run build` itself as
+        # part of the Gradle build — pass 45 put React (JSX) in the app shell,
+        # so a raw copy of src/ isn't servable in a WebView anymore.
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install npm dependencies
+        run: npm ci
+
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:

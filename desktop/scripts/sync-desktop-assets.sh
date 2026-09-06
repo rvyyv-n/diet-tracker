@@ -3,23 +3,21 @@
 # before every build, from desktop/src-tauri. Mirrors what
 # android/app/build.gradle.kts's copyWebAssets task does for the Android
 # shell: rather than keep a second copy of index.html/src/ under version
-# control where it would drift, sync the current repo tree into the
-# desktop shell's frontendDist folder fresh on every build.
+# control where it would drift, run the real `npm run build` and sync its
+# output (dist/) into the desktop shell's frontendDist folder fresh on every
+# build.
+#
+# Before pass 45's shell went React (JSX), syncing src/ raw and skipping the
+# build worked because the app was plain, unbundled ES modules — Tauri's
+# webview can run those directly. It can't run JSX unparsed, so a real build
+# is no longer optional.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 DIST_DIR="$(cd "$SCRIPT_DIR/.." && pwd)/dist"
 
-rm -rf "$DIST_DIR"
-mkdir -p "$DIST_DIR"
+( cd "$REPO_ROOT" && npm run build )
 
-# manifest.json, sw.js and assets/ moved into public/ when pass 45 added Vite
-# (it copies public/ to the build output root verbatim); src/ is still plain
-# vanilla ES modules and stays directly servable raw until a screen actually
-# goes JSX, at which point this switches to syncing the `npm run build`
-# output (dist/ at repo root) instead.
-cp "$REPO_ROOT/index.html" "$DIST_DIR/"
-cp "$REPO_ROOT/public/manifest.json" "$REPO_ROOT/public/sw.js" "$DIST_DIR/"
-cp -r "$REPO_ROOT/src" "$DIST_DIR/src"
-cp -r "$REPO_ROOT/public/assets" "$DIST_DIR/assets"
+rm -rf "$DIST_DIR"
+cp -r "$REPO_ROOT/dist" "$DIST_DIR"

@@ -29,6 +29,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Node
+        # sync-desktop-assets.sh runs `npm run build` itself — pass 45 put
+        # React (JSX) in the app shell, so a raw copy of src/ isn't servable
+        # in Tauri's webview anymore.
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install npm dependencies
+        run: npm ci
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
