@@ -213,15 +213,21 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
 
 ### phase 7 — motion, and the framework question  (last, by decision)
 
-**Pass 45 is done — decided: stay vanilla, port effects directly.** No Vite,
-no component framework. Pass 46's whole scope (tick acknowledgement, the hero
-kcal count-up, formalising panel open/close, pane crossfade, the nav slide)
-is `transform`/`opacity` CSS keyframes plus small bits of JS state — exactly
-what `justOpened()` (pass 41c) already proved out — and none of it needs
-anything React-shaped. Adopting a framework now would still be the same
-~3,000-line rewrite touching `sw.js` precaching, the Android
-WebViewAssetLoader path, and the Tauri build that `vanilla_through_v2` was
-written to avoid, for zero animation capability actually gained.
+- [ ] **pass 45 — the framework call. Decided: full adopt, React + Vite.**
+  The owner wants actual reactbits.dev components — text/number effects (the
+  hero kcal figure is the obvious target for a count-up), background/ambient
+  effects, and interactive/hover effects — used close to as-authored rather
+  than hand-ported, which rules out staying vanilla or adding Vite alone.
+  This is the highest-cost option `vanilla_through_v2` was written to defer:
+  a rewrite of the render layer across every screen (`el()`/
+  `replaceChildren()` → JSX/components), plus `sw.js` precaching (a Vite
+  build output has hashed filenames, so `PRECACHE_URLS` and the cache-bump
+  workflow both change shape), the Android WebViewAssetLoader path (which
+  currently serves the raw `src/` tree), and the Tauri build config. **Not
+  scoped or started** — this needs its own planning pass (dependency choices,
+  migration order screen-by-screen, how `justOpened()` and
+  `renderPreservingFocus()`'s jobs map onto React idioms) before any code
+  changes, and is too large to fold into a single session opportunistically.
 - [ ] **pass 46 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.

@@ -4,16 +4,6 @@ where the build is, and what each completed pass did. numbers for the plan itsel
 
 ## v2.0.0 — in progress
 
-- **pass 45 — the framework call:** Decided: stay vanilla, port pass 46's
-  motion effects directly rather than adding Vite or a component framework.
-  Nothing in that scope (tick acknowledgement, the hero kcal count-up,
-  formalising panel open/close, pane crossfade, the nav slide) needs anything
-  React-shaped — it's `transform`/`opacity` keyframes plus small JS state,
-  the same shape as `justOpened()` (pass 41c). A framework adoption now would
-  still be the ~3,000-line rewrite touching `sw.js` precaching, the Android
-  WebViewAssetLoader path, and the Tauri build that `vanilla_through_v2` was
-  written to avoid, for no animation capability actually gained. Phase 7 is
-  unblocked for pass 46.
 
 *Status — building on `release-2`. Not released.* The phased plan lives in `roadmap.md`.
 
