@@ -213,11 +213,15 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
 
 ### phase 7 — motion, and the framework question  (last, by decision)
 
-- [ ] **pass 45 — the framework call.** With every surface final, decide
-  whether the reactbits.dev components justify a build step. Options in
-  ascending cost: port the effects to vanilla, add Vite for bundling only, or
-  adopt a component framework. Deferring to here means the decision is made with
-  full knowledge of what v2 actually became.
+**Pass 45 is done — decided: stay vanilla, port effects directly.** No Vite,
+no component framework. Pass 46's whole scope (tick acknowledgement, the hero
+kcal count-up, formalising panel open/close, pane crossfade, the nav slide)
+is `transform`/`opacity` CSS keyframes plus small bits of JS state — exactly
+what `justOpened()` (pass 41c) already proved out — and none of it needs
+anything React-shaped. Adopting a framework now would still be the same
+~3,000-line rewrite touching `sw.js` precaching, the Android
+WebViewAssetLoader path, and the Tauri build that `vanilla_through_v2` was
+written to avoid, for zero animation capability actually gained.
 - [ ] **pass 46 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.

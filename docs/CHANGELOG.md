@@ -4,6 +4,17 @@ where the build is, and what each completed pass did. numbers for the plan itsel
 
 ## v2.0.0 — in progress
 
+- **pass 45 — the framework call:** Decided: stay vanilla, port pass 46's
+  motion effects directly rather than adding Vite or a component framework.
+  Nothing in that scope (tick acknowledgement, the hero kcal count-up,
+  formalising panel open/close, pane crossfade, the nav slide) needs anything
+  React-shaped — it's `transform`/`opacity` keyframes plus small JS state,
+  the same shape as `justOpened()` (pass 41c). A framework adoption now would
+  still be the ~3,000-line rewrite touching `sw.js` precaching, the Android
+  WebViewAssetLoader path, and the Tauri build that `vanilla_through_v2` was
+  written to avoid, for no animation capability actually gained. Phase 7 is
+  unblocked for pass 46.
+
 *Status — building on `release-2`. Not released.* The phased plan lives in `roadmap.md`.
 
 - **pass 21 — the design system reconciliation:** The full Claude Design export arrived (`design-export-prompt.md` is the prompt that produced it) and proved to be the *same* source system already implemented, so palette, spacing, radii, elevation, motion, font stacks and the display/title/body type scale were byte-identical to `tokens.css` — this was additive, not a rewrite. `design-system.md` rewritten around what actually ships, gaining a **deliberate departures** table (the six places Rise knowingly differs from the export, with reasons) and a **Still open** queue of unconfirmed `PROPOSED` values. Token changes: metric roles left mono for serif (hero figure) + sans (inline), every call site already declaring `tabular-nums` — which dropped JetBrains Mono and 43KB of woff2 from the precache and re-measured `.block-row__kcal` `min-width` 88px → 72px to match the narrower face; `--text-link` coral-500 → coral-700, fixing a live ~3.0:1 AA failure on body-sized links; `--icon-button-size` 36px → 44px; new `--night-sunken`; dark elevation re-expressed as hairline outline + inner top highlight, since a black shadow is invisible on a near-black surface; and `--duration-entry` / `--transition-entry` for phase-2 sheets. `sw.js` `CACHE_NAME` → `rise-v14`. Two of the export's three flags (font CDN, icon CDN) were already solved in Rise and were dismissed as stale. Held against the export: the 44px tab bar (pass 18, device-tested), the pass-19 night ramp, coral toggles, and `--surface-overlay`'s existing meaning.
