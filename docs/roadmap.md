@@ -310,9 +310,23 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
   `set2-profile__avatar`) — confirmed against each wrapper's `svg`
   descendant-sizing CSS so no extra box breaks icon sizing.
 
+  **Weight converted.** `src/js/weight.js` is gone; `src/Weight.jsx` takes
+  its `SCREENS` slot. The one wrinkle Settings didn't have: the entry card
+  and history rows lean on two self-contained vanilla widgets,
+  `dateCalendar()` and `weightInput()`, that build their own DOM and hand
+  back an imperative API (`.node`, `.onChange`, `.getKg()`, `.setInvalid()`)
+  rather than being React components. Rewriting either wasn't worth it for
+  this pass, so they're rebuilt fresh every render (same full-rebuild model
+  the vanilla screen always used) and dropped into the tree with a new
+  one-line `Imperative` adapter that mounts a plain DOM node inside a
+  `display: contents` host, re-mounting it in a no-dependency-array
+  `useEffect` after every render. Everything else on the screen (stats,
+  weekly review, the inline SVG trend chart, group labels) converted to
+  plain JSX the same way Settings did.
+
   **Next step:** convert the remaining screens one at a time, easiest first
-  (Weight → Plan → Today → Welcome/Intro), per the migration-order section of
-  the plan doc.
+  (Plan → Today → Welcome/Intro), per the migration-order section of the
+  plan doc.
 - [ ] **pass 46 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.

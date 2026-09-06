@@ -32,7 +32,7 @@ import { allWeights } from "./js/core/weights.js";
 import { formatWeight } from "./js/core/units.js";
 import { renderToday, repaintToday } from "./js/today.js";
 import { renderPlan, repaintPlan } from "./js/plan-view.js";
-import { renderWeight, repaintWeight } from "./js/weight.js";
+import Weight from "./Weight.jsx";
 import Settings from "./Settings.jsx";
 
 const NUM = new Intl.NumberFormat();
@@ -47,7 +47,7 @@ const NUM = new Intl.NumberFormat();
 const SCREENS = [
   { id: "today", label: "Today", icon: "square-check-big", open: (el) => renderToday(el), repaint: repaintToday },
   { id: "plan", label: "Plan", icon: "clipboard-list", open: (el) => renderPlan(el), repaint: repaintPlan },
-  { id: "weight", label: "Weight", icon: "trending-up", open: (el) => renderWeight(el), repaint: repaintWeight },
+  { id: "weight", label: "Weight", icon: "trending-up", Component: Weight },
   { id: "settings", label: "Settings", icon: "sliders-horizontal", Component: Settings },
 ];
 
