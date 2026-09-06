@@ -278,8 +278,40 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
   unchanged) to pick up the hashed bundle and any lazy-loaded screen chunk the
   first time each is actually requested. `CACHE_NAME` → `rise-v34`.
 
-  **Next step:** convert screens one at a time, easiest first (Settings →
-  Weight → Plan → Today → Welcome/Intro), per the migration-order section of
+  **Settings converted.** `src/js/settings.js` is gone; `src/Settings.jsx`
+  replaces it and is wired into `App.jsx`'s `SCREENS` array via a `Component`
+  field (a still-vanilla screen carries `open`/`repaint` for the `VanillaPane`
+  adapter; a converted one carries `Component` and renders directly —
+  `VanillaPane` itself got simpler now that only three screens still need it).
+  The conversion recipe, reusable for what's left: module-level `let`s →
+  `useState`; DOM refs (`querySelector`, a persisted file-input reference) →
+  `useRef`; the vanilla `render()`'s trailing `publish(screenId)` → a
+  no-dependency-array `useEffect` (runs after every render); the router's old
+  "repaint if a sibling published and I didn't" logic → a local
+  `subscribe()`-based counter that forces a re-render; the entry crossfade →
+  a mount-only (`[]`-dependency) effect on the pane ref; storage-derived data
+  that isn't worth lifting into state (`loadProfile()`, snapshot info, update
+  status) is just recomputed at the top of the render function every time.
+  `justOpened()` from `ui/dom.js` is reused as-is — it's safe to call during
+  a React render body because `main.jsx` doesn't mount under `StrictMode`, so
+  there's no double-invoke to corrupt its one-shot bookkeeping.
+
+  Fixed a real bug in the just-shipped `App.jsx` while doing this: `icon()`
+  (from `ui/icons.js`) returns a detached DOM `Node`, which React can't
+  accept as a JSX child — `{icon(screen.icon)}` in `Tabbar`/`NavGlance` was
+  broken at runtime despite building and smoke-testing clean, since neither
+  `npm run build` nor a curl-style request executes React rendering. Caught
+  by code review, not by a failing check. Fixed by switching to `iconSvg()`
+  (the string-returning sibling export) plus a shared `Icon` component using
+  `dangerouslySetInnerHTML`, in two modes depending on the call site: a real
+  classed `<span>` where the original markup had one (`tabbar__icon`,
+  `group__label-icon`), or a `display:contents` span where the caller already
+  renders its own sized wrapper (`set2-row__icon`, `set2-row__chev`,
+  `set2-profile__avatar`) — confirmed against each wrapper's `svg`
+  descendant-sizing CSS so no extra box breaks icon sizing.
+
+  **Next step:** convert the remaining screens one at a time, easiest first
+  (Weight → Plan → Today → Welcome/Intro), per the migration-order section of
   the plan doc.
 - [ ] **pass 46 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block

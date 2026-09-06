@@ -18,7 +18,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { icon } from "./js/ui/icons.js";
+import { iconSvg } from "./js/ui/icons.js";
 import { isAvailable } from "./js/core/storage.js";
 import { snapshotInfo, restoreSnapshot } from "./js/core/backup.js";
 import { markWhatsNewSeen } from "./js/core/whatsnew.js";
@@ -33,29 +33,22 @@ import { formatWeight } from "./js/core/units.js";
 import { renderToday, repaintToday } from "./js/today.js";
 import { renderPlan, repaintPlan } from "./js/plan-view.js";
 import { renderWeight, repaintWeight } from "./js/weight.js";
-import { renderSettings, repaintSettings } from "./js/settings.js";
+import Settings from "./Settings.jsx";
 
 const NUM = new Intl.NumberFormat();
 
 /**
- * Every screen the router can mount, in nav order. `open` renders a screen
- * fresh into a pane; `repaint` refreshes one that is already up without
- * resetting its view state. Adding a screen means adding a row here — the tab
- * bar and the `?tab=` whitelist both read from it. Unchanged contract from
- * the vanilla router; only who calls `open`/`repaint` (VanillaPane, not
- * `setPanes()`) is new.
+ * Every screen the router can mount, in nav order. A still-vanilla screen
+ * carries `open`/`repaint` (rendered through the `VanillaPane` adapter); a
+ * converted one carries `Component` (rendered directly). Adding a screen or
+ * finishing its conversion means editing this one row — the tab bar and the
+ * `?tab=` whitelist both read from it either way.
  */
 const SCREENS = [
   { id: "today", label: "Today", icon: "square-check-big", open: (el) => renderToday(el), repaint: repaintToday },
   { id: "plan", label: "Plan", icon: "clipboard-list", open: (el) => renderPlan(el), repaint: repaintPlan },
   { id: "weight", label: "Weight", icon: "trending-up", open: (el) => renderWeight(el), repaint: repaintWeight },
-  {
-    id: "settings",
-    label: "Settings",
-    icon: "sliders-horizontal",
-    open: (el, opts) => renderSettings(el, opts),
-    repaint: repaintSettings,
-  },
+  { id: "settings", label: "Settings", icon: "sliders-horizontal", Component: Settings },
 ];
 
 const screenById = (id) => SCREENS.find((s) => s.id === id) ?? null;
@@ -234,9 +227,14 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
   return (
     <>
       <div className="app-content">
-        {panes.map((id) => (
-          <VanillaPane key={id} screen={screenById(id)} openOpts={id === "settings" ? { onEditSetup, onReset } : undefined} />
-        ))}
+        {panes.map((id) => {
+          const screen = screenById(id);
+          return screen.Component ? (
+            <screen.Component key={id} onEditSetup={onEditSetup} onReset={onReset} />
+          ) : (
+            <VanillaPane key={id} screen={screen} />
+          );
+        })}
       </div>
       <Tabbar panes={panes} onNavigate={onNavigate} />
     </>
@@ -251,7 +249,7 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
  * which is also the right moment to fire the entry crossfade, so it runs from
  * this effect instead of a separate `crossfade()` call.
  */
-function VanillaPane({ screen, openOpts }) {
+function VanillaPane({ screen }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -259,18 +257,13 @@ function VanillaPane({ screen, openOpts }) {
     el.classList.remove("tab-switching");
     void el.offsetWidth;
     el.classList.add("tab-switching");
-    screen.open(el, openOpts);
+    screen.open(el);
 
     // A screen has repainted itself, so this one may now be showing stale
     // numbers. `fresh` is the set of ids that already caught up.
     return subscribe((fresh) => {
       if (!fresh.has(screen.id)) screen.repaint();
     });
-    // openOpts is a fresh object every render (it closes over onEditSetup /
-    // onReset, which are themselves stable via useCallback in App) — reopening
-    // on every change would reset the screen's view state on an unrelated
-    // re-render, so only screen.id gates a remount, matching the old router's
-    // per-id mount-once behaviour.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen.id]);
 
@@ -297,9 +290,7 @@ function NavGlance() {
   return (
     <div className="tabbar__glance">
       <span className="group__label">
-        <span className="group__label-icon" aria-hidden="true">
-          {icon("gauge", { size: 14 })}
-        </span>
+        <Icon name="gauge" size={14} className="group__label-icon" />
         Today
       </span>
       <div className="tabbar__glance-row">
@@ -350,9 +341,7 @@ function Tabbar({ panes, onNavigate }) {
             aria-current={current ? "page" : undefined}
             onClick={() => select(screen.id)}
           >
-            <span className="tabbar__icon" aria-hidden="true">
-              {icon(screen.icon)}
-            </span>
+            <Icon name={screen.icon} className="tabbar__icon" />
             <span className="tabbar__label">{screen.label}</span>
           </button>
         );
@@ -360,4 +349,27 @@ function Tabbar({ panes, onNavigate }) {
       <NavGlance />
     </nav>
   );
+}
+
+/**
+ * A Lucide glyph as JSX. `ui/icons.js`'s own `icon()` hands back a detached
+ * DOM `<svg>` node — the right shape for the vanilla `el()` tree it was
+ * written for, but not something React can render as a child (it isn't a
+ * React element). `iconSvg()` returns the same markup as a string instead,
+ * which `dangerouslySetInnerHTML` can seat directly — same DOM shape either
+ * way, just built through React's own path.
+ *
+ * `className` decides what box (if any) this renders. Pass one when the icon
+ * itself is the sized element (`tabbar__icon`, `group__label-icon` — a real
+ * span carrying that class, containing the svg, same as the vanilla
+ * `el("span", {class}, icon(...))` it replaces). Omit it when the caller
+ * already renders its own sizing wrapper around the icon (`set2-row__icon`
+ * and friends expect the `<svg>` as their own direct flex item, sized via
+ * `<wrapper> svg { width/height: 100% }`) — `display: contents` keeps this
+ * component from adding a second, unsized box in between.
+ */
+function Icon({ name, size, stroke, className }) {
+  const html = { __html: iconSvg(name, { size, stroke }) };
+  if (className) return <span className={className} aria-hidden="true" dangerouslySetInnerHTML={html} />;
+  return <span style={{ display: "contents" }} dangerouslySetInnerHTML={html} />;
 }
