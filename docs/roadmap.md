@@ -324,9 +324,18 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
   weekly review, the inline SVG trend chart, group labels) converted to
   plain JSX the same way Settings did.
 
+  **Plan converted.** `src/js/plan-view.js` is gone; `src/Plan.jsx` takes its
+  `SCREENS` slot. No stateful vanilla widgets here (unlike Weight) — just
+  markup and one bit of local state (`openMeal`), so this was a
+  straight JSX port. One real simplification fell out of leaving the vanilla
+  render model: the old file wrapped every render in `renderPreservingFocus()`
+  because its full `replaceChildren()` rebuild would otherwise drop a
+  keyboard user's focus to `<body>` on every grocery tick — React's own
+  reconciler doesn't tear the tree down like that, so that wrapper and its
+  `data-focus-key` attributes were dropped entirely rather than ported.
+
   **Next step:** convert the remaining screens one at a time, easiest first
-  (Plan → Today → Welcome/Intro), per the migration-order section of the
-  plan doc.
+  (Today → Welcome/Intro), per the migration-order section of the plan doc.
 - [ ] **pass 46 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.
