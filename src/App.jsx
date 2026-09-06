@@ -30,7 +30,7 @@ import { getDay } from "./js/core/days.js";
 import { newDay, dayTotals, intakeStatus } from "./js/core/day.js";
 import { allWeights } from "./js/core/weights.js";
 import { formatWeight } from "./js/core/units.js";
-import { renderToday, repaintToday } from "./js/today.js";
+import Today from "./Today.jsx";
 import Plan from "./Plan.jsx";
 import Weight from "./Weight.jsx";
 import Settings from "./Settings.jsx";
@@ -45,7 +45,7 @@ const NUM = new Intl.NumberFormat();
  * `?tab=` whitelist both read from it either way.
  */
 const SCREENS = [
-  { id: "today", label: "Today", icon: "square-check-big", open: (el) => renderToday(el), repaint: repaintToday },
+  { id: "today", label: "Today", icon: "square-check-big", Component: Today },
   { id: "plan", label: "Plan", icon: "clipboard-list", Component: Plan },
   { id: "weight", label: "Weight", icon: "trending-up", Component: Weight },
   { id: "settings", label: "Settings", icon: "sliders-horizontal", Component: Settings },

@@ -334,8 +334,30 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
   reconciler doesn't tear the tree down like that, so that wrapper and its
   `data-focus-key` attributes were dropped entirely rather than ported.
 
-  **Next step:** convert the remaining screens one at a time, easiest first
-  (Today → Welcome/Intro), per the migration-order section of the plan doc.
+  **Today converted.** `src/js/today.js` (the biggest screen, 1,600 lines) is
+  gone; `src/Today.jsx` takes its `SCREENS` slot. `renderPreservingFocus()`
+  and its `data-focus-key` attributes are dropped entirely, same reasoning as
+  Plan. Three places the vanilla file went further and bypassed `render()`
+  altogether to avoid losing keystroke focus — the recipe-book filter box, the
+  recipe editor's name field, and both quick-type ingredient/extra forms — are
+  now ordinary controlled inputs backed by `useState`; a controlled input's
+  DOM node persists across a re-render, so there's nothing left to lose. Two
+  more self-contained vanilla widgets joined `dateCalendar()` from Weight
+  behind the `Imperative` adapter: `listbox()` (the FOOD_DB picker, shared by
+  the extras "Foods" tab and the recipe editor's add-ingredient form) and
+  `dateCalendar()` again, this time for the 7-day adherence strip's
+  older-day popover. `emptyState()` (from `ui/dom.js`) turned out to have the
+  same bug `icon()` had — it also builds and returns a real DOM `Node`, not a
+  valid JSX child — so the recipe book's empty state is a small local
+  `EmptyState` component instead of that import. The two near-duplicate pairs
+  the vanilla file carried (`extrasTypeForm`/`recipeAddTypeForm`,
+  `extrasPickForm`/`recipeAddPickForm`) collapsed into one shared `TypeForm`
+  and one shared `PickForm`, parameterised by label, button style, and the
+  `onAdd` callback. Verified with `npm run build` (52 modules, clean) and a
+  `npm run dev` + HTTP smoke check against `/` and `/src/Today.jsx`.
+
+  **Next step:** convert the remaining screen, Welcome/Intro, per the
+  migration-order section of the plan doc.
 - [ ] **pass 46 — motion polish.** Subtle, not showy; scoped per surface.
   The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
   already exist and must be honoured.
