@@ -3093,8 +3093,8 @@
     padding-left: 0;
     padding-right: 0;
   }
-  .app-shell--nav-hover .tabbar:hover .tabbar--icons .tabbar__btn,
-  .app-shell--nav-hover .tabbar:focus-within .tabbar--icons .tabbar__btn {
+  .app-shell--nav-hover .tabbar.tabbar--icons:hover .tabbar__btn,
+  .app-shell--nav-hover .tabbar.tabbar--icons:focus-within .tabbar__btn {
     justify-content: flex-start;
     padding-left: var(--space-sm);
     padding-right: var(--space-sm);
