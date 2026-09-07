@@ -164,7 +164,8 @@ color-scheme:light;
 --bp-wide:1440px;     /* side nav + main + detail, three panels */
 
 --gutter-compact:16px;--gutter-medium:20px;--gutter-desktop:32px;
---panel-nav-width:240px;      /* desktop side nav, 72px collapsed */
+--panel-nav-width:240px;      /* desktop side nav */
+--panel-nav-width-collapsed:72px; /* the hover-to-expand rail (pass 47) */
 --panel-detail-width:360px;   /* the third panel at --bp-wide */
 --container-app:960px;        /* reading column inside the desktop main panel */
 

@@ -39,6 +39,13 @@ export const DEFAULT_PROFILE = {
   overviewMetrics: {},    // { [metricId]: false } for a readout the user hid on
   //                         Today's day-total card (pass 32). An absent id reads
   //                         as shown, so a metric added later defaults visible.
+  navPref: "visible",     // "visible" | "hover" — the desktop side nav column
+  //                         (pass 47). "hover" collapses it to an icon-only
+  //                         rail that expands on pointer or keyboard focus;
+  //                         only takes effect on a fine-pointer, hover-capable
+  //                         device at the desktop breakpoint — a phone or a
+  //                         touch tablet always shows the always-visible
+  //                         column regardless of this value.
 };                        // merged over defaults on load, so no schema bump.
 
 export function loadProfile() {

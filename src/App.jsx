@@ -195,9 +195,29 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
   // data; the nav glance reads the same day/weight records the screens do, so
   // it goes stale on the same events. Bumping this forces Shell to re-render,
   // which recomputes navGlance() fresh — there's no persistent glance node to
-  // patch in place the way the vanilla paintTabbar() did.
+  // patch in place the way the vanilla paintTabbar() did. The nav's own
+  // pinned/hover toggle (pass 47) reuses this same counter rather than a
+  // second one — flipping it is just another profile write Shell needs to
+  // notice.
   const [, bump] = useState(0);
   useEffect(() => subscribe(() => bump((n) => n + 1)), []);
+
+  const profile = loadProfile();
+  const navPref = profile.navPref === "hover" ? "hover" : "visible";
+
+  // `.app-shell--nav-hover` drives the collapsed-rail CSS (app.css, pass 47).
+  // It lives on the same #app element `.app-shell--tabbed` does, toggled here
+  // rather than in App()'s effect because navPref can change without view.kind
+  // ever changing — a tap on the toggle below never leaves the "shell" view.
+  useEffect(() => {
+    document.getElementById("app")?.classList.toggle("app-shell--nav-hover", navPref === "hover");
+  }, [navPref]);
+
+  function setNavPref(next) {
+    if (next === navPref) return;
+    saveProfile({ ...profile, navPref: next });
+    bump((n) => n + 1);
+  }
 
   return (
     <>
@@ -211,7 +231,7 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
           );
         })}
       </div>
-      <Tabbar panes={panes} onNavigate={onNavigate} />
+      <Tabbar panes={panes} onNavigate={onNavigate} navPref={navPref} onSetNavPref={setNavPref} />
     </>
   );
 }
@@ -289,7 +309,7 @@ function NavGlance() {
   );
 }
 
-function Tabbar({ panes, onNavigate }) {
+function Tabbar({ panes, onNavigate, navPref, onSetNavPref }) {
   const select = (id) => {
     if (panes.length === 1 && panes[0] === id) return;
     onNavigate(id);
@@ -322,7 +342,45 @@ function Tabbar({ panes, onNavigate }) {
         );
       })}
       <NavGlance />
+      <NavPinToggle navPref={navPref} onSetNavPref={onSetNavPref} />
     </nav>
+  );
+}
+
+/**
+ * The desktop nav's own always-visible / show-on-hover switch (pass 47).
+ * Sits at the very bottom of the column, below the glance card, and — like
+ * the glance card — is itself part of what a collapsed rail hides. That's
+ * deliberate, not an oversight: reaching this control at all means the rail
+ * is already expanded (by hover, or by tabbing into it), which is exactly
+ * how a keyboard user switches it back to pinned. `.tabbar__pin`'s CSS keeps
+ * it out of the DOM's visible flow entirely outside the desktop breakpoint
+ * and on a device with no hover to offer — there is nothing here for such a
+ * device to control.
+ */
+function NavPinToggle({ navPref, onSetNavPref }) {
+  const pinned = navPref !== "hover";
+  return (
+    <div className="tabbar__pin">
+      <div className="seg seg--full" role="group" aria-label="Side nav width">
+        <button
+          type="button"
+          className={`seg__btn${pinned ? " is-on" : ""}`}
+          aria-pressed={pinned ? "true" : "false"}
+          onClick={() => onSetNavPref("visible")}
+        >
+          Pinned
+        </button>
+        <button
+          type="button"
+          className={`seg__btn${!pinned ? " is-on" : ""}`}
+          aria-pressed={!pinned ? "true" : "false"}
+          onClick={() => onSetNavPref("hover")}
+        >
+          On hover
+        </button>
+      </div>
+    </div>
   );
 }
 

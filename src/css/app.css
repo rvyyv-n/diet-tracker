@@ -2808,6 +2808,11 @@
 /* Same deal as the wordmark: the phone's bar is four icons edge to edge and
    has nowhere to put this. It only exists on the desktop nav column. */
 .tabbar__glance { display: none; }
+/* The pinned/hover switch (pass 47) — desktop-and-hover-capable only, same
+   reasoning as the two rules above, plus there is nothing for it to control
+   on a device that can't hover in the first place. See the combined media
+   query further down for where it turns back on. */
+.tabbar__pin { display: none; }
 
 
 /* ==================================================== desktop shell (35) ===
@@ -3000,6 +3005,99 @@
   .planref__food-kcal,
   .planref__food-protein {
     text-align: right;
+  }
+}
+
+
+/* ============================================ desktop side nav rail (47) ===
+   The desktop nav column above is always 240px and always there — this adds
+   a second mode, off by default, where it collapses to a --panel-nav-width-
+   collapsed rail and expands over the content on hover or keyboard focus.
+   Gated behind (hover: hover) and (pointer: fine) *in addition to* the width
+   breakpoint: a touch-capable device at desktop width has no way to trigger
+   a hover state at all, so offering this mode there would just leave the
+   rail permanently collapsed and its four destinations unreadable. Such a
+   device always gets the plain always-visible column above, regardless of
+   what the user picked (`.tabbar__pin` only renders where this query
+   matches, so the choice is never even offered there).
+
+   `.app-shell--nav-hover` is the one class this whole block keys off — App.jsx
+   toggles it on #app when profile.navPref is "hover", independent of
+   `.app-shell--tabbed` (view.kind) which can stay "shell" the entire time. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .tabbar__pin {
+    display: block;
+    margin-top: var(--space-sm);
+  }
+
+  /* The reserved gutter shrinks to match the rail's resting width. This is a
+     discrete state — set once by a tap on the toggle below, not something
+     that moves on every pointer event — so it is fine for it to affect
+     layout directly, unlike the width change below. */
+  .app-shell--nav-hover.app-shell--tabbed {
+    padding-left: calc(var(--panel-nav-width-collapsed) + var(--gutter-desktop) + env(safe-area-inset-left));
+  }
+
+  /* The rail itself. Its width snaps between the collapsed and full figure
+     with no `transition: width` on purpose: animating width forces a layout
+     pass on every single frame, even on a `position: fixed` element that
+     visually overlaps nothing else — exactly the cost the roadmap's "animate
+     transform and opacity only" note is there to avoid. The snap itself is
+     instant and one-off; everything that reads as "sliding open" below is a
+     transform/opacity fade on the content the wider rail reveals, which the
+     compositor handles for whatever this takes without ever touching layout. */
+  .app-shell--nav-hover .tabbar {
+    width: var(--panel-nav-width-collapsed);
+    overflow: hidden;
+  }
+  .app-shell--nav-hover .tabbar:hover,
+  .app-shell--nav-hover .tabbar:focus-within {
+    width: var(--panel-nav-width);
+    overflow: visible;
+  }
+
+  /* Everything a bare icon can't carry on its own — the wordmark, a nav
+     button's label, the glance card, and the pin toggle itself — stays at
+     its normal size and position throughout (nothing here ever moves the
+     four nav icons), just invisible and clipped away by the rail's own
+     overflow at rest. `:focus-within` above means tabbing into a collapsed
+     rail expands it exactly like a hover would, so a keyboard user is never
+     worse off than a mouse. */
+  .app-shell--nav-hover .tabbar__brand,
+  .app-shell--nav-hover .tabbar__label,
+  .app-shell--nav-hover .tabbar__glance,
+  .app-shell--nav-hover .tabbar__pin {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition:
+      opacity var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-standard);
+  }
+  .app-shell--nav-hover .tabbar:hover .tabbar__brand,
+  .app-shell--nav-hover .tabbar:hover .tabbar__label,
+  .app-shell--nav-hover .tabbar:hover .tabbar__glance,
+  .app-shell--nav-hover .tabbar:hover .tabbar__pin,
+  .app-shell--nav-hover .tabbar:focus-within .tabbar__brand,
+  .app-shell--nav-hover .tabbar:focus-within .tabbar__label,
+  .app-shell--nav-hover .tabbar:focus-within .tabbar__glance,
+  .app-shell--nav-hover .tabbar:focus-within .tabbar__pin {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* A collapsed row centres its lone icon; the expanded row (icon, then
+     label, left-aligned) is what .tabbar--icons .tabbar__btn already does at
+     240px, so hovering/focusing restores it rather than overriding it twice. */
+  .app-shell--nav-hover .tabbar--icons .tabbar__btn {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .app-shell--nav-hover .tabbar:hover .tabbar--icons .tabbar__btn,
+  .app-shell--nav-hover .tabbar:focus-within .tabbar--icons .tabbar__btn {
+    justify-content: flex-start;
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
   }
 }
 
