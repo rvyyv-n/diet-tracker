@@ -521,7 +521,7 @@ function TotalCard({ day, profile }) {
       <div className="daytotal__figure">
         <CountUp
           to={totals.kcal}
-          duration={0.45}
+          duration={0.25}
           separator=","
           className={`daytotal__kcal ${STATUS_CLASS[status]}`}
         />
