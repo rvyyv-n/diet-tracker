@@ -87,6 +87,14 @@ import { publish, subscribe } from "./js/core/broadcast.js";
 
 const NUM = new Intl.NumberFormat("en-US"); // 1,890
 
+// The hero kcal figure's count-up (pass 45) should only play once per page
+// load — not every time Today remounts from a tab switch, and not every
+// time a block is checked and the total changes mid-visit. A module-level
+// flag (rather than component state) is what makes that survive Today
+// unmounting entirely when you navigate away: it resets only on an actual
+// page reload, which is exactly "first load of the site".
+let kcalCountUpPlayed = false;
+
 // The appetite check labels, in tap order. Keys are APPETITE_VALUES.
 const APPETITE_LABEL = { stuffed: "Stuffed", fine: "Fine", hungry: "Hungry" };
 
@@ -516,15 +524,27 @@ function TotalCard({ day, profile }) {
   else if (toGo === 0) remaining = `Target met · ${blocksLeft} ${blockWord} left`;
   else remaining = `${NUM.format(toGo)} kcal to go · ${blocksLeft} ${blockWord} left`;
 
+  // First paint of this page load gets the count-up; everything after —
+  // a remount from switching tabs, a block ticked mid-visit — just shows
+  // the number, matching how it behaved before pass 45's CountUp landed.
+  const playCountUp = !kcalCountUpPlayed;
+  useEffect(() => {
+    kcalCountUpPlayed = true;
+  }, []);
+
   return (
     <div className="card daytotal">
       <div className="daytotal__figure">
-        <CountUp
-          to={totals.kcal}
-          duration={0.25}
-          separator=","
-          className={`daytotal__kcal ${STATUS_CLASS[status]}`}
-        />
+        {playCountUp ? (
+          <CountUp
+            to={totals.kcal}
+            duration={0.25}
+            separator=","
+            className={`daytotal__kcal ${STATUS_CLASS[status]}`}
+          />
+        ) : (
+          <span className={`daytotal__kcal ${STATUS_CLASS[status]}`}>{NUM.format(totals.kcal)}</span>
+        )}
         <span className="daytotal__target">/ {NUM.format(target.kcal)} kcal</span>
       </div>
       <DayBar kcal={totals.kcal} targetKcal={target.kcal} status={status} />
