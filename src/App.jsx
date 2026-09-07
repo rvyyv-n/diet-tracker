@@ -20,7 +20,7 @@
  * `welcome-*.js` chunks in a production build).
  */
 
-import { useCallback, useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import { iconSvg } from "./js/ui/icons.js";
 import { isAvailable } from "./js/core/storage.js";
 import { snapshotInfo, restoreSnapshot } from "./js/core/backup.js";
@@ -219,8 +219,24 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
     bump((n) => n + 1);
   }
 
-  return (
-    <>
+  // Memoized on identity, not recomputed by the `bump` above: every screen
+  // publishes on its own render with no dependency array (see Today.jsx),
+  // and each publish flows straight back here and bumps this same counter.
+  // Without this memo, that bump re-renders the pane subtree too, which
+  // re-fires the very publish that caused it — a self-sustaining loop with
+  // nothing about it that depends on user input to keep going once started.
+  // The vanilla broadcast.js this is ported from relied on a subscriber's
+  // reaction being *synchronous* (a sibling's render() call, straight down
+  // the call stack) so the "a publish raised while the queue drains is
+  // dropped" guard could catch the bounce-back; a React state update is
+  // deferred to its own commit, which lands after that guard has already
+  // reset, so the loop gets through. Handing React back the exact same
+  // element tree (`panes`/`onEditSetup`/`onReset` are all stable across a
+  // bump-only re-render) lets it bail out of reconciling this subtree
+  // entirely, so a bump only ever repaints the nav — which is all it was
+  // ever meant to do.
+  const appContent = useMemo(
+    () => (
       <div className="app-content">
         {panes.map((id) => {
           const screen = screenById(id);
@@ -231,6 +247,13 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
           );
         })}
       </div>
+    ),
+    [panes, onEditSetup, onReset],
+  );
+
+  return (
+    <>
+      {appContent}
       <Tabbar panes={panes} onNavigate={onNavigate} navPref={navPref} onSetNavPref={setNavPref} />
     </>
   );
