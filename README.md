@@ -6,7 +6,7 @@
 Screen" (mobile) or "Install app" (desktop) for the standalone, offline PWA.
 
 ```
-status: v1.6.0 released — the quality-of-life pass after v1.5
+status: v2.0.0 built on release-2, not yet released — the bulk redesign
 built:  today checklist + phase ladder, weight trend + adjustment engine,
         settings/about, json export/import, pwa shell (installable, offline),
         durable storage, deployed to github pages, android apk, windows
@@ -19,8 +19,11 @@ built:  today checklist + phase ladder, weight trend + adjustment engine,
         with an adherence dot strip, a weekly review card + most-skipped
         readout, a repaired export/import round trip, time-of-day meal cues,
         manifest shortcuts, lb / stone weight display, and dark mode
-next:   v2 — the bulk redesign; android pwa install check on a device
-        (non-blocking)
+2.0:    off-plan food + a recipe book, a weekly grocery checklist, configurable
+        overview metrics, a desktop layout with a collapsible side nav, a
+        visual polish pass, a full react + vite rewrite, and motion polish
+next:   v2.1+ — a possible recipes tab split off of plan; android pwa install
+        check on a device (non-blocking)
 ```
 
 ## the idea

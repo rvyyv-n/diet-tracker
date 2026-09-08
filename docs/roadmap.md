@@ -214,9 +214,13 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
 
 ### phase 7 — motion, and the framework question  (last, by decision)
 
-- [ ] **pass 46 — motion polish.** Subtle, not showy; scoped per surface.
-  The `--duration-*` / `--ease-*` tokens and the `prefers-reduced-motion` block
-  already exist and must be honoured.
+**Pass 46 is done** — see `CHANGELOG.md`. Scoped to the two concrete gaps
+earlier passes had already named rather than a broad invented pass: the tick
+acknowledgement pass 41c deferred until Today's render model could carry a
+transition across a change (now true, since Today is React), and the
+day-total progress bar growing into place instead of jumping. Both ride the
+existing `prefers-reduced-motion` rule with no new opt-out.
+
 - [ ] **pass 48 — split Recipes out of Plan.** *(theoretical — do not build
   without a decision)* The Plan tab currently carries three unrelated things:
   the weekly grocery checklist, the phase target ladder, and a full reference
@@ -248,19 +252,30 @@ fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
 
 ### phase 8 — the 2.0 release
 
-- [ ] **pass 49.** Version to `2.0.0` across `appinfo.js`, `build.gradle.kts`
-  (+ `versionCode` 4), `tauri.conf.json`, `Cargo.toml`, and `README.md`. `sw.js`
-  `CACHE_NAME` → `rise-v34` or later (the pass-44 fix took `v31`, the loose-ends
-  pass took `v32`, the 41c re-render fix took `v33`), with every module added
-  across phases 1–7 appended to `PRECACHE_URLS` — a missed entry is an offline
-  break that only shows up after install.
-- [ ] **Before `release-2` merges to `main` at all** (not just at 2.0 —
-  whenever that merge happens): switch the repo's Pages source from "Deploy
-  from a branch" to "GitHub Actions" in Settings → Pages. Pass 45 added
-  `.github/workflows/pages.yml`, which builds via `npm run build` and deploys
-  `dist/`, but it only takes effect once that switch is made — until then
-  Pages keeps serving the raw repo root, which 404s on `/manifest.json`,
-  `/sw.js`, and every icon the moment `public/` lands on `main`.
+**Pass 49 is done** — see `CHANGELOG.md`. Version is `2.0.0` across
+`appinfo.js`, `package.json`, `build.gradle.kts` (`versionCode` 4),
+`tauri.conf.json`, `Cargo.toml`, and `README.md`; `sw.js` `CACHE_NAME` →
+`rise-v35`. `PRECACHE_URLS` needed no per-module audit — pass 45 step 2
+already stopped it naming the hashed JS/CSS bundle, so there was nothing to
+append.
+
+Everything code-side that makes v2 launchable is now built on `release-2`.
+What's left is not code:
+
+- [ ] **The Pages source switch — before `release-2` merges to `main` at
+  all**, not just at this release: switch the repo's Pages source from
+  "Deploy from a branch" to "GitHub Actions" in Settings → Pages. Pass 45
+  added `.github/workflows/pages.yml`, which builds via `npm run build` and
+  deploys `dist/`, but it only takes effect once that switch is made — until
+  then Pages keeps serving the raw repo root, which 404s on
+  `/manifest.json`, `/sw.js`, and every icon the moment `public/` lands on
+  `main`. This is a repo-settings change, not something committable — the
+  owner has to make it (or explicitly ask for it to be made via `gh`).
+- [ ] **The actual release** — merging `release-2` to `main`, tagging `v2.0.0`,
+  and publishing the GitHub Release stays the owner's call, per the standing
+  release workflow.
+- [ ] **pass 48**, above, remains open and is fine to ship without — it's
+  cuttable to 2.1 by design.
 
 ## resuming on another machine
 `git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it

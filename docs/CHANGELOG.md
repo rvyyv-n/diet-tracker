@@ -2,10 +2,11 @@
 
 where the build is, and what each completed pass did. numbers for the plan itself live in `plan-spec.md`; design tokens in `design-system.md`.
 
-## v2.0.0 — in progress
+## v2.0.0 — build complete, awaiting release
 
-
-*Status — building on `release-2`. Not released.* The phased plan lives in `roadmap.md`.
+*Status — all passes built on `release-2`. Not yet merged to `main`, tagged,
+or published — that's the owner's call.* The phased plan lives in
+`roadmap.md`.
 
 - **pass 21 — the design system reconciliation:** The full Claude Design export arrived (`design-export-prompt.md` is the prompt that produced it) and proved to be the *same* source system already implemented, so palette, spacing, radii, elevation, motion, font stacks and the display/title/body type scale were byte-identical to `tokens.css` — this was additive, not a rewrite. `design-system.md` rewritten around what actually ships, gaining a **deliberate departures** table (the six places Rise knowingly differs from the export, with reasons) and a **Still open** queue of unconfirmed `PROPOSED` values. Token changes: metric roles left mono for serif (hero figure) + sans (inline), every call site already declaring `tabular-nums` — which dropped JetBrains Mono and 43KB of woff2 from the precache and re-measured `.block-row__kcal` `min-width` 88px → 72px to match the narrower face; `--text-link` coral-500 → coral-700, fixing a live ~3.0:1 AA failure on body-sized links; `--icon-button-size` 36px → 44px; new `--night-sunken`; dark elevation re-expressed as hairline outline + inner top highlight, since a black shadow is invisible on a near-black surface; and `--duration-entry` / `--transition-entry` for phase-2 sheets. `sw.js` `CACHE_NAME` → `rise-v14`. Two of the export's three flags (font CDN, icon CDN) were already solved in Rise and were dismissed as stale. Held against the export: the 44px tab bar (pass 18, device-tested), the pass-19 night ramp, coral toggles, and `--surface-overlay`'s existing meaning.
 - **pass 23 — the schema migration:** `storage.js` `SCHEMA_VERSION` 1 → 2, the
@@ -368,7 +369,65 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   don't appear to advance in it), but the discrete, non-transitioned `width`
   snap it does drive confirmed the collapse/expand state logic itself is
   correct.
+- **three loose CountUp/render fixes, caught before pass 46 started:** Found in review of pass 45 step 8's hero kcal count-up. `CountUp` was reconstructing an `Intl.NumberFormat` on every spring tick instead of once, and the hero duration was cut twice (0.8s → 0.45s → 0.25s) for feeling sluggish against how fast a block tick actually lands. Separately, the count-up was replaying on every remount of Today (a tab switch, not just a genuine kcal change) — fixed so it only plays on the page's first paint, matching what a "count up" reads as. The most consequential catch: an infinite render loop between `App.jsx`'s Shell and every screen's own dependency-less publish effect. Today/Weight/Plan/Settings each publish on every render with no dependency array (a straight port of the vanilla model), and Shell subscribes globally and bumps state on any publish, unconditionally; because Shell's bump re-rendered the whole pane subtree (the active screen wasn't memoized), that re-render re-fired the screen's own publish effect, which flowed straight back to Shell and bumped again. The vanilla `broadcast.js` this is ported from relied on a subscriber's reaction being synchronous — a sibling's `render()` call, straight down the same call stack — so its "a publish raised while the queue drains is dropped" guard could catch the bounce-back; a React state update is deferred to its own commit, landing after that guard has already reset, so the loop got through unchecked. Fixed by memoizing Shell's pane subtree on identity (`panes`/`onEditSetup`/`onReset` are all stable across a bump-only re-render), so React bails out of reconciling it entirely on a bump — which only ever needed to repaint the nav glance, not the active screen.
+- **pass 46 — motion polish:** Scoped to two concrete gaps rather than a
+  broad invented pass, both flagged by name in earlier entries rather than
+  picked fresh here. **The tick acknowledgement pass 41c explicitly
+  deferred:** `.block-row__tick`'s background/border-color transition was
+  dropped under the vanilla renderer because a ticked row was a freshly
+  inserted node with its final colour already set — nothing to transition
+  from. Today's React conversion (pass 45) changed that: the row keeps its
+  DOM identity across a tap (stable `key={block.id}`), so the same
+  `--transition-control` treatment every other interactive control already
+  carries now actually fires, and the grocery checklist on Plan gets it for
+  free since it reuses the same `.block-row__tick` class on rows keyed by
+  `item.name`. **The day-total progress bar** (`.daytotal__bar-fill`, pass
+  42) gained a `width`/`background-color` transition for the same reason —
+  same node every render, width changes as `dayTotals()` changes — so the
+  bar now grows into place on a tick or a logged extra instead of jumping.
+  Both ride the existing blanket `prefers-reduced-motion` rule in
+  `tokens.css` with no extra opt-out needed. Verified with a clean
+  `npm run build`.
+- **pass 47 fix — the collapsed rail's icons were being squeezed to nothing,
+  and it gained a brand mark:** Reported against the "On hover" nav at rest:
+  the rail rendered as an empty pill and a stray sliver rather than four
+  icons. The cause was worse than clipping. A collapsed row's content box is
+  47px, but the label was only ever set to `opacity: 0` — which still
+  reserves its full 41px of layout width, plus the row's 12px gap, for 53px
+  of demand in a 47px box. The icon span is `flex: 0 1 auto` and the label
+  text won't shrink below its min-content width, so the icon absorbed the
+  entire overflow and computed to **0px wide**; `justify-content: center`
+  then centred *icon + gap + label* as one group, pushing what little was
+  left past the rail's own `overflow: hidden`. Fixed by taking the label out
+  of the flow when collapsed (`max-width: 0; overflow: hidden`) and zeroing
+  the row's gap, so the icon is the only flex item and centres on its own —
+  both untransitioned, snapping with the rail width exactly as the discrete
+  state change it belongs to, leaving the opacity/transform fade to do the
+  visible work as before. Measured live: icon 0px → 20px, centred at x=37 in
+  a 72px rail. The **wordmark gained a collapsed face** in the same pass,
+  since an empty 72px strip above the icons read as a broken header: the
+  brand button now carries a `tabbar__brand-mark` ("R", `aria-hidden` so the
+  accessible name stays "Rise") beside the full `tabbar__brand-word`, which
+  is clipped out of flow exactly as a nav label is. The two crossfade rather
+  than one leaving before the other arrives, which would blank the strip for
+  a whole `--duration-base` mid-expand, and the collapsed brand takes the
+  same 2px transparent `border-left` every nav button carries for its active
+  coral edge — without it the mark sat 2px left of the icon column below it.
+  One incidental find while verifying: a stale `rise-v35` service-worker
+  cache was serving old assets against a changed app, which is the likeliest
+  explanation for a "frozen" page reported earlier in the same session.
 - **pass 22 — closing the genuine design-system gaps:** Three items the "Still open" queue flagged as truly missing, not merely undocumented. **Focus ring:** adopted the export's canvas-gap + coral double ring, replacing the 3px 15%-alpha coral wash — `--border-focus: var(--coral-500); --focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--border-focus)`. The dark-theme override was deleted outright rather than re-specified: `--surface-canvas` already flips per theme, so the one declaration resolves correctly in both, and every one of the 21 existing `:focus-visible` call sites in `app.css` picked up the new ring for free since they all read the token, never a literal. **Breakpoints:** the 5-token scale landed as reference-only constants (`--bp-compact` 360 · `--bp-medium` 600 · `--bp-expanded` 840 · `--bp-desktop` 1024 · `--bp-wide` 1440, plus `--gutter-*`, `--panel-nav-width`, `--panel-detail-width`, `--container-app`) — correctly not wired into media queries yet, since a custom property can't drive `@media`; that wiring is phase 4's job. **Form controls:** no code change. `design-system.md` documents the existing `.field` / `.seg` system as already coherent and defers checkbox/radio/toggle/slider until a feature actually needs one, on the standing rule that unused component CSS rots. Phase 4 is now unblocked.
+- **pass 49 — the 2.0 release:** Version bumped to `2.0.0` in `appinfo.js`,
+  `package.json`, `build.gradle.kts` (+ `versionCode` 4), `tauri.conf.json`,
+  `Cargo.toml`, and `README.md`. `sw.js` `CACHE_NAME` → `rise-v35` for the
+  pass-46 CSS changes; `PRECACHE_URLS` needed no audit beyond that — pass 45
+  step 2 already stopped it naming hashed JS/CSS bundles, so it doesn't drift
+  per-pass the way the roadmap's older phase entries once worried about.
+  Pass 48 (splitting Recipes out of Plan) stays open, explicitly theoretical
+  pending a nav-shape decision, and is deferred to 2.1 rather than blocking
+  this release — phase 5's own note already marked phases 0–4 as a coherent,
+  shippable cut line, and phases 5–7 (desktop layout, visual pass, the React
+  migration, motion) round it out cleanly without it.
 
 ## v1.6.0 — shipped
 
