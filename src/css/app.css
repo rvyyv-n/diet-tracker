@@ -3118,27 +3118,34 @@
   /* The wordmark. An empty 72px strip above the icons read as a broken
      header, so the rail keeps a one-letter "R" mark where the word goes.
 
-     The brand row stays left-aligned and --space-sm-padded in BOTH states —
-     the same content x as a nav icon below it — so the "R" never moves: on
-     expand the mark fades and collapses to nothing while "Rise" unspools from
-     that exact spot, and because the word carries the same opacity +
-     translateX(-4px) fade as every nav label (the shared rule above), the
-     "ise" slides out in lockstep with them rather than the whole wordmark
-     popping into place. The border-left mirrors the transparent 2px active
-     edge every .tabbar--icons .tabbar__btn carries, so the brand's content
-     box lines up with the icon column and not 2px left of it. */
+     The mark is taken OUT OF FLOW and pinned to the content-box origin. That
+     is the whole trick, and getting it wrong is what made the word look like
+     it flew in from the right: with both spans in normal flow, shrinking the
+     mark's width from 2ch to 0 dragged the word's left edge 2ch leftward at
+     the same time it was growing, so "Rise" materialised to the right of
+     where it belonged and slid left into place. Absolutely positioned, the
+     mark occupies no inline space, the word is the only thing in flow, and
+     its left edge is nailed to the same x in both states — so growing its
+     max-width unspools "ise" rightward out of a stationary "R", which is
+     exactly what a nav label does as it comes out of its icon.
+
+     The brand row also keeps its left-aligned, --space-sm-padded position in
+     both states (no re-centring on expand), and the border-left mirrors the
+     transparent 2px active edge every .tabbar--icons .tabbar__btn carries so
+     the brand's content box lines up with the icon column below it. `left`
+     resolves against the padding box, hence the explicit --space-sm to land
+     on the content edge the word starts from. */
   .app-shell--nav-hover .tabbar__brand {
+    position: relative;
     border-left: 2px solid transparent;
   }
   .app-shell--nav-hover .tabbar__brand-mark {
     display: inline-block;
-    vertical-align: bottom;
-    max-width: 2ch;
-    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: var(--space-sm);
     opacity: 1;
-    transition:
-      max-width var(--duration-base) var(--ease-standard),
-      opacity var(--duration-base) var(--ease-standard);
+    transition: opacity var(--duration-base) var(--ease-standard);
   }
   .app-shell--nav-hover .tabbar__brand-word {
     display: inline-block;
@@ -3150,7 +3157,6 @@
   }
   .app-shell--nav-hover .tabbar:hover .tabbar__brand-mark,
   .app-shell--nav-hover .tabbar:focus-within .tabbar__brand-mark {
-    max-width: 0;
     opacity: 0;
   }
   .app-shell--nav-hover .tabbar:hover .tabbar__brand-word,
