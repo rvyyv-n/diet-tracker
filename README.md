@@ -6,25 +6,17 @@
 Screen" (mobile) or "Install app" (desktop) for the standalone, offline PWA.
 
 ```
-status: v2.0.0 built on release-2, not yet released — the bulk redesign
-built:  today checklist + phase ladder, weight trend + adjustment engine,
-        settings/about, json export/import, pwa shell (installable, offline),
-        durable storage, deployed to github pages, android apk, windows
-        installer
-1.5:    add / drop a block for the day on today, one-tap daily appetite
-        check, first-run intro splash, header polish, black app icon, and
-        an in-app update check (links the apk / installer straight to the
-        next release; no in-place install yet)
-1.6:    sticky meal rotations + a slot for the 2nd shake, past-day browsing
-        with an adherence dot strip, a weekly review card + most-skipped
-        readout, a repaired export/import round trip, time-of-day meal cues,
-        manifest shortcuts, lb / stone weight display, and dark mode
-2.0:    off-plan food + a recipe book, a weekly grocery checklist, configurable
-        overview metrics, a desktop layout with a collapsible side nav, a
-        visual polish pass, a full react + vite rewrite, and motion polish
-next:   v2.1+ — a possible recipes tab split off of plan; android pwa install
+status: v2.0.0 — the bulk redesign
+built:  fixed meal blocks + phase ladder, weight trend + adjustment engine,
+        off-plan food + recipe book, weekly grocery checklist, desktop
+        layout, dark mode, json export/import, installable offline pwa,
+        android apk + windows installer
+next:   v2.1 — a possible recipes tab split off of plan; android pwa install
         check on a device (non-blocking)
 ```
+
+Release-by-release detail lives in [`docs/CHANGELOG.md`](docs/CHANGELOG.md);
+what's still unbuilt is in [`docs/roadmap.md`](docs/roadmap.md).
 
 ## the idea
 
