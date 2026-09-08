@@ -55,9 +55,15 @@
     <script type="module" src="/src/main.jsx"></script>
     <script>
       // Register the offline service worker. Skipped on file:// where it can't run.
+      // The path is document-relative, not root-absolute: this is a plain string
+      // in an inline script, so Vite's base rewriting never touches it, and a
+      // leading "/" would look for the worker at the domain root — wrong on
+      // GitHub Pages, where the app is served from the /diet-tracker/ subpath.
+      // Relative also gives the registration the right scope on each host,
+      // since scope defaults to the directory the worker was loaded from.
       if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
         window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/sw.js").catch(() => {});
+          navigator.serviceWorker.register("sw.js").catch(() => {});
         });
       }
     </script>
