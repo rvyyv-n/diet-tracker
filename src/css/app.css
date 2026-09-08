@@ -627,6 +627,10 @@
   height: 100%;
   border-radius: inherit;
   background: var(--text-muted-soft);
+  /* Same node every render (Today.jsx only ever changes its width/class), so
+     the fill actually grows into place as a block gets ticked or food gets
+     logged, rather than jumping to the new total. */
+  transition: width var(--duration-base) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard);
 }
 .daytotal__bar-fill.is-on-track { background: var(--intake-on-track); }
 .daytotal__bar-fill.is-partial { background: var(--intake-partial); }
@@ -756,6 +760,12 @@
   background: var(--surface-canvas);
   border: var(--border-width-hairline) solid var(--border-hairline);
   border-radius: var(--radius-sm);
+  /* Pass 41c removed this under the vanilla renderer, where a ticked row was
+     a freshly-inserted node with its final colour already set — nothing for
+     the transition to run from. Today is React now and the row keeps its DOM
+     identity across a tap (stable `key={block.id}`), so the same node really
+     does flip from unchecked to checked and this now fires. */
+  transition: var(--transition-control);
 }
 .block-row__tick.is-done {
   background: var(--color-primary);
@@ -2713,12 +2723,11 @@
    ========================================================================== */
 
 /* .block-row / .block-row__tick used to carry a background/border-color
-   transition here, meant to ease a tick's colour change. It never ran: Today
-   rebuilds its whole subtree on every commit, so the ticked row is a freshly
-   inserted node with its final colour already set and nothing to transition
-   from. Dropped rather than faked — pass 45 (motion) owns the tick
-   acknowledgement deliberately, once there is a render model that can
-   actually carry a transition across the change. */
+   transition here, meant to ease a tick's colour change. It never ran: the
+   vanilla Today rebuilt its whole subtree on every commit, so the ticked row
+   was a freshly inserted node with its final colour already set and nothing
+   to transition from. Pass 46 brought it back on `.block-row__tick` itself
+   now that Today is React and the row keeps its DOM identity across a tap. */
 .block-row__name,
 .block-row__desc,
 .block-row__kcal,
@@ -2805,6 +2814,9 @@
    desktop side nav — on a phone the bar is four icons wide and a title there
    would cost a tab. */
 .tabbar__brand { display: none; }
+/* The one-letter mark only ever appears in the collapsed desktop rail (pass
+   47); every other width shows the full wordmark instead. */
+.tabbar__brand-mark { display: none; }
 /* Same deal as the wordmark: the phone's bar is four icons edge to edge and
    has nowhere to put this. It only exists on the desktop nav column. */
 .tabbar__glance { display: none; }
@@ -3063,7 +3075,7 @@
      overflow at rest. `:focus-within` above means tabbing into a collapsed
      rail expands it exactly like a hover would, so a keyboard user is never
      worse off than a mouse. */
-  .app-shell--nav-hover .tabbar__brand,
+  .app-shell--nav-hover .tabbar__brand-word,
   .app-shell--nav-hover .tabbar__label,
   .app-shell--nav-hover .tabbar__glance,
   .app-shell--nav-hover .tabbar__pin {
@@ -3073,11 +3085,11 @@
       opacity var(--duration-base) var(--ease-standard),
       transform var(--duration-base) var(--ease-standard);
   }
-  .app-shell--nav-hover .tabbar:hover .tabbar__brand,
+  .app-shell--nav-hover .tabbar:hover .tabbar__brand-word,
   .app-shell--nav-hover .tabbar:hover .tabbar__label,
   .app-shell--nav-hover .tabbar:hover .tabbar__glance,
   .app-shell--nav-hover .tabbar:hover .tabbar__pin,
-  .app-shell--nav-hover .tabbar:focus-within .tabbar__brand,
+  .app-shell--nav-hover .tabbar:focus-within .tabbar__brand-word,
   .app-shell--nav-hover .tabbar:focus-within .tabbar__label,
   .app-shell--nav-hover .tabbar:focus-within .tabbar__glance,
   .app-shell--nav-hover .tabbar:focus-within .tabbar__pin {
@@ -3085,19 +3097,94 @@
     transform: translateX(0);
   }
 
-  /* A collapsed row centres its lone icon; the expanded row (icon, then
-     label, left-aligned) is what .tabbar--icons .tabbar__btn already does at
-     240px, so hovering/focusing restores it rather than overriding it twice. */
-  .app-shell--nav-hover .tabbar--icons .tabbar__btn {
-    justify-content: center;
+  /* The wordmark's collapsed face. An empty 72px strip above the icons read
+     as a broken header, so the rail keeps a one-letter mark where the word
+     goes. The word is clipped out of the flow exactly as a nav label is —
+     `opacity: 0` alone would still reserve its width and knock the mark off
+     centre — and the two crossfade into each other rather than one vanishing
+     as the other arrives, which would leave the strip blank for a whole
+     --duration-base mid-expand. Same face and size for both, so the mark sits
+     where the wordmark's own R does and expanding reads as the word unspooling
+     from it. */
+  .app-shell--nav-hover .tabbar__brand {
+    text-align: center;
     padding-left: 0;
     padding-right: 0;
+    /* Mirrors the transparent border every .tabbar--icons .tabbar__btn carries
+       for its active-state coral edge. Without it the brand's content box
+       starts 2px left of every icon below it and the mark sits visibly off
+       the column; declaring the same border rather than a 2px padding keeps
+       the two in step if that edge ever changes width. */
+    border-left: 2px solid transparent;
+  }
+  .app-shell--nav-hover .tabbar__brand-mark {
+    display: inline-block;
+    vertical-align: bottom;
+    opacity: 1;
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+  .app-shell--nav-hover .tabbar__brand-word {
+    display: inline-block;
+    vertical-align: bottom;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .app-shell--nav-hover .tabbar:hover .tabbar__brand,
+  .app-shell--nav-hover .tabbar:focus-within .tabbar__brand {
+    text-align: left;
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
+  .app-shell--nav-hover .tabbar:hover .tabbar__brand-mark,
+  .app-shell--nav-hover .tabbar:focus-within .tabbar__brand-mark {
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+  .app-shell--nav-hover .tabbar:hover .tabbar__brand-word,
+  .app-shell--nav-hover .tabbar:focus-within .tabbar__brand-word {
+    max-width: none;
+    overflow: visible;
+  }
+
+  /* A collapsed row centres its lone icon; the expanded row (icon, then
+     label, left-aligned) is what .tabbar--icons .tabbar__btn already does at
+     240px, so hovering/focusing restores it rather than overriding it twice.
+
+     The label has to leave the flow, not just go transparent. `opacity: 0`
+     alone still reserves its full width, so `justify-content: center` was
+     centring *icon + gap + label* as one group inside a 72px row — which put
+     the icon itself off the left edge, where the rail's own `overflow:
+     hidden` clipped it away and left nothing but an empty active pill. The
+     row's gap goes with it for the same reason: gap applies between flex
+     items whatever their width, so leaving it in would offset the lone icon
+     by half of it. Both are untransitioned and snap with the rail's width,
+     matching the discrete state change the width itself already is; the
+     opacity/transform fade above is untouched and still does the visible
+     work. */
+  .app-shell--nav-hover .tabbar--icons .tabbar__btn {
+    justify-content: center;
+    gap: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .app-shell--nav-hover .tabbar--icons .tabbar__label {
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
   }
   .app-shell--nav-hover .tabbar.tabbar--icons:hover .tabbar__btn,
   .app-shell--nav-hover .tabbar.tabbar--icons:focus-within .tabbar__btn {
     justify-content: flex-start;
+    gap: var(--space-sm);
     padding-left: var(--space-sm);
     padding-right: var(--space-sm);
+  }
+  .app-shell--nav-hover .tabbar.tabbar--icons:hover .tabbar__label,
+  .app-shell--nav-hover .tabbar.tabbar--icons:focus-within .tabbar__label {
+    max-width: none;
+    overflow: visible;
   }
 }
 
