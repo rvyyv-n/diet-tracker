@@ -55,12 +55,13 @@ const SCREENS = [
   { id: "today", label: "Today", icon: "square-check-big", Component: Today },
   { id: "plan", label: "Plan", icon: "clipboard-list", Component: Plan },
   { id: "weight", label: "Weight", icon: "trending-up", Component: Weight },
-  { id: "settings", label: "Settings", icon: "sliders-horizontal", Component: Settings },
   // Desktop-only (pass 51): the recipe book gets a fifth nav item where the
   // side rail has room for one, but the phone tab bar stays four icons edge
   // to edge — the button carries `tabbar__btn--wide-only` and CSS hides it
   // below --bp-desktop, where Today → Log food → Recipes is still the way in.
+  // Sits above Settings so Settings stays the last item in the rail.
   { id: "recipes", label: "Recipes", icon: "book-open", Component: Recipes, desktopOnly: true },
+  { id: "settings", label: "Settings", icon: "sliders-horizontal", Component: Settings },
 ];
 
 const screenById = (id) => SCREENS.find((s) => s.id === id) ?? null;

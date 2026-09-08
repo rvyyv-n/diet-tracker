@@ -3174,26 +3174,21 @@
      240px, so hovering/focusing only has to restore the bits the collapse
      changed.
 
-     The centring is done with padding, not `justify-content: center`. With
-     one visible child, `center` would centre *icon + gap + label* as a group
-     once the label regained width mid-transition, walking the icon left as
-     the row opened; a fixed `padding-left` that happens to equal
-     `(rail - icon) / 2` holds the icon still and, being a length, can tween.
-     `gap` collapses to 0 for the same reason it used to — gap sits between
-     flex items whatever the second one's width, so leaving it in would
-     offset the lone icon by half of it. Both `gap` and `padding` now ease
-     over --duration-base so the icon glides the ~14px between its collapsed
-     and expanded x in step with the rail edge instead of hopping. The
-     label's width eases too (0 ↔ a real length, not `none`, or it can't
-     tween) so its opacity fade above plays over something that is actually
-     narrowing rather than a box that already snapped to zero. */
+     `padding-left` is deliberately NOT touched: the row inherits --space-sm
+     from .tabbar--icons .tabbar__btn, and in a 72px rail (less the rail's own
+     --space-sm gutter and the 2px active-edge border) --space-sm lands the
+     20px icon dead centre. Keeping it identical to the expanded row means the
+     icon does not move at all as the rail opens — only the label's width and
+     the gap behind it animate. `gap` still collapses to 0 because flex gap
+     reserves space next to a zero-width item, which would otherwise shove the
+     lone icon half a gap off centre; it (and the now-pointless right padding)
+     ease back on --duration-base so the label's left edge doesn't lurch. The
+     label's own width eases 0 ↔ a real length (not `none`, which can't tween)
+     so the opacity fade on it plays over a box that is genuinely narrowing. */
   .app-shell--nav-hover .tabbar--icons .tabbar__btn {
     gap: 0;
-    padding-left: calc((var(--panel-nav-width-collapsed) - 20px) / 2);
     padding-right: 0;
-    transition:
-      gap var(--duration-base) var(--ease-standard),
-      padding var(--duration-base) var(--ease-standard);
+    transition: gap var(--duration-base) var(--ease-standard);
   }
   .app-shell--nav-hover .tabbar--icons .tabbar__label {
     max-width: 0;
@@ -3204,7 +3199,6 @@
   .app-shell--nav-hover .tabbar.tabbar--icons:hover .tabbar__btn,
   .app-shell--nav-hover .tabbar.tabbar--icons:focus-within .tabbar__btn {
     gap: var(--space-sm);
-    padding-left: var(--space-sm);
     padding-right: var(--space-sm);
   }
   .app-shell--nav-hover .tabbar.tabbar--icons:hover .tabbar__label,
