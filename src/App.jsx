@@ -345,7 +345,13 @@ function Tabbar({ panes, onNavigate, navPref, onSetNavPref }) {
           is a button, not a span: a wordmark at the top of a nav reads as
           "home", and Today is this app's home. */}
       <button type="button" className="tabbar__brand" onClick={() => select("today")}>
-        Rise
+        {/* Two faces of the same wordmark, swapped by CSS: the collapsed rail
+            (pass 47) shows the one-letter mark where the full word cannot fit,
+            and the word itself takes over as the rail expands. The mark is
+            aria-hidden so the button's accessible name stays "Rise" in both
+            states rather than becoming "R Rise". */}
+        <span className="tabbar__brand-mark" aria-hidden="true">R</span>
+        <span className="tabbar__brand-word">Rise</span>
       </button>
       {SCREENS.map((screen) => {
         // "Current" is membership now, not equality — a multi-pane layout
