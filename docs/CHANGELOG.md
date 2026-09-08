@@ -2,6 +2,49 @@
 
 where the build is, and what each completed pass did. numbers for the plan itself live in `plan-spec.md`; design tokens in `design-system.md`.
 
+## v2.1.0 — in progress
+
+*Status — passes build on `release-2.1`, off `main`. Not merged, tagged, or
+published — the owner's call.* A small follow-on to v2: one motion fix and the
+recipe book promoted to its own screen on desktop.
+
+- **pass 50 — smoother side-rail collapse:** The hover-to-expand desktop nav
+  (pass 47) snapped between its 72px and 240px widths with no `transition` at
+  all, on the reasoning that tweening `width` forces a per-frame layout pass.
+  On mouse-out that snap read as janky — it chopped the labels, glance card
+  and pin toggle out of the DOM before their opacity/transform fade could
+  play, so the fade was never seen. The width now eases over `--duration-base`
+  `--ease-standard` both ways: the rail is `position: fixed` and the reading
+  column's gutter is reserved off `--panel-nav-width-collapsed`
+  independently, so the per-frame relayout is confined to the rail's own
+  handful of rows and the column never reflows. The nav buttons' `gap` /
+  `padding` and the label / wordmark `max-width` now tween on the same curve
+  (lengths, not `justify-content: center` or `max-width: none`, so they can
+  interpolate) — the icon glides the ~14px between its collapsed and expanded
+  x instead of hopping — and `overflow` still flips to `hidden` instantly on
+  collapse so nothing spills as the rail closes, waiting out the widen on
+  expand via a 0s-duration transition with a delay. A
+  `prefers-reduced-motion` block drops the whole rail back to the original
+  instant snap, since `tokens.css`'s blanket rule neutralises
+  `transition-duration` but not `transition-delay`. CSS only; no markup or JS
+  change.
+- **pass 51 — Recipes on the desktop nav:** The recipe book has existed since
+  pass 26 but only ever inside Today's "Log food" panel, three disclosures
+  deep — a first-class feature reachable only through another screen. It now
+  gets a fifth nav item, **Recipes** (`book-open` glyph), on the desktop side
+  rail. The phone tab bar stays four icons edge to edge: the `SCREENS` entry
+  carries `desktopOnly: true`, the button carries `tabbar__btn--wide-only`,
+  and CSS hides it below `--bp-desktop` where Today → Log food → Recipes is
+  still the way in. `launchTab()` falls back to `today` for a `?tab=recipes`
+  deep link on a narrow viewport. The new `Recipes.jsx` pane adds no new UI —
+  it mounts Today's own `ExtrasRecipeForm` (now exported) with a local copy
+  of the `recipeEditor` state slice that component reads and a `day` of
+  today, so tapping a recipe row still logs it as an extra, here always onto
+  the current day; New / Edit / rename / delete are unchanged. `sw.js`
+  `CACHE_NAME` → `rise-v37`; version to `2.1.0` across `appinfo.js`,
+  `package.json`, `build.gradle.kts` (`versionCode` 5), `tauri.conf.json`,
+  `Cargo.toml`, and `README.md`.
+
 ## v2.0.0 — build complete, awaiting release
 
 *Status — all passes built on `release-2`. Not yet merged to `main`, tagged,

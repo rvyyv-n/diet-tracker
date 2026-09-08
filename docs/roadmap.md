@@ -221,27 +221,45 @@ transition across a change (now true, since Today is React), and the
 day-total progress bar growing into place instead of jumping. Both ride the
 existing `prefers-reduced-motion` rule with no new opt-out.
 
-- [ ] **pass 48 — split Recipes out of Plan.** *(theoretical — do not build
-  without a decision)* The Plan tab currently carries three unrelated things:
+**Pass 50 is done (v2.1)** — see `CHANGELOG.md`. The pass-47 hover-to-expand
+side rail snapped its width with no transition; on mouse-out that chopped the
+revealed content out before its fade could play. The width now eases both
+ways (the rail is `position: fixed` with an independently-reserved gutter, so
+only the rail's own rows relayout, not the column), with the button
+`gap`/`padding` and label/wordmark `max-width` tweening on the same curve and
+a `prefers-reduced-motion` fallback to the old instant snap.
+
+**Pass 51 is done (v2.1) — the recipe book is now a screen.** The owner
+settled the blocking nav question for the book itself: it gets a fifth item
+on the **desktop side rail only** (`desktopOnly` in `SCREENS`, hidden below
+`--bp-desktop`), and the phone keeps its four icons with the book still
+reached through Today → Log food → Recipes. `Recipes.jsx` reuses Today's
+`ExtrasRecipeForm` rather than moving code. This does **not** close pass 48:
+the Plan-tab content split below (reference sheet, food table, meal
+rotations, and whether Plan still earns a tab) is untouched and still needs a
+decision.
+
+- [ ] **pass 48 — split the rest of Plan's reference out.** *(theoretical —
+  do not build without a decision)* The Plan tab currently carries three
+  unrelated things:
   the weekly grocery checklist, the phase target ladder, and a full reference
   sheet (meals, rotations, and a twenty-row food table). That is a long scroll
   in which the part you open daily — the groceries — sits above a wall of
   reference you read once a month.
 
-  The proposal is to cut the tab in two. **Plan** keeps what changes week to
-  week: the groceries and the target ladder. A new **Recipes** tab takes the
-  reference sheet, the meal rotations, and the food table, and becomes the
-  natural home for the recipe book that currently only exists inside Today's
-  "Log food" panel — which is the real argument for this, since the book is a
-  first-class feature reachable only through a disclosure inside another
-  screen.
+  The proposal is to cut the tab down. **Plan** keeps what changes week to
+  week: the groceries and the target ladder. The reference sheet, the meal
+  rotations, and the food table move somewhere else — the **Recipes** screen
+  that now exists (pass 51) is the obvious candidate, since it is already the
+  home of the recipe book.
 
-  What has to be settled before any of it is built:
+  What still has to be settled before it is built:
 
-  - **The nav is four items and the phone bar is four icons edge to edge.** A
-    fifth tab does not fit the shipped bar. Either something merges (Plan into
-    Today?), or the phone bar changes shape, or Recipes is reachable some other
-    way. This is the blocking question, not the content split.
+  - **Where the Recipes screen lives on a phone.** Pass 51 gave it a
+    desktop-rail item only; the phone reaches it through Today. Moving
+    once-a-month reference onto it is fine on desktop but leaves the phone
+    with reference buried two screens deep. Either that is acceptable, or the
+    phone bar has to change shape after all.
   - **Where the food table belongs.** It is reference for logging an off-plan
     extra, so it arguably follows the recipe book rather than the plan.
   - **Whether the Plan tab still earns a tab** once it is groceries plus three

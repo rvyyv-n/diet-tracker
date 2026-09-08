@@ -1583,6 +1583,11 @@
 .tabbar__btn:active { background: var(--surface-soft); }
 .tabbar__btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
+/* Desktop-only nav items (pass 51 — Recipes). The phone bar is four icons
+   edge to edge with no room for a fifth; the side rail below --bp-desktop
+   never renders, so this stays hidden until the rail does. */
+.tabbar__btn--wide-only { display: none; }
+
 
 /* -------------------------------------------------------------- weight ---
    Weekly weigh-in, the 4-week trend it feeds, and a history list.           */
@@ -2920,6 +2925,9 @@
     border-left: 2px solid transparent;
     border-radius: var(--radius-md);
   }
+
+  /* the rail has room for the fifth item the phone bar can't fit */
+  .tabbar__btn--wide-only { display: inline-flex; }
   .tabbar--icons .tabbar__label {
     font: var(--text-nav);
   }
@@ -3050,22 +3058,32 @@
     padding-left: calc(var(--panel-nav-width-collapsed) + var(--gutter-desktop) + env(safe-area-inset-left));
   }
 
-  /* The rail itself. Its width snaps between the collapsed and full figure
-     with no `transition: width` on purpose: animating width forces a layout
-     pass on every single frame, even on a `position: fixed` element that
-     visually overlaps nothing else — exactly the cost the roadmap's "animate
-     transform and opacity only" note is there to avoid. The snap itself is
-     instant and one-off; everything that reads as "sliding open" below is a
-     transform/opacity fade on the content the wider rail reveals, which the
-     compositor handles for whatever this takes without ever touching layout. */
+  /* The rail widens and narrows on an ease (pass 50). It was a bare snap
+     originally, on the reasoning that tweening `width` forces a per-frame
+     layout pass — true, but the pass is confined to this element's own
+     subtree: the rail is `position: fixed` and the reading column's gutter is
+     reserved off --panel-nav-width-collapsed independently, so the column
+     never reflows and the only thing relaid out each frame is the rail's own
+     handful of rows. On mouse-out the snap read as janky (it chopped the
+     labels/glance out before their fade could play); easing the width lets
+     the narrowing rail carry that content off-screen in step with the fade.
+     `overflow` still flips instantly to hidden on collapse (so nothing spills
+     as the rail closes) but waits out the widen on expand — a 0s transition
+     with a delay, so the value is discrete, only its timing moves. */
   .app-shell--nav-hover .tabbar {
     width: var(--panel-nav-width-collapsed);
     overflow: hidden;
+    transition:
+      width var(--duration-base) var(--ease-standard),
+      overflow 0s;
   }
   .app-shell--nav-hover .tabbar:hover,
   .app-shell--nav-hover .tabbar:focus-within {
     width: var(--panel-nav-width);
     overflow: visible;
+    transition:
+      width var(--duration-base) var(--ease-standard),
+      overflow 0s var(--duration-base);
   }
 
   /* Everything a bare icon can't carry on its own — the wordmark, a nav
@@ -3120,8 +3138,12 @@
   .app-shell--nav-hover .tabbar__brand-mark {
     display: inline-block;
     vertical-align: bottom;
+    max-width: 2ch;
+    overflow: hidden;
     opacity: 1;
-    transition: opacity var(--duration-base) var(--ease-standard);
+    transition:
+      max-width var(--duration-base) var(--ease-standard),
+      opacity var(--duration-base) var(--ease-standard);
   }
   .app-shell--nav-hover .tabbar__brand-word {
     display: inline-block;
@@ -3129,6 +3151,7 @@
     max-width: 0;
     overflow: hidden;
     white-space: nowrap;
+    transition: max-width var(--duration-base) var(--ease-standard);
   }
   .app-shell--nav-hover .tabbar:hover .tabbar__brand,
   .app-shell--nav-hover .tabbar:focus-within .tabbar__brand {
@@ -3139,52 +3162,71 @@
   .app-shell--nav-hover .tabbar:hover .tabbar__brand-mark,
   .app-shell--nav-hover .tabbar:focus-within .tabbar__brand-mark {
     max-width: 0;
-    overflow: hidden;
     opacity: 0;
   }
   .app-shell--nav-hover .tabbar:hover .tabbar__brand-word,
   .app-shell--nav-hover .tabbar:focus-within .tabbar__brand-word {
-    max-width: none;
-    overflow: visible;
+    max-width: 6rem;
   }
 
-  /* A collapsed row centres its lone icon; the expanded row (icon, then
+  /* A collapsed row keeps its lone icon centred; the expanded row (icon, then
      label, left-aligned) is what .tabbar--icons .tabbar__btn already does at
-     240px, so hovering/focusing restores it rather than overriding it twice.
+     240px, so hovering/focusing only has to restore the bits the collapse
+     changed.
 
-     The label has to leave the flow, not just go transparent. `opacity: 0`
-     alone still reserves its full width, so `justify-content: center` was
-     centring *icon + gap + label* as one group inside a 72px row — which put
-     the icon itself off the left edge, where the rail's own `overflow:
-     hidden` clipped it away and left nothing but an empty active pill. The
-     row's gap goes with it for the same reason: gap applies between flex
-     items whatever their width, so leaving it in would offset the lone icon
-     by half of it. Both are untransitioned and snap with the rail's width,
-     matching the discrete state change the width itself already is; the
-     opacity/transform fade above is untouched and still does the visible
-     work. */
+     The centring is done with padding, not `justify-content: center`. With
+     one visible child, `center` would centre *icon + gap + label* as a group
+     once the label regained width mid-transition, walking the icon left as
+     the row opened; a fixed `padding-left` that happens to equal
+     `(rail - icon) / 2` holds the icon still and, being a length, can tween.
+     `gap` collapses to 0 for the same reason it used to — gap sits between
+     flex items whatever the second one's width, so leaving it in would
+     offset the lone icon by half of it. Both `gap` and `padding` now ease
+     over --duration-base so the icon glides the ~14px between its collapsed
+     and expanded x in step with the rail edge instead of hopping. The
+     label's width eases too (0 ↔ a real length, not `none`, or it can't
+     tween) so its opacity fade above plays over something that is actually
+     narrowing rather than a box that already snapped to zero. */
   .app-shell--nav-hover .tabbar--icons .tabbar__btn {
-    justify-content: center;
     gap: 0;
-    padding-left: 0;
+    padding-left: calc((var(--panel-nav-width-collapsed) - 20px) / 2);
     padding-right: 0;
+    transition:
+      gap var(--duration-base) var(--ease-standard),
+      padding var(--duration-base) var(--ease-standard);
   }
   .app-shell--nav-hover .tabbar--icons .tabbar__label {
     max-width: 0;
     overflow: hidden;
     white-space: nowrap;
+    transition: max-width var(--duration-base) var(--ease-standard);
   }
   .app-shell--nav-hover .tabbar.tabbar--icons:hover .tabbar__btn,
   .app-shell--nav-hover .tabbar.tabbar--icons:focus-within .tabbar__btn {
-    justify-content: flex-start;
     gap: var(--space-sm);
     padding-left: var(--space-sm);
     padding-right: var(--space-sm);
   }
   .app-shell--nav-hover .tabbar.tabbar--icons:hover .tabbar__label,
   .app-shell--nav-hover .tabbar.tabbar--icons:focus-within .tabbar__label {
-    max-width: none;
-    overflow: visible;
+    max-width: 10rem;
+  }
+}
+
+/* Reduced motion: drop back to the original instant snap for the whole rail —
+   no eased width, no deferred overflow, no gliding icons. The content
+   opacity/transform fades above are already neutralised by tokens.css's
+   blanket `transition-duration: .01ms`, but that rule does not touch
+   `transition-delay`, so the deferred `overflow` flip is cleared here too. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
+  .app-shell--nav-hover .tabbar,
+  .app-shell--nav-hover .tabbar:hover,
+  .app-shell--nav-hover .tabbar:focus-within,
+  .app-shell--nav-hover .tabbar--icons .tabbar__btn,
+  .app-shell--nav-hover .tabbar--icons .tabbar__label,
+  .app-shell--nav-hover .tabbar__brand-mark,
+  .app-shell--nav-hover .tabbar__brand-word {
+    transition: none;
   }
 }
 

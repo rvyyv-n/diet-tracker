@@ -914,8 +914,11 @@ function ExtrasModeToggle({ modes, activeMode, extrasState }) {
 // --- the recipe book (Recipes tab) --------------------------------------
 
 /** The Recipes tab: the editor when one is open (pass 28), else the insert
- *  list with a "New recipe" trigger above it. */
-function ExtrasRecipeForm({ day, extrasState, setExtrasOpen, commit }) {
+ *  list with a "New recipe" trigger above it. Exported so the standalone
+ *  desktop Recipes screen (Recipes.jsx, pass 51) can mount the same book —
+ *  it hands in its own extrasState-shaped state and a `day` of today, so a
+ *  tap on a row still logs the recipe as an extra, here onto today. */
+export function ExtrasRecipeForm({ day, extrasState, setExtrasOpen, commit }) {
   return extrasState.recipeEditor ? (
     <RecipeEditorPanel extrasState={extrasState} />
   ) : (

@@ -37,6 +37,7 @@ import Today from "./Today.jsx";
 import Plan from "./Plan.jsx";
 import Weight from "./Weight.jsx";
 import Settings from "./Settings.jsx";
+import Recipes from "./Recipes.jsx";
 
 const Intro = lazy(() => import("./Intro.jsx"));
 const Welcome = lazy(() => import("./Welcome.jsx"));
@@ -55,18 +56,33 @@ const SCREENS = [
   { id: "plan", label: "Plan", icon: "clipboard-list", Component: Plan },
   { id: "weight", label: "Weight", icon: "trending-up", Component: Weight },
   { id: "settings", label: "Settings", icon: "sliders-horizontal", Component: Settings },
+  // Desktop-only (pass 51): the recipe book gets a fifth nav item where the
+  // side rail has room for one, but the phone tab bar stays four icons edge
+  // to edge — the button carries `tabbar__btn--wide-only` and CSS hides it
+  // below --bp-desktop, where Today → Log food → Recipes is still the way in.
+  { id: "recipes", label: "Recipes", icon: "book-open", Component: Recipes, desktopOnly: true },
 ];
 
 const screenById = (id) => SCREENS.find((s) => s.id === id) ?? null;
 
+/** True on a viewport wide enough for the desktop side nav (matches the
+ *  `min-width: 1024px` the tab CSS and `tabbar__btn--wide-only` key off). */
+const isWideViewport = () =>
+  typeof matchMedia === "function" && matchMedia("(min-width: 1024px)").matches;
+
 /**
  * The tab to open on launch. Normally "today"; a `?tab=weight` (or today /
- * settings) on the URL overrides it, which is how the manifest shortcuts and
- * any deep link land on a section. An unknown value falls back to "today".
+ * plan / settings / recipes) on the URL overrides it, which is how the
+ * manifest shortcuts and any deep link land on a section. An unknown value —
+ * or a desktop-only section on a phone, where its nav button is hidden —
+ * falls back to "today".
  */
 function launchTab() {
   const wanted = new URLSearchParams(location.search).get("tab");
-  return screenById(wanted) ? wanted : "today";
+  const screen = screenById(wanted);
+  if (!screen) return "today";
+  if (screen.desktopOnly && !isWideViewport()) return "today";
+  return wanted;
 }
 
 /**
@@ -361,7 +377,7 @@ function Tabbar({ panes, onNavigate, navPref, onSetNavPref }) {
           <button
             key={screen.id}
             type="button"
-            className={`tabbar__btn${current ? " is-active" : ""}`}
+            className={`tabbar__btn${screen.desktopOnly ? " tabbar__btn--wide-only" : ""}${current ? " is-active" : ""}`}
             aria-current={current ? "page" : undefined}
             onClick={() => select(screen.id)}
           >
