@@ -362,13 +362,17 @@ function Tabbar({ panes, onNavigate, navPref, onSetNavPref }) {
           is a button, not a span: a wordmark at the top of a nav reads as
           "home", and Today is this app's home. */}
       <button type="button" className="tabbar__brand" onClick={() => select("today")}>
-        {/* Two faces of the same wordmark, swapped by CSS: the collapsed rail
-            (pass 47) shows the one-letter mark where the full word cannot fit,
-            and the word itself takes over as the rail expands. The mark is
-            aria-hidden so the button's accessible name stays "Rise" in both
-            states rather than becoming "R Rise". */}
-        <span className="tabbar__brand-mark" aria-hidden="true">R</span>
-        <span className="tabbar__brand-word">Rise</span>
+        {/* One wordmark split after its first letter, not two competing
+            copies of it. The "R" is always on screen — it is the whole of
+            the mark the collapsed rail (pass 47) shows — and "ise" is the
+            part the rail clips away, revealed on expand exactly as a nav
+            label is. Splitting rather than crossfading a one-letter mark
+            against a full "Rise" is what stops the R flickering as the two
+            traded opacity over the same glyph. Together they still read as
+            "Rise", so the button's accessible name is unchanged and neither
+            span is aria-hidden. */}
+        <span className="tabbar__brand-mark">R</span>
+        <span className="tabbar__brand-word">ise</span>
       </button>
       {SCREENS.map((screen) => {
         // "Current" is membership now, not equality — a multi-pane layout

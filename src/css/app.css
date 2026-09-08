@@ -2819,9 +2819,6 @@
    desktop side nav — on a phone the bar is four icons wide and a title there
    would cost a tab. */
 .tabbar__brand { display: none; }
-/* The one-letter mark only ever appears in the collapsed desktop rail (pass
-   47); every other width shows the full wordmark instead. */
-.tabbar__brand-mark { display: none; }
 /* Same deal as the wordmark: the phone's bar is four icons edge to edge and
    has nowhere to put this. It only exists on the desktop nav column. */
 .tabbar__glance { display: none; }
@@ -3116,36 +3113,37 @@
   }
 
   /* The wordmark. An empty 72px strip above the icons read as a broken
-     header, so the rail keeps a one-letter "R" mark where the word goes.
+     header, so the collapsed rail keeps the wordmark's own first letter
+     where the word goes.
 
-     The mark is taken OUT OF FLOW and pinned to the content-box origin. That
-     is the whole trick, and getting it wrong is what made the word look like
-     it flew in from the right: with both spans in normal flow, shrinking the
-     mark's width from 2ch to 0 dragged the word's left edge 2ch leftward at
-     the same time it was growing, so "Rise" materialised to the right of
-     where it belonged and slid left into place. Absolutely positioned, the
-     mark occupies no inline space, the word is the only thing in flow, and
-     its left edge is nailed to the same x in both states — so growing its
-     max-width unspools "ise" rightward out of a stationary "R", which is
-     exactly what a nav label does as it comes out of its icon.
+     "R" and "ise" are two halves of one wordmark, not two competing copies
+     of it, and that is the whole trick — two earlier attempts got it wrong
+     in ways worth naming. Animating a separate one-letter mark's width down
+     to 0 while a full "Rise" grew beside it dragged the word's left edge
+     leftward as it arrived, so the word flew in from the right. Overlapping
+     the two and crossfading their opacity instead fixed the direction but
+     made the R visibly flicker, since two copies of the same glyph at 50%
+     alpha composite to ~75%, not 100%. Splitting the word after its first
+     letter removes both problems by construction: there is only ever one R,
+     it never animates, and "ise" is an ordinary label that clips to nothing
+     and unspools rightward out of it.
 
-     The brand row also keeps its left-aligned, --space-sm-padded position in
-     both states (no re-centring on expand), and the border-left mirrors the
+     The brand row keeps its left-aligned, --space-sm-padded position in both
+     states (no re-centring on expand), and the border-left mirrors the
      transparent 2px active edge every .tabbar--icons .tabbar__btn carries so
-     the brand's content box lines up with the icon column below it. `left`
-     resolves against the padding box, hence the explicit --space-sm to land
-     on the content edge the word starts from. */
+     the brand's content box lines up with the icon column below it. */
   .app-shell--nav-hover .tabbar__brand {
-    position: relative;
     border-left: 2px solid transparent;
   }
+  /* The mark is inert: no opacity, no width, no transition. It is the "R" of
+     the wordmark itself, so it simply stays put in both states and the word
+     beside it is the only thing that moves. Both are inline-blocks aligned by
+     `bottom` rather than baseline, because the word's `overflow: hidden`
+     makes its baseline its own bottom edge — matching that on the mark is
+     what keeps the two halves of "Rise" sitting on one line. */
   .app-shell--nav-hover .tabbar__brand-mark {
     display: inline-block;
-    position: absolute;
-    top: 0;
-    left: var(--space-sm);
-    opacity: 1;
-    transition: opacity var(--duration-base) var(--ease-standard);
+    vertical-align: bottom;
   }
   .app-shell--nav-hover .tabbar__brand-word {
     display: inline-block;
@@ -3154,10 +3152,6 @@
     overflow: hidden;
     white-space: nowrap;
     transition: max-width var(--duration-base) var(--ease-standard);
-  }
-  .app-shell--nav-hover .tabbar:hover .tabbar__brand-mark,
-  .app-shell--nav-hover .tabbar:focus-within .tabbar__brand-mark {
-    opacity: 0;
   }
   .app-shell--nav-hover .tabbar:hover .tabbar__brand-word,
   .app-shell--nav-hover .tabbar:focus-within .tabbar__brand-word {
