@@ -2,11 +2,12 @@
 
 where the build is, and what each completed pass did. numbers for the plan itself live in `plan-spec.md`; design tokens in `design-system.md`.
 
-## v2.1.0 — in progress
+## v2.1.0 — shipped
 
-*Status — passes build on `release-2.1`, off `main`. Not merged, tagged, or
-published — the owner's call.* A small follow-on to v2: one motion fix and the
-recipe book promoted to its own screen on desktop.
+*Status — released as `v2.1.0`.* Passes 50–51 built on `release-2.1`,
+fast-forwarded to `main`, tagged, and published as a GitHub Release with the
+APK + Windows installer attached. A small follow-on to v2: one motion fix and
+the recipe book promoted to its own screen on desktop.
 
 - **pass 50 — smoother side-rail collapse:** The hover-to-expand desktop nav
   (pass 47) snapped between its 72px and 240px widths with no `transition` at
@@ -17,17 +18,38 @@ recipe book promoted to its own screen on desktop.
   `--ease-standard` both ways: the rail is `position: fixed` and the reading
   column's gutter is reserved off `--panel-nav-width-collapsed`
   independently, so the per-frame relayout is confined to the rail's own
-  handful of rows and the column never reflows. The nav buttons' `gap` /
-  `padding` and the label / wordmark `max-width` now tween on the same curve
-  (lengths, not `justify-content: center` or `max-width: none`, so they can
-  interpolate) — the icon glides the ~14px between its collapsed and expanded
-  x instead of hopping — and `overflow` still flips to `hidden` instantly on
+  handful of rows and the column never reflows. The nav labels' `max-width`
+  now tweens on the same curve (a real length, not `max-width: none`, which
+  cannot interpolate) so their existing opacity + `translateX(-4px)` fade
+  finally plays over a box that is genuinely narrowing rather than one that
+  already snapped to zero. `overflow` still flips to `hidden` instantly on
   collapse so nothing spills as the rail closes, waiting out the widen on
-  expand via a 0s-duration transition with a delay. A
-  `prefers-reduced-motion` block drops the whole rail back to the original
-  instant snap, since `tokens.css`'s blanket rule neutralises
-  `transition-duration` but not `transition-delay`. CSS only; no markup or JS
-  change.
+  expand via a 0s-duration transition with a delay. A `prefers-reduced-motion`
+  block drops the whole rail back to the original instant snap, since
+  `tokens.css`'s blanket rule neutralises `transition-duration` but not
+  `transition-delay`.
+
+  Two things had to stop moving rather than move more smoothly. The **nav
+  icons** keep the `--space-sm` `padding-left` they already had in the
+  expanded row — in a 72px rail, less the rail's own gutter and the 2px
+  active-edge border, that lands a 20px icon dead centre — so the icon does
+  not shift at all as the rail opens; an earlier attempt computed the centring
+  against the full rail width instead of the button's content box and shoved
+  every icon hard against the overflow edge. The **wordmark** was the harder
+  one, and took three goes: animating a separate one-letter mark's width down
+  to 0 while a full "Rise" grew beside it dragged the word's left edge
+  leftward as it arrived, so the word appeared to fly in from the right;
+  overlapping the two and crossfading their opacity fixed the direction but
+  made the R flicker, since two copies of one glyph at 50% alpha composite to
+  ~75%, not 100%. The shipped answer is structural, not a tuning: the markup
+  splits the wordmark after its first letter, so `R` is a permanent
+  unanimated span and `ise` is an ordinary label that clips to nothing and
+  unspools rightward out of it. There is only ever one R on screen and it
+  never animates, so there is nothing left that can flicker. The two spans
+  still read "Rise", so the button's accessible name is unchanged and neither
+  needs `aria-hidden`; the global `.tabbar__brand-mark { display: none }` went
+  with the change, since `.tabbar__brand` is already `display: none` on a
+  phone and its children need no separate hide.
 - **pass 51 — Recipes on the desktop nav:** The recipe book has existed since
   pass 26 but only ever inside Today's "Log food" panel, three disclosures
   deep — a first-class feature reachable only through another screen. It now
@@ -40,16 +62,22 @@ recipe book promoted to its own screen on desktop.
   it mounts Today's own `ExtrasRecipeForm` (now exported) with a local copy
   of the `recipeEditor` state slice that component reads and a `day` of
   today, so tapping a recipe row still logs it as an extra, here always onto
-  the current day; New / Edit / rename / delete are unchanged. `sw.js`
-  `CACHE_NAME` → `rise-v37`; version to `2.1.0` across `appinfo.js`,
-  `package.json`, `build.gradle.kts` (`versionCode` 5), `tauri.conf.json`,
-  `Cargo.toml`, and `README.md`.
+  the current day; New / Edit / rename / delete are unchanged. Recipes sits
+  above Settings in `SCREENS` so Settings stays the last item in the rail. `sw.js` `CACHE_NAME` → `rise-v37`; version to `2.1.0` across
+  `appinfo.js`, `package.json`, `build.gradle.kts` (`versionCode` 5),
+  `tauri.conf.json`, `Cargo.toml`, and `README.md`.
 
-## v2.0.0 — build complete, awaiting release
+  This does **not** close roadmap pass 48. Only the recipe book moved; the
+  Plan tab's reference sheet, meal rotations and food table are untouched and
+  still need a decision on where they belong.
 
-*Status — all passes built on `release-2`. Not yet merged to `main`, tagged,
-or published — that's the owner's call.* The phased plan lives in
-`roadmap.md`.
+## v2.0.0 — shipped
+
+*Status — released as `v2.0.0` on 2026-09-08.* Passes 21–49 built on
+`release-2`, fast-forwarded to `main`, tagged, and published as a GitHub
+Release. Repo Pages was switched to the "GitHub Actions" source at the same
+time, which is what `.github/workflows/pages.yml` needed to take over the
+deploy. The phased plan lives in `roadmap.md`.
 
 - **pass 21 — the design system reconciliation:** The full Claude Design export arrived (`design-export-prompt.md` is the prompt that produced it) and proved to be the *same* source system already implemented, so palette, spacing, radii, elevation, motion, font stacks and the display/title/body type scale were byte-identical to `tokens.css` — this was additive, not a rewrite. `design-system.md` rewritten around what actually ships, gaining a **deliberate departures** table (the six places Rise knowingly differs from the export, with reasons) and a **Still open** queue of unconfirmed `PROPOSED` values. Token changes: metric roles left mono for serif (hero figure) + sans (inline), every call site already declaring `tabular-nums` — which dropped JetBrains Mono and 43KB of woff2 from the precache and re-measured `.block-row__kcal` `min-width` 88px → 72px to match the narrower face; `--text-link` coral-500 → coral-700, fixing a live ~3.0:1 AA failure on body-sized links; `--icon-button-size` 36px → 44px; new `--night-sunken`; dark elevation re-expressed as hairline outline + inner top highlight, since a black shadow is invisible on a near-black surface; and `--duration-entry` / `--transition-entry` for phase-2 sheets. `sw.js` `CACHE_NAME` → `rise-v14`. Two of the export's three flags (font CDN, icon CDN) were already solved in Rise and were dismissed as stale. Held against the export: the 44px tab bar (pass 18, device-tested), the pass-19 night ramp, coral toggles, and `--surface-overlay`'s existing meaning.
 - **pass 23 — the schema migration:** `storage.js` `SCHEMA_VERSION` 1 → 2, the

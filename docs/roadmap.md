@@ -277,23 +277,26 @@ decision.
 already stopped it naming the hashed JS/CSS bundle, so there was nothing to
 append.
 
-Everything code-side that makes v2 launchable is now built on `release-2`.
-What's left is not code:
+**v2.0.0 shipped on 2026-09-08.** `release-2` was fast-forwarded to `main`,
+tagged `v2.0.0`, and published as a GitHub Release. Both non-code blockers
+that used to sit here are closed: the repo's Pages source was switched from
+"Deploy from a branch" to "GitHub Actions" (`gh api .../pages` now reports
+`build_type: workflow`), which is what let pass 45's
+`.github/workflows/pages.yml` take over the deploy, and a follow-up hotfix
+set Vite's `base` to `"./"` after the first Actions deploy served an index
+that resolved nothing. Pass 48 shipped without, as designed.
 
-- [ ] **The Pages source switch — before `release-2` merges to `main` at
-  all**, not just at this release: switch the repo's Pages source from
-  "Deploy from a branch" to "GitHub Actions" in Settings → Pages. Pass 45
-  added `.github/workflows/pages.yml`, which builds via `npm run build` and
-  deploys `dist/`, but it only takes effect once that switch is made — until
-  then Pages keeps serving the raw repo root, which 404s on
-  `/manifest.json`, `/sw.js`, and every icon the moment `public/` lands on
-  `main`. This is a repo-settings change, not something committable — the
-  owner has to make it (or explicitly ask for it to be made via `gh`).
-- [ ] **The actual release** — merging `release-2` to `main`, tagging `v2.0.0`,
-  and publishing the GitHub Release stays the owner's call, per the standing
-  release workflow.
-- [ ] **pass 48**, above, remains open and is fine to ship without — it's
-  cuttable to 2.1 by design.
+### phase 9 — v2.1
+
+**Passes 50–51 are done, and v2.1.0 shipped** — see `CHANGELOG.md`. Two
+items, both small: the pass-47 hover rail's collapse was made to ease rather
+than snap (and, more to the point, made to stop things moving that had no
+business moving — the nav icons and the wordmark's R now hold still), and the
+recipe book was promoted out of Today's "Log food" disclosure onto its own
+**Recipes** screen, given a fifth item on the desktop side rail while the
+phone tab bar stays four icons.
+
+Nothing in v2.1 closes pass 48 below — only the recipe book moved.
 
 ## resuming on another machine
 `git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it
