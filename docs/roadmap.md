@@ -1,10 +1,13 @@
 # roadmap.md
 
+What's still unbuilt. Shipped history in brief is `docs/CHANGELOG.md`; the
+pass-by-pass detail through pass 17 is `docs/roadmap-history.md`.
+
 ## Architectural Decisions & Constraints
 
 Settled with the user and shipped — standing constraints on future work, not
 open questions. The one-line `why` is what keeps each closed; full reasoning is
-in `docs/legacy/roadmap-full-history.md`.
+in `docs/roadmap-history.md`.
 
 ```yaml
 block_times_home:
@@ -22,6 +25,12 @@ backup_round_trip:
 insight_copy_states_facts:
   decision: "the time-of-day cue and the most-skipped readout state facts, never verdicts or gamified streaks"
   why: "both sit one design slip from the guilt mechanic the never-nag principle rules out"
+never_invent_a_token:
+  decision: "anything the design export marks PROPOSED needs sign-off before it is load-bearing (export SATISFIED 2026-09-03)"
+  why: "building against assumed values is how the app drifts from the system — design-system.md already forbids it"
+animations_last:
+  decision: "motion polish and component-framework adoption come after every feature phase"
+  why: "effects applied to surfaces that aren't final have to be ported twice"
 ```
 
 ## Not doing
@@ -36,10 +45,19 @@ re-propose without a reason that wasn't already weighed:
 - **Streak count** — the classic guilt mechanic the never-nag principle rules out.
 - **Free-text day notes** — conflict with the pass-9 decision against prose.
 - **7-day appetite strip** — held. (The plan reference sheet that used to sit
-  here shipped in phase 3, pass 31 — see below.)
+  here shipped in phase 3, pass 31.)
 - **A contextual "you're short and it's late — add a shake" nudge** — follows
   plan-spec.md's own appetite tactic, but held as the closest thing to a nag on
   the list.
+- **A second desktop pane** — one pane stays the layout at every width. The
+  pass-33 multi-pane routing (`setPanes()`, `core/broadcast.js`) stays in place
+  unused rather than being ripped out.
+- **Online food lookup** (`src/js/data/food-source.js`) — a 20-entry local
+  `FOOD_DB` plus user recipes covers the feature, and `tokens.css` requires the
+  app work with no network. Revisit only if it's actually wanted.
+- **Recipe photos** — images don't fit localStorage's ~5MB budget, so a real
+  version means IndexedDB as a second storage path: new migration surface, a
+  rewritten backup format, and an export that stops being human-readable JSON.
 
 ## later
 - [ ] **Verify the in-app update check** picks up `v1.6.0` — on a v1.5.x
@@ -50,253 +68,48 @@ re-propose without a reason that wasn't already weighed:
   Non-blocking, carried since v1.0.0; do it when a device is in hand.
 - [ ] Daily meal reminders (local notifications at the best time to eat each block).
 
-## v2 — the build plan
+## v2 — shipped
 
-Scope confirmed with the owner: **all four features ship in v2** — off-plan food
-and recipes, the grocery checklist, configurable overview metrics, and the
-desktop layout. Three standing decisions shape the ordering:
+All four confirmed features shipped: off-plan food and recipes, the grocery
+checklist, configurable overview metrics, and the desktop layout. Pass-by-pass
+detail is in `CHANGELOG.md`.
 
-```yaml
-vanilla_through_v2:
-  decision: "stay vanilla ES modules for the design-system and feature phases; the build/framework call is deferred to phase 7"
-  why: "a framework migration before any user-visible feature is a rewrite of 3,000 working lines that also touches sw.js precaching, the Android WebViewAssetLoader path, and the Tauri build"
-animations_last:
-  decision: "motion polish and any component-framework adoption come last, after every feature phase"
-  why: "effects applied to surfaces that aren't final have to be ported twice; keeping them last lets them be scoped per surface"
-design_export_gate:
-  decision: "SATISFIED 2026-09-03 — but never invent a token value; anything the export marks PROPOSED needs sign-off before it is load-bearing"
-  why: "design-system.md already forbids inventing tokens silently — building against assumed values is how the app drifts from the system"
-```
+- **phase 0 — design system** ✅ passes 21–22
+- **phase 1 — off-plan food and recipes** ✅ passes 23–27 (`SCHEMA_VERSION` → 2)
+- **phase 2 — recipe book, expanded** ✅ passes 28–29 (`SCHEMA_VERSION` → 3)
+- **phase 3 — grocery checklist with weekly reset** ✅ passes 30–31; added the Plan tab
+- **phase 4 — configurable overview metrics** ✅ pass 32
+- **phase 5 — the desktop layout** ✅ passes 33, 35 — side nav above 1024px, one main pane at every width
+- **phase 6 — the visual pass** ✅ passes 41–44 — empty states, day-total bar, real PNG icons, theme-aware favicon
+- **phase 7 — motion + the framework question** ✅ pass 45 (React + Vite migration), pass 46 (tick + progress-bar motion); pass 48 below is still open
+- **phase 8 — the 2.0 release** ✅ pass 49; **v2.0.0 shipped 2026-09-08**, Pages moved to GitHub Actions
+- **phase 9 — v2.1** ✅ passes 50–51; **v2.1.0 shipped** — hover-rail easing, recipe book promoted to its own Recipes screen
 
-### phase 0 — the design system ✅ done
+### open — pass 48: split the rest of Plan's reference out
 
-**Passes 21–22 are done** — see `CHANGELOG.md`. The export landed, proved to be
-the same source system already implemented, and `design-system.md` now
-documents what ships. Pass 22 closed the three genuine gaps: the focus ring
-adopted the export's canvas-gap + coral double ring (displacing the old 15%-
-alpha wash), the five-token breakpoint scale landed as reference constants in
-`tokens.css`, and form controls were confirmed already coherent and documented
-as-is. **Phase 5 (the desktop layout) is unblocked.**
+*(theoretical — do not build without a decision)* The Plan tab currently carries
+three unrelated things: the weekly grocery checklist, the phase target ladder,
+and a full reference sheet (meals, rotations, and a twenty-row food table). The
+part you open daily — the groceries — sits above a wall of reference you read
+once a month.
 
-### phase 1 — off-plan food and recipes ✅ done
+The proposal: **Plan** keeps what changes week to week (groceries, target
+ladder). The reference sheet, meal rotations, and food table move to the
+**Recipes** screen (pass 51), already the home of the recipe book.
 
-**Passes 23–27 are done** — see `CHANGELOG.md`. `SCHEMA_VERSION` went to 2 and
-the migration ladder ran for the first time, backfilling `extras: []` onto old
-days (23); `core/extras.js` and the Today entry surface landed and `dayTotals()`
-took on bonus semantics for extras (24–25); `core/recipes.js` added the
-reusable recipe book, ordered by what you actually repeat, with Save on a
-logged extra and a one-tap Recipes tab as its two operations (26); and the
-backup round trip was extended to carry `wgt:recipes`, closing the
-`backup_round_trip` gap (27). Pass 27 also caught `core/extras.js` missing from
-the service-worker precache and fixed it (`CACHE_NAME` → `rise-v15`).
+Still to settle before it's built:
 
-**Not doing in v2:** re-introducing `src/js/data/food-source.js`. The roadmap
-holds it for "when the network path is needed", and v2 does not need it —
-`tokens.css` states the app must work with no network, and a 20-entry local
-`FOOD_DB` plus user recipes covers the feature. Revisit only if online food
-lookup is ever actually wanted.
+- **Where the Recipes screen lives on a phone.** Pass 51 gave it a desktop-rail
+  item only; the phone reaches it through Today. Moving once-a-month reference
+  onto it leaves the phone with reference buried two screens deep — either
+  that's acceptable, or the phone bar has to change shape.
+- **Where the food table belongs.** It's reference for logging an off-plan
+  extra, so it arguably follows the recipe book rather than the plan.
+- **Whether the Plan tab still earns a tab** once it's groceries plus three
+  rungs of a ladder. It might be a card on Today instead.
 
-### phase 2 — the recipe book, expanded ✅ done
-
-**Passes 28–29 are done** — see `CHANGELOG.md`. `SCHEMA_VERSION` went to 3 with
-a `MIGRATIONS[3]` step backfilling `items: [{ name, kcal, proteinG }]` onto every
-stored recipe (28); `core/recipes.js` grew `recipeTotals` / `getRecipe` /
-`createRecipe` / `updateRecipe` and the Recipes tab gained an expand-in-place
-**recipe editor** for compound recipes, rename and delete, still logging one
-extra per insert (28); and the Weight tab's weekly review card gained a
-most-logged-recipe line beside the most-skipped-block readout (29). Pass 28 also
-fixed a pre-existing `listbox` staleness in the extras "From the list" picker and
-rounded the reused `.block-row__drop` strip inside free-standing `.extras__row`
-cards. `sw.js` `CACHE_NAME` → `rise-v16`.
-
-### phase 3 — grocery checklist with weekly reset ✅ done
-
-**Passes 30–31 are done** — see `CHANGELOG.md`. The owner resolved the open
-question in favour of **scaling**: `plan.js` `GROCERY_LIST` became structured
-`{ name, qty, unit, step }` items (null `qty` = unmeasured staple) and a new
-`scaleGroceryQty` selector multiplies the Phase 2 baseline by the active phase's
-kcal ratio (30). `core/grocery.js` is a new standalone record
-(`wgt:grocery -> { weekStart, checked }`) anchored on the week's Monday via a new
-`core/dates.js` `startOfWeekISO` — a read past that Monday reads the ticks as
-empty, so the list resets itself weekly with no write until the next toggle; no
-schema bump, as the pass-23 note predicted (30). A fourth **Plan** tab
-(`clipboard-list` glyph; `?tab=plan` via the existing `launchTab()`) carries the
-aisle-grouped checklist plus a read-only **plan reference sheet** — phase
-targets, the active phase's meals with rotations, and the `FOOD_DB` table (31).
-`core/backup.js` carries `wgt:grocery` through the round trip (kept out of the
-record count); `sw.js` `CACHE_NAME` → `rise-v17`, with `plan-view.js` and
-`core/grocery.js` precached.
-
-### phase 4 — configurable overview metrics ✅ done
-
-**Pass 32 is done** — see `CHANGELOG.md`. `profile.overviewMetrics` (a
-`{ [id]: false }` map of hidden readouts, no schema bump — it merges over the
-defaults like `themePref`) now gates the day-total card's protein line and
-"remaining" line; `today.js` `totalCard()` renders each only when
-`overviewMetricShown()` is true, and a new **Overview** group in Settings draws
-one Show / Hide `.seg` per metric, reusing the pass-19 Appearance block. No new
-module, so `PRECACHE_URLS` was untouched; `sw.js` `CACHE_NAME` → `rise-v18`.
-
-### phase 5 — the desktop layout ✅ done
-
-The largest item, and a deliberate structural pass — the roadmap is explicit
-that media queries bolted onto the mobile CSS do not count. Depends on phase 0
-delivering a breakpoint scale.
-
-**Pass 33 is done** — see `CHANGELOG.md`. The routing model now holds a list of
-panes rather than one `activeTab`, and `core/broadcast.js` keeps simultaneous
-panes in step. Nothing on screen changed; the phone still mounts exactly one.
-
-**Pass 35 is done** — see `CHANGELOG.md`. The bottom tab bar becomes a left
-side nav above 1024px, the column widens from `--app-max-width` to
-`--container-app`, and hover landed scoped to
-`(hover: hover) and (pointer: fine)`. The three open calls were settled with
-the owner before building: **one main pane at 1024px** (two panes there leave
-each screen ~450px, narrower than the phone they were designed for), a nav tap
-**swaps that pane**, and `?tab=` **stays a single value**. That makes pass 35 a
-pure CSS pass with no new `setPanes()` caller — the multi-pane routing from
-pass 33 is untouched and waits for `--bp-wide`.
-
-**Open call settled: no second pane.** The owner decided against it — one pane
-stays the layout at every width, including 1440px and above, rather than
-mounting a second pane just because the space exists. The owner has other
-ideas for how the app should behave on higher-resolution displays, held
-deliberately for 2.1 rather than folded in here. The pass-33 multi-pane
-routing (`setPanes()`, `core/broadcast.js`) stays in place unused — nothing to
-rip out, it just never gets a second id passed to it in v2.
-
-**If v2 runs long, this is the cut line.** Phases 0–4 are a coherent, shippable
-release on their own; the desktop layout is the natural 2.1.
-
-### phase 6 — the visual pass ✅ done
-
-Scoped with the owner after phase 5 was designed. Everything here is polish
-over surfaces that already work, which is exactly why it sits **after** the
-desktop layout and **before** motion: the `animations_last` reasoning applies
-to static polish too. Empty states in particular have to be checked at wide
-widths, and doing them before pass 35 would have meant doing them twice.
-
-Two things were weighed and **excluded**, so don't re-propose them without a
-new reason:
-
-- **Recipe photos.** Images do not fit localStorage's ~5MB budget, so any real
-  version means adding IndexedDB as a second storage path beside `storage.js` —
-  new migration surface, a rewritten backup format, and an export that stops
-  being human-readable JSON. Not worth it for a text-first recipe book.
-- **Hover states.** Already on `design-system.md`'s open list and already noted
-  there as belonging with desktop. It folded into pass 35, not here — shipped.
-
-**Passes 41–43 are done, and the open call is settled** — see `CHANGELOG.md`.
-Pass 41 found that the roadmap's own premise was half wrong: of the four
-surfaces listed as empty, only two ever are. Today's checklist always renders
-the day's blocks and the grocery list always renders its aisles — those are at
-zero progress, not empty, and a glyph over either would have covered content
-that is already useful. So the shared `emptyState()` in `ui/dom.js` landed on
-the weight history and the recipe book only. Pass 42 added the day-total bar,
-clamped at 100% and hidden from the accessibility tree, coloured by the
-`intakeStatus()` the figure above it already uses. Pass 43 replaced the
-single-SVG icon set with real PNGs (192, 512, a 512 maskable drawn inside the
-80% safe zone, and a 180 `apple-touch-icon`) plus a monochrome SVG for themed
-icons, all generated by `tools/make-icons.py`. The **meal-block glyphs** open
-call was settled as recommended: Plan reference sheet only, keyed by block id
-in `plan-view.js`'s `BLOCK_GLYPH`. `sw.js` `CACHE_NAME` → `rise-v29`.
-
-**Pass 44 is done** — see `CHANGELOG.md`. A theme-aware favicon: `icon-dark.svg`
-is the same mark with the black tile removed and the art scaled 1.2 to fill the
-box, selected by `media="(prefers-color-scheme: dark)"` on the icon link. The
-tile was dropped rather than recoloured because a cream tile hides the white
-egg — at 16px all that survives is a pale square with an orange dot. There is
-nothing to do for the installed icons: Android themed icons already have
-`icon-mono.svg`, and neither the manifest nor `apple-touch-icon` has a
-colour-scheme mechanism to hook. The same pass stopped `sw.js` caching `dev-*`
-files, which is what had frozen a broken `dev-seed.html` in the cache and made a
-fixed syntax error look unfixed. `sw.js` `CACHE_NAME` → `rise-v30`.
-
-### phase 7 — motion, and the framework question  (last, by decision)
-
-**Pass 46 is done** — see `CHANGELOG.md`. Scoped to the two concrete gaps
-earlier passes had already named rather than a broad invented pass: the tick
-acknowledgement pass 41c deferred until Today's render model could carry a
-transition across a change (now true, since Today is React), and the
-day-total progress bar growing into place instead of jumping. Both ride the
-existing `prefers-reduced-motion` rule with no new opt-out.
-
-**Pass 50 is done (v2.1)** — see `CHANGELOG.md`. The pass-47 hover-to-expand
-side rail snapped its width with no transition; on mouse-out that chopped the
-revealed content out before its fade could play. The width now eases both
-ways (the rail is `position: fixed` with an independently-reserved gutter, so
-only the rail's own rows relayout, not the column), with the button
-`gap`/`padding` and label/wordmark `max-width` tweening on the same curve and
-a `prefers-reduced-motion` fallback to the old instant snap.
-
-**Pass 51 is done (v2.1) — the recipe book is now a screen.** The owner
-settled the blocking nav question for the book itself: it gets a fifth item
-on the **desktop side rail only** (`desktopOnly` in `SCREENS`, hidden below
-`--bp-desktop`), and the phone keeps its four icons with the book still
-reached through Today → Log food → Recipes. `Recipes.jsx` reuses Today's
-`ExtrasRecipeForm` rather than moving code. This does **not** close pass 48:
-the Plan-tab content split below (reference sheet, food table, meal
-rotations, and whether Plan still earns a tab) is untouched and still needs a
-decision.
-
-- [ ] **pass 48 — split the rest of Plan's reference out.** *(theoretical —
-  do not build without a decision)* The Plan tab currently carries three
-  unrelated things:
-  the weekly grocery checklist, the phase target ladder, and a full reference
-  sheet (meals, rotations, and a twenty-row food table). That is a long scroll
-  in which the part you open daily — the groceries — sits above a wall of
-  reference you read once a month.
-
-  The proposal is to cut the tab down. **Plan** keeps what changes week to
-  week: the groceries and the target ladder. The reference sheet, the meal
-  rotations, and the food table move somewhere else — the **Recipes** screen
-  that now exists (pass 51) is the obvious candidate, since it is already the
-  home of the recipe book.
-
-  What still has to be settled before it is built:
-
-  - **Where the Recipes screen lives on a phone.** Pass 51 gave it a
-    desktop-rail item only; the phone reaches it through Today. Moving
-    once-a-month reference onto it is fine on desktop but leaves the phone
-    with reference buried two screens deep. Either that is acceptable, or the
-    phone bar has to change shape after all.
-  - **Where the food table belongs.** It is reference for logging an off-plan
-    extra, so it arguably follows the recipe book rather than the plan.
-  - **Whether the Plan tab still earns a tab** once it is groceries plus three
-    rungs of a ladder. It might be a card on Today instead.
-
-  Sequenced last on purpose: it moves whole screens between tabs, so doing it
-  before the visual passes would mean redoing their polish on new surfaces.
-
-### phase 8 — the 2.0 release
-
-**Pass 49 is done** — see `CHANGELOG.md`. Version is `2.0.0` across
-`appinfo.js`, `package.json`, `build.gradle.kts` (`versionCode` 4),
-`tauri.conf.json`, `Cargo.toml`, and `README.md`; `sw.js` `CACHE_NAME` →
-`rise-v35`. `PRECACHE_URLS` needed no per-module audit — pass 45 step 2
-already stopped it naming the hashed JS/CSS bundle, so there was nothing to
-append.
-
-**v2.0.0 shipped on 2026-09-08.** `release-2` was fast-forwarded to `main`,
-tagged `v2.0.0`, and published as a GitHub Release. Both non-code blockers
-that used to sit here are closed: the repo's Pages source was switched from
-"Deploy from a branch" to "GitHub Actions" (`gh api .../pages` now reports
-`build_type: workflow`), which is what let pass 45's
-`.github/workflows/pages.yml` take over the deploy, and a follow-up hotfix
-set Vite's `base` to `"./"` after the first Actions deploy served an index
-that resolved nothing. Pass 48 shipped without, as designed.
-
-### phase 9 — v2.1
-
-**Passes 50–51 are done, and v2.1.0 shipped** — see `CHANGELOG.md`. Two
-items, both small: the pass-47 hover rail's collapse was made to ease rather
-than snap (and, more to the point, made to stop things moving that had no
-business moving — the nav icons and the wordmark's R now hold still), and the
-recipe book was promoted out of Today's "Log food" disclosure onto its own
-**Recipes** screen, given a fifth item on the desktop side rail while the
-phone tab bar stays four icons.
-
-Nothing in v2.1 closes pass 48 below — only the recipe book moved.
+Sequenced last on purpose: it moves whole screens between tabs, so doing it
+before the visual passes would mean redoing their polish on new surfaces.
 
 ## resuming on another machine
 `git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it

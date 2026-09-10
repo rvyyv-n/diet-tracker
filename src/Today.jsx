@@ -26,7 +26,7 @@
  *
  * The hero kcal figure in `TotalCard` uses reactbits.dev's `CountUp`
  * (`src/components/reactbits/CountUp.jsx`) — the text/number effect
- * pass-45-plan.md called for landing here, once this screen went React. It
+ * pass 45 called for landing here, once this screen went React. It
  * animates on mount and re-animates smoothly whenever the total changes
  * (ticking a block, logging food), rather than the figure just snapping.
  */

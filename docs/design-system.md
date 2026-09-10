@@ -2,9 +2,8 @@
 
 Read before building any UI.
 
-The source is the user's Claude Design system, exported in full on 2026-09-03
-(`docs/design-export-prompt.md` is the prompt that produced it). That export is
-a **marketing-site** system — cream canvas, coral accent, five components. This
+The source is the user's Claude Design system, exported in full on 2026-09-03.
+That export is a **marketing-site** system — cream canvas, coral accent, five components. This
 document is the app-facing reconciliation of it: what the source says, what Rise
 implements, and where Rise deliberately departs.
 

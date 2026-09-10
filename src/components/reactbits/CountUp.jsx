@@ -1,6 +1,6 @@
 // CountUp — from reactbits.dev (JavaScript + CSS variant), copied in
-// unmodified per pass 45's "copy-paste, not an npm package" convention (see
-// docs/pass-45-plan.md). `motion` is its one real dependency.
+// unmodified per pass 45's "copy-paste, not an npm package" convention.
+// `motion` is its one real dependency.
 import { useInView, useMotionValue, useSpring } from 'motion/react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
