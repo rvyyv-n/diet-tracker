@@ -146,7 +146,9 @@ out the scheduling and copy the other two reuse.
     shells and in any build without `VITE_PUSH_URL` (Pages reads it from the
     `PUSH_URL` Actions variable), so this ships dark until the Worker is
     deployed. Verified with a harness over the real modules and `sw.js`;
-    **not yet tried in a real browser against a live Worker.**
+    Rehearsed end to end on 2026-09-14 against the Worker under `wrangler dev`
+    (real Chrome, real FCM push, both notification texts, unsubscribe
+    deleting the record); **not yet tried against the deployed Worker.**
 - **phase 11 — desktop tray**
   - [x] pass 54 — tray, start with Windows, and reminders in the Windows
     shell. The scoping assumed pass 53 had an in-app scheduler to reuse; it

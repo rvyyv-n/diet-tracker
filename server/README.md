@@ -98,9 +98,25 @@ Everything here sits inside the free tier: 100k Worker requests/day, 100k KV
 reads and 1k KV writes/day, unlimited Cron Triggers. A single-user install uses
 96 scheduled invocations and a handful of writes a day.
 
-For local work, `npm run dev` serves the routes and `wrangler dev --test-scheduled`
-lets you fire a tick by hand; put `VAPID_PRIVATE_JWK` in `server/.dev.vars`
-(gitignored) rather than in `wrangler.toml`.
+For local work, `npm run dev` serves the routes. Put `VAPID_PUBLIC_KEY` and
+`VAPID_PRIVATE_JWK` from `npm run keys` in `server/.dev.vars` (gitignored)
+rather than in `wrangler.toml`. To fire a tick by hand, call Miniflare's
+scheduled handler with the instant to pretend it is, in epoch milliseconds:
+
+```sh
+curl "http://127.0.0.1:8787/cdn-cgi/handler/scheduled?cron=0,15,30,45+*+*+*+*&time=1789396200000"
+```
+
+That example is 14:30 UTC, which is 19:30 (Dinner) in Asia/Karachi. Use this
+rather than `/__scheduled` from `wrangler dev --test-scheduled`: that route
+ignores `time` and ticks at the real clock, which matches nothing unless it
+happens to be a block time. A tick is deduplicated per device, local date and
+time for an hour, so a second test at the same time needs a different date.
+
+This was rehearsed end to end before the first deploy (2026-09-14): a real
+Chrome subscription through FCM, the local Worker signing and sending the
+push, and the service worker showing both "Dinner · 19:30 / 700 kcal · 37 g
+protein" and the silent "Dinner — logged".
 
 Rotating the key pair invalidates every existing subscription — browsers bind a
 subscription to the key that created it — so every device has to re-subscribe.
