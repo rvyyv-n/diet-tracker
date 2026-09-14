@@ -22,6 +22,32 @@ pulls in when loaded from `file://`; the asset loader sidesteps that by
 making the bundle look like it's on a normal http(s) origin, entirely
 offline and with no permissions requested.
 
+## Meal reminders (passes 55–56)
+
+The one place the shell does more than host the page. Settings → Notifications
+→ Meal reminders is held in the shell's own SharedPreferences, not on the
+profile, and reaches it through a `RiseAndroid` JavaScript interface that
+`MainActivity` injects (see the native section of `src/js/core/reminders.js`).
+
+- **One alarm at a time.** `Reminders.kt` books the next block time with
+  `AlarmManager`. `ReminderReceiver` shows it when it fires, unless that block
+  is already logged or the alarm is over an hour late, then books the next.
+  Exact where Android allows it (`SCHEDULE_EXACT_ALARM`, granted by default on
+  12–13), otherwise allow-while-idle, which Doze can push back a few minutes.
+- **Logged state for free.** The page re-sends the same snapshot of today's
+  blocks the web service worker and the Windows shell get, after every storage
+  write. It carries each block's `done` flag, so a tick, skip or undo reaches
+  the next alarm without a bridge call of its own.
+- **Rebooking.** Alarms don't survive a reboot, an app update, or a clock or
+  timezone change; `BootReceiver` books the next one after each.
+- **Permission.** Android 13+ shows its notification prompt the first time
+  reminders are switched on. Once Android stops offering the prompt, the
+  Settings hint points to the app's system settings instead.
+
+The schedule logic (`ReminderPlan.kt`) has no Android types, so
+`ReminderPlanTest` runs on the JVM: `gradle testReleaseUnitTest`, also a CI
+step.
+
 ## Building
 
 **CI (the normal path):** `.github/workflows/android.yml` builds and signs

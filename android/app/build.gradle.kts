@@ -62,6 +62,8 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.activity:activity-ktx:1.9.0")
     implementation("androidx.webkit:webkit:1.11.0")
+    // ReminderPlanTest — the schedule logic, on the JVM.
+    testImplementation("junit:junit:4.13.2")
 }
 
 // The app has no native source of its own — it's the same web app that runs

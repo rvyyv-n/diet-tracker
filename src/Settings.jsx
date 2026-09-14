@@ -43,8 +43,8 @@ import {
   reminderState,
   enableReminders,
   disableReminders,
-  desktopSettings,
-  setDesktopSetting,
+  nativeSettings,
+  setNativeSetting,
 } from "./js/core/reminders.js";
 
 const APP_NAME = "Rise";
@@ -307,7 +307,7 @@ export default function Settings({ onEditSetup, onReset }) {
         <ProfileGroup profile={profile} />
         <AppearanceGroup profile={profile} />
         <OverviewGroup profile={profile} />
-        {reminderSupport() === "desktop" ? <DesktopNotificationsGroup /> : <NotificationsGroup />}
+        {reminderSupport() === "native" ? <NativeNotificationsGroup /> : <NotificationsGroup />}
 
         <div className="group">
           <GroupLabel icon="database">Data</GroupLabel>
@@ -473,9 +473,8 @@ function OverviewGroup({ profile }) {
  * whatever the browser says (notification permission, a live push
  * subscription), read asynchronously, so the group holds it in local state.
  *
- * Hidden outright where web push can't apply — the Windows shell has its own
- * group below (pass 54), Android's is pass 55, and a build without
- * VITE_PUSH_URL has no server
+ * Hidden outright where web push can't apply — the native shells have their
+ * own group below (passes 54–56), and a build without VITE_PUSH_URL has no server
  * to talk to. A browser without push support still shows the group, since the
  * fix (install to the Home Screen on iOS) is something the user can act on.
  */
@@ -494,7 +493,7 @@ function NotificationsGroup() {
     };
   }, [support]);
 
-  if (support === "native" || support === "unconfigured") return null;
+  if (support === "native" || support === "unavailable" || support === "unconfigured") return null;
 
   async function choose(on) {
     if (busy || (on ? state === "on" : state !== "on")) return;
@@ -549,33 +548,34 @@ function NotificationsGroup() {
 }
 
 /**
- * The Windows shell's Notifications group (pass 54): meal reminders, keep
- * running in the tray, and start with Windows, as three independent rows in
- * the Overview group's shape. The shell holds all three (see the desktop
+ * The native shells' Notifications group (passes 54–56), in the Overview
+ * group's shape. Android has one row, Meal reminders; Windows adds Keep in
+ * tray and Start with Windows. The shell holds every setting (see the native
  * section of reminders.js), so they're read once on mount and replaced with
  * whatever the shell reports back after each change.
  */
-function DesktopNotificationsGroup() {
+function NativeNotificationsGroup() {
+  const windows = detectBuild() === "windows";
   const [settings, setSettings] = useState(null);
   const [busy, setBusy] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     let live = true;
-    desktopSettings()
+    nativeSettings()
       .then((s) => live && setSettings(s))
-      .catch(() => live && setSettings({ reminders: false, tray: false, autostart: false }));
+      .catch(() => live && setSettings({}));
     return () => {
       live = false;
     };
   }, []);
 
   async function choose(key, on) {
-    if (!settings || busy || settings[key] === on) return;
+    if (!settings || busy || Boolean(settings[key]) === on) return;
     setBusy(key);
     setError(null);
     try {
-      setSettings(await setDesktopSetting(key, on));
+      setSettings(await setNativeSetting(key, on));
     } catch {
       setError(key);
     } finally {
@@ -583,27 +583,26 @@ function DesktopNotificationsGroup() {
     }
   }
 
-  const s = settings ?? { reminders: false, tray: false, autostart: false };
-  const rows = [
-    {
-      key: "reminders",
-      name: "Meal reminders",
-      hint:
-        s.reminders && !s.tray
-          ? "Only while Rise is open. Turn on Keep in tray to get them after closing the window."
-          : "A reminder at each meal time. Blocks you've already logged stay quiet.",
-    },
-    {
-      key: "tray",
-      name: "Keep in tray",
-      hint: "Closing the window hides Rise to the tray instead of quitting.",
-    },
-    {
-      key: "autostart",
-      name: "Start with Windows",
-      hint: s.tray ? "Starts quietly in the tray when you sign in." : "Opens Rise when you sign in.",
-    },
-  ];
+  const s = settings ?? {};
+  let remindersHint = windows
+    ? "A reminder at each meal time. Blocks you've already logged stay quiet."
+    : "A reminder at each meal time, even with Rise closed. Blocks you've already logged stay quiet.";
+  if (windows && s.reminders && !s.tray) {
+    remindersHint = "Only while Rise is open. Turn on Keep in tray to get them after closing the window.";
+  }
+  if (s.blocked) remindersHint = "Notifications are blocked for Rise. Allow them in Android's app settings.";
+
+  const rows = [{ key: "reminders", name: "Meal reminders", hint: remindersHint }];
+  if (windows) {
+    rows.push(
+      { key: "tray", name: "Keep in tray", hint: "Closing the window hides Rise to the tray instead of quitting." },
+      {
+        key: "autostart",
+        name: "Start with Windows",
+        hint: s.tray ? "Starts quietly in the tray when you sign in." : "Opens Rise when you sign in.",
+      },
+    );
+  }
 
   return (
     <div className="group">
@@ -624,7 +623,7 @@ function DesktopNotificationsGroup() {
               aria-busy={!settings || busy === key ? "true" : "false"}
             >
               {[true, false].map((want) => {
-                const on = settings ? s[key] === want : false;
+                const on = settings ? Boolean(s[key]) === want : false;
                 return (
                   <button
                     key={String(want)}

@@ -164,13 +164,22 @@ out the scheduling and copy the other two reuse.
     Rust side is verified by CI (`cargo test` + build). **Not yet tried on a
     real install.**
 - **phase 12 — android native alarms**
-  - [ ] pass 55 — JS↔Kotlin bridge; `AlarmManager` + `BroadcastReceiver`
-    scheduling the seven block times; a boot receiver to reschedule (alarms
-    don't survive a reboot); the `POST_NOTIFICATIONS` runtime permission
-    (Android 13+).
-  - [ ] pass 56 — logged-state sync: a bridge call on every log/skip/undo so
-    the alarm can suppress a block already handled, mirroring what the web
-    push handler gets for free from local storage.
+  - [x] pass 55 — a `RiseAndroid` JavaScript interface, and `AlarmManager`
+    booking one alarm at a time: the next block time, rebooked after it fires
+    and by `BootReceiver` after a reboot, app update, or clock/timezone change.
+    Exact where Android grants `SCHEDULE_EXACT_ALARM`, allow-while-idle
+    otherwise. The `POST_NOTIFICATIONS` prompt (13+) comes back to the page as
+    an event. The page's desktop bridge became one native bridge for both
+    shells, and the Settings group one component (Windows adds its two tray
+    rows). Same copy as web and desktop; logged blocks stay silent, as decided
+    for desktop. The status-bar icon is `icon-mono.svg`'s egg as a vector.
+  - [x] pass 56 — logged-state sync, folded into 55: the snapshot the page
+    already re-sends after every storage write carries each block's `done`
+    flag, so the receiver checks it when the alarm fires and no per-action
+    bridge call was needed.
+  - Checked in a browser against a faked `RiseAndroid` (sync on write, the
+    pending permission flow) and by CI (`ReminderPlanTest` + the APK build).
+    **Not yet tried on a real phone.**
 
 ## resuming on another machine
 `git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it

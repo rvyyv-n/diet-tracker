@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The status-bar icon for meal reminders. Android draws small notification
+  icons as a white silhouette, so this is public/assets/icon-mono.svg's egg
+  path verbatim: the egg filled, the yolk knocked out by evenOdd.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M256,124.4 A110.6,133 0 1,0 255.9,124.4 Z M256,211.2 A64.4,64.4 0 1,0 255.9,211.2 Z" />
+</vector>

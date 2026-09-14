@@ -18,9 +18,10 @@
  * `wgt:reminders` record. Like `wgt:update`, backup.js leaves it out of an
  * export: a subscription belongs to one browser, not to the data.
  *
- * The Windows shell (pass 54) reuses the snapshot but not the push: its own
- * process keeps the clock (desktop/src-tauri/src/reminders.rs), so this file
- * just hands it the snapshot after every write. See the desktop section below.
+ * The Windows and Android shells (passes 54–56) reuse the snapshot but not the
+ * push: each keeps its own clock (desktop/src-tauri/src/reminders.rs,
+ * android/.../Reminders.kt), so this file just hands it the snapshot after
+ * every write. See the native section below.
  */
 
 import { load, save, remove, onWrite } from "./storage.js";
@@ -40,23 +41,56 @@ const IDB_STORE = "kv";
 
 /* ---------------------------------------------------------------- support */
 
-// The shell's command bridge (tauri.conf.json sets withGlobalTauri), or null
-// anywhere else — including a Windows build too old to have it.
-const tauriInvoke = typeof window !== "undefined" ? (window.__TAURI__?.core?.invoke ?? null) : null;
+/**
+ * The native shell's reminder bridge, one shape for both shells, or null in a
+ * browser (and in a shell build too old to have one):
+ *   settings()     → the shell's settings object
+ *   set(key, on)   → the settings as they now stand
+ *   sync(snapshot) → hands over today's plan
+ * Windows is Tauri's command bridge (tauri.conf.json sets withGlobalTauri).
+ * Android is the `RiseAndroid` object MainActivity injects; it's synchronous,
+ * except that turning reminders on may show Android 13's permission prompt,
+ * whose answer comes back as a `rise-android-settings` event.
+ */
+const nativeBridge = (() => {
+  if (typeof window === "undefined") return null;
+  const invoke = window.__TAURI__?.core?.invoke;
+  if (invoke) {
+    return {
+      settings: () => invoke("desktop_settings"),
+      set: (key, on) => invoke("desktop_set", { key, on }),
+      sync: (snapshot) => invoke("desktop_sync", { snapshot }),
+    };
+  }
+  const android = window.RiseAndroid;
+  if (android) {
+    return {
+      settings: async () => JSON.parse(android.settings()),
+      set: (key, on) =>
+        new Promise((resolve, reject) => {
+          if (key !== "reminders") return reject(new Error(`unknown setting ${key}`));
+          const now = JSON.parse(android.setReminders(on));
+          if (!now.pending) return resolve(now);
+          window.addEventListener("rise-android-settings", (e) => resolve(e.detail), { once: true });
+        }),
+      sync: async (snapshot) => android.sync(JSON.stringify(snapshot)),
+    };
+  }
+  return null;
+})();
 
 /**
  * Whether reminders can run here:
  *   "ok"           — a browser with push, and a server configured at build time
  *   "unsupported"  — no push in this browser (includes iOS Safari before the
  *                    app is added to the Home Screen)
- *   "desktop"      — the Windows shell, which schedules its own (pass 54)
- *   "native"       — the Android shell; its reminders are pass 55, not web push
+ *   "native"       — the Windows or Android shell, which schedules its own
+ *                    (passes 54–56)
+ *   "unavailable"  — a shell build without the reminder bridge
  *   "unconfigured" — built without VITE_PUSH_URL, so there's no server to use
  */
 export function reminderSupport() {
-  const build = detectBuild();
-  if (build === "windows") return tauriInvoke ? "desktop" : "native";
-  if (build !== "web") return "native";
+  if (detectBuild() !== "web") return nativeBridge ? "native" : "unavailable";
   if (!PUSH_URL) return "unconfigured";
   if (
     typeof navigator === "undefined" ||
@@ -262,47 +296,49 @@ async function webSync() {
   if (!same) await register(sub);
 }
 
-/* ---------------------------------------------------------------- desktop */
+/* ----------------------------------------------------------------- native */
 
 /*
- * The Windows shell (pass 54). Three device settings, each held by the shell
- * rather than on the profile — they describe this install, not the plan, and
- * a backup restored on another machine shouldn't flip them:
- *   reminders — toasts at each block time
- *   tray      — closing the window hides it to the tray instead of quitting
- *   autostart — start with Windows (straight to the tray, when that's on)
- * The shell only reminds while it's running, so reminders without the tray
- * stop when the window closes; the Settings hint says so.
+ * The native shells' device settings, each held by the shell rather than on
+ * the profile — they describe this install, not the plan, and a backup
+ * restored on another device shouldn't flip them.
+ *   Windows: { reminders, tray, autostart }. Tray hides the window instead of
+ *            quitting; autostart starts with Windows (straight to the tray,
+ *            when that's on). The shell only reminds while it runs, so
+ *            reminders without the tray stop when the window closes.
+ *   Android: { reminders, blocked }. Alarms fire with the app closed;
+ *            `blocked` means Android won't show notifications for Rise.
  */
 
-/** `{ reminders, tray, autostart }`, as the shell has them. */
-export function desktopSettings() {
-  return tauriInvoke("desktop_settings");
+export function nativeSettings() {
+  return nativeBridge.settings();
 }
 
-/** Flip one setting; resolves to all three as they now stand. */
-export function setDesktopSetting(key, on) {
-  return tauriInvoke("desktop_set", { key, on });
+/** Flip one setting; resolves to the settings as they now stand. */
+export function setNativeSetting(key, on) {
+  return nativeBridge.set(key, on);
 }
 
 /**
  * Hand the shell today's snapshot. Sent whether or not reminders are on, so
- * switching them on has today's plan to work from straight away.
+ * switching them on has today's plan to work from straight away — and it
+ * carries each block's logged state, so a tick or undo reaches the shell's
+ * next alarm without a call of its own.
  */
-function desktopSync() {
-  return tauriInvoke("desktop_sync", { snapshot: buildSnapshot() });
+function nativeSync() {
+  return nativeBridge.sync(buildSnapshot());
 }
 
 /* ------------------------------------------------------------------- init */
 
 /**
  * Start following writes. Fire-and-forget from main.jsx; a no-op wherever
- * reminders can't run, so the Android shell and an unconfigured build never
- * touch IndexedDB or the network.
+ * reminders can't run, so a shell without the bridge and an unconfigured build
+ * never touch IndexedDB or the network.
  */
 export function initReminders() {
   const support = reminderSupport();
-  const sync = support === "desktop" ? desktopSync : support === "ok" ? webSync : null;
+  const sync = support === "native" ? nativeSync : support === "ok" ? webSync : null;
   if (!sync) return;
 
   let queued = false;
