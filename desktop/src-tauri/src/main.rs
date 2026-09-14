@@ -84,7 +84,12 @@ fn desktop_sync(app: AppHandle, desktop: State<Desktop>, snapshot: Snapshot) {
 fn main() {
     tauri::Builder::default()
         // First, so a second launch hands off before anything else starts.
-        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| show_main(app)))
+        // A login start finding Rise already running has nothing to show.
+        .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
+            if !args.iter().any(|a| a == HIDDEN_ARG) {
+                show_main(app);
+            }
+        }))
         .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec![HIDDEN_ARG])))
         .invoke_handler(tauri::generate_handler![desktop_settings, desktop_set, desktop_sync])
         .setup(|app| {

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Run by Tauri's `beforeBuildCommand` (see src-tauri/tauri.conf.json) right
-# before every build, from desktop/src-tauri. Mirrors what
+# Run by hand (or by desktop.yml's "Sync the web app" step) from the repo root,
+# before `cargo tauri build`. Not Tauri's `beforeBuildCommand`: that hook's
+# working directory didn't match what this relative path assumed and silently
+# broke the CI build (see desktop/README.md). Mirrors what
 # android/app/build.gradle.kts's copyWebAssets task does for the Android
 # shell: rather than keep a second copy of index.html/src/ under version
 # control where it would drift, run the real `npm run build` and sync its

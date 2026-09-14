@@ -1,7 +1,6 @@
 name: Desktop (Windows)
 
-# Builds the Tauri desktop shell described in docs/roadmap.md ("next" ->
-# "Build the executables"). Runs on windows-latest — this repo has no
+# Builds the Tauri desktop shell (desktop/README.md). Runs on windows-latest — this repo has no
 # Rust toolchain or MSVC Build Tools installed anywhere else, and Tauri's
 # Windows targets need both. Same trigger shape as android.yml: pushes
 # touching the app or the desktop project, on demand, and on publishing a

@@ -142,16 +142,24 @@ pub fn next_label(stored: &Stored, now: NaiveDateTime) -> String {
 
 /// Bring the tray's status line up to date, touching the menu only when the
 /// text actually changed.
+///
+/// The lock is released before `set_text`: from the clock thread that call
+/// waits on the main thread, and the main thread takes this same lock when a
+/// command calls in here. Holding it across the call can hang the app.
 pub fn refresh_tray(app: &AppHandle) {
     let desktop = app.state::<Desktop>();
     let label = next_label(&desktop.get(), Local::now().naive_local());
-    let mut slot = desktop.next_item.lock().unwrap();
-    if let Some((item, shown)) = slot.as_mut() {
-        if *shown != label {
-            let _ = item.set_text(&label);
-            *shown = label;
+    let item = {
+        let mut slot = desktop.next_item.lock().unwrap();
+        match slot.as_mut() {
+            Some((item, shown)) if *shown != label => {
+                *shown = label.clone();
+                item.clone()
+            }
+            _ => return,
         }
-    }
+    };
+    let _ = item.set_text(&label);
 }
 
 /// Blocks that came due in (last, now], not yet logged, and not too stale to

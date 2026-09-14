@@ -240,16 +240,13 @@ export async function disableReminders() {
 
 /* ------------------------------------------------------------------- sync */
 
-let syncQueued = false;
-
 /**
  * Bring the worker's snapshot and the server's copy up to date. Cheap when
  * nothing changed: the server is only called when the endpoint, timezone or
  * times differ from what was last sent — an add-on switched on, a phone that
  * flew somewhere, a reset that wiped `wgt:reminders`.
  */
-async function sync() {
-  syncQueued = false;
+async function webSync() {
   const sub = await currentSubscription();
   if (!sub || Notification.permission !== "granted") return;
 
@@ -263,14 +260,6 @@ async function sync() {
     sent.tz === timeZone() &&
     sent.times?.join() === times.join();
   if (!same) await register(sub);
-}
-
-function queueSync() {
-  if (syncQueued) return;
-  syncQueued = true;
-  // A tap usually writes more than one record (a day, then the profile);
-  // one sync after the burst covers them all.
-  setTimeout(() => sync().catch(() => {}), 0);
 }
 
 /* ---------------------------------------------------------------- desktop */
@@ -296,16 +285,15 @@ export function setDesktopSetting(key, on) {
   return tauriInvoke("desktop_set", { key, on });
 }
 
-let desktopQueued = false;
-
-function queueDesktopSync() {
-  if (desktopQueued) return;
-  desktopQueued = true;
-  setTimeout(() => {
-    desktopQueued = false;
-    tauriInvoke("desktop_sync", { snapshot: buildSnapshot() }).catch(() => {});
-  }, 0);
+/**
+ * Hand the shell today's snapshot. Sent whether or not reminders are on, so
+ * switching them on has today's plan to work from straight away.
+ */
+function desktopSync() {
+  return tauriInvoke("desktop_sync", { snapshot: buildSnapshot() });
 }
+
+/* ------------------------------------------------------------------- init */
 
 /**
  * Start following writes. Fire-and-forget from main.jsx; a no-op wherever
@@ -313,16 +301,22 @@ function queueDesktopSync() {
  * touch IndexedDB or the network.
  */
 export function initReminders() {
-  if (reminderSupport() === "desktop") {
-    // Synced whether or not reminders are on, so switching them on has
-    // today's plan to work from straight away.
-    onWrite((name) => {
-      if (name === "days" || name === "profile" || name === "*") queueDesktopSync();
-    });
-    queueDesktopSync();
-    return;
-  }
-  if (reminderSupport() !== "ok") return;
+  const support = reminderSupport();
+  const sync = support === "desktop" ? desktopSync : support === "ok" ? webSync : null;
+  if (!sync) return;
+
+  let queued = false;
+  const queueSync = () => {
+    if (queued) return;
+    queued = true;
+    // A tap usually writes more than one record (a day, then the profile);
+    // one sync after the burst covers them all.
+    setTimeout(() => {
+      queued = false;
+      sync().catch(() => {});
+    }, 0);
+  };
+
   onWrite((name) => {
     if (name === "days" || name === "profile" || name === "*") queueSync();
   });
