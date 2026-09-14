@@ -86,6 +86,7 @@ detail is in `CHANGELOG.md`.
 - **phase 7 — motion + the framework question** ✅ pass 45 (React + Vite migration), pass 46 (tick + progress-bar motion); pass 48 below is still open
 - **phase 8 — the 2.0 release** ✅ pass 49; **v2.0.0 shipped 2026-09-08**, Pages moved to GitHub Actions
 - **phase 9 — v2.1** ✅ passes 50–51; **v2.1.0 shipped** — hover-rail easing, recipe book promoted to its own Recipes screen
+- **phases 10–12 — v2.2** ✅ passes 52–56 — meal reminders; see below for what's left before the tag
 
 ### open — pass 48: split the rest of Plan's reference out
 
@@ -115,73 +116,29 @@ before the visual passes would mean redoing their polish on new surfaces.
 
 ## v2.2 — meal reminders
 
-Closed-app reminders at each block's nominal time (`plan.js`'s `BLOCKS[].time`),
-on every surface — scoped in full on 2026-09-12. Three independent
-workstreams, sequenced web first since it needs no native toolchain and proves
-out the scheduling and copy the other two reuse.
+Closed-app reminders at each block's time, on the web, Windows and Android.
+Passes 52–56 are done; pass-by-pass detail is in `CHANGELOG.md`.
 
-- **phase 10 — web push**
-  - [x] pass 52 — the Worker itself, in `server/`: VAPID signing on Web Crypto
-    (no `web-push` dependency — a payloadless push needs no body encryption), a
-    KV subscription store holding endpoint + timezone (+ times, from pass 53; see
-    `reminder_push_no_personal_data` above), four routes, and a quarter-hour
-    Cron Trigger that resolves each subscriber's local wall clock and fires one
-    bodiless ping per `BLOCKS` time. `BLOCKS` is imported from `plan.js`, not
-    copied. Verified against a stub KV and a stubbed `fetch`: route validation,
-    per-device times, per-timezone matching (the `:45` zones, half-hour blocks),
-    the at-least-once dedup marker, JWT signature verification, and 410
-    pruning. **Not deployed** — needs a Cloudflare account. `server/README.md`
-    has the one-time setup; until it runs there is no endpoint for pass 53 to
-    point at.
-  - [x] pass 53 — client, in `src/js/core/reminders.js`: a Settings
-    "Notifications" group (on/off, same shape as Appearance), the subscribe
-    flow, and the service worker's `push` handler. A worker can't read
-    localStorage, so the app mirrors a snapshot of today's blocks (name, time,
-    kcal, protein, ticked) into IndexedDB after every write — hooked in
-    `storage.js`, so imports and resets are covered too. Decided with the owner:
-    an unlogged block shows "Lunch · 13:30 / 630 kcal · 33 g protein"; a logged
-    one shows a soundless "Lunch — logged" instead of nothing (Chrome and Safari
-    penalise empty pushes); and the device tells the server which times to
-    ping, so switched-off add-ons get none. The group is hidden in the native
-    shells and in any build without `VITE_PUSH_URL` (Pages reads it from the
-    `PUSH_URL` Actions variable), so this ships dark until the Worker is
-    deployed. Verified with a harness over the real modules and `sw.js`;
-    Rehearsed end to end on 2026-09-14 against the Worker under `wrangler dev`
-    (real Chrome, real FCM push, both notification texts, unsubscribe
-    deleting the record); **not yet tried against the deployed Worker.**
-- **phase 11 — desktop tray**
-  - [x] pass 54 — tray, start with Windows, and reminders in the Windows
-    shell. The scoping assumed pass 53 had an in-app scheduler to reuse; it
-    doesn't (web reminders are server-pushed, and the group was hidden in the
-    shells), so the clock lives in Rust (`desktop/src-tauri/src/reminders.rs`)
-    and the page hands it the pass 53 snapshot after every write. Decided with
-    the owner: three independent switches (Meal reminders, Keep in tray, Start
-    with Windows), and a logged block stays silent — the web's "— logged"
-    notice only exists to dodge browser push penalties. Added on top: a
-    single-instance lock (autostart + a manual launch would double reminders),
-    a "Next: Lunch · 13:30" line in the tray menu, catch-up for a block slept
-    through within the hour, and a one-time "still running in the tray" toast.
-    Toasts use `tauri-winrt-notification` rather than the plugin, for
-    click-to-open. The UI was checked in a browser against a mocked bridge; the
-    Rust side is verified by CI (`cargo test` + build). **Not yet tried on a
-    real install.**
-- **phase 12 — android native alarms**
-  - [x] pass 55 — a `RiseAndroid` JavaScript interface, and `AlarmManager`
-    booking one alarm at a time: the next block time, rebooked after it fires
-    and by `BootReceiver` after a reboot, app update, or clock/timezone change.
-    Exact where Android grants `SCHEDULE_EXACT_ALARM`, allow-while-idle
-    otherwise. The `POST_NOTIFICATIONS` prompt (13+) comes back to the page as
-    an event. The page's desktop bridge became one native bridge for both
-    shells, and the Settings group one component (Windows adds its two tray
-    rows). Same copy as web and desktop; logged blocks stay silent, as decided
-    for desktop. The status-bar icon is `icon-mono.svg`'s egg as a vector.
-  - [x] pass 56 — logged-state sync, folded into 55: the snapshot the page
-    already re-sends after every storage write carries each block's `done`
-    flag, so the receiver checks it when the alarm fires and no per-action
-    bridge call was needed.
-  - Checked in a browser against a faked `RiseAndroid` (sync on write, the
-    pending permission flow) and by CI (`ReminderPlanTest` + the APK build).
-    **Not yet tried on a real phone.**
+- **phase 10 — web push** ✅ passes 52–53 — Cloudflare Worker + service worker
+- **phase 11 — desktop tray** ✅ pass 54 — Rust clock, tray, start with Windows
+- **phase 12 — android native alarms** ✅ passes 55–56 — `AlarmManager`, logged state via the snapshot
+
+### before tagging v2.2.0
+
+- [ ] **Deploy the reminder Worker** *(owner)* — `server/README.md` →
+  Deploying: KV namespaces, VAPID keys, `wrangler deploy`, `ALLOWED_ORIGIN` set
+  to the Pages URL, then the `PUSH_URL` Actions variable. Without it the web
+  build ships with Notifications hidden.
+- [ ] **Web push against the deployed Worker** — subscribe from the Pages
+  preview and fire a real tick. The local rehearsal already passed, so this
+  confirms the deploy rather than the code.
+- [ ] **A reminder toast from the installed Windows build** — the one-time
+  tray toast, hide-to-tray and single-instance were checked on 2026-09-14; a
+  real block-time reminder and click-to-open are still to see, and Start with
+  Windows needs a sign-in.
+- [ ] **Android reminders on a phone** — the permission prompt, a reminder
+  arriving with the app closed, and one surviving a reboot. Needs a device in
+  hand; could slip to `later` if the owner ships without it.
 
 ## resuming on another machine
 `git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it

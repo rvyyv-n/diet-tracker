@@ -6,12 +6,12 @@
 Screen" (mobile) or "Install app" (desktop) for the standalone, offline PWA.
 
 ```
-status: v2.1.0 — recipes on the desktop nav, smoother side-rail motion
+status: v2.2.0 — meal reminders on the web, Windows and Android
 built:  fixed meal blocks + phase ladder, weight trend + adjustment engine,
         off-plan food + recipe book (its own screen on desktop), weekly
         grocery checklist, desktop layout, dark mode, json export/import,
         installable offline pwa, android apk + windows installer
-next:   android pwa install check on a device (non-blocking)
+next:   device checks of the reminders; android pwa install check (non-blocking)
 ```
 
 Release-by-release detail lives in [`docs/CHANGELOG.md`](docs/CHANGELOG.md);

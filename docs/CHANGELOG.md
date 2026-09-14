@@ -2,6 +2,102 @@
 
 where the build is, and what each completed pass did. numbers for the plan itself live in `plan-spec.md`; design tokens in `design-system.md`.
 
+## v2.2.0 — shipped
+
+*Status — staged on `release-2.2`, not yet tagged.* Passes 52–56 built on
+`release-2.2`. Before the tag: the reminder Worker is deployed and checked
+against a real subscription, then `main` is fast-forwarded, tagged, and
+published as a GitHub Release with the APK + Windows installer attached. One
+feature across three surfaces: meal reminders at each block's time, with the
+app closed.
+
+- **pass 52 — the reminder push Worker:** Closed-app reminders on the web need
+  a server, and this is the only thing in Rise that talks to one, so it was
+  kept as narrow as a push service can be. `server/` is one Cloudflare Worker,
+  one KV namespace and a quarter-hour Cron Trigger. A record is a push
+  endpoint, an IANA timezone and the clock times to ping; the push itself
+  carries no payload at all, which is also why VAPID signing is forty lines of
+  Web Crypto rather than the `web-push` package — with no body there is
+  nothing to aes128gcm-encrypt. Quarter-hour rather than half-hour because a
+  handful of zones sit at `:45`, and fifteen minutes is the coarsest tick that
+  lines up with a block time in every one of them. Each tick resolves the wall
+  clock once per distinct timezone, so the common case — nothing due — costs a
+  single KV list. Cron Triggers are at-least-once, so a `fired:` marker keyed
+  by device, local date and time makes a retried tick harmless, and a 404/410
+  from the push service deletes the record. `BLOCKS` is imported from
+  `plan.js` rather than copied, so a block time that moves in the plan moves on
+  the server at the next deploy. The constraint that keeps diet data off the
+  server is recorded as `reminder_push_no_personal_data` in the roadmap.
+
+- **pass 53 — web push, the client half:** The server knows when, never what,
+  so the service worker has to decide what a push says — and a worker cannot
+  read localStorage. `reminders.js` therefore mirrors a small snapshot of
+  today's blocks (name, time, kcal, protein, ticked) into IndexedDB after every
+  write, plus a `fresh` copy for a date the app hasn't been opened on. The hook
+  sits in `storage.js` rather than in the screens, so a backup import and a
+  reset resync as well. Three copy decisions were taken with the owner. An
+  unlogged block reads "Lunch · 13:30 / 630 kcal · 33 g protein". A logged one
+  still shows a soundless "Lunch — logged", because a push that shows nothing
+  is punished — Chrome posts its own generic notice and Safari revokes the
+  subscription after a few. And the device tells the server which times to
+  ping, so a switched-off add-on isn't pinged at all rather than pinged into
+  silence. The Settings group is hidden in any build without `VITE_PUSH_URL`
+  (Pages reads it from the `PUSH_URL` Actions variable), so the feature ships
+  dark until the Worker exists. Before deploying, the whole path was rehearsed
+  against the Worker under `wrangler dev`: a real Chrome subscription through
+  FCM, the Worker signing and sending, both notification texts, and turning
+  reminders off deleting the record. That rehearsal also found the README's
+  test instructions wrong — wrangler's `/__scheduled` ignores the time you
+  give it, so a hand-fired tick only matched a block if the real clock
+  happened to be on one; the README now points at Miniflare's scheduled
+  handler.
+
+- **pass 54 — tray, start with Windows, and reminders in the desktop shell:**
+  The scoping assumed pass 53 left an in-app scheduler the Windows shell could
+  keep running with its window hidden. It didn't — web reminders are pushed
+  from the server, and the group was hidden in the shells — so the desktop
+  clock is new, and it lives in Rust rather than the page: WebView2 throttles
+  timers in a hidden window, and a login start may never show the window at
+  all. The page hands the shell the same snapshot the service worker gets.
+  The owner chose three independent switches over tying tray and autostart to
+  the reminder toggle: Meal reminders, Keep in tray, and Start with Windows,
+  which launches with `--hidden` and goes straight to the tray when there is a
+  tray to come back to. A logged block stays silent here, since the web's
+  "— logged" notice only exists to dodge browser penalties. Added on top: a
+  single-instance lock, because a login start plus a manual launch would
+  otherwise run two clocks and double every reminder; a "Next: Lunch · 13:30"
+  line in the tray menu; catch-up for a block slept through within the hour;
+  and a one-time "Rise is still running" toast the first time closing the
+  window doesn't quit. Toasts go through `tauri-winrt-notification` rather than
+  `tauri-plugin-notification`, whose desktop side can't report a click, and a
+  reminder that can't open the app it is reminding you about is half a
+  feature. A review pass before shipping found a real hang: the clock thread
+  held the tray-label lock while waiting on the main thread, which a command
+  from the page could be blocked on in the same instant. CI builds and tests
+  the shell (`cargo test`), and the installed build was checked on a PC:
+  toasts arrive under the app's own identity, closing hides to the tray, a
+  `--hidden` launch stays quiet, and a second launch surfaces the running
+  window.
+
+- **passes 55–56 — reminders in the Android shell:** One alarm at a time
+  rather than seven: `Reminders.kt` books the next block time with
+  `AlarmManager`, and when it fires `ReminderReceiver` shows the block and
+  books the one after. Exact where Android grants `SCHEDULE_EXACT_ALARM`
+  (12–13 by default), allow-while-idle otherwise, which Doze can push back a
+  few minutes — acceptable for a meal, and it avoids asking for a special
+  permission most users would have to dig for. Alarms don't survive a reboot,
+  an app update or a clock change, so a `BootReceiver` rebooks after each.
+  The page reaches the shell through a `RiseAndroid` JavaScript interface, and
+  Android 13's notification prompt answers back to the page as an event.
+  Pass 56 was scoped as a bridge call on every log, skip and undo, so an alarm
+  could stay quiet for a block already handled. It folded into 55 instead: the
+  snapshot the page already re-sends after every write carries each block's
+  logged state, so the receiver simply checks it when the alarm fires. The
+  schedule logic has no Android types, so `ReminderPlanTest` runs on the JVM
+  in CI. With a second shell on the same pattern, the page's desktop bridge
+  became one native bridge and the Settings group one component, with Windows
+  adding its two tray rows.
+
 ## v2.1.0 — shipped
 
 *Status — released as `v2.1.0`.* Passes 50–51 built on `release-2.1`,
