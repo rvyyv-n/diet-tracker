@@ -69,6 +69,10 @@ re-propose without a reason that wasn't already weighed:
 - [ ] **Android PWA verification** — the browser-installed path (install /
   standalone / persistence) on a real Android device, from the Pages URL.
   Non-blocking, carried since v1.0.0; do it when a device is in hand.
+- [ ] **Web push against the deployed Worker** — a live-site subscription
+  reached the Worker's KV on 2026-09-15; a push from a real cron tick is still
+  to see. The local rehearsal passed end to end, so this confirms the deploy.
+- [ ] **Start with Windows** — needs a sign-in to see Rise come up in the tray.
 - [ ] **Android reminders on a phone** — the permission prompt, a reminder
   arriving with the app closed, and one surviving a reboot. Slipped from the
   v2.2.0 checklist by the owner; do it when a device is in hand.
@@ -89,7 +93,7 @@ detail is in `CHANGELOG.md`.
 - **phase 7 — motion + the framework question** ✅ pass 45 (React + Vite migration), pass 46 (tick + progress-bar motion); pass 48 below is still open
 - **phase 8 — the 2.0 release** ✅ pass 49; **v2.0.0 shipped 2026-09-08**, Pages moved to GitHub Actions
 - **phase 9 — v2.1** ✅ passes 50–51; **v2.1.0 shipped** — hover-rail easing, recipe book promoted to its own Recipes screen
-- **phases 10–12 — v2.2** ✅ passes 52–56 — meal reminders; see below for what's left before the tag
+- **phases 10–12 — v2.2** ✅ passes 52–56; **v2.2.0 shipped 2026-09-15** — meal reminders on the web, Windows and Android
 
 ### open — pass 48: split the rest of Plan's reference out
 
@@ -116,28 +120,6 @@ Still to settle before it's built:
 
 Sequenced last on purpose: it moves whole screens between tabs, so doing it
 before the visual passes would mean redoing their polish on new surfaces.
-
-## v2.2 — meal reminders
-
-Closed-app reminders at each block's time, on the web, Windows and Android.
-Passes 52–56 are done; pass-by-pass detail is in `CHANGELOG.md`.
-
-- **phase 10 — web push** ✅ passes 52–53 — Cloudflare Worker + service worker
-- **phase 11 — desktop tray** ✅ pass 54 — Rust clock, tray, start with Windows
-- **phase 12 — android native alarms** ✅ passes 55–56 — `AlarmManager`, logged state via the snapshot
-
-### before tagging v2.2.0
-
-- [x] **Deploy the reminder Worker** *(owner)* — deployed 2026-09-15 to
-  `https://rise-reminders.rvyyv-n.workers.dev`, `ALLOWED_ORIGIN` locked to the
-  Pages origin, `PUSH_URL` Actions variable set.
-- [ ] **Web push against the deployed Worker** — subscribe from the Pages
-  preview and fire a real tick. The local rehearsal already passed, so this
-  confirms the deploy rather than the code.
-- [ ] **A reminder toast from the installed Windows build** — the one-time
-  tray toast, hide-to-tray, single-instance and a real block-time reminder
-  (Dinner · 19:30 / 700 kcal · 37 g protein) were all seen on 2026-09-14;
-  click-to-open is still to see, and Start with Windows needs a sign-in.
 
 ## resuming on another machine
 `git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it

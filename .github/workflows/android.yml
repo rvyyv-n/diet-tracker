@@ -50,6 +50,11 @@ jobs:
 
       - name: Set up the Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # The default also asks for the legacy `tools` package, which newer
+          # runner images' sdkmanager can't find — failing the step. Gradle
+          # fetches the platform it needs on its own.
+          packages: platform-tools
 
       - name: Install librsvg (rasterises public/assets/icon.svg for the launcher icon)
         run: sudo apt-get update && sudo apt-get install -y librsvg2-bin

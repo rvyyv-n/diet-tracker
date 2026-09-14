@@ -4,12 +4,13 @@ where the build is, and what each completed pass did. numbers for the plan itsel
 
 ## v2.2.0 — shipped
 
-*Status — staged on `release-2.2`, not yet tagged.* Passes 52–56 built on
-`release-2.2`. Before the tag: the reminder Worker is deployed and checked
-against a real subscription, then `main` is fast-forwarded, tagged, and
-published as a GitHub Release with the APK + Windows installer attached. One
-feature across three surfaces: meal reminders at each block's time, with the
-app closed.
+*Status — released as `v2.2.0` on 2026-09-15.* Passes 52–56 built on
+`release-2.2`; the reminder Worker was deployed to Cloudflare, the desktop
+reminder toast and click-to-open were seen on the installed Windows build,
+then `main` was fast-forwarded, tagged, and published as a GitHub Release with
+the APK + Windows installer attached. The Android phone check slipped to
+`later`. One feature across three surfaces: meal reminders at each block's
+time, with the app closed.
 
 - **pass 52 — the reminder push Worker:** Closed-app reminders on the web need
   a server, and this is the only thing in Rise that talks to one, so it was
