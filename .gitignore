@@ -71,3 +71,8 @@ CLAUDE.md
 # dev-only, untracked
 dev-seed.html
 vite-dev.log
+
+# ---- Reminder Worker -------------------------------------------------
+# wrangler local secrets (the VAPID private key). Never committed.
+server/.dev.vars
+server/.wrangler/

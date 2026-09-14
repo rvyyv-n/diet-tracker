@@ -1,0 +1,46 @@
+# wrangler.toml — the Rise reminder push service.
+#
+# One Worker, one KV namespace, one Cron Trigger. Everything here is inside
+# Cloudflare's free tier (100k Worker requests/day, 100k KV reads + 1k KV
+# writes/day, unlimited Cron Triggers); a single-user install uses a rounding
+# error of it.
+#
+# Before the first deploy:
+#   1. npm install                       (in this directory)
+#   2. npx wrangler kv namespace create SUBS
+#      npx wrangler kv namespace create SUBS --preview
+#      -> paste the two ids below
+#   3. node tools/gen-vapid.mjs
+#      -> public key goes in [vars], private JWK goes in as a secret:
+#         npx wrangler secret put VAPID_PRIVATE_JWK
+#   4. npx wrangler deploy
+
+name = "rise-reminders"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+# Half-hour granularity is not enough: a handful of IANA zones sit at :45
+# (Asia/Kathmandu, Pacific/Chatham), and every UTC offset in the database is a
+# multiple of 15 minutes. Firing on the quarter hour is the coarsest schedule
+# that can still line up with a block time in *every* timezone. Ticks that
+# match nothing exit after one KV list.
+[triggers]
+crons = ["0,15,30,45 * * * *"]
+
+[[kv_namespaces]]
+binding = "SUBS"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_KV_PREVIEW_ID"
+
+[vars]
+# The VAPID subject: a mailto: or https: URL a push service can use to contact
+# the sender. Not sent to the browser, not stored per subscriber.
+VAPID_SUBJECT = "mailto:REPLACE_WITH_CONTACT_EMAIL"
+
+# The VAPID public key (base64url, uncompressed P-256 point). Public by
+# definition — the client fetches it from GET /vapid-public-key.
+VAPID_PUBLIC_KEY = "REPLACE_WITH_VAPID_PUBLIC_KEY"
+
+# The one origin allowed to call /subscribe. Set to the Pages URL on deploy;
+# "*" is only sensible while testing against a local `npm run dev`.
+ALLOWED_ORIGIN = "*"
