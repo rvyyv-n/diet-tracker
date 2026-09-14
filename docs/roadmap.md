@@ -69,6 +69,9 @@ re-propose without a reason that wasn't already weighed:
 - [ ] **Android PWA verification** — the browser-installed path (install /
   standalone / persistence) on a real Android device, from the Pages URL.
   Non-blocking, carried since v1.0.0; do it when a device is in hand.
+- [ ] **Android reminders on a phone** — the permission prompt, a reminder
+  arriving with the app closed, and one surviving a reboot. Slipped from the
+  v2.2.0 checklist by the owner; do it when a device is in hand.
 
 ## v2 — shipped
 
@@ -135,9 +138,6 @@ Passes 52–56 are done; pass-by-pass detail is in `CHANGELOG.md`.
   tray toast, hide-to-tray, single-instance and a real block-time reminder
   (Dinner · 19:30 / 700 kcal · 37 g protein) were all seen on 2026-09-14;
   click-to-open is still to see, and Start with Windows needs a sign-in.
-- [ ] **Android reminders on a phone** — the permission prompt, a reminder
-  arriving with the app closed, and one surviving a reboot. Needs a device in
-  hand; could slip to `later` if the owner ships without it.
 
 ## resuming on another machine
 `git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it
