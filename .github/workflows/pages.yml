@@ -31,6 +31,11 @@ jobs:
           node-version: "24"
       - run: npm ci
       - run: npm run build
+        env:
+          # The reminder server's URL (server/, pass 52), from the repo's
+          # Actions variables. Unset, the build ships with the Notifications
+          # group hidden — see reminderSupport() in src/js/core/reminders.js.
+          VITE_PUSH_URL: ${{ vars.PUSH_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

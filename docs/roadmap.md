@@ -31,6 +31,9 @@ never_invent_a_token:
 animations_last:
   decision: "motion polish and component-framework adoption come after every feature phase"
   why: "effects applied to surfaces that aren't final have to be ported twice"
+reminder_push_no_personal_data:
+  decision: "the web push server stores only a subscription endpoint, timezone, and the bare clock times to ping — never meal names, plan or log data"
+  why: "closed-app web reminders need a server, but the no-accounts/no-network line still holds for actual diet data — the service worker decides what to show at delivery time from a local copy of today's plan. The times were added in pass 53: a ping for a switched-off add-on would reach a worker with nothing to show, and browsers penalise a push that shows no notification"
 ```
 
 ## Not doing
@@ -66,7 +69,6 @@ re-propose without a reason that wasn't already weighed:
 - [ ] **Android PWA verification** — the browser-installed path (install /
   standalone / persistence) on a real Android device, from the Pages URL.
   Non-blocking, carried since v1.0.0; do it when a device is in hand.
-- [ ] Daily meal reminders (local notifications at the best time to eat each block).
 
 ## v2 — shipped
 
@@ -110,6 +112,54 @@ Still to settle before it's built:
 
 Sequenced last on purpose: it moves whole screens between tabs, so doing it
 before the visual passes would mean redoing their polish on new surfaces.
+
+## v2.2 — meal reminders
+
+Closed-app reminders at each block's nominal time (`plan.js`'s `BLOCKS[].time`),
+on every surface — scoped in full on 2026-09-12. Three independent
+workstreams, sequenced web first since it needs no native toolchain and proves
+out the scheduling and copy the other two reuse.
+
+- **phase 10 — web push**
+  - [x] pass 52 — the Worker itself, in `server/`: VAPID signing on Web Crypto
+    (no `web-push` dependency — a payloadless push needs no body encryption), a
+    KV subscription store holding endpoint + timezone (+ times, from pass 53; see
+    `reminder_push_no_personal_data` above), four routes, and a quarter-hour
+    Cron Trigger that resolves each subscriber's local wall clock and fires one
+    bodiless ping per `BLOCKS` time. `BLOCKS` is imported from `plan.js`, not
+    copied. Verified against a stub KV and a stubbed `fetch`: route validation,
+    per-device times, per-timezone matching (the `:45` zones, half-hour blocks),
+    the at-least-once dedup marker, JWT signature verification, and 410
+    pruning. **Not deployed** — needs a Cloudflare account. `server/README.md`
+    has the one-time setup; until it runs there is no endpoint for pass 53 to
+    point at.
+  - [x] pass 53 — client, in `src/js/core/reminders.js`: a Settings
+    "Notifications" group (on/off, same shape as Appearance), the subscribe
+    flow, and the service worker's `push` handler. A worker can't read
+    localStorage, so the app mirrors a snapshot of today's blocks (name, time,
+    kcal, protein, ticked) into IndexedDB after every write — hooked in
+    `storage.js`, so imports and resets are covered too. Decided with the owner:
+    an unlogged block shows "Lunch · 13:30 / 630 kcal · 33 g protein"; a logged
+    one shows a soundless "Lunch — logged" instead of nothing (Chrome and Safari
+    penalise empty pushes); and the device tells the server which times to
+    ping, so switched-off add-ons get none. The group is hidden in the native
+    shells and in any build without `VITE_PUSH_URL` (Pages reads it from the
+    `PUSH_URL` Actions variable), so this ships dark until the Worker is
+    deployed. Verified with a harness over the real modules and `sw.js`;
+    **not yet tried in a real browser against a live Worker.**
+- **phase 11 — desktop tray**
+  - [ ] pass 54 — Tauri tray/background mode: start on login, hide-to-tray
+    instead of quitting, `tauri-plugin-notification` wired in. The in-app
+    scheduler from pass 53 keeps running while the window's hidden — no
+    separate native scheduling needed here.
+- **phase 12 — android native alarms**
+  - [ ] pass 55 — JS↔Kotlin bridge; `AlarmManager` + `BroadcastReceiver`
+    scheduling the seven block times; a boot receiver to reschedule (alarms
+    don't survive a reboot); the `POST_NOTIFICATIONS` runtime permission
+    (Android 13+).
+  - [ ] pass 56 — logged-state sync: a bridge call on every log/skip/undo so
+    the alarm can suppress a block already handled, mirroring what the web
+    push handler gets for free from local storage.
 
 ## resuming on another machine
 `git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it

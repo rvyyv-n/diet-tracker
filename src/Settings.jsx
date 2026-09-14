@@ -38,6 +38,7 @@ import { humanDate, todayISO } from "./js/core/dates.js";
 import { APP_VERSION, REPO_URL } from "./js/core/appinfo.js";
 import { checkForUpdate, updateStatus, detectBuild } from "./js/core/updates.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
+import { reminderSupport, reminderState, enableReminders, disableReminders } from "./js/core/reminders.js";
 
 const APP_NAME = "Rise";
 
@@ -299,6 +300,7 @@ export default function Settings({ onEditSetup, onReset }) {
         <ProfileGroup profile={profile} />
         <AppearanceGroup profile={profile} />
         <OverviewGroup profile={profile} />
+        <NotificationsGroup />
 
         <div className="group">
           <GroupLabel icon="database">Data</GroupLabel>
@@ -453,6 +455,86 @@ function OverviewGroup({ profile }) {
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Meal reminders on/off (pass 53), same name + hint + full-width segment as
+ * Appearance. Unlike the groups above, its state isn't on the profile: it is
+ * whatever the browser says (notification permission, a live push
+ * subscription), read asynchronously, so the group holds it in local state.
+ *
+ * Hidden outright where web push can't apply — the native shells get their own
+ * reminders in passes 54–55, and a build without VITE_PUSH_URL has no server
+ * to talk to. A browser without push support still shows the group, since the
+ * fix (install to the Home Screen on iOS) is something the user can act on.
+ */
+function NotificationsGroup() {
+  const support = reminderSupport();
+  const [state, setState] = useState(support === "ok" ? "loading" : support);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (support !== "ok") return;
+    let live = true;
+    reminderState().then((s) => live && setState(s)).catch(() => live && setState("off"));
+    return () => {
+      live = false;
+    };
+  }, [support]);
+
+  if (support === "native" || support === "unconfigured") return null;
+
+  async function choose(on) {
+    if (busy || (on ? state === "on" : state !== "on")) return;
+    setBusy(true);
+    setError(false);
+    try {
+      setState(await (on ? enableReminders() : disableReminders()));
+    } catch {
+      setError(true);
+      setState(await reminderState().catch(() => "off"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  let hint = "A reminder at each meal time, even with Rise closed.";
+  if (state === "unsupported") hint = "This browser can't show reminders. On iPhone or iPad, add Rise to your Home Screen first.";
+  if (state === "blocked") hint = "Notifications are blocked for Rise. Allow them in your browser's site settings.";
+  if (error) hint = "Couldn't turn reminders on. Check your connection and try again.";
+
+  const showToggle = state === "on" || state === "off" || state === "loading";
+
+  return (
+    <div className="group">
+      <GroupLabel icon="bell">Notifications</GroupLabel>
+      <div className="card set2-card set2-appearance">
+        <div className="set2-appearance__head">
+          <span className="set2-appearance__name">Meal reminders</span>
+          <span className="set2-appearance__hint" role={error ? "alert" : undefined}>{hint}</span>
+        </div>
+        {showToggle ? (
+          <div className="seg seg--full" role="group" aria-label="Meal reminders" aria-busy={busy || state === "loading" ? "true" : "false"}>
+            {[true, false].map((want) => {
+              const on = state === "loading" ? false : (state === "on") === want;
+              return (
+                <button
+                  key={String(want)}
+                  className={`seg__btn${on ? " is-on" : ""}`}
+                  type="button"
+                  onClick={() => choose(want)}
+                  aria-pressed={on ? "true" : "false"}
+                >
+                  {want ? "On" : "Off"}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -84,6 +84,11 @@ const PATHS = {
     '<rect width="7" height="5" x="14" y="3" rx="1"></rect>' +
     '<rect width="7" height="9" x="14" y="12" rx="1"></rect>' +
     '<rect width="7" height="5" x="3" y="16" rx="1"></rect>',
+  // The Notifications group label in Settings (pass 53).
+  bell: [
+    "M10.268 21a2 2 0 0 0 3.464 0",
+    "M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326",
+  ],
   database:
     '<ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>' +
     '<path d="M3 5V19A9 3 0 0 0 21 19V5"></path>' +

@@ -16,6 +16,31 @@ export const SCHEMA_VERSION = 3;
 const key = (name) => `${NAMESPACE}:${name}`;
 
 /**
+ * Write listeners (pass 53). Reminders keep a copy of today's plan where the
+ * service worker can read it — a worker has no localStorage — and that copy
+ * has to follow every write, including the ones that don't go through a
+ * screen: a backup import and a reset. Hooking the one module every write
+ * already passes through catches all of them without each caller having to
+ * remember. A listener gets the record name, or "*" for clear().
+ */
+const writeListeners = new Set();
+
+export function onWrite(fn) {
+  writeListeners.add(fn);
+  return () => writeListeners.delete(fn);
+}
+
+function notifyWrite(name) {
+  writeListeners.forEach((fn) => {
+    try {
+      fn(name);
+    } catch (err) {
+      console.error("Write listener failed:", err);
+    }
+  });
+}
+
+/**
  * Migrations run in order, each upgrading a record by exactly one version.
  * SCHEMA_VERSION is one number shared by every named record (profile, days,
  * weights, ...), so a step receives `name` and must pass through anything it
@@ -120,6 +145,7 @@ export function save(name, data) {
       key(name),
       JSON.stringify({ ...data, schemaVersion: SCHEMA_VERSION })
     );
+    notifyWrite(name);
     return true;
   } catch (err) {
     // Quota exceeded, or storage disabled entirely.
@@ -131,6 +157,7 @@ export function save(name, data) {
 export function remove(name) {
   try {
     localStorage.removeItem(key(name));
+    notifyWrite(name);
   } catch {
     /* nothing useful to do */
   }
@@ -157,6 +184,7 @@ export function clear() {
       if (k && k.startsWith(`${NAMESPACE}:`) && !PRESERVE_ON_CLEAR.has(k)) doomed.push(k);
     }
     doomed.forEach((k) => localStorage.removeItem(k));
+    notifyWrite("*");
   } catch {
     /* nothing useful to do */
   }

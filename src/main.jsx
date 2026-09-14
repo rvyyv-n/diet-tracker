@@ -12,6 +12,7 @@ import App from "./App.jsx";
 import { initTheme } from "./js/core/theme.js";
 import { requestPersistence } from "./js/core/persist.js";
 import { autoCheckForUpdate } from "./js/core/updates.js";
+import { initReminders } from "./js/core/reminders.js";
 
 // Re-apply the stored theme (index.html already set it pre-paint for a pinned
 // choice) and start following the OS while the pref is "system".
@@ -26,3 +27,7 @@ requestPersistence();
 // Check GitHub for a newer release, at most once every 7 days. Fire-and-forget,
 // silent on failure, and off the first-render path — same shape as above.
 autoCheckForUpdate();
+
+// Keep the service worker's copy of today's plan, and the reminder server's
+// schedule, in step with every write. A no-op unless reminders can run here.
+initReminders();

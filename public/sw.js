@@ -99,3 +99,137 @@ self.addEventListener("fetch", (event) => {
     }),
   );
 });
+
+/* ------------------------------------------------------------ reminders */
+
+/*
+ * Meal reminders (pass 53). The reminder server sends an empty push at each
+ * of this device's block times and knows nothing else (see server/README.md).
+ * What to say is decided here, from a snapshot of today's plan that
+ * src/js/core/reminders.js keeps in IndexedDB — a worker can't read
+ * localStorage, and this file isn't bundled, so it can't import plan.js.
+ *
+ * Every push shows *something*. A push that shows nothing is punished: Chrome
+ * posts its own "site updated in the background" notice, and Safari revokes
+ * the subscription after a few. So a block that's already logged still gets a
+ * notification — a soundless "Lunch — logged" — rather than silence.
+ */
+
+// Shared with src/js/core/reminders.js — change both.
+const REMINDER_DB = "rise-reminders";
+const REMINDER_STORE = "kv";
+
+function reminderRead(key) {
+  return new Promise((resolve) => {
+    const req = indexedDB.open(REMINDER_DB, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(REMINDER_STORE);
+    req.onerror = () => resolve(null);
+    req.onsuccess = () => {
+      const db = req.result;
+      const get = db.transaction(REMINDER_STORE, "readonly").objectStore(REMINDER_STORE).get(key);
+      get.onsuccess = () => {
+        resolve(get.result ?? null);
+        db.close();
+      };
+      get.onerror = () => {
+        resolve(null);
+        db.close();
+      };
+    };
+  });
+}
+
+function localDateISO(now) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
+/**
+ * The block this push is for: the one whose time is nearest now, within an
+ * hour either side. A push is sent on the minute but can land late — the
+ * server gives it 30 minutes to live — and a clock a few minutes fast would
+ * land it early.
+ */
+function dueBlock(blocks, now) {
+  const minutes = now.getHours() * 60 + now.getMinutes();
+  let best = null;
+  let bestGap = 61;
+  for (const block of Object.values(blocks)) {
+    const [h, m] = block.time.split(":").map(Number);
+    const gap = Math.abs(minutes - (h * 60 + m));
+    if (gap < bestGap) {
+      best = block;
+      bestGap = gap;
+    }
+  }
+  return best;
+}
+
+async function showReminder() {
+  const now = new Date();
+  const snap = await reminderRead("snapshot");
+  const blocks = snap ? (snap.date === localDateISO(now) && snap.today ? snap.today : snap.fresh) : null;
+  const block = blocks ? dueBlock(blocks, now) : null;
+  const base = { icon: "assets/icon-192.png", data: { url: "./" } };
+
+  // No snapshot (storage cleared) or no block near this time (the plan changed
+  // after the server was last told): still show something, quietly.
+  if (!block) {
+    return self.registration.showNotification("Rise", { ...base, body: "Meal time", tag: "rise-reminder", silent: true });
+  }
+
+  const tag = `rise-reminder-${block.time}`;
+  if (block.done) {
+    return self.registration.showNotification(`${block.name} — logged`, { ...base, tag, silent: true });
+  }
+  return self.registration.showNotification(`${block.name} · ${block.time}`, {
+    ...base,
+    tag,
+    body: `${block.kcal} kcal · ${block.proteinG} g protein`,
+  });
+}
+
+self.addEventListener("push", (event) => {
+  event.waitUntil(showReminder());
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      const open = clients.find((c) => "focus" in c);
+      if (open) return open.focus();
+      return self.clients.openWindow(event.notification.data?.url || "./");
+    }),
+  );
+});
+
+/**
+ * The browser rotated the push subscription (it can, at any time, with the
+ * app closed). Re-subscribe with the same key and tell the server, using the
+ * details the app last registered with. The app's own sync also catches a
+ * changed endpoint the next time it opens; this just closes the gap before
+ * then.
+ */
+self.addEventListener("pushsubscriptionchange", (event) => {
+  event.waitUntil(
+    (async () => {
+      const config = await reminderRead("config");
+      const key = event.oldSubscription?.options?.applicationServerKey;
+      if (!config || !key) return;
+      const sub = event.newSubscription ?? (await self.registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key }));
+      await fetch(`${config.pushUrl}/subscribe`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ endpoint: sub.endpoint, tz: config.tz, times: config.times }),
+      });
+      if (event.oldSubscription) {
+        await fetch(`${config.pushUrl}/unsubscribe`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ endpoint: event.oldSubscription.endpoint }),
+        }).catch(() => {});
+      }
+    })().catch(() => {}),
+  );
+});
