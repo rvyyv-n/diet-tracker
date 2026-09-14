@@ -29,18 +29,18 @@ crons = ["0,15,30,45 * * * *"]
 
 [[kv_namespaces]]
 binding = "SUBS"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "d4631a28810c4ae68e46f54900d2301c"
 preview_id = "REPLACE_WITH_KV_PREVIEW_ID"
 
 [vars]
 # The VAPID subject: a mailto: or https: URL a push service can use to contact
 # the sender. Not sent to the browser, not stored per subscriber.
-VAPID_SUBJECT = "mailto:REPLACE_WITH_CONTACT_EMAIL"
+VAPID_SUBJECT = "https://github.com/rvyyv-n"
 
 # The VAPID public key (base64url, uncompressed P-256 point). Public by
 # definition — the client fetches it from GET /vapid-public-key.
-VAPID_PUBLIC_KEY = "REPLACE_WITH_VAPID_PUBLIC_KEY"
+VAPID_PUBLIC_KEY = "BD2Xcm3yG3Y03ygecCxua3RAsWolmFMRkH41ZZmQN42RiR9WpFI50BRUVlLt6cFs8bnmvSHkz8kEKF5D64kFpFU"
 
 # The one origin allowed to call /subscribe. Set to the Pages URL on deploy;
 # "*" is only sensible while testing against a local `npm run dev`.
-ALLOWED_ORIGIN = "*"
+ALLOWED_ORIGIN = "https://rvyyv-n.github.io"

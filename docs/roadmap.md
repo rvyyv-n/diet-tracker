@@ -125,10 +125,9 @@ Passes 52–56 are done; pass-by-pass detail is in `CHANGELOG.md`.
 
 ### before tagging v2.2.0
 
-- [ ] **Deploy the reminder Worker** *(owner)* — `server/README.md` →
-  Deploying: KV namespaces, VAPID keys, `wrangler deploy`, `ALLOWED_ORIGIN` set
-  to the Pages URL, then the `PUSH_URL` Actions variable. Without it the web
-  build ships with Notifications hidden.
+- [x] **Deploy the reminder Worker** *(owner)* — deployed 2026-09-15 to
+  `https://rise-reminders.rvyyv-n.workers.dev`, `ALLOWED_ORIGIN` locked to the
+  Pages origin, `PUSH_URL` Actions variable set.
 - [ ] **Web push against the deployed Worker** — subscribe from the Pages
   preview and fire a real tick. The local rehearsal already passed, so this
   confirms the deploy rather than the code.

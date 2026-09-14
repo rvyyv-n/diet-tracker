@@ -71,7 +71,7 @@ transient and the record stays.
 
 ## Deploying
 
-Not yet deployed; it needs a Cloudflare account.
+Deployed at `https://rise-reminders.rvyyv-n.workers.dev` (2026-09-15). To redeploy from scratch:
 
 ```sh
 cd server
