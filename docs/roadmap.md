@@ -133,9 +133,9 @@ Passes 52–56 are done; pass-by-pass detail is in `CHANGELOG.md`.
   preview and fire a real tick. The local rehearsal already passed, so this
   confirms the deploy rather than the code.
 - [ ] **A reminder toast from the installed Windows build** — the one-time
-  tray toast, hide-to-tray and single-instance were checked on 2026-09-14; a
-  real block-time reminder and click-to-open are still to see, and Start with
-  Windows needs a sign-in.
+  tray toast, hide-to-tray, single-instance and a real block-time reminder
+  (Dinner · 19:30 / 700 kcal · 37 g protein) were all seen on 2026-09-14;
+  click-to-open is still to see, and Start with Windows needs a sign-in.
 - [ ] **Android reminders on a phone** — the permission prompt, a reminder
   arriving with the app closed, and one surviving a reboot. Needs a device in
   hand; could slip to `later` if the owner ships without it.
