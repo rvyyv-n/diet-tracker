@@ -10,7 +10,20 @@ edition = "2021"
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2" }
+tauri = { version = "2", features = ["tray-icon"] }
+# Pass 54: start on login, and one process at a time — a login start plus a
+# manual launch would otherwise run two schedulers and double every reminder.
+tauri-plugin-autostart = "2"
+tauri-plugin-single-instance = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = "0.4"
+
+# Toasts straight through WinRT rather than tauri-plugin-notification: the
+# plugin's desktop side can't report a click, and a reminder that can't open
+# the app it's reminding you about is half a feature.
+[target.'cfg(windows)'.dependencies]
+tauri-winrt-notification = "0.8"
 
 [[bin]]
 name = "rise"

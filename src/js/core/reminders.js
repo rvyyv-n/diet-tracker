@@ -17,6 +17,10 @@
  * Device state (which endpoint and times were last sent) lives in its own
  * `wgt:reminders` record. Like `wgt:update`, backup.js leaves it out of an
  * export: a subscription belongs to one browser, not to the data.
+ *
+ * The Windows shell (pass 54) reuses the snapshot but not the push: its own
+ * process keeps the clock (desktop/src-tauri/src/reminders.rs), so this file
+ * just hands it the snapshot after every write. See the desktop section below.
  */
 
 import { load, save, remove, onWrite } from "./storage.js";
@@ -36,17 +40,23 @@ const IDB_STORE = "kv";
 
 /* ---------------------------------------------------------------- support */
 
+// The shell's command bridge (tauri.conf.json sets withGlobalTauri), or null
+// anywhere else — including a Windows build too old to have it.
+const tauriInvoke = typeof window !== "undefined" ? (window.__TAURI__?.core?.invoke ?? null) : null;
+
 /**
  * Whether reminders can run here:
  *   "ok"           — a browser with push, and a server configured at build time
  *   "unsupported"  — no push in this browser (includes iOS Safari before the
  *                    app is added to the Home Screen)
- *   "native"       — the Windows or Android shell; their reminders are
- *                    passes 54–55, not web push
+ *   "desktop"      — the Windows shell, which schedules its own (pass 54)
+ *   "native"       — the Android shell; its reminders are pass 55, not web push
  *   "unconfigured" — built without VITE_PUSH_URL, so there's no server to use
  */
 export function reminderSupport() {
-  if (detectBuild() !== "web") return "native";
+  const build = detectBuild();
+  if (build === "windows") return tauriInvoke ? "desktop" : "native";
+  if (build !== "web") return "native";
   if (!PUSH_URL) return "unconfigured";
   if (
     typeof navigator === "undefined" ||
@@ -263,12 +273,55 @@ function queueSync() {
   setTimeout(() => sync().catch(() => {}), 0);
 }
 
+/* ---------------------------------------------------------------- desktop */
+
+/*
+ * The Windows shell (pass 54). Three device settings, each held by the shell
+ * rather than on the profile — they describe this install, not the plan, and
+ * a backup restored on another machine shouldn't flip them:
+ *   reminders — toasts at each block time
+ *   tray      — closing the window hides it to the tray instead of quitting
+ *   autostart — start with Windows (straight to the tray, when that's on)
+ * The shell only reminds while it's running, so reminders without the tray
+ * stop when the window closes; the Settings hint says so.
+ */
+
+/** `{ reminders, tray, autostart }`, as the shell has them. */
+export function desktopSettings() {
+  return tauriInvoke("desktop_settings");
+}
+
+/** Flip one setting; resolves to all three as they now stand. */
+export function setDesktopSetting(key, on) {
+  return tauriInvoke("desktop_set", { key, on });
+}
+
+let desktopQueued = false;
+
+function queueDesktopSync() {
+  if (desktopQueued) return;
+  desktopQueued = true;
+  setTimeout(() => {
+    desktopQueued = false;
+    tauriInvoke("desktop_sync", { snapshot: buildSnapshot() }).catch(() => {});
+  }, 0);
+}
+
 /**
- * Start following writes. Fire-and-forget from main.jsx; a no-op wherever web
- * push can't run, so the native shells and an unconfigured build never touch
- * IndexedDB or the network.
+ * Start following writes. Fire-and-forget from main.jsx; a no-op wherever
+ * reminders can't run, so the Android shell and an unconfigured build never
+ * touch IndexedDB or the network.
  */
 export function initReminders() {
+  if (reminderSupport() === "desktop") {
+    // Synced whether or not reminders are on, so switching them on has
+    // today's plan to work from straight away.
+    onWrite((name) => {
+      if (name === "days" || name === "profile" || name === "*") queueDesktopSync();
+    });
+    queueDesktopSync();
+    return;
+  }
   if (reminderSupport() !== "ok") return;
   onWrite((name) => {
     if (name === "days" || name === "profile" || name === "*") queueSync();

@@ -38,7 +38,14 @@ import { humanDate, todayISO } from "./js/core/dates.js";
 import { APP_VERSION, REPO_URL } from "./js/core/appinfo.js";
 import { checkForUpdate, updateStatus, detectBuild } from "./js/core/updates.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
-import { reminderSupport, reminderState, enableReminders, disableReminders } from "./js/core/reminders.js";
+import {
+  reminderSupport,
+  reminderState,
+  enableReminders,
+  disableReminders,
+  desktopSettings,
+  setDesktopSetting,
+} from "./js/core/reminders.js";
 
 const APP_NAME = "Rise";
 
@@ -300,7 +307,7 @@ export default function Settings({ onEditSetup, onReset }) {
         <ProfileGroup profile={profile} />
         <AppearanceGroup profile={profile} />
         <OverviewGroup profile={profile} />
-        <NotificationsGroup />
+        {reminderSupport() === "desktop" ? <DesktopNotificationsGroup /> : <NotificationsGroup />}
 
         <div className="group">
           <GroupLabel icon="database">Data</GroupLabel>
@@ -466,8 +473,9 @@ function OverviewGroup({ profile }) {
  * whatever the browser says (notification permission, a live push
  * subscription), read asynchronously, so the group holds it in local state.
  *
- * Hidden outright where web push can't apply — the native shells get their own
- * reminders in passes 54–55, and a build without VITE_PUSH_URL has no server
+ * Hidden outright where web push can't apply — the Windows shell has its own
+ * group below (pass 54), Android's is pass 55, and a build without
+ * VITE_PUSH_URL has no server
  * to talk to. A browser without push support still shows the group, since the
  * fix (install to the Home Screen on iOS) is something the user can act on.
  */
@@ -535,6 +543,103 @@ function NotificationsGroup() {
             })}
           </div>
         ) : null}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The Windows shell's Notifications group (pass 54): meal reminders, keep
+ * running in the tray, and start with Windows, as three independent rows in
+ * the Overview group's shape. The shell holds all three (see the desktop
+ * section of reminders.js), so they're read once on mount and replaced with
+ * whatever the shell reports back after each change.
+ */
+function DesktopNotificationsGroup() {
+  const [settings, setSettings] = useState(null);
+  const [busy, setBusy] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let live = true;
+    desktopSettings()
+      .then((s) => live && setSettings(s))
+      .catch(() => live && setSettings({ reminders: false, tray: false, autostart: false }));
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  async function choose(key, on) {
+    if (!settings || busy || settings[key] === on) return;
+    setBusy(key);
+    setError(null);
+    try {
+      setSettings(await setDesktopSetting(key, on));
+    } catch {
+      setError(key);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const s = settings ?? { reminders: false, tray: false, autostart: false };
+  const rows = [
+    {
+      key: "reminders",
+      name: "Meal reminders",
+      hint:
+        s.reminders && !s.tray
+          ? "Only while Rise is open. Turn on Keep in tray to get them after closing the window."
+          : "A reminder at each meal time. Blocks you've already logged stay quiet.",
+    },
+    {
+      key: "tray",
+      name: "Keep in tray",
+      hint: "Closing the window hides Rise to the tray instead of quitting.",
+    },
+    {
+      key: "autostart",
+      name: "Start with Windows",
+      hint: s.tray ? "Starts quietly in the tray when you sign in." : "Opens Rise when you sign in.",
+    },
+  ];
+
+  return (
+    <div className="group">
+      <GroupLabel icon="bell">Notifications</GroupLabel>
+      <div className="card set2-card">
+        {rows.map(({ key, name, hint }) => (
+          <div key={key} className="set2-appearance set2-overview__row">
+            <div className="set2-appearance__head">
+              <span className="set2-appearance__name">{name}</span>
+              <span className="set2-appearance__hint" role={error === key ? "alert" : undefined}>
+                {error === key ? "Couldn't change that. Try again." : hint}
+              </span>
+            </div>
+            <div
+              className="seg seg--full"
+              role="group"
+              aria-label={name}
+              aria-busy={!settings || busy === key ? "true" : "false"}
+            >
+              {[true, false].map((want) => {
+                const on = settings ? s[key] === want : false;
+                return (
+                  <button
+                    key={String(want)}
+                    className={`seg__btn${on ? " is-on" : ""}`}
+                    type="button"
+                    onClick={() => choose(key, want)}
+                    aria-pressed={on ? "true" : "false"}
+                  >
+                    {want ? "On" : "Off"}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

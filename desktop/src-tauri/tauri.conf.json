@@ -7,8 +7,11 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
+        "label": "main",
+        "visible": false,
         "title": "Rise: Diet Tracker",
         "width": 480,
         "height": 860,

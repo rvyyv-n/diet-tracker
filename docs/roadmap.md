@@ -148,10 +148,21 @@ out the scheduling and copy the other two reuse.
     deployed. Verified with a harness over the real modules and `sw.js`;
     **not yet tried in a real browser against a live Worker.**
 - **phase 11 — desktop tray**
-  - [ ] pass 54 — Tauri tray/background mode: start on login, hide-to-tray
-    instead of quitting, `tauri-plugin-notification` wired in. The in-app
-    scheduler from pass 53 keeps running while the window's hidden — no
-    separate native scheduling needed here.
+  - [x] pass 54 — tray, start with Windows, and reminders in the Windows
+    shell. The scoping assumed pass 53 had an in-app scheduler to reuse; it
+    doesn't (web reminders are server-pushed, and the group was hidden in the
+    shells), so the clock lives in Rust (`desktop/src-tauri/src/reminders.rs`)
+    and the page hands it the pass 53 snapshot after every write. Decided with
+    the owner: three independent switches (Meal reminders, Keep in tray, Start
+    with Windows), and a logged block stays silent — the web's "— logged"
+    notice only exists to dodge browser push penalties. Added on top: a
+    single-instance lock (autostart + a manual launch would double reminders),
+    a "Next: Lunch · 13:30" line in the tray menu, catch-up for a block slept
+    through within the hour, and a one-time "still running in the tray" toast.
+    Toasts use `tauri-winrt-notification` rather than the plugin, for
+    click-to-open. The UI was checked in a browser against a mocked bridge; the
+    Rust side is verified by CI (`cargo test` + build). **Not yet tried on a
+    real install.**
 - **phase 12 — android native alarms**
   - [ ] pass 55 — JS↔Kotlin bridge; `AlarmManager` + `BroadcastReceiver`
     scheduling the seven block times; a boot receiver to reschedule (alarms

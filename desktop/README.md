@@ -19,6 +19,32 @@ first run. None of that is a rendering or functionality gap: Tauri renders
 through WebView2, the same Chromium engine the browser PWA uses, so the app
 itself behaves identically either way.
 
+## Tray and reminders (pass 54)
+
+The one place the shell does more than host the page. Settings → Notifications
+has three independent switches, all held by the shell in
+`%APPDATA%\com.rise.diettracker\desktop.json` rather than on the profile:
+
+- **Meal reminders** — a toast at each block's time, unless that block is
+  already logged. `src-tauri/src/reminders.rs` keeps the clock on its own
+  thread, because WebView2 throttles timers in a hidden window. The page sends
+  it the same snapshot of today's blocks the web build gives its service
+  worker, after every storage write. Clicking a toast opens Rise. A PC waking
+  from sleep still gets a block it slept through, if it was due in the last hour.
+- **Keep in tray** — closing the window hides it to the tray instead of
+  quitting. Left-click the tray icon to reopen; right-click for Open, the next
+  reminder, and Quit. Reminders only arrive while the process runs, so without
+  this they stop when the window closes.
+- **Start with Windows** — a `Run` registry entry launching with `--hidden`,
+  which goes straight to the tray when Keep in tray is on.
+
+A single-instance lock hands a second launch to the running window, so a login
+start plus a manual one can't double every reminder. Toasts go through
+`tauri-winrt-notification` directly rather than `tauri-plugin-notification`,
+whose desktop side can't report a click. They carry the app identifier as their
+AppUserModelID, which Tauri's NSIS installer puts on the Start menu shortcut;
+under `cargo tauri dev` there's no shortcut, so they borrow PowerShell's.
+
 ## How it's built
 
 There is no second copy of the app in this folder. `scripts/sync-desktop-assets.sh`

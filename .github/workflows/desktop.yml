@@ -81,6 +81,12 @@ jobs:
         shell: bash
         run: rm -rf desktop/src-tauri/target/release/bundle
 
+      - name: Test the shell
+        # The reminder clock's due/label logic (desktop/src-tauri/src/reminders.rs).
+        # After the sync step, since generate_context! needs desktop/dist.
+        working-directory: desktop/src-tauri
+        run: cargo test
+
       - name: Build the installer
         working-directory: desktop/src-tauri
         run: cargo tauri build
