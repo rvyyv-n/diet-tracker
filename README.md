@@ -17,6 +17,25 @@ next:   device checks of the reminders; android pwa install check (non-blocking)
 Release-by-release detail lives in [`docs/CHANGELOG.md`](docs/CHANGELOG.md);
 what's still unbuilt is in [`docs/roadmap.md`](docs/roadmap.md).
 
+## screenshots
+
+<p>
+  <img src="docs/screenshots/phone-today-light.png" width="32%" alt="Today — the day's meal blocks, part-ticked, with the running kcal total">
+  <img src="docs/screenshots/phone-weight-light.png" width="32%" alt="Weight — a weigh-in, the four-week gain, and the weekly review">
+  <img src="docs/screenshots/phone-plan-light.png" width="32%" alt="Plan — the weekly grocery checklist">
+</p>
+<p>
+  <img src="docs/screenshots/phone-today-dark.png" width="32%" alt="Today in dark mode">
+  <img src="docs/screenshots/phone-weight-dark.png" width="32%" alt="Weight in dark mode">
+  <img src="docs/screenshots/phone-plan-dark.png" width="32%" alt="Plan in dark mode">
+</p>
+<p>
+  <img src="docs/screenshots/desktop-today-light.png" width="49%" alt="Today on desktop, with the side nav">
+  <img src="docs/screenshots/desktop-today-dark.png" width="49%" alt="Today on desktop in dark mode">
+</p>
+
+*demo data, not a real person's.*
+
 ## the idea
 
 most diet apps make you weigh and log every item you eat, and most people quit
