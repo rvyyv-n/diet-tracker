@@ -30,6 +30,10 @@ android/keystore/*.jks
 android/local.properties
 android/**/build/
 android/.gradle/
+android/.kotlin/
+android/.idea/
+android/captures/
+*.iml
 
 # Generated at build time by app/build.gradle.kts (copyWebAssets) and by
 # android.yml (rasterising assets/icon.svg) — not the source of truth, so
@@ -47,6 +51,7 @@ desktop/src-tauri/target/
 desktop/src-tauri/icons/
 desktop/src-tauri/icon-source.png
 desktop/src-tauri/Cargo.lock
+desktop/src-tauri/gen/
 
 # ---- OS / editor ---------------------------------------------------
 Thumbs.db
@@ -59,6 +64,13 @@ desktop.ini
 # Per-machine Claude Code settings (permission grants etc.); the shared
 # .claude/settings.json, if one is ever added, stays tracked.
 .claude/settings.local.json
+# Claude Code runtime state — per machine, never shared.
+.claude/scheduled_tasks.*
+.claude/worktrees/
+# Playwright MCP session output (snapshots, screenshots, console logs).
+.playwright-mcp/
+# Test coverage reports, for when a test runner lands.
+coverage/
 
 # ---- Local scratch ----------------------------------------------
 # Loose screenshots / notes that land in the repo root but aren't part
@@ -70,7 +82,7 @@ CLAUDE.md
 
 # dev-only, untracked
 dev-seed.html
-vite-dev.log
+*.log
 
 # ---- Reminder Worker -------------------------------------------------
 # wrangler local secrets (the VAPID private key). Never committed.
