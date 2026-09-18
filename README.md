@@ -14,9 +14,6 @@ built:  fixed meal blocks + phase ladder, weight trend + adjustment engine,
 next:   device checks of the reminders; android pwa install check (non-blocking)
 ```
 
-Release-by-release detail lives in [`docs/CHANGELOG.md`](docs/CHANGELOG.md);
-what's still unbuilt is in [`docs/roadmap.md`](docs/roadmap.md).
-
 <img src="docs/screenshots/desktop-today-light.png" alt="Rise on desktop — Today, with the day's meal blocks and the side nav">
 
 ## the idea
@@ -32,9 +29,10 @@ steady weight gain; the block structure generalises to any fixed plan.
 
 - **no food logging** — adherence tracking, not nutrition accounting
 - **works offline** — everything is cached; fonts vendored, data stays in your
-  browser. the one outbound request is the update check: a version lookup
-  against the GitHub API, run on a manual tap or at most weekly, sending
-  nothing about you. it can be ignored entirely.
+  browser. only two things ever touch the network, and neither sends diet
+  data: the update check (a version lookup against the GitHub API, on a
+  manual tap or at most weekly), and web meal reminders if you turn them on
+  (the push server stores only a push address, a timezone and the meal times)
 - **never nags** — a missed block is a number, not a guilt trip
 - **nothing personal in this repo** — your details are entered on first run
 
@@ -49,15 +47,17 @@ steady weight gain; the block structure generalises to any fixed plan.
 
 - **today** — the day's active blocks as tap rows; running kcal + protein, an
   intake-status colour, an inline rotation picker per meal, a way to add or drop
-  a block for the day, a one-tap appetite check, and any adjustment suggestion
-  with apply / dismiss
+  a block for the day, off-plan food logged by name and kcal, a one-tap
+  appetite check, and any adjustment suggestion with apply / dismiss
 - **weight** — a weigh-in (any date, through a calendar popover), the four-week
   gain against the target band, a trend chart, and an editable history
 - **plan** — the weekly grocery checklist, the phase target ladder, and the
   plan's reference sheet
-- **settings** — the profile card (tap to edit), json export / import with a
-  preview, a check-for-updates row, a data reset behind a confirm, and an about
-  block
+- **recipes** — a reusable recipe book for off-plan meals (its own screen on
+  desktop, reached from Today on a phone)
+- **settings** — the profile card (tap to edit), theme, overview metrics, meal
+  reminders, json export / import with a preview, a check-for-updates row, and
+  a data reset behind a confirm
 
 ## install
 
@@ -82,10 +82,11 @@ Export data** is the manual backup.
 Open the URL in Chrome, then take the **Install app** prompt, or
 **⋮ menu → Add to Home screen → Install**.
 
-**Desktop (Chrome / Edge)**
+**Desktop**
 
 Open the URL and click the **install icon** at the right of the address bar, or
-**⋮ menu → Install Rise…**. It opens in its own window.
+**⋮ menu → Install Rise…**. It opens in its own window. On a Mac, Safari's
+**File → Add to Dock** does the same.
 
 **Standalone installers**
 
@@ -99,54 +100,44 @@ release and links you straight to it (**Settings → Check for updates**, also
 run automatically at most weekly). Data doesn't carry over between this and a
 browser-installed copy — use **Settings → Export/Import data** to move it.
 
+## built with
+
+React 19 + Vite, with `motion` for animation; no backend for diet data — it
+stays in the browser's storage. the Android app is a Kotlin WebView shell, the Windows
+app is Tauri, and web reminders go through a small Cloudflare Worker.
+
 ## structure
 
 ```
-index.html        app shell — loads the stylesheet and entry script, registers the sw
-public/           files Vite copies to the build output root untouched:
-  manifest.json     pwa manifest (name, icon, standalone display)
-  sw.js             cache-first service worker for offline use
-  assets/           the app icon and vendored typefaces
-docs/             design system, plan spec, and the build roadmap
-src/css/          design tokens, then the screen + component styles
-src/js/           app shell + router, and one module per screen
+index.html        app shell — loads the entry script, registers the service worker
+src/*.jsx         one React component per screen, plus the app shell
 src/js/core/      storage, profile, the plan + day + weight models, the trend
                   and adjustment engines — all pure, no dom
-src/js/ui/        small shared controls (dom helper, icons, popover, listbox,
-                  the date pickers)
+src/js/ui/        small shared controls (popover, listbox, date pickers, icons)
+src/css/          design tokens, then the screen + component styles
+public/           manifest.json, sw.js, the app icon and vendored typefaces —
+                  copied to the build root untouched
+android/          the Android shell and its native reminders
+desktop/          the Tauri desktop shell: tray, start with Windows, reminders
+server/           the Cloudflare Worker behind web push reminders
+docs/             design system, plan spec, changelog and roadmap
 ```
 
 ## running it
 
-`npm install`, then `npm run dev` (Vite). `file://` won't work — es modules
-need http, and Vite serves over it. `npm run build` produces the deployable
-`dist/`; `npm run preview` serves that build locally to check it before a
-release. The service worker caches aggressively; while developing, hard-reload
-or bump `CACHE_NAME` in `public/sw.js` to pick up changes.
+needs Node 24. `npm install`, then `npm run dev`. `file://` won't work — es
+modules need http, and Vite serves over it. `npm run build` produces the
+deployable `dist/`, and `npm run preview` serves that build locally. the
+service worker caches aggressively; while developing, hard-reload or bump
+`CACHE_NAME` in `public/sw.js` to pick up changes. the native shells have their
+own build notes in [`android/README.md`](android/README.md) and
+[`desktop/README.md`](desktop/README.md), and the reminder server in
+[`server/README.md`](server/README.md).
 
 ## roadmap
 
-what's left is in [docs/roadmap.md](docs/roadmap.md); the history of shipped
-passes is in [docs/CHANGELOG.md](docs/CHANGELOG.md) (full pass-by-pass detail in
-`docs/roadmap-history.md`).
-
-**v1** — the three screens above, offline, packaged to run on android, iphone
-and desktop with no local server, and shipped as a github release.
-
-**1.5** *(shipped)* — small features and a design-polish pass: adding or
-dropping a block for the day from the today screen, a one-tap daily appetite
-check, a first-run intro, header tweaks, a black app icon, and an in-app update
-check so the apk and the installer have a route to the next release.
-
-**1.6** *(shipped)* — a quality-of-life pass over data the app already stores:
-sticky meal rotations, a rotation for the 2nd shake, past-day browsing with an
-adherence strip, a weekly review card, a most-skipped-block readout, a real
-export/import round trip, time-of-day cues, manifest shortcuts, lb / stone
-weight display, and dark mode.
-
-**v2** — the bulk redesign: off-plan food entries and a reusable recipe book,
-configurable overview metrics, a real desktop layout, a grocery checklist, and
-meal reminders.
+what's shipped, release by release, is in [docs/CHANGELOG.md](docs/CHANGELOG.md);
+what's still unbuilt is in [docs/roadmap.md](docs/roadmap.md).
 
 ## license
 
