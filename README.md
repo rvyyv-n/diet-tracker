@@ -17,24 +17,7 @@ next:   device checks of the reminders; android pwa install check (non-blocking)
 Release-by-release detail lives in [`docs/CHANGELOG.md`](docs/CHANGELOG.md);
 what's still unbuilt is in [`docs/roadmap.md`](docs/roadmap.md).
 
-## screenshots
-
-<p>
-  <img src="docs/screenshots/phone-today-light.png" width="32%" alt="Today — the day's meal blocks, part-ticked, with the running kcal total">
-  <img src="docs/screenshots/phone-weight-light.png" width="32%" alt="Weight — a weigh-in, the four-week gain, and the weekly review">
-  <img src="docs/screenshots/phone-plan-light.png" width="32%" alt="Plan — the weekly grocery checklist">
-</p>
-<p>
-  <img src="docs/screenshots/phone-today-dark.png" width="32%" alt="Today in dark mode">
-  <img src="docs/screenshots/phone-weight-dark.png" width="32%" alt="Weight in dark mode">
-  <img src="docs/screenshots/phone-plan-dark.png" width="32%" alt="Plan in dark mode">
-</p>
-<p>
-  <img src="docs/screenshots/desktop-today-light.png" width="49%" alt="Today on desktop, with the side nav">
-  <img src="docs/screenshots/desktop-today-dark.png" width="49%" alt="Today on desktop in dark mode">
-</p>
-
-*demo data, not a real person's.*
+<img src="docs/screenshots/desktop-today-light.png" alt="Rise on desktop — Today, with the day's meal blocks and the side nav">
 
 ## the idea
 
@@ -57,12 +40,21 @@ steady weight gain; the block structure generalises to any fixed plan.
 
 ## screens
 
+<p>
+  <img src="docs/screenshots/phone-today-light.png" width="24%" alt="Today — the day's meal blocks, part-ticked, with the running kcal total">
+  <img src="docs/screenshots/phone-weight-light.png" width="24%" alt="Weight — a weigh-in, the four-week gain, and the weekly review">
+  <img src="docs/screenshots/phone-plan-light.png" width="24%" alt="Plan — the weekly grocery checklist">
+  <img src="docs/screenshots/phone-settings-dark.png" width="24%" alt="Settings in dark mode — profile, theme, and overview options">
+</p>
+
 - **today** — the day's active blocks as tap rows; running kcal + protein, an
   intake-status colour, an inline rotation picker per meal, a way to add or drop
   a block for the day, a one-tap appetite check, and any adjustment suggestion
   with apply / dismiss
 - **weight** — a weigh-in (any date, through a calendar popover), the four-week
   gain against the target band, a trend chart, and an editable history
+- **plan** — the weekly grocery checklist, the phase target ladder, and the
+  plan's reference sheet
 - **settings** — the profile card (tap to edit), json export / import with a
   preview, a check-for-updates row, a data reset behind a confirm, and an about
   block
