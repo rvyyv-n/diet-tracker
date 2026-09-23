@@ -52,10 +52,11 @@ steady weight gain; the block structure generalises to any fixed plan.
   appetite check, and any adjustment suggestion with apply / dismiss
 - **weight** — a weigh-in (any date, through a calendar popover), the four-week
   gain against the target band, a trend chart, and an editable history
-- **plan** — the weekly grocery checklist, the phase target ladder, and the
-  plan's reference sheet
-- **recipes** — a reusable recipe book for off-plan meals (its own screen on
-  desktop, reached from Today on a phone)
+- **plan** — the weekly grocery checklist and the phase target ladder, with a
+  link through to recipes
+- **recipes** — a reusable recipe book for off-plan meals, every meal option
+  in the plan, and the food table (in the side nav on desktop; on a phone,
+  reached from plan, and the book alone from Today's log food panel)
 - **settings** — the profile card (tap to edit), theme, overview metrics, meal
   reminders (on iPhone and iPad, once Rise is added to the Home Screen),
   json export / import with a preview, a check-for-updates row, and

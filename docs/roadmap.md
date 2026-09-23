@@ -90,36 +90,10 @@ detail is in `CHANGELOG.md`.
 - **phase 4 — configurable overview metrics** ✅ pass 32
 - **phase 5 — the desktop layout** ✅ passes 33, 35 — side nav above 1024px, one main pane at every width
 - **phase 6 — the visual pass** ✅ passes 41–44 — empty states, day-total bar, real PNG icons, theme-aware favicon
-- **phase 7 — motion + the framework question** ✅ pass 45 (React + Vite migration), pass 46 (tick + progress-bar motion); pass 48 below is still open
+- **phase 7 — motion + the framework question** ✅ pass 45 (React + Vite migration), pass 46 (tick + progress-bar motion); pass 48 (Plan's reference split out to Recipes) built for v2.3
 - **phase 8 — the 2.0 release** ✅ pass 49; **v2.0.0 shipped 2026-09-08**, Pages moved to GitHub Actions
 - **phase 9 — v2.1** ✅ passes 50–51; **v2.1.0 shipped** — hover-rail easing, recipe book promoted to its own Recipes screen
 - **phases 10–12 — v2.2** ✅ passes 52–56; **v2.2.0 shipped 2026-09-15** — meal reminders on the web, Windows and Android
-
-### open — pass 48: split the rest of Plan's reference out
-
-*(theoretical — do not build without a decision)* The Plan tab currently carries
-three unrelated things: the weekly grocery checklist, the phase target ladder,
-and a full reference sheet (meals, rotations, and a twenty-row food table). The
-part you open daily — the groceries — sits above a wall of reference you read
-once a month.
-
-The proposal: **Plan** keeps what changes week to week (groceries, target
-ladder). The reference sheet, meal rotations, and food table move to the
-**Recipes** screen (pass 51), already the home of the recipe book.
-
-Still to settle before it's built:
-
-- **Where the Recipes screen lives on a phone.** Pass 51 gave it a desktop-rail
-  item only; the phone reaches it through Today. Moving once-a-month reference
-  onto it leaves the phone with reference buried two screens deep — either
-  that's acceptable, or the phone bar has to change shape.
-- **Where the food table belongs.** It's reference for logging an off-plan
-  extra, so it arguably follows the recipe book rather than the plan.
-- **Whether the Plan tab still earns a tab** once it's groceries plus three
-  rungs of a ladder. It might be a card on Today instead.
-
-Sequenced last on purpose: it moves whole screens between tabs, so doing it
-before the visual passes would mean redoing their polish on new surfaces.
 
 ## resuming on another machine
 `git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it

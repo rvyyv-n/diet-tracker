@@ -74,6 +74,21 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   can build on it without reaching into Today. `Today.jsx` went from 1,441
   lines to 868. No behaviour changes.
 
+- **pass 48 — Plan's reference moves to Recipes:** Plan carried three
+  unrelated things: the weekly groceries, the target ladder, and a reference
+  sheet of meals, rotations and a twenty-row food table that sat as a wall
+  under the list opened every week. Settled with the owner: Plan keeps what
+  changes week to week (groceries, targets) and stays a tab, since groceries
+  get used one-handed in the shop. The meals and the food table move to
+  Recipes, beside the book, because all three answer "what could I eat or
+  log". The phone bar stays four icons: Recipes now opens at any width
+  (`?tab=recipes` included), reached on a phone from a row at the foot of Plan,
+  and while it's open the phone bar lights Plan's tab. The side rail lists
+  Recipes itself, so there the parent stays plain. The blocks live in
+  `PlanReference.jsx`, shared by both screens. Testing the foot link turned up
+  an older bug: the document is the scroller, so every tab switch opened the
+  new screen at the old one's depth. A screen now opens at its top.
+
 ## v2.2.0 — shipped
 
 *Status — released as `v2.2.0` on 2026-09-15.* Passes 52–56 built on

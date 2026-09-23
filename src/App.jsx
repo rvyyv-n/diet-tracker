@@ -55,35 +55,27 @@ const SCREENS = [
   { id: "today", label: "Today", icon: "square-check-big", Component: Today },
   { id: "plan", label: "Plan", icon: "clipboard-list", Component: Plan },
   { id: "weight", label: "Weight", icon: "trending-up", Component: Weight },
-  // Desktop-only (pass 51): the recipe book gets a fifth nav item where the
-  // side rail has room for one, but the phone tab bar stays four icons edge
-  // to edge — the button carries `tabbar__btn--wide-only` and CSS hides it
-  // below --bp-desktop, where Today → Log food → Recipes is still the way in.
-  // Sits above Settings so Settings stays the last item in the rail.
-  { id: "recipes", label: "Recipes", icon: "book-open", Component: Recipes, desktopOnly: true },
+  // The side rail has room for a fifth item (pass 51); the phone tab bar stays
+  // four icons edge to edge, so Recipes' button carries `tabbar__btn--wide-only`
+  // and CSS hides it below --bp-desktop. The screen itself opens at any width
+  // (pass 48): a phone reaches it from the row at the foot of Plan, and
+  // `tabParent` lights Plan's button there while it's open. Sits above
+  // Settings so Settings stays the last item in the rail.
+  { id: "recipes", label: "Recipes", icon: "book-open", Component: Recipes, wideOnlyTab: true, tabParent: "plan" },
   { id: "settings", label: "Settings", icon: "sliders-horizontal", Component: Settings },
 ];
 
 const screenById = (id) => SCREENS.find((s) => s.id === id) ?? null;
 
-/** True on a viewport wide enough for the desktop side nav (matches the
- *  `min-width: 1024px` the tab CSS and `tabbar__btn--wide-only` key off). */
-const isWideViewport = () =>
-  typeof matchMedia === "function" && matchMedia("(min-width: 1024px)").matches;
-
 /**
  * The tab to open on launch. Normally "today"; a `?tab=weight` (or today /
  * plan / settings / recipes) on the URL overrides it, which is how the
- * manifest shortcuts and any deep link land on a section. An unknown value —
- * or a desktop-only section on a phone, where its nav button is hidden —
+ * manifest shortcuts and any deep link land on a section. An unknown value
  * falls back to "today".
  */
 function launchTab() {
   const wanted = new URLSearchParams(location.search).get("tab");
-  const screen = screenById(wanted);
-  if (!screen) return "today";
-  if (screen.desktopOnly && !isWideViewport()) return "today";
-  return wanted;
+  return screenById(wanted) ? wanted : "today";
 }
 
 /**
@@ -128,6 +120,9 @@ export default function App() {
   const [view, setView] = useState(computeView);
 
   const goRoute = useCallback(() => setView(computeView()), []);
+  // Stable, like the two beside it, so Shell's memoised pane tree survives a
+  // re-render; screens get it too now (Plan links to Recipes, pass 48).
+  const navigate = useCallback((id) => setView((v) => ({ ...v, panes: [id] })), []);
   const openEditSetup = useCallback(() => setView({ kind: "welcome", edit: true }), []);
 
   // Mark the shell as carrying the nav, or not. Above the desktop breakpoint
@@ -187,7 +182,7 @@ export default function App() {
   return (
     <Shell
       panes={view.panes}
-      onNavigate={(id) => setView((v) => ({ ...v, panes: [id] }))}
+      onNavigate={navigate}
       onEditSetup={openEditSetup}
       onReset={goRoute}
     />
@@ -218,6 +213,14 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
   // notice.
   const [, bump] = useState(0);
   useEffect(() => subscribe(() => bump((n) => n + 1)), []);
+
+  // A different screen opens at its top (pass 48). The document is the
+  // scroller, so switching tabs used to land the new screen at whatever depth
+  // the old one was left at, and Plan's foot link to Recipes opened it
+  // hundreds of pixels down.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [panes]);
 
   const profile = loadProfile();
   const navPref = profile.navPref === "hover" ? "hover" : "visible";
@@ -258,14 +261,14 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
         {panes.map((id) => {
           const screen = screenById(id);
           return screen.Component ? (
-            <screen.Component key={id} onEditSetup={onEditSetup} onReset={onReset} />
+            <screen.Component key={id} onEditSetup={onEditSetup} onReset={onReset} onNavigate={onNavigate} />
           ) : (
             <VanillaPane key={id} screen={screen} />
           );
         })}
       </div>
     ),
-    [panes, onEditSetup, onReset],
+    [panes, onEditSetup, onReset, onNavigate],
   );
 
   return (
@@ -408,11 +411,19 @@ function Tabbar({ panes, onNavigate, navPref, onSetNavPref }) {
         // "Current" is membership now, not equality — a multi-pane layout
         // could legitimately show more than one nav item as active.
         const current = panes.includes(screen.id);
+        // A screen with no phone button of its own (Recipes) lights its
+        // parent's instead, at phone widths only (see .is-parent-active).
+        const parentOfCurrent = SCREENS.some((s) => s.tabParent === screen.id && panes.includes(s.id));
         return (
           <button
             key={screen.id}
             type="button"
-            className={`tabbar__btn${screen.desktopOnly ? " tabbar__btn--wide-only" : ""}${current ? " is-active" : ""}`}
+            className={
+              "tabbar__btn" +
+              (screen.wideOnlyTab ? " tabbar__btn--wide-only" : "") +
+              (current ? " is-active" : "") +
+              (parentOfCurrent ? " is-parent-active" : "")
+            }
             aria-current={current ? "page" : undefined}
             onClick={() => select(screen.id)}
           >

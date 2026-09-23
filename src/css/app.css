@@ -1606,7 +1606,8 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.tabbar__btn.is-active {
+.tabbar__btn.is-active,
+.tabbar__btn.is-parent-active {
   color: var(--text-ink);
   border-top-color: var(--color-primary);
 }
@@ -1615,7 +1616,10 @@
 
 /* Desktop-only nav items (pass 51 — Recipes). The phone bar is four icons
    edge to edge with no room for a fifth; the side rail below --bp-desktop
-   never renders, so this stays hidden until the rail does. */
+   never renders, so this stays hidden until the rail does. The screen still
+   opens on a phone (pass 48), and while it's open the bar lights its parent
+   (.is-parent-active, above); the rail shows the item itself, so there the
+   parent is left alone (see the desktop block). */
 .tabbar__btn--wide-only { display: none; }
 
 
@@ -2963,6 +2967,8 @@
     border-left-color: var(--color-primary);
     background: var(--surface-card);
   }
+  /* the rail lights Recipes itself, so its phone-only parent stays plain */
+  .tabbar__btn.is-parent-active:not(.is-active) { color: var(--text-muted); }
 
   /* ---- the nav's foot: today at a glance ----
      `margin-top: auto` pushes it to the bottom of the column, which is the
