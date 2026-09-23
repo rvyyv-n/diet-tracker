@@ -16,7 +16,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { el, emptyState } from "./js/ui/dom.js";
-import { icon, iconSvg } from "./js/ui/icons.js";
+import { icon } from "./js/ui/icons.js";
 import { dateCalendar } from "./js/ui/date-calendar.js";
 import { weightInput } from "./js/ui/weight-input.js";
 import { formatWeight, formatWeightDelta, weightRangeText } from "./js/core/units.js";
@@ -35,42 +35,7 @@ import {
   weeklyKcal,
   mostSkippedBlock,
 } from "./js/core/trend.js";
-
-const NUM = new Intl.NumberFormat("en-US"); // 2,565
-
-/** Same dual-mode design as App.jsx's / Settings.jsx's `Icon` — see either. */
-function Icon({ name, size, stroke, className }) {
-  const html = { __html: iconSvg(name, { size, stroke }) };
-  if (className) return <span className={className} aria-hidden="true" dangerouslySetInnerHTML={html} />;
-  return <span style={{ display: "contents" }} dangerouslySetInnerHTML={html} />;
-}
-
-function GroupLabel({ icon: glyph, children }) {
-  return (
-    <span className="group__label">
-      {glyph ? <Icon name={glyph} size={14} className="group__label-icon" /> : null}
-      {children}
-    </span>
-  );
-}
-
-function Group({ label, icon: glyph, children }) {
-  return (
-    <div className="group">
-      <GroupLabel icon={glyph}>{label}</GroupLabel>
-      {children}
-    </div>
-  );
-}
-
-/** Mounts a plain DOM node (rebuilt fresh every render) into the React tree. */
-function Imperative({ node }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    ref.current.replaceChildren(node);
-  });
-  return <span style={{ display: "contents" }} ref={ref} />;
-}
+import { NUM, Icon, Group, Imperative } from "./components/shared.jsx";
 
 export default function Weight() {
   const paneRef = useRef(null);

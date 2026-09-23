@@ -65,6 +65,15 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   "commit is not defined" and did nothing, in every build since v2.0.0. It's
   now passed down from Today.
 
+- **pass 62 — shared components, and Log food out of Today:** Five screens
+  each defined an identical `Icon`, four a `GroupLabel`, two a `Group` and two
+  an `Imperative`. They now live once in `src/components/shared.jsx`, along
+  with `EmptyState` and the `en-US` number format. The "+ Log food" panel and
+  the recipe book behind it (about 520 lines) moved from `Today.jsx` to
+  `LogFood.jsx`, which the Recipes screen already borrowed from, so pass 48
+  can build on it without reaching into Today. `Today.jsx` went from 1,441
+  lines to 868. No behaviour changes.
+
 ## v2.2.0 — shipped
 
 *Status — released as `v2.2.0` on 2026-09-15.* Passes 52–56 built on

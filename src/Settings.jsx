@@ -16,7 +16,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { justOpened } from "./js/ui/dom.js";
-import { iconSvg } from "./js/ui/icons.js";
 import { SCHEMA_VERSION, clear as clearStorage, usedChars, APPROX_QUOTA } from "./js/core/storage.js";
 import {
   exportAll,
@@ -46,33 +45,9 @@ import {
   nativeSettings,
   setNativeSetting,
 } from "./js/core/reminders.js";
+import { Icon, GroupLabel } from "./components/shared.jsx";
 
 const APP_NAME = "Rise";
-
-/**
- * `className` decides what box (if any) this renders. Pass one when the icon
- * itself is the sized element (`group__label-icon` — a real span carrying
- * that class, containing the svg, same as the vanilla `groupLabel()` helper
- * it replaces). Omit it when the caller already renders its own sizing
- * wrapper (`set2-row__icon`, `set2-row__chev`, `set2-profile__avatar` all
- * expect the `<svg>` as their own direct flex item, sized via
- * `<wrapper> svg { width/height: 100% }`) — `display: contents` keeps this
- * component from adding a second, unsized box in between.
- */
-function Icon({ name, size, stroke, className }) {
-  const html = { __html: iconSvg(name, { size, stroke }) };
-  if (className) return <span className={className} aria-hidden="true" dangerouslySetInnerHTML={html} />;
-  return <span style={{ display: "contents" }} dangerouslySetInnerHTML={html} />;
-}
-
-function GroupLabel({ icon, children }) {
-  return (
-    <span className="group__label">
-      {icon ? <Icon name={icon} size={14} className="group__label-icon" /> : null}
-      {children}
-    </span>
-  );
-}
 
 export default function Settings({ onEditSetup, onReset }) {
   const paneRef = useRef(null);

@@ -8,7 +8,7 @@
  * why App.jsx marks this screen `desktopOnly` and the tab button is hidden
  * below --bp-desktop.
  *
- * There is no new UI here: it mounts Today's own `ExtrasRecipeForm` — the same
+ * There is no new UI here: it mounts LogFood.jsx's `ExtrasRecipeForm` — the same
  * list, editor, rename and delete — with a local copy of the slice of Today
  * state that component reads (`recipeEditor` and friends) and a `day` of
  * today, so a tap on a recipe row still logs it as an extra, here always onto
@@ -22,7 +22,8 @@ import { newDay } from "./js/core/day.js";
 import { getDay, putDay } from "./js/core/days.js";
 import { FOOD_DB } from "./js/core/plan.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
-import { ExtrasRecipeForm, announceDayTotal } from "./Today.jsx";
+import { announceDayTotal } from "./Today.jsx";
+import { ExtrasRecipeForm } from "./LogFood.jsx";
 
 export default function Recipes() {
   const paneRef = useRef(null);

@@ -13,7 +13,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { announce } from "./js/ui/dom.js";
-import { iconSvg } from "./js/ui/icons.js";
 import { loadProfile } from "./js/core/profile.js";
 import {
   GROCERY_LIST,
@@ -29,33 +28,7 @@ import {
 import { planWeek, todayISO } from "./js/core/dates.js";
 import { groceryKey, weekChecks, toggleGrocery, clearGroceryChecks } from "./js/core/grocery.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
-
-const NUM = new Intl.NumberFormat("en-US"); // 3,110
-
-/** Same dual-mode design as App.jsx's / Settings.jsx's `Icon` — see either. */
-function Icon({ name, size, stroke, className }) {
-  const html = { __html: iconSvg(name, { size, stroke }) };
-  if (className) return <span className={className} aria-hidden="true" dangerouslySetInnerHTML={html} />;
-  return <span style={{ display: "contents" }} dangerouslySetInnerHTML={html} />;
-}
-
-function GroupLabel({ icon: glyph, children }) {
-  return (
-    <span className="group__label">
-      {glyph ? <Icon name={glyph} size={14} className="group__label-icon" /> : null}
-      {children}
-    </span>
-  );
-}
-
-function Group({ label, icon: glyph, children }) {
-  return (
-    <div className="group">
-      <GroupLabel icon={glyph}>{label}</GroupLabel>
-      {children}
-    </div>
-  );
-}
+import { NUM, Icon, Group } from "./components/shared.jsx";
 
 export default function Plan() {
   const paneRef = useRef(null);
