@@ -177,3 +177,15 @@ it("createStorage enforces its capacity", () => {
   expect(() => s.setItem("ab", "abc")).not.toThrow();
   expect(() => s.setItem("cd", "e")).toThrow(expect.objectContaining({ name: "QuotaExceededError" }));
 });
+
+describe("usedChars", () => {
+  it("counts wgt: keys and values, and nothing else on the origin", () => {
+    localStorage.setItem("wgt:a", "12345");
+    localStorage.setItem("other", "x".repeat(100));
+    expect(storage.usedChars()).toBe("wgt:a".length + 5);
+  });
+
+  it("is zero when Rise has stored nothing", () => {
+    expect(storage.usedChars()).toBe(0);
+  });
+});

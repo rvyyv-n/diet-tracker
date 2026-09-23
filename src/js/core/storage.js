@@ -258,6 +258,28 @@ export function clear() {
   }
 }
 
+/**
+ * Roughly how much of the origin's localStorage Rise holds (pass 61): every
+ * `wgt:` key plus its value, the undo snapshot and any set-aside corrupt
+ * copies included. Counted in characters, because that's what browsers cap —
+ * about 5 MB of them per origin — rather than in encoded bytes. Anything else
+ * on the origin isn't counted.
+ */
+export const APPROX_QUOTA = 5 * 1024 * 1024;
+
+export function usedChars() {
+  try {
+    let total = 0;
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(`${NAMESPACE}:`)) total += k.length + (localStorage.getItem(k)?.length ?? 0);
+    }
+    return total;
+  } catch {
+    return null;
+  }
+}
+
 /** True when localStorage is actually usable — worth checking on first run. */
 export function isAvailable() {
   try {

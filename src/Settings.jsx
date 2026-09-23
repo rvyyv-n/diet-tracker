@@ -17,7 +17,7 @@
 import { useEffect, useRef, useState } from "react";
 import { justOpened } from "./js/ui/dom.js";
 import { iconSvg } from "./js/ui/icons.js";
-import { SCHEMA_VERSION, clear as clearStorage } from "./js/core/storage.js";
+import { SCHEMA_VERSION, clear as clearStorage, usedChars, APPROX_QUOTA } from "./js/core/storage.js";
 import {
   exportAll,
   importAll,
@@ -714,6 +714,23 @@ function ErrorPanel({ message, justOpenedNow }) {
   );
 }
 
+/**
+ * "240 KB of about 5 MB used." (pass 61) — how full Rise's storage is, as a
+ * fact beside the action that keeps a copy. The limit is approximate because
+ * browsers don't report it for localStorage; they all sit near 5 MB.
+ */
+function storageUsedText() {
+  const used = usedChars();
+  if (used == null) return "";
+  return `${formatSize(used)} of about ${formatSize(APPROX_QUOTA)} used.`;
+}
+
+function formatSize(chars) {
+  if (chars < 1024) return "under 1 KB";
+  if (chars < 1024 * 1024) return `${Math.round(chars / 1024)} KB`;
+  return `${(chars / (1024 * 1024)).toFixed(1).replace(/\.0$/, "")} MB`;
+}
+
 /** "Never exported." / "Exported today." / "Exported 3 days ago.", stated as
  * a fact on the Export row rather than a separate line — see backup.js. */
 function exportFreshnessText() {
@@ -732,7 +749,9 @@ function ExportItem({ justDownloaded }) {
       </span>
       <span className="set2-row__body">
         <span className="set2-row__name">Export data</span>
-        <span className="set2-row__desc">Save all records as a JSON file. {exportFreshnessText()}</span>
+        <span className="set2-row__desc">
+          Save all records as a JSON file. {exportFreshnessText()} {storageUsedText()}
+        </span>
       </span>
       <button className="btn btn--secondary btn--sm" type="button" data-act="export-download">
         {justDownloaded ? "Downloaded" : "Download JSON"}

@@ -52,6 +52,13 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   `release-*` branch. It's separate from the Pages workflow on purpose: a red
   run flags the commit, it doesn't hold back a deploy.
 
+- **pass 61 — how full storage is:** now that a full store shows a banner, the
+  Export row states the level beforehand: "22 KB of about 5 MB used."
+  `usedChars()` counts every `wgt:` key and value, including the undo snapshot,
+  in characters, because that's what browsers cap. The limit reads "about"
+  because no browser reports it for localStorage; they all sit near 5 MB.
+  Stated as a fact, with no warning colour and no threshold nudge.
+
 ## v2.2.0 — shipped
 
 *Status — released as `v2.2.0` on 2026-09-15.* Passes 52–56 built on
