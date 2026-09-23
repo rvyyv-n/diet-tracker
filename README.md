@@ -39,10 +39,11 @@ steady weight gain; the block structure generalises to any fixed plan.
 ## screens
 
 <p>
-  <img src="docs/screenshots/phone-today-light.png" width="24%" alt="Today — the day's meal blocks, part-ticked, with the running kcal total">
-  <img src="docs/screenshots/phone-weight-light.png" width="24%" alt="Weight — a weigh-in, the four-week gain, and the weekly review">
-  <img src="docs/screenshots/phone-plan-light.png" width="24%" alt="Plan — the weekly grocery checklist">
-  <img src="docs/screenshots/phone-settings-dark.png" width="24%" alt="Settings in dark mode — profile, theme, and overview options">
+  <img src="docs/screenshots/phone-today-light.png" width="19%" alt="Today — the day's meal blocks, part-ticked, with the running kcal total">
+  <img src="docs/screenshots/phone-weight-light.png" width="19%" alt="Weight — a weigh-in, the four-week gain, and the weekly review">
+  <img src="docs/screenshots/phone-plan-light.png" width="19%" alt="Plan — the weekly grocery checklist">
+  <img src="docs/screenshots/phone-recipes-light.png" width="19%" alt="Recipes — the recipe book under Today's Log food panel on a phone">
+  <img src="docs/screenshots/phone-settings-dark.png" width="19%" alt="Settings in dark mode — profile, theme, and overview options">
 </p>
 
 - **today** — the day's active blocks as tap rows; running kcal + protein, an
@@ -56,7 +57,8 @@ steady weight gain; the block structure generalises to any fixed plan.
 - **recipes** — a reusable recipe book for off-plan meals (its own screen on
   desktop, reached from Today on a phone)
 - **settings** — the profile card (tap to edit), theme, overview metrics, meal
-  reminders, json export / import with a preview, a check-for-updates row, and
+  reminders (on iPhone and iPad, once Rise is added to the Home Screen),
+  json export / import with a preview, a check-for-updates row, and
   a data reset behind a confirm
 
 ## install
@@ -72,6 +74,9 @@ your device; it then launches standalone and works with no signal.
 3. Scroll down, tap **Add to Home Screen**, then **Add**.
 4. Launch it from the new **Rise** icon. It opens full-screen with no browser
    bars and keeps working offline.
+
+Meal reminders need this step on iOS: Safari only delivers web notifications
+to an app added to the Home Screen, never to a tab.
 
 iOS can clear an unused web app's storage after roughly a week offline. Rise
 requests persistent storage on first run to avoid that, and **Settings →

@@ -17,4 +17,11 @@ export default defineConfig({
   // is ever served at sits at the same directory depth.
   base: "./",
   plugins: [react()],
+  // `npm test` (pass 57). The core modules are DOM-free by design, so plain
+  // node plus an in-memory localStorage (test/setup.js) is all they need.
+  test: {
+    environment: "node",
+    setupFiles: ["./test/setup.js"],
+    restoreMocks: true,
+  },
 });

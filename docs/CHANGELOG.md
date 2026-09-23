@@ -2,6 +2,30 @@
 
 where the build is, and what each completed pass did. numbers for the plan itself live in `plan-spec.md`; design tokens in `design-system.md`.
 
+## v2.3.0 — in progress
+
+*Status — building on `release-2.3`, not yet released.*
+
+- **pass 57 — writes that fail, fail loudly (+ a test floor):** `save()` has
+  always returned false on a failed write, but almost nothing checked it, so a
+  tick near quota just bounced back with no word why, and a corrupt record
+  loaded as defaults and was then overwritten for good. `storage.js` gained
+  `onWriteFailure()` beside `onWrite()`: every failed save, remove or clear
+  reports "quota" or "blocked", and a corrupt record is copied to
+  `wgt:corrupt:<name>` and reported once per session. Delivery is a microtask,
+  because `load()` runs inside renders, and a failure found before anyone
+  subscribes is held for the first listener. One inline banner above the
+  screens states it — not a toast, which is still open in the design system.
+  The undo slot can no longer be silently absent: an import aborts before
+  writing anything if its snapshot doesn't fit, a restore that fails keeps the
+  slot for a retry, and a reset whose snapshot didn't fit says it can't be
+  undone but still proceeds, since freeing space may be the point. Logging a
+  recipe from Recipes now announces the day total as Today does. Step 2 added
+  vitest and the first tests, on storage, backup, the adjustment engine, trend
+  and plan, run under plain node with a capacity-limited localStorage stub so
+  quota failures are real. No CI job yet. The README gained the iOS
+  Home Screen note for reminders and a Recipes screenshot.
+
 ## v2.2.0 — shipped
 
 *Status — released as `v2.2.0` on 2026-09-15.* Passes 52–56 built on
