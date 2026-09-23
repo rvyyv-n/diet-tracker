@@ -872,7 +872,9 @@ function ResetConfirm({ noUndo, justOpenedNow }) {
       <p className="set-confirm__title">Erase everything?</p>
       <p className="set-confirm__body">
         This removes your profile, {listed} from this browser, and starts the plan over at week 1.{" "}
-        {noUndo ? "Storage is full, so this can't be undone." : "It cannot be undone."}
+        {noUndo
+          ? "Storage is full, so this can't be undone."
+          : "A copy is kept, and setup offers to restore it."}
       </p>
       <div className="set-confirm__actions">
         <button className="btn btn--danger" type="button" data-act="reset-commit">Erase everything</button>

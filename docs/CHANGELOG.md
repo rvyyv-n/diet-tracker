@@ -26,6 +26,12 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   quota failures are real. No CI job yet. The README gained the iOS
   Home Screen note for reminders and a Recipes screenshot.
 
+- **pass 58 — the reset confirm tells the truth about undo:** it said "It
+  cannot be undone" while taking an undo snapshot one line later, and setup
+  offers to restore it right after. It now says a copy is kept and where to
+  find it; the storage-full line from pass 57 still replaces it when the copy
+  didn't fit.
+
 ## v2.2.0 — shipped
 
 *Status — released as `v2.2.0` on 2026-09-15.* Passes 52–56 built on
