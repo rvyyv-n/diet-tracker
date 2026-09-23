@@ -32,6 +32,21 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   find it; the storage-full line from pass 57 still replaces it when the copy
   didn't fit.
 
+- **pass 59 — the calendar and the listbox, by keyboard:** The calendar
+  popover took no keyboard input past Tab. It now follows the ARIA
+  date-picker dialog: opening puts focus on the selected day, one day at a
+  time sits in the tab order, the arrows move by day and week, Home/End go to
+  the week's ends, PageUp/PageDown turn months (Shift for years), and `max`
+  is a wall. Days are labelled with their full date, the month heading is a
+  polite live region, and Tab cycles inside the open dialog instead of
+  escaping behind it. The listbox's trigger claimed `aria-haspopup="menu"`
+  over a panel of plain buttons; it's now the select-only combobox pattern
+  (combobox, listbox, options, `aria-activedescendant`). Any popover closes
+  when focus leaves it. Two focus losses turned up while testing: Today's food
+  picker was rebuilt on every pick, so arrowing moved one option and dropped
+  focus, and it's now built once per form; and a calendar pick re-renders its
+  host screen, so the calendar now hands focus to its replacement.
+
 ## v2.2.0 — shipped
 
 *Status — released as `v2.2.0` on 2026-09-15.* Passes 52–56 built on

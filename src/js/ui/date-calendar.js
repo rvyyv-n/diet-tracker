@@ -10,18 +10,48 @@
  * and unclickable. The weigh-in picker uses this so a reading can't be filed in
  * the future.
  *
+ * Keyboard (pass 59), following the ARIA date-picker dialog: opening moves
+ * focus onto the selected day, and only that one day is in the tab order.
+ *   - ← / →             previous / next day
+ *   - ↑ / ↓             same day last / next week
+ *   - Home / End        start / end of the week (Monday / Sunday)
+ *   - PageUp / PageDown previous / next month; with Shift, year
+ *   - Enter / Space     pick the focused day
+ *   - Tab               cycles the month buttons and the day, never out
+ *   - Esc               close, focus back on the trigger
+ * Moving past the edge of the month turns the page; `max` is a wall.
+ *
  * Returns { node, get, set, onChange }.
  */
 import { el } from "./dom.js";
 import { icon } from "./icons.js";
 import { attachPopover } from "./popover.js";
-import { todayISO, humanDate, daysInMonth, MONTH_NAMES } from "../core/dates.js";
+import { todayISO, humanDate, daysInMonth, addDays, startOfWeekISO, MONTH_NAMES } from "../core/dates.js";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const WEEKDAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+/** An ISO date moved by whole months, the day clamped to the new month's length. */
+function addMonths(iso, delta) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const index = y * 12 + (m - 1) + delta;
+  const ny = Math.floor(index / 12);
+  const nm = (index % 12) + 1;
+  const nd = Math.min(d, daysInMonth(ny, nm));
+  return `${ny}-${String(nm).padStart(2, "0")}-${String(nd).padStart(2, "0")}`;
+}
+
+/** "Thursday 24 September 2026" — what a screen reader hears for a day. */
+function spokenDate(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dow = (new Date(y, m - 1, d).getDay() + 6) % 7;
+  return `${WEEKDAY_NAMES[dow]} ${humanDate(iso)}`;
+}
 
 export function dateCalendar({ value, max = null }) {
   let selected = value || todayISO();
   let [viewY, viewM] = selected.split("-").map(Number); // month on screen
+  let focusISO = selected; // the one day in the tab order
 
   const valueEl = el("span", { class: "cal__value" });
   const trigger = el(
@@ -31,8 +61,10 @@ export function dateCalendar({ value, max = null }) {
     el("span", { class: "cal__caret", "aria-hidden": "true" }, icon("chevron-down", { size: 14 })),
   );
 
-  const heading = el("span", { class: "cal__heading" });
+  // Polite live region: a month turned by keyboard is announced.
+  const heading = el("span", { class: "cal__heading", "aria-live": "polite" });
   const grid = el("div", { class: "cal__grid" });
+  grid.addEventListener("keydown", onGridKey);
   const panel = el(
     "div",
     { class: "cal__panel", hidden: "", role: "dialog", "aria-label": "Choose a date" },
@@ -50,7 +82,7 @@ export function dateCalendar({ value, max = null }) {
   );
   const root = el("div", { class: "cal" }, trigger, panel);
 
-  const pop = attachPopover(root, trigger, panel, { onOpen: paintGrid });
+  const pop = attachPopover(root, trigger, panel, { onOpen: openAtSelected, trapFocus: true });
   let onChange = null;
 
   // Lucide glyphs rather than the « ‹ › » characters this used to type. Those are
@@ -66,16 +98,75 @@ export function dateCalendar({ value, max = null }) {
     return b;
   }
 
-  function shift(dMonth, dYear) {
-    viewM += dMonth;
-    viewY += dYear;
-    if (viewM < 1) { viewM = 12; viewY -= 1; }
-    if (viewM > 12) { viewM = 1; viewY += 1; }
+  /** Past `max` isn't a place focus can go. */
+  function clamp(iso) {
+    return max != null && iso > max ? max : iso;
+  }
+
+  function showMonthOf(iso) {
+    [viewY, viewM] = iso.split("-").map(Number);
+  }
+
+  function openAtSelected() {
+    focusISO = clamp(selected);
+    showMonthOf(focusISO);
     paintGrid();
+    focusDay();
+  }
+
+  function focusDay() {
+    grid.querySelector('[tabindex="0"]')?.focus();
+  }
+
+  // The month buttons carry the roving day along, so there's always one day
+  // in the tab order on the page being shown.
+  function shift(dMonth, dYear) {
+    focusISO = clamp(addMonths(focusISO, dMonth + dYear * 12));
+    showMonthOf(focusISO);
+    paintGrid();
+  }
+
+  function onGridKey(event) {
+    let next = null;
+    switch (event.key) {
+      case "ArrowLeft": next = addDays(focusISO, -1); break;
+      case "ArrowRight": next = addDays(focusISO, 1); break;
+      case "ArrowUp": next = addDays(focusISO, -7); break;
+      case "ArrowDown": next = addDays(focusISO, 7); break;
+      case "Home": next = startOfWeekISO(focusISO); break;
+      case "End": next = addDays(startOfWeekISO(focusISO), 6); break;
+      case "PageUp": next = addMonths(focusISO, event.shiftKey ? -12 : -1); break;
+      case "PageDown": next = addMonths(focusISO, event.shiftKey ? 12 : 1); break;
+      default: return; // Enter / Space fall through to the button's own click
+    }
+    event.preventDefault();
+    focusISO = clamp(next);
+    showMonthOf(focusISO);
+    paintGrid();
+    focusDay();
   }
 
   function paintTrigger() {
     valueEl.textContent = humanDate(selected);
+  }
+
+  // The screens that host this rebuild their DOM on every render, so an
+  // onChange that updates state replaces this whole control, and the focus
+  // just returned to the trigger goes with it. Once the re-render has landed,
+  // hand focus to whichever calendar trigger now sits under the nearest
+  // ancestor that survived. A no-op when nothing was replaced.
+  function lineage(node) {
+    const out = [];
+    for (let n = node.parentElement; n; n = n.parentElement) out.push(n);
+    return out;
+  }
+
+  function refocusSuccessor(ancestors) {
+    setTimeout(() => {
+      if (trigger.isConnected) return;
+      const holder = ancestors.find((n) => n.isConnected);
+      holder?.querySelector(".cal__trigger")?.focus();
+    });
   }
 
   function paintGrid() {
@@ -99,16 +190,23 @@ export function dateCalendar({ value, max = null }) {
             (disabled ? " is-disabled" : ""),
           type: "button",
           disabled: disabled ? "" : null,
+          tabindex: iso === focusISO ? "0" : "-1",
+          "aria-label": spokenDate(iso),
+          "aria-pressed": iso === selected ? "true" : "false",
+          "aria-current": iso === today ? "date" : null,
         },
         String(dm),
       );
       if (!disabled) {
         btn.addEventListener("click", () => {
           selected = iso; // viewY / viewM already match the shown month
+          focusISO = iso;
           paintTrigger();
           pop.close();
           trigger.focus();
+          const ancestors = lineage(root);
           onChange?.(selected);
+          refocusSuccessor(ancestors);
         });
       }
       cells.push(btn);
@@ -123,7 +221,8 @@ export function dateCalendar({ value, max = null }) {
     get: () => selected,
     set: (iso) => {
       selected = iso;
-      [viewY, viewM] = iso.split("-").map(Number);
+      focusISO = iso;
+      showMonthOf(iso);
       paintTrigger();
     },
     onChange: (fn) => { onChange = fn; },

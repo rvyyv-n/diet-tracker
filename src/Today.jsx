@@ -136,11 +136,15 @@ function EmptyState({ glyph, line }) {
   );
 }
 
-/** Mounts a plain DOM node (rebuilt fresh every render) into the React tree. */
+/**
+ * Mounts a plain DOM node into the React tree. Usually rebuilt fresh every
+ * render; a node kept across renders (PickForm's listbox) is left in place,
+ * because detaching and re-inserting it would drop keyboard focus.
+ */
 function Imperative({ node }) {
   const ref = useRef(null);
   useEffect(() => {
-    ref.current.replaceChildren(node);
+    if (ref.current.firstChild !== node || ref.current.childNodes.length !== 1) ref.current.replaceChildren(node);
   });
   return <span style={{ display: "contents" }} ref={ref} />;
 }
@@ -1206,14 +1210,29 @@ function RecipeAddModeToggle({ extrasState }) {
 function PickForm({ label, foodId, onFoodChange, buttonClass, buttonLabel, onAdd }) {
   const effectiveId = foodId != null && FOOD_DB.some((f) => f.id === foodId) ? foodId : (FOOD_DB[0]?.id ?? null);
   const food = FOOD_DB.find((f) => f.id === effectiveId) ?? null;
-  const lb = listbox({
-    options: FOOD_DB.map((f) => ({ value: f.id, label: `${f.name} — ${f.portion}` })),
-    value: effectiveId,
-    ariaLabel: label,
-    // Re-render so the kcal/protein hint and the Add button's captured food
-    // follow the new pick — same as the calendar popover's onChange.
-    onChange: onFoodChange,
-  });
+
+  // One listbox for the life of the form (pass 59), not one per render: the
+  // re-render that follows every pick used to swap in a new trigger, which
+  // took keyboard focus with it, so arrowing moved one option and stopped.
+  // The latest onFoodChange is read through a ref, since the widget keeps the
+  // callback it was built with.
+  const onChangeRef = useRef(onFoodChange);
+  onChangeRef.current = onFoodChange;
+  const lbRef = useRef(null);
+  if (!lbRef.current) {
+    lbRef.current = listbox({
+      options: FOOD_DB.map((f) => ({ value: f.id, label: `${f.name} — ${f.portion}` })),
+      value: effectiveId,
+      ariaLabel: label,
+      // Re-render so the kcal/protein hint and the Add button's captured food
+      // follow the new pick.
+      onChange: (id) => onChangeRef.current(id),
+    });
+  }
+  const lb = lbRef.current;
+  useEffect(() => {
+    if (lb.get() !== effectiveId) lb.set(effectiveId);
+  }, [lb, effectiveId]);
 
   return (
     <div className="extras__form">

@@ -14,6 +14,11 @@
  *   - Enter / Space     open, or (when open) confirm and close
  *   - Esc               close
  *
+ * Roles (pass 59) follow the ARIA select-only combobox: focus never leaves
+ * the trigger (role="combobox"), the panel is a role="listbox" of
+ * role="option"s, and aria-activedescendant points at the picked one, since
+ * arrowing picks as it goes, like a native <select>.
+ *
  * Options are `[{ value, label }]`; `value` may be any type.
  * Returns { node, get, set, setOptions }.
  */
@@ -22,12 +27,14 @@ import { icon } from "./icons.js";
 import { attachPopover } from "./popover.js";
 
 const TYPEAHEAD_RESET_MS = 800;
+let nextId = 0;
 
 export function listbox({ options, value = null, placeholder = "—", ariaLabel, onChange }) {
   let opts = options;
   let current = value;
   let typed = "";
   let typedTimer = null;
+  const panelId = `lb-${(nextId += 1)}`;
 
   const valueEl = el("span", { class: "lb__value" });
   const trigger = el(
@@ -35,7 +42,9 @@ export function listbox({ options, value = null, placeholder = "—", ariaLabel,
     {
       class: "lb__trigger",
       type: "button",
-      "aria-haspopup": "menu",
+      role: "combobox",
+      "aria-haspopup": "listbox",
+      "aria-controls": panelId,
       "aria-expanded": "false",
       "aria-label": ariaLabel,
     },
@@ -43,7 +52,16 @@ export function listbox({ options, value = null, placeholder = "—", ariaLabel,
     el("span", { class: "lb__caret", "aria-hidden": "true" }, icon("chevron-down", { size: 14 })),
   );
 
-  const panel = el("div", { class: "lb__panel", hidden: "" });
+  // tabindex -1: Chrome puts a scrollable box in the tab order on its own,
+  // which would catch a Tab meant to leave the control.
+  const panel = el("div", {
+    class: "lb__panel",
+    id: panelId,
+    role: "listbox",
+    "aria-label": ariaLabel,
+    tabindex: "-1",
+    hidden: "",
+  });
   const root = el("div", { class: "lb" }, trigger, panel);
 
   const pop = attachPopover(root, trigger, panel, { onOpen: scrollToCurrent });
@@ -57,12 +75,25 @@ export function listbox({ options, value = null, placeholder = "—", ariaLabel,
     valueEl.textContent = label ?? placeholder;
     valueEl.classList.toggle("is-placeholder", label == null);
 
+    const pickedAt = opts.findIndex((o) => o.value === current);
+    if (pickedAt < 0) trigger.removeAttribute("aria-activedescendant");
+    else trigger.setAttribute("aria-activedescendant", `${panelId}-${pickedAt}`);
+
     panel.replaceChildren(
-      ...opts.map((o) => {
-        const picked = o.value === current;
+      ...opts.map((o, i) => {
+        const picked = i === pickedAt;
+        // tabindex -1: an option is clicked, never tabbed to — the keyboard
+        // path is the trigger's own arrow keys.
         const btn = el(
           "button",
-          { class: `lb__opt${picked ? " is-picked" : ""}`, type: "button" },
+          {
+            class: `lb__opt${picked ? " is-picked" : ""}`,
+            type: "button",
+            id: `${panelId}-${i}`,
+            role: "option",
+            "aria-selected": String(picked),
+            tabindex: "-1",
+          },
           o.label,
         );
         btn.addEventListener("click", () => choose(o.value, { close: true }));
