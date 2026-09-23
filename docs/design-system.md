@@ -211,7 +211,11 @@ into a side nav (`--panel-nav-width`) and widens the column to
 second pane would become defensible, and the routing model has been ready for
 it since pass 33.
 
-## Still open — do not invent, ask first
+## Still open
+
+New tokens no longer need sign-off (2026-09-24). Reuse what exists; when new
+UI needs something new, add it to `tokens.css` and list it here. These areas
+have export values that were never adopted:
 
 - **Modal / sheet / toast** and the z-index scale that orders them. The export
   specifies all of it (§12, §17); nothing is built, so nothing is adopted yet.
@@ -226,6 +230,5 @@ have to obey it: **hover is one step below the element's press state**, never a
 new colour. A row whose `:active` is `--surface-cream-strong` hovers to
 `--surface-card`; a small icon trigger whose `:active` is `--surface-card`
 hovers to `--surface-soft`. Filled coral buttons are the exception — there is
-no token between coral-500 and the coral-700 press and inventing a coral-600 is
-exactly what this document forbids, so they dim with `filter: brightness(0.96)`
+no token between coral-500 and the coral-700 press, so they dim with `filter: brightness(0.96)`
 instead. Nothing moves, grows or animates on hover; motion stays with `:active`.

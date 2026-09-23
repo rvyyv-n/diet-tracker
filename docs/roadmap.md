@@ -25,9 +25,9 @@ backup_round_trip:
 insight_copy_states_facts:
   decision: "the time-of-day cue and the most-skipped readout state facts, never verdicts or gamified streaks"
   why: "both sit one design slip from the guilt mechanic the never-nag principle rules out"
-never_invent_a_token:
-  decision: "anything the design export marks PROPOSED needs sign-off before it is load-bearing (export SATISFIED 2026-09-03)"
-  why: "building against assumed values is how the app drifts from the system — design-system.md already forbids it"
+tokens_reuse_first:
+  decision: "reuse tokens.css first; new UI may add its own tokens without sign-off, recorded in tokens.css and design-system.md (relaxed 2026-09-24)"
+  why: "the export is settled; asking before every new value slowed new screens, and one home for tokens is what actually stops drift"
 animations_last:
   decision: "motion polish and component-framework adoption come after every feature phase"
   why: "effects applied to surfaces that aren't final have to be ported twice"
