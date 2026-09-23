@@ -53,8 +53,8 @@ re-propose without a reason that wasn't already weighed:
   plan-spec.md's own appetite tactic, but held as the closest thing to a nag on
   the list.
 - **A second desktop pane** — one pane stays the layout at every width. The
-  pass-33 multi-pane routing (`setPanes()`, `core/broadcast.js`) stays in place
-  unused rather than being ripped out.
+  pass-33 multi-pane routing (the `panes` list in `App.jsx`,
+  `core/broadcast.js`) stays in place unused rather than being ripped out.
 - **Online food lookup** (`src/js/data/food-source.js`) — a 20-entry local
   `FOOD_DB` plus user recipes covers the feature, and `tokens.css` requires the
   app work with no network. Revisit only if it's actually wanted.

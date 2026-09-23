@@ -55,18 +55,20 @@ export function isGroceryChecked(key, onISO = todayISO()) {
 
 /**
  * Flip one item's tick and persist, stamping this week's Monday as the anchor.
- * Returns the new checked-map.
+ * Returns whether the write landed.
  */
 export function toggleGrocery(key, onISO = todayISO()) {
   const monday = startOfWeekISO(onISO);
   const checked = { ...weekChecks(onISO) };
   if (checked[key]) delete checked[key];
   else checked[key] = true;
-  save(RECORD, { weekStart: monday, checked });
-  return checked;
+  return save(RECORD, { weekStart: monday, checked });
 }
 
-/** Clear every tick now, keeping this week's anchor — the manual "reset". */
+/**
+ * Clear every tick now, keeping this week's anchor — the manual "reset".
+ * Returns whether the write landed.
+ */
 export function clearGroceryChecks(onISO = todayISO()) {
-  save(RECORD, { weekStart: startOfWeekISO(onISO), checked: {} });
+  return save(RECORD, { weekStart: startOfWeekISO(onISO), checked: {} });
 }

@@ -87,6 +87,10 @@ export default function Settings({ onEditSetup, onReset }) {
   const [pasteOpen, setPasteOpen] = useState(false);
   // Whether the reset confirm panel is open.
   const [confirming, setConfirming] = useState(false);
+  // Set when a reset's undo snapshot didn't fit: the confirm says so, and the
+  // next tap erases anyway. Someone whose storage is full may be resetting
+  // precisely to free space, so a failed snapshot never blocks the reset.
+  const [resetNoUndo, setResetNoUndo] = useState(false);
   // The update-check row's transient phase: "idle", "checking", or "error".
   const [updatePhase, setUpdatePhase] = useState("idle");
   // The Export row's transient "Downloaded" acknowledgement.
@@ -198,17 +202,23 @@ export default function Settings({ onEditSetup, onReset }) {
         break;
       case "reset-open":
         setConfirming((v) => !v);
+        setResetNoUndo(false);
         setPending(null);
         setImportError(null);
         setPasteOpen(false);
         break;
       case "reset-commit":
-        takeSnapshot("reset");
+        if (!resetNoUndo && !takeSnapshot("reset")) {
+          setResetNoUndo(true);
+          break;
+        }
+        setResetNoUndo(false);
         clearStorage();
         onReset();
         break;
       case "reset-cancel":
         setConfirming(false);
+        setResetNoUndo(false);
         break;
       case "update-check":
         runUpdateCheck();
@@ -286,8 +296,14 @@ export default function Settings({ onEditSetup, onReset }) {
     if (!pending) return;
     try {
       assertImportable(pending.obj); // check before snapshotting what we overwrite
-      takeSnapshot("import");
-      importAll(pending.obj);
+      // No undo copy, no import: write nothing rather than overwrite with no
+      // way back.
+      if (!takeSnapshot("import")) {
+        throw new Error("Couldn't make an undo copy, storage is full. Nothing was imported.");
+      }
+      if (!importAll(pending.obj)) {
+        throw new Error("Import failed part-way. Use Undo to restore what was there.");
+      }
     } catch (err) {
       setPending(null);
       setImportError(err.message);
@@ -326,6 +342,7 @@ export default function Settings({ onEditSetup, onReset }) {
           updatePhase={updatePhase}
           updateJustOpened={updateJustOpened}
           confirming={confirming}
+          resetNoUndo={resetNoUndo}
           confirmJustOpened={confirmJustOpened}
         />
 
@@ -784,7 +801,7 @@ function ImportPanel({ pending, justOpenedNow }) {
  * browser, a reload — the service worker already has it). The honest note
  * about the one network request lives in the About block below.
  */
-function ActionsGroup({ status, updatePhase, updateJustOpened, confirming, confirmJustOpened }) {
+function ActionsGroup({ status, updatePhase, updateJustOpened, confirming, resetNoUndo, confirmJustOpened }) {
   let trail;
   if (updatePhase === "checking") trail = "Checking…";
   else if (updatePhase === "error") trail = "Try later";
@@ -812,7 +829,7 @@ function ActionsGroup({ status, updatePhase, updateJustOpened, confirming, confi
           <span className="set2-row__name">Reset all data</span>
         </span>
       </button>
-      {confirming ? <ResetConfirm justOpenedNow={confirmJustOpened} /> : null}
+      {confirming ? <ResetConfirm noUndo={resetNoUndo} justOpenedNow={confirmJustOpened} /> : null}
     </div>
   );
 }
@@ -842,7 +859,7 @@ function UpdatePanel({ status, justOpenedNow }) {
   );
 }
 
-function ResetConfirm({ justOpenedNow }) {
+function ResetConfirm({ noUndo, justOpenedNow }) {
   const c = countRecords(exportAll());
   const items = [
     `${c.days} day record${c.days === 1 ? "" : "s"}`,
@@ -854,8 +871,8 @@ function ResetConfirm({ justOpenedNow }) {
     <div className={`set-confirm${justOpenedNow ? " is-entering" : ""}`}>
       <p className="set-confirm__title">Erase everything?</p>
       <p className="set-confirm__body">
-        This removes your profile, {listed} from this browser, and starts the plan over at week 1. It cannot be
-        undone.
+        This removes your profile, {listed} from this browser, and starts the plan over at week 1.{" "}
+        {noUndo ? "Storage is full, so this can't be undone." : "It cannot be undone."}
       </p>
       <div className="set-confirm__actions">
         <button className="btn btn--danger" type="button" data-act="reset-commit">Erase everything</button>

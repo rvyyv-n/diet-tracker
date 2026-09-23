@@ -41,6 +41,73 @@ function notifyWrite(name) {
 }
 
 /**
+ * Failure listeners (pass 57). save() has always returned false on a failed
+ * write, but almost no caller checks it, and a corrupt record used to load as
+ * defaults with only a console warning. One subscriber here catches every
+ * path, including an import and a reset that never return through a screen.
+ * A listener gets the record name and a kind: "quota", "blocked" or
+ * "corrupt". Delivery is deferred to a microtask because load() runs inside
+ * React renders, and a listener that sets state mid-render trips a warning.
+ * A failure raised before anyone has subscribed — a corrupt record found on
+ * the very first render, before the notice's effect runs — is held and
+ * handed to the first listener that arrives.
+ */
+const failureListeners = new Set();
+let undelivered = null;
+
+function deliver(fn, name, kind) {
+  queueMicrotask(() => {
+    try {
+      fn(name, kind);
+    } catch (err) {
+      console.error("Write-failure listener failed:", err);
+    }
+  });
+}
+
+export function onWriteFailure(fn) {
+  failureListeners.add(fn);
+  if (undelivered) {
+    deliver(fn, undelivered.name, undelivered.kind);
+    undelivered = null;
+  }
+  return () => failureListeners.delete(fn);
+}
+
+function notifyFailure(name, kind) {
+  if (failureListeners.size === 0) {
+    undelivered = { name, kind };
+    return;
+  }
+  failureListeners.forEach((fn) => deliver(fn, name, kind));
+}
+
+function failureKind(err) {
+  const n = err?.name;
+  return n === "QuotaExceededError" || n === "NS_ERROR_DOM_QUOTA_REACHED" ? "quota" : "blocked";
+}
+
+/**
+ * Records already found corrupt this session. load() runs on every render, so
+ * without this the quarantine copy would be rewritten and the notice re-fired
+ * constantly. Once per record per session is enough.
+ */
+const quarantined = new Set();
+
+function quarantine(name, raw) {
+  if (quarantined.has(name)) return;
+  quarantined.add(name);
+  console.warn(`Corrupt record "${name}"; set aside as "${key(`corrupt:${name}`)}", falling back to defaults.`);
+  try {
+    // Kept under the namespace, so a reset sweeps it like everything else.
+    localStorage.setItem(key(`corrupt:${name}`), raw);
+  } catch {
+    /* best-effort: the notice still goes out */
+  }
+  notifyFailure(name, "corrupt");
+}
+
+/**
  * Migrations run in order, each upgrading a record by exactly one version.
  * SCHEMA_VERSION is one number shared by every named record (profile, days,
  * weights, ...), so a step receives `name` and must pass through anything it
@@ -129,7 +196,7 @@ export function load(name, fallback) {
   try {
     parsed = JSON.parse(raw);
   } catch {
-    console.warn(`Corrupt record "${name}"; falling back to defaults.`);
+    quarantine(name, raw);
     return fallback;
   }
   if (parsed === null || typeof parsed !== "object") return fallback;
@@ -150,6 +217,7 @@ export function save(name, data) {
   } catch (err) {
     // Quota exceeded, or storage disabled entirely.
     console.error(`Could not save "${name}":`, err);
+    notifyFailure(name, failureKind(err));
     return false;
   }
 }
@@ -158,8 +226,8 @@ export function remove(name) {
   try {
     localStorage.removeItem(key(name));
     notifyWrite(name);
-  } catch {
-    /* nothing useful to do */
+  } catch (err) {
+    notifyFailure(name, failureKind(err));
   }
 }
 
@@ -185,8 +253,8 @@ export function clear() {
     }
     doomed.forEach((k) => localStorage.removeItem(k));
     notifyWrite("*");
-  } catch {
-    /* nothing useful to do */
+  } catch (err) {
+    notifyFailure("*", failureKind(err));
   }
 }
 

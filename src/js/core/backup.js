@@ -56,14 +56,20 @@ export function assertImportable(obj) {
  * build's schema version, and save() stamps the CURRENT version onto whatever
  * it's given, so skipping this step would mark them migrated when they never
  * were (see migrateRecord's doc comment in storage.js).
+ *
+ * Returns whether all five writes landed. A false means storage now holds a
+ * mix of old and new records; the undo slot is the way back.
  */
 export function importAll(obj) {
   assertImportable(obj);
-  save("profile", migrateRecord(obj.profile, "profile", {}));
-  save("days", migrateRecord(obj.days, "days", { days: {} }));
-  save("weights", migrateRecord(obj.weights, "weights", { weights: {} }));
-  save("recipes", migrateRecord(obj.recipes, "recipes", { recipes: [] }));
-  save("grocery", migrateRecord(obj.grocery, "grocery", { weekStart: null, checked: {} }));
+  const results = [
+    save("profile", migrateRecord(obj.profile, "profile", {})),
+    save("days", migrateRecord(obj.days, "days", { days: {} })),
+    save("weights", migrateRecord(obj.weights, "weights", { weights: {} })),
+    save("recipes", migrateRecord(obj.recipes, "recipes", { recipes: [] })),
+    save("grocery", migrateRecord(obj.grocery, "grocery", { weekStart: null, checked: {} })),
+  ];
+  return results.every(Boolean);
 }
 
 /** Counts for the import preview: profiles, day records, weigh-ins, recipes. */
@@ -123,9 +129,13 @@ export function lastExportedAt() {
 // consumes it. storage.clear() deliberately preserves this key so a reset can
 // still be undone; see storage.js.
 
-/** Snapshot the whole of storage into the undo slot, tagged with why. */
+/**
+ * Snapshot the whole of storage into the undo slot, tagged with why. Returns
+ * whether it landed — near quota this is the write most likely to fail, since
+ * it doubles the footprint.
+ */
 export function takeSnapshot(reason) {
-  save("snapshot", { envelope: exportAll(), takenAt: new Date().toISOString(), reason });
+  return save("snapshot", { envelope: exportAll(), takenAt: new Date().toISOString(), reason });
 }
 
 /** `{ takenAt, reason }` for the pending undo, or null when the slot is empty. */
@@ -134,11 +144,14 @@ export function snapshotInfo() {
   return s.takenAt ? { takenAt: s.takenAt, reason: s.reason ?? null } : null;
 }
 
-/** Restore the snapshot and consume the slot. Returns false if it was empty. */
+/**
+ * Restore the snapshot and consume the slot. Returns false if it was empty or
+ * the restore didn't fully land — then the slot stays, so Undo can be retried.
+ */
 export function restoreSnapshot() {
   const s = load("snapshot", {});
   if (!s.envelope) return false;
-  importAll(s.envelope);
+  if (!importAll(s.envelope)) return false;
   remove("snapshot");
   return true;
 }

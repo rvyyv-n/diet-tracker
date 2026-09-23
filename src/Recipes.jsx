@@ -22,7 +22,7 @@ import { newDay } from "./js/core/day.js";
 import { getDay, putDay } from "./js/core/days.js";
 import { FOOD_DB } from "./js/core/plan.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
-import { ExtrasRecipeForm } from "./Today.jsx";
+import { ExtrasRecipeForm, announceDayTotal } from "./Today.jsx";
 
 export default function Recipes() {
   const paneRef = useRef(null);
@@ -54,6 +54,7 @@ export default function Recipes() {
 
   function commit(nextDay) {
     putDay(nextDay);
+    announceDayTotal(nextDay);
     bump((n) => n + 1);
   }
 

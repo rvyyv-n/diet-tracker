@@ -291,7 +291,7 @@ function loadViewDay(profile, viewDate) {
 
 /** Tell a screen reader the one fact that changed — the new total — rather
  * than the whole re-render. Shares TotalCard's own wording. */
-function announceDayTotal(day) {
+export function announceDayTotal(day) {
   const totals = dayTotals(day);
   const target = phaseTarget(day.phaseId);
   const toGo = Math.max(0, target.kcal - totals.kcal);

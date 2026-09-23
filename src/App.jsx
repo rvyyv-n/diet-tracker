@@ -22,7 +22,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import { iconSvg } from "./js/ui/icons.js";
-import { isAvailable } from "./js/core/storage.js";
+import { isAvailable, onWriteFailure } from "./js/core/storage.js";
 import { snapshotInfo, restoreSnapshot } from "./js/core/backup.js";
 import { markWhatsNewSeen } from "./js/core/whatsnew.js";
 import { loadProfile, saveProfile, isComplete } from "./js/core/profile.js";
@@ -270,9 +270,39 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
 
   return (
     <>
+      <WriteFailureNotice />
       {appContent}
       <Tabbar panes={panes} onNavigate={onNavigate} navPref={navPref} onSetNavPref={setNavPref} />
     </>
+  );
+}
+
+/** What a failed write means, stated plainly — see storage.js onWriteFailure(). */
+const WRITE_FAILURE_COPY = {
+  quota: "Not saved — storage for Rise is full on this device. Export your data from Settings to keep a copy.",
+  blocked: "Not saved — storage is blocked for this site.",
+  corrupt: "Some saved data couldn't be read and was set aside. What's on screen may be incomplete.",
+};
+
+/**
+ * An inline banner above the screens for a write that didn't land or a record
+ * that couldn't be read (pass 57). The screens re-read storage on every
+ * render, so a failed tick already bounces back; this says why. It shows the
+ * latest failure only, and a dismissed notice comes back on the next one.
+ * Inline rather than a toast: toasts and their z-index scale are still open
+ * in design-system.md.
+ */
+function WriteFailureNotice() {
+  const [kind, setKind] = useState(null);
+  useEffect(() => onWriteFailure((_name, next) => setKind(next)), []);
+  if (!kind) return null;
+  return (
+    <div className="write-failure" role="alert">
+      <p className="write-failure__body">{WRITE_FAILURE_COPY[kind] ?? WRITE_FAILURE_COPY.blocked}</p>
+      <button className="btn btn--text" type="button" onClick={() => setKind(null)}>
+        Dismiss
+      </button>
+    </div>
   );
 }
 
