@@ -253,7 +253,7 @@ export default function Today() {
         <TotalCard day={day} profile={profile} />
         <BackfillPrompt viewDate={viewDate} setViewDate={setViewDate} setOpenPicker={setOpenPicker} />
         <Checklist day={day} editable={editable} openPicker={openPicker} setOpenPicker={setOpenPicker} setAddOpen={setAddOpen} commit={commit} />
-        <ExtrasSection day={day} editable={editable} />
+        <ExtrasSection day={day} editable={editable} commit={commit} />
         {editable ? (
           <div className="today-actions">
             <ExtrasAddPanel
@@ -785,7 +785,7 @@ function AddBlockSection({ day, addOpen, setAddOpen, commit }) {
  * nothing logged there is nothing to draw here, and the strip carries the
  * affordance.
  */
-function ExtrasSection({ day, editable }) {
+function ExtrasSection({ day, editable, commit }) {
   const extras = dayExtras(day);
   if (!extras.length) return null;
   // The set of name keys already in the recipe book — so an extra that's
@@ -796,14 +796,14 @@ function ExtrasSection({ day, editable }) {
     <div className="extras">
       <ul className="extras__list">
         {extras.map((extra) => (
-          <ExtraRow key={extra.id} day={day} extra={extra} editable={editable} savedKeys={savedKeys} />
+          <ExtraRow key={extra.id} day={day} extra={extra} editable={editable} savedKeys={savedKeys} commit={commit} />
         ))}
       </ul>
     </div>
   );
 }
 
-function ExtraRow({ day, extra, editable, savedKeys }) {
+function ExtraRow({ day, extra, editable, savedKeys, commit }) {
   const canSave = editable && savedKeys && !savedKeys.has(recipeKey(extra.name));
   return (
     <li className="extras__row">
@@ -846,9 +846,6 @@ function ExtraRow({ day, extra, editable, savedKeys }) {
     </li>
   );
 }
-
-// this file's ExtraRow above needs `commit` in scope — see call site below,
-// which passes it through instead of leaving it a free variable.
 
 /** The "+ Log food" trigger and its panel — closed by default, same register
  *  as AddBlockSection's "+ Add a block". Behind the toggle: the recipe book,

@@ -59,6 +59,12 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   because no browser reports it for localStorage; they all sit near 5 MB.
   Stated as a fact, with no warning colour and no threshold nudge.
 
+- **pass 45 fix — removing a logged food works again:** The React port left
+  `ExtraRow` calling a `commit` it was never given, with a comment claiming
+  the call site passed it through. The × on a logged extra threw
+  "commit is not defined" and did nothing, in every build since v2.0.0. It's
+  now passed down from Today.
+
 ## v2.2.0 — shipped
 
 *Status — released as `v2.2.0` on 2026-09-15.* Passes 52–56 built on
