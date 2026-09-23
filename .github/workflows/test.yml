@@ -1,0 +1,30 @@
+name: Test
+
+# Runs the core-engine tests (pass 57) and a production build on every push
+# to a release branch or main, so a red result shows on the branch before
+# release time rather than at it. Deliberately separate from Pages: a failing
+# test flags the commit, it doesn't hold back a deploy.
+on:
+  push:
+    branches: [main, "release-*"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build

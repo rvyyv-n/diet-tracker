@@ -47,6 +47,11 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   focus, and it's now built once per form; and a calendar pick re-renders its
   host screen, so the calendar now hands focus to its replacement.
 
+- **pass 60 — tests run on push:** `.github/workflows/test.yml` runs
+  `npm test` and a production build on every push to `main` or a
+  `release-*` branch. It's separate from the Pages workflow on purpose: a red
+  run flags the commit, it doesn't hold back a deploy.
+
 ## v2.2.0 — shipped
 
 *Status — released as `v2.2.0` on 2026-09-15.* Passes 52–56 built on
