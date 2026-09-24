@@ -34,7 +34,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { justOpened, announce } from "./js/ui/dom.js";
+import { justOpened } from "./js/ui/dom.js";
 import CountUp from "./components/reactbits/CountUp.jsx";
 import { loadProfile, saveProfile, overviewMetricShown } from "./js/core/profile.js";
 import {
@@ -74,8 +74,8 @@ import { weeklyWeights, weeklyGains, rollingGain, weeklyAdherence } from "./js/c
 import { evaluate, applySuggestion } from "./js/core/adjust.js";
 import { todayISO, addDays, planWeek, daysBetween } from "./js/core/dates.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
-import { NUM, Icon, GroupLabel, Imperative } from "./components/shared.jsx";
-import { ExtrasAddPanel } from "./LogFood.jsx";
+import { NUM, Icon, GroupLabel, Imperative, fmtTime } from "./components/shared.jsx";
+import { ExtrasAddPanel, announceDayTotal } from "./LogFood.jsx";
 
 // The hero kcal figure's count-up (pass 45) should only play once per page
 // load — not every time Today remounts from a tab switch, and not every
@@ -241,21 +241,6 @@ function loadViewDay(profile, viewDate) {
   }
   const phaseId = defaultPhaseForWeek(planWeek(profile.startDate || viewDate, viewDate));
   return newDay(viewDate, phaseId, phaseAddOns(phaseId), last?.rotations);
-}
-
-/** Tell a screen reader the one fact that changed — the new total — rather
- * than the whole re-render. Shares TotalCard's own wording. */
-export function announceDayTotal(day) {
-  const totals = dayTotals(day);
-  const target = phaseTarget(day.phaseId);
-  const toGo = Math.max(0, target.kcal - totals.kcal);
-  const blocksLeft = Math.max(0, totals.total - totals.planDone);
-  const blockWord = blocksLeft === 1 ? "block" : "blocks";
-  let remaining;
-  if (blocksLeft === 0 && toGo === 0) remaining = "All done.";
-  else if (toGo === 0) remaining = `Target met, ${blocksLeft} ${blockWord} left.`;
-  else remaining = `${NUM.format(toGo)} kcal to go, ${blocksLeft} ${blockWord} left.`;
-  announce(`${NUM.format(totals.kcal)} of ${NUM.format(target.kcal)} kcal. ${remaining}`);
 }
 
 /**
@@ -772,6 +757,8 @@ function ExtraRow({ day, extra, editable, savedKeys, commit }) {
           aria-label={`Save ${extra.name} to the recipe book`}
           onClick={(event) => {
             saveRecipe({ name: extra.name, kcal: extra.kcal, proteinG: extra.proteinG });
+            // A write that didn't land gets no "Saved"; the banner says why.
+            if (!allRecipes().some((r) => recipeKey(r.name) === recipeKey(extra.name))) return;
             // No re-render: the day didn't change. Acknowledge in place, the
             // way Settings' export button does. The next render drops the
             // button anyway (savedKeys will contain it now).
@@ -838,14 +825,6 @@ function AppetiteSection({ day, commit }) {
 function nowHHMM() {
   const d = new Date();
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-}
-
-/** "08:00" -> "8am", "13:30" -> "1:30pm" — a compact time-of-day label. */
-function fmtTime(hhmm) {
-  const [h, m] = hhmm.split(":").map(Number);
-  const period = h < 12 ? "am" : "pm";
-  const h12 = h % 12 || 12;
-  return m ? `${h12}:${String(m).padStart(2, "0")}${period}` : `${h12}${period}`;
 }
 
 /** The description to show for a block — the chosen rotation option's, if any. */

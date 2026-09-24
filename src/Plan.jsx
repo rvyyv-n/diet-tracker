@@ -20,7 +20,7 @@ import { planWeek, todayISO } from "./js/core/dates.js";
 import { groceryKey, weekChecks, toggleGrocery, clearGroceryChecks } from "./js/core/grocery.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
 import { Icon, Group } from "./components/shared.jsx";
-import { Subhead, TargetsBlock } from "./PlanReference.jsx";
+import { TargetsBlock } from "./PlanReference.jsx";
 
 export default function Plan({ onNavigate }) {
   const paneRef = useRef(null);
@@ -193,4 +193,18 @@ function groceryLine(item, phaseId) {
   const qty = scaleGroceryQty(item, phaseId);
   if (qty == null) return item.name;
   return item.unit ? `${qty} ${item.unit} ${item.name}` : `${qty} ${item.name}`;
+}
+
+/**
+ * A grocery aisle heading: caption size in full ink with a muted glyph, so the
+ * aisles read as landmarks when the list is scrolled. The icon is decorative —
+ * the label already says what the aisle is — so it is hidden from the tree.
+ */
+function Subhead({ label, glyph }) {
+  return (
+    <p className="planscreen__subhead">
+      {glyph ? <Icon name={glyph} size={16} className="planscreen__subhead-icon" /> : null}
+      {label}
+    </p>
+  );
 }

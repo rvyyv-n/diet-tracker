@@ -89,6 +89,14 @@ where the build is, and what each completed pass did. numbers for the plan itsel
   an older bug: the document is the scroller, so every tab switch opened the
   new screen at the old one's depth. A screen now opens at its top.
 
+- **v2.3 review:** a reset whose undo copy couldn't be made now clears any
+  older copy, so setup never offers stale data as the undo. A corrupt profile
+  says so on the setup screen. Save on a logged food, and Weight's Save, only
+  say "Saved" when the write landed. The calendar heading is announced on a
+  month change only. Plan's rail item hovers while Recipes is open. The
+  storage readout is counted once per write, not per render. `fmtTime`,
+  `announceDayTotal` and `Subhead` moved to the modules that use them.
+
 ## v2.2.0 — shipped
 
 *Status — released as `v2.2.0` on 2026-09-15.* Passes 52–56 built on

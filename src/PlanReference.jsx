@@ -7,24 +7,8 @@
  * the host screen puts it in a card under its own group label.
  */
 
-import { NUM, Icon } from "./components/shared.jsx";
+import { NUM, Icon, fmtTime } from "./components/shared.jsx";
 import { PHASES, phaseTarget, activeBlocks, rotationOptions, FOOD_DB } from "./js/core/plan.js";
-
-/**
- * A section mark on the reference sheet. The label was a 12px muted-soft line
- * that disappeared between the rows it was meant to introduce; it now sits at
- * caption size in full ink with a muted glyph beside it, so the three sections
- * read as landmarks when the sheet is scrolled. The icon is decorative — the
- * label already says what the section is — so it is hidden from the tree.
- */
-export function Subhead({ label, glyph }) {
-  return (
-    <p className="planscreen__subhead">
-      {glyph ? <Icon name={glyph} size={16} className="planscreen__subhead-icon" /> : null}
-      {label}
-    </p>
-  );
-}
 
 /** The three-rung target ladder, the active phase picked out. */
 export function TargetsBlock({ phaseId }) {
@@ -232,10 +216,3 @@ export function FoodsBlock() {
 
 // --- helpers -------------------------------------------------------------
 
-/** "08:00" -> "8am", "13:30" -> "1:30pm" — mirrors Today.jsx. */
-function fmtTime(hhmm) {
-  const [h, m] = hhmm.split(":").map(Number);
-  const period = h < 12 ? "am" : "pm";
-  const h12 = h % 12 || 12;
-  return m ? `${h12}:${String(m).padStart(2, "0")}${period}` : `${h12}${period}`;
-}

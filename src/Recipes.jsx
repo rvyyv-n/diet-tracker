@@ -23,8 +23,7 @@ import { newDay } from "./js/core/day.js";
 import { getDay, putDay } from "./js/core/days.js";
 import { FOOD_DB, normaliseAddOns } from "./js/core/plan.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
-import { announceDayTotal } from "./Today.jsx";
-import { ExtrasRecipeForm } from "./LogFood.jsx";
+import { ExtrasRecipeForm, announceDayTotal } from "./LogFood.jsx";
 import { MealsBlock, FoodsBlock } from "./PlanReference.jsx";
 import { Group } from "./components/shared.jsx";
 

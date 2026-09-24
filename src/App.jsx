@@ -137,6 +137,8 @@ export default function App() {
   if (view.kind === "intro") {
     return (
       <Suspense fallback={null}>
+        {/* Here too: a corrupt profile lands on setup, and should say why. */}
+        <WriteFailureNotice />
         <Intro
           onDone={() => {
             saveProfile({ ...loadProfile(), introSeen: true });
@@ -149,6 +151,8 @@ export default function App() {
   if (view.kind === "welcome") {
     return (
       <Suspense fallback={null}>
+        {/* Here too: a corrupt profile lands on setup, and should say why. */}
+        <WriteFailureNotice />
         <Welcome
           edit={view.edit}
           undoReset={

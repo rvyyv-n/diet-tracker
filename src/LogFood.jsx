@@ -8,8 +8,9 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { justOpened } from "./js/ui/dom.js";
-import { FOOD_DB } from "./js/core/plan.js";
+import { justOpened, announce } from "./js/ui/dom.js";
+import { FOOD_DB, phaseTarget } from "./js/core/plan.js";
+import { dayTotals } from "./js/core/day.js";
 import { addExtra } from "./js/core/extras.js";
 import {
   allRecipes,
@@ -541,4 +542,19 @@ function ExtrasTypeForm({ day, setExtrasOpen, commit }) {
       }}
     />
   );
+}
+
+/** Tell a screen reader the one fact that changed — the new total — rather
+ * than the whole re-render. Shares TotalCard's own wording. */
+export function announceDayTotal(day) {
+  const totals = dayTotals(day);
+  const target = phaseTarget(day.phaseId);
+  const toGo = Math.max(0, target.kcal - totals.kcal);
+  const blocksLeft = Math.max(0, totals.total - totals.planDone);
+  const blockWord = blocksLeft === 1 ? "block" : "blocks";
+  let remaining;
+  if (blocksLeft === 0 && toGo === 0) remaining = "All done.";
+  else if (toGo === 0) remaining = `Target met, ${blocksLeft} ${blockWord} left.`;
+  else remaining = `${NUM.format(toGo)} kcal to go, ${blocksLeft} ${blockWord} left.`;
+  announce(`${NUM.format(totals.kcal)} of ${NUM.format(target.kcal)} kcal. ${remaining}`);
 }

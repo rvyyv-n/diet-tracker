@@ -16,7 +16,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { justOpened } from "./js/ui/dom.js";
-import { SCHEMA_VERSION, clear as clearStorage, usedChars, APPROX_QUOTA } from "./js/core/storage.js";
+import { SCHEMA_VERSION, clear as clearStorage, usedChars, APPROX_QUOTA, onWrite } from "./js/core/storage.js";
 import {
   exportAll,
   importAll,
@@ -184,6 +184,9 @@ export default function Settings({ onEditSetup, onReset }) {
         break;
       case "reset-commit":
         if (!resetNoUndo && !takeSnapshot("reset")) {
+          // Drop whatever older copy is in the slot, or setup would offer it
+          // as this reset's undo after we said there isn't one.
+          discardSnapshot();
           setResetNoUndo(true);
           break;
         }
@@ -694,8 +697,16 @@ function ErrorPanel({ message, justOpenedNow }) {
  * fact beside the action that keeps a copy. The limit is approximate because
  * browsers don't report it for localStorage; they all sit near 5 MB.
  */
+// usedChars() reads every value, the undo copy included, so it is counted
+// once and recounted only after a write.
+let usedCache;
+onWrite(() => {
+  usedCache = undefined;
+});
+
 function storageUsedText() {
-  const used = usedChars();
+  if (usedCache === undefined) usedCache = usedChars();
+  const used = usedCache;
   if (used == null) return "";
   return `${formatSize(used)} of about ${formatSize(APPROX_QUOTA)} used.`;
 }

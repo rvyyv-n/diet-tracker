@@ -3264,7 +3264,8 @@
 
 @media (hover: hover) and (pointer: fine) {
   /* nav */
-  .tabbar__btn:hover { color: var(--text-ink); background: var(--surface-soft); }
+  .tabbar__btn:hover,
+  .tabbar__btn.is-parent-active:not(.is-active):hover { color: var(--text-ink); background: var(--surface-soft); }
   /* The wordmark routes to Today, so it takes a hover like any other nav
      target. Colour only — the nav buttons step their background, and a filled
      display-sized wordmark would read as a fifth tab. */

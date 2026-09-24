@@ -360,7 +360,8 @@ function entryCard({ entryDate, setEntryDate, justSaved, setJustSaved, unit }) {
       field.setInvalid(true);
       return;
     }
-    logWeight(date, kg);
+    // A write that didn't land gets no "Saved"; the banner says why.
+    if (!logWeight(date, kg)) return;
     setJustSaved(true);
     setTimeout(() => setJustSaved(false), 2000);
   });

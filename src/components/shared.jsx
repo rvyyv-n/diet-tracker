@@ -81,3 +81,11 @@ export function Imperative({ node }) {
   });
   return <span style={{ display: "contents" }} ref={ref} />;
 }
+
+/** "08:00" -> "8am", "13:30" -> "1:30pm" — a compact time-of-day label. */
+export function fmtTime(hhmm) {
+  const [h, m] = hhmm.split(":").map(Number);
+  const period = h < 12 ? "am" : "pm";
+  const h12 = h % 12 || 12;
+  return m ? `${h12}:${String(m).padStart(2, "0")}${period}` : `${h12}${period}`;
+}

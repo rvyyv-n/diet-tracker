@@ -170,7 +170,10 @@ export function dateCalendar({ value, max = null }) {
   }
 
   function paintGrid() {
-    heading.textContent = `${MONTH_NAMES[viewM - 1]} ${viewY}`;
+    // Only on a real month change: the heading is a live region, and
+    // rewriting the same text re-announces it on every arrow key.
+    const title = `${MONTH_NAMES[viewM - 1]} ${viewY}`;
+    if (heading.textContent !== title) heading.textContent = title;
     const lead = (new Date(viewY, viewM - 1, 1).getDay() + 6) % 7; // Mon = 0
     const total = daysInMonth(viewY, viewM);
     const today = todayISO();
