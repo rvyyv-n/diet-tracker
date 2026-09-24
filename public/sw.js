@@ -20,7 +20,7 @@
  * that treatment since a new build gets new hashes automatically.
  */
 
-const CACHE_NAME = "rise-v38";
+const CACHE_NAME = "rise-v39";
 
 const PRECACHE_URLS = [
   "./",

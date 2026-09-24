@@ -6,12 +6,12 @@
 Screen" (mobile) or "Install app" (desktop) for the standalone, offline PWA.
 
 ```
-status: v2.2.0 — meal reminders on the web, Windows and Android
+status: v2.3.0 — failed writes surface, plan's reference moves to recipes
 built:  fixed meal blocks + phase ladder, weight trend + adjustment engine,
         off-plan food + recipe book (its own screen on desktop), weekly
         grocery checklist, desktop layout, dark mode, json export/import,
         installable offline pwa, android apk + windows installer
-next:   device checks of the reminders; android pwa install check (non-blocking)
+next:   v2.3 phone + desktop checks; the motion and polish pass
 ```
 
 <img src="docs/screenshots/desktop-today-light.png" alt="Rise on desktop — Today, with the day's meal blocks and the side nav">

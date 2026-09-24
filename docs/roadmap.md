@@ -63,6 +63,9 @@ re-propose without a reason that wasn't already weighed:
   rewritten backup format, and an export that stops being human-readable JSON.
 
 ## later
+- [ ] **v2.3.0 phone and desktop pass** — Plan → Recipes and back on a real
+  phone, the storage-full banner, and reminder sync on the deployed build
+  (reminders are unavailable locally). Scheduled for after the release.
 - [ ] **Verify the in-app update check** picks up `v1.6.0` — on a v1.5.x
   install, that Settings → Check for updates now offers 1.6.0 and links the
   right asset. One-off, do it when a device is in hand.
@@ -90,10 +93,11 @@ detail is in `CHANGELOG.md`.
 - **phase 4 — configurable overview metrics** ✅ pass 32
 - **phase 5 — the desktop layout** ✅ passes 33, 35 — side nav above 1024px, one main pane at every width
 - **phase 6 — the visual pass** ✅ passes 41–44 — empty states, day-total bar, real PNG icons, theme-aware favicon
-- **phase 7 — motion + the framework question** ✅ pass 45 (React + Vite migration), pass 46 (tick + progress-bar motion); pass 48 (Plan's reference split out to Recipes) built for v2.3
+- **phase 7 — motion + the framework question** ✅ pass 45 (React + Vite migration), pass 46 (tick + progress-bar motion); pass 48 (Plan's reference split out to Recipes) shipped in v2.3
 - **phase 8 — the 2.0 release** ✅ pass 49; **v2.0.0 shipped 2026-09-08**, Pages moved to GitHub Actions
 - **phase 9 — v2.1** ✅ passes 50–51; **v2.1.0 shipped** — hover-rail easing, recipe book promoted to its own Recipes screen
 - **phases 10–12 — v2.2** ✅ passes 52–56; **v2.2.0 shipped 2026-09-15** — meal reminders on the web, Windows and Android
+- **phase 13 — v2.3** ✅ passes 57–62 and 48; **v2.3.0 shipped 2026-09-24** — failed and corrupt writes surface, a test floor in CI, accessible pickers, and Plan's reference moved to Recipes
 
 ## resuming on another machine
 `git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it

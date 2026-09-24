@@ -2,9 +2,11 @@
 
 where the build is, and what each completed pass did. numbers for the plan itself live in `plan-spec.md`; design tokens in `design-system.md`.
 
-## v2.3.0 — in progress
+## v2.3.0 — shipped
 
-*Status — building on `release-2.3`, not yet released.*
+*Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on
+`release-2.3`, closed by a full review of everything since `v2.2.0`; the phone
+and desktop test pass follows the release.
 
 - **pass 57 — writes that fail, fail loudly (+ a test floor):** `save()` has
   always returned false on a failed write, but almost nothing checked it, so a
