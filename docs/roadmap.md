@@ -28,6 +28,9 @@ insight_copy_states_facts:
 tokens_reuse_first:
   decision: "reuse tokens.css first; new UI may add its own tokens without sign-off, recorded in tokens.css and design-system.md (relaxed 2026-09-24)"
   why: "the export is settled; asking before every new value slowed new screens, and one home for tokens is what actually stops drift"
+design_overhaul_v3:
+  decision: "v3.0 is a full visual and UI/UX overhaul; Claude Design has full freedom over the look, adapting the owner's Bookcook design system to Rise. The product rules (never nag, inverted intake colours, past days closed, no Today date stepper, suggest-never-apply, offline) still hold (2026-09-26)"
+  why: "the owner loved what Claude Design made for Bookcook; the 2026-09-03 export was a marketing-site system reconciled into an app, and a design made for the app should replace it rather than be patched onto it"
 animations_last:
   decision: "motion polish and component-framework adoption come after every feature phase"
   why: "effects applied to surfaces that aren't final have to be ported twice"
@@ -61,6 +64,23 @@ re-propose without a reason that wasn't already weighed:
 - **Recipe photos** — images don't fit localStorage's ~5MB budget, so a real
   version means IndexedDB as a second storage path: new migration surface, a
   rewritten backup format, and an export that stops being human-readable JSON.
+
+## v3.0 — the design overhaul
+
+The brief is `docs/design-overhaul-brief.md`. Paste it into a new Claude
+Design thread with the codebase attached and the Bookcook design system
+selected. Until the handoff lands, `tokens_reuse_first` still governs.
+
+- [ ] **Claude Design thread** (owner) — after Bookcook's mockups and design
+  system are final: directions → design system → hero screens → the rest,
+  then export with Send to Claude Code.
+- [ ] **Tokens and fonts** — the handoff's tokens replace `tokens.css`,
+  `design-system.md` is rewritten against them, and fonts are vendored.
+- [ ] **Shared components** — `src/components/` and `src/js/ui/` restyled
+  against the component sheet.
+- [ ] **Screens, one pass each** — Today, Weight, Plan, Recipes, Settings,
+  first run, then the smaller surfaces.
+- [ ] **Motion** — last, per `animations_last`.
 
 ## later
 - [ ] **v2.3.0 phone and desktop pass** — Plan → Recipes and back on a real
