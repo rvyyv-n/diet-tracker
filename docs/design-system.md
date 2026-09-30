@@ -135,7 +135,7 @@ never write a shadow literal. `--texture` is Reel's grain, `none` in Paper.
 to 0 under `prefers-reduced-motion`. `--transition-control` and
 `--transition-entry` are app-layer shorthands over these.
 
-Nine duration literals remain in `app.css` (the intro, accordion, ack and tab
+Eight duration literals remain in `app.css` (the intro, accordion, ack and tab
 cross-fade animations, and a few press transitions). They are tokenised by the
 `motion` target (pass 76); motion work does not start before then.
 

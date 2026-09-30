@@ -37,12 +37,13 @@ import Plan from "./Plan.jsx";
 import Weight from "./Weight.jsx";
 import Settings from "./Settings.jsx";
 import Recipes from "./Recipes.jsx";
-import { Icon } from "./components/shared.jsx";
+import { Segmented } from "./components/core.jsx";
+import { PhoneNav, SideNav } from "./components/nav.jsx";
 
 const Intro = lazy(() => import("./Intro.jsx"));
 const Welcome = lazy(() => import("./Welcome.jsx"));
 
-const NUM = new Intl.NumberFormat();
+const NUM = new Intl.NumberFormat("en-US");
 
 /**
  * Every screen the router can mount, in nav order. A still-vanilla screen
@@ -52,9 +53,9 @@ const NUM = new Intl.NumberFormat();
  * `?tab=` whitelist both read from it either way.
  */
 const SCREENS = [
-  { id: "today", label: "Today", icon: "square-check-big", Component: Today },
-  { id: "plan", label: "Plan", icon: "clipboard-list", Component: Plan },
-  { id: "weight", label: "Weight", icon: "trending-up", Component: Weight },
+  { id: "today", label: "Today", icon: "today", Component: Today },
+  { id: "plan", label: "Plan", icon: "plan", Component: Plan },
+  { id: "weight", label: "Weight", icon: "weight", Component: Weight },
   // The side rail has room for a fifth item (pass 51); the phone tab bar stays
   // four icons edge to edge, so Recipes' button carries `tabbar__btn--wide-only`
   // and CSS hides it below --bp-desktop. The screen itself opens at any width
@@ -64,12 +65,12 @@ const SCREENS = [
   {
     id: "recipes",
     label: "Recipes",
-    icon: "book-open",
+    icon: "recipes",
     Component: Recipes,
     wideOnlyTab: true,
     tabParent: "plan",
   },
-  { id: "settings", label: "Settings", icon: "sliders-horizontal", Component: Settings },
+  { id: "settings", label: "Settings", icon: "settings", Component: Settings },
 ];
 
 const screenById = (id) => SCREENS.find((s) => s.id === id) ?? null;
@@ -286,7 +287,7 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
     <>
       <WriteFailureNotice />
       {appContent}
-      <Tabbar panes={panes} onNavigate={onNavigate} navPref={navPref} onSetNavPref={setNavPref} />
+      <Nav panes={panes} onNavigate={onNavigate} navPref={navPref} onSetNavPref={setNavPref} />
     </>
   );
 }
@@ -354,142 +355,79 @@ function VanillaPane({ screen }) {
 }
 
 /**
- * The desktop side nav's foot: today's intake against target, how much of the
- * plan is left, and the latest weigh-in. Hidden at phone widths by CSS (see
- * `.tabbar__glance`); recomputed on every Shell render, which is what keeps it
- * from showing a stale total after a broadcast.
+ * The Today glance at the foot of the desktop nav: today's intake against
+ * target with its status word, and the latest weigh-in. Recomputed on every
+ * Shell render, which is what keeps it from showing a stale total after a
+ * broadcast.
  */
-function NavGlance() {
+function navGlance() {
   const profile = loadProfile();
   if (!isComplete(profile)) return null;
 
   const today = todayISO();
   const day = getDay(today) ?? newDay(today, profile.currentPhaseId, profile.addOns);
-  const totals = dayTotals(day);
   const target = phaseTarget(day.phaseId).kcal;
-  const left = Math.max(0, totals.total - totals.planDone);
   const latest = allWeights().at(-1) ?? null;
 
-  return (
-    <div className="tabbar__glance">
-      <span className="group__label">
-        <Icon name="gauge" size={14} className="group__label-icon" />
-        Today
-      </span>
-      <div className="tabbar__glance-row">
-        <span className="tabbar__glance-key">Intake</span>
-        <span className={`tabbar__glance-val is-${intakeStatus(day)}`}>
-          {NUM.format(totals.kcal)}
-          {target ? ` / ${NUM.format(target)}` : ""}
-        </span>
-      </div>
-      <div className="tabbar__glance-row">
-        <span className="tabbar__glance-key">Blocks left</span>
-        <span className="tabbar__glance-val">{left === 0 ? "None" : `${left}`}</span>
-      </div>
-      {latest ? (
-        <div className="tabbar__glance-row">
-          <span className="tabbar__glance-key">Weight</span>
-          <span className="tabbar__glance-val">
-            {formatWeight(latest.kg, profile.weightUnit || "kg")}
-          </span>
-        </div>
-      ) : null}
-    </div>
-  );
+  return {
+    kcal: NUM.format(dayTotals(day).kcal),
+    target: target ? NUM.format(target) : null,
+    status: intakeStatus(day),
+    latest: latest ? formatWeight(latest.kg, profile.weightUnit || "kg") : null,
+  };
 }
 
-function Tabbar({ panes, onNavigate, navPref, onSetNavPref }) {
+/**
+ * The shell's navigation (pass 66): the floating phone pill and the desktop
+ * side nav, both rendered, one shown by CSS. The phone pill has four tabs;
+ * Recipes lives only in the side nav, and while it is open the pill lights
+ * its `tabParent` (Plan) instead.
+ */
+function Nav({ panes, onNavigate, navPref, onSetNavPref }) {
+  const active = panes[0];
   const select = (id) => {
     if (panes.length === 1 && panes[0] === id) return;
     onNavigate(id);
   };
 
   return (
-    <nav className="tabbar tabbar--icons" aria-label="Sections">
-      {/* Shown only by the desktop side nav (see .tabbar__brand); on a phone
-          the bar is four icons edge to edge and has no room for a title. It
-          is a button, not a span: a wordmark at the top of a nav reads as
-          "home", and Today is this app's home. */}
-      <button type="button" className="tabbar__brand" onClick={() => select("today")}>
-        {/* One wordmark split after its first letter, not two competing
-            copies of it. The "R" is always on screen — it is the whole of
-            the mark the collapsed rail (pass 47) shows — and "ise" is the
-            part the rail clips away, revealed on expand exactly as a nav
-            label is. Splitting rather than crossfading a one-letter mark
-            against a full "Rise" is what stops the R flickering as the two
-            traded opacity over the same glyph. Together they still read as
-            "Rise", so the button's accessible name is unchanged and neither
-            span is aria-hidden. */}
-        <span className="tabbar__brand-mark">R</span>
-        <span className="tabbar__brand-word">ise</span>
-      </button>
-      {SCREENS.map((screen) => {
-        // "Current" is membership now, not equality — a multi-pane layout
-        // could legitimately show more than one nav item as active.
-        const current = panes.includes(screen.id);
-        // A screen with no phone button of its own (Recipes) lights its
-        // parent's instead, at phone widths only (see .is-parent-active).
-        const parentOfCurrent = SCREENS.some(
-          (s) => s.tabParent === screen.id && panes.includes(s.id),
-        );
-        return (
-          <button
-            key={screen.id}
-            type="button"
-            className={
-              "tabbar__btn" +
-              (screen.wideOnlyTab ? " tabbar__btn--wide-only" : "") +
-              (current ? " is-active" : "") +
-              (parentOfCurrent ? " is-parent-active" : "")
-            }
-            aria-current={current ? "page" : undefined}
-            onClick={() => select(screen.id)}
-          >
-            <Icon name={screen.icon} className="tabbar__icon" />
-            <span className="tabbar__label">{screen.label}</span>
-          </button>
-        );
-      })}
-      <NavGlance />
-      <NavPinToggle navPref={navPref} onSetNavPref={onSetNavPref} />
-    </nav>
+    <>
+      <PhoneNav
+        items={SCREENS.filter((s) => !s.wideOnlyTab)}
+        active={active}
+        lit={screenById(active)?.tabParent}
+        onSelect={select}
+      />
+      <SideNav
+        items={SCREENS}
+        active={active}
+        onSelect={select}
+        glance={navGlance()}
+        foot={<NavPinToggle navPref={navPref} onSetNavPref={onSetNavPref} />}
+      />
+    </>
   );
 }
 
 /**
- * The desktop nav's own always-visible / show-on-hover switch (pass 47).
- * Sits at the very bottom of the column, below the glance card, and — like
- * the glance card — is itself part of what a collapsed rail hides. That's
- * deliberate, not an oversight: reaching this control at all means the rail
- * is already expanded (by hover, or by tabbing into it), which is exactly
- * how a keyboard user switches it back to pinned. `.tabbar__pin`'s CSS keeps
- * it out of the DOM's visible flow entirely outside the desktop breakpoint
- * and on a device with no hover to offer — there is nothing here for such a
- * device to control.
+ * The desktop nav's own pinned / show-on-hover switch (pass 47). Sits under
+ * the glance card and is itself part of what a collapsed rail hides: reaching
+ * it means the rail is already expanded (by hover, or by tabbing into it),
+ * which is how a keyboard user switches it back to pinned. CSS renders it
+ * only at desktop width on a device that can hover.
  */
 function NavPinToggle({ navPref, onSetNavPref }) {
-  const pinned = navPref !== "hover";
   return (
-    <div className="tabbar__pin">
-      <div className="seg seg--full" role="group" aria-label="Side nav width">
-        <button
-          type="button"
-          className={`seg__btn${pinned ? " is-on" : ""}`}
-          aria-pressed={pinned ? "true" : "false"}
-          onClick={() => onSetNavPref("visible")}
-        >
-          Pinned
-        </button>
-        <button
-          type="button"
-          className={`seg__btn${!pinned ? " is-on" : ""}`}
-          aria-pressed={!pinned ? "true" : "false"}
-          onClick={() => onSetNavPref("hover")}
-        >
-          On hover
-        </button>
-      </div>
+    <div className="r-sidenav__pin">
+      <Segmented
+        label="Side nav width"
+        options={[
+          { value: "visible", label: "Pinned" },
+          { value: "hover", label: "On hover" },
+        ]}
+        value={navPref === "hover" ? "hover" : "visible"}
+        onChange={onSetNavPref}
+      />
     </div>
   );
 }

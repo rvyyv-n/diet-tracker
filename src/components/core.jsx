@@ -249,3 +249,34 @@ export function SectionHeading({ children, meta, as: Tag = "h2" }) {
     </div>
   );
 }
+
+/**
+ * The wordmark, set in type with the sun disc; there is no drawn logo file.
+ * `nav` is the side-nav lockup (sun, then "Rise"); `reel` is the italic
+ * "Rıse" with the sun as the dot on its dotless i.
+ */
+export function Wordmark({ variant = "nav", size = 26 }) {
+  if (variant === "nav") {
+    return (
+      <span className="r-wordmark" style={{ "--r-wordmark-size": `${size}px` }}>
+        <span className="r-wordmark__sun" aria-hidden="true" />
+        <span className="r-wordmark__word">Rise</span>
+      </span>
+    );
+  }
+  return (
+    <span
+      className="r-wordmark r-wordmark--reel"
+      role="img"
+      aria-label="Rise"
+      style={{ "--r-wordmark-size": `${size}px` }}
+    >
+      R
+      <span className="r-wordmark__i">
+        {"ı"}
+        <span className="r-wordmark__dot" />
+      </span>
+      se
+    </span>
+  );
+}

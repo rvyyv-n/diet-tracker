@@ -268,7 +268,7 @@
   --sun-halo: rgba(248, 169, 89, 0.32);
   --nav-bg: #1f1d1a;
   --nav-edge: inset 0 0 0 1px #34302b;
-  --nav-shadow: none;
+  --nav-shadow: 0 0 0 0 transparent; /* none would void the edge beside it */
   --nav-ink: #b9ad9f;
   --nav-active-bg: #f3ede3;
   --nav-active-ink: #0b0a09;
@@ -542,14 +542,17 @@
   --border-width-hairline: 1px;
   --shadow-none: none;
 
-  /* Layout carried over from v2. The shell pass (66) revisits these against the
-     desktop handoff (256px nav, 1080px column, 340px support column). */
+  /* The shell (pass 66), from the desktop handoff: a 256px side nav, a 1080px
+     content column padded 48px, and a 340px support column beside the main
+     one. The phone pill floats 12px in from the edges and 14px up. */
   --app-max-width: 580px; /* fills a phone, caps for tablet */
-  --gutter-desktop: 32px;
-  --panel-nav-width: 240px;
-  --panel-nav-width-collapsed: 72px;
-  --panel-detail-width: 360px;
-  --container-app: 960px;
+  --gutter-desktop: 48px;
+  --panel-nav-width: 256px;
+  --panel-nav-width-collapsed: 72px; /* the on-hover rail (pass 47) at rest */
+  --panel-support-width: 340px;
+  --container-app: 1080px;
+  --nav-inset: 12px;
+  --nav-lift: 14px;
 
   /* Breakpoints — REFERENCE ONLY. A custom property can't sit in an @media
      condition, so queries repeat these as literals. */

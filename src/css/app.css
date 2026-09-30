@@ -64,14 +64,14 @@
   }
 }
 
-/* When the tab bar is present it fixes to the bottom, so the scrolling content
-   above it needs room to clear it (bar height + the iOS home-indicator inset).
-   The first-run screen has no bar and keeps the plain .app-shell padding. */
+/* The floating tab pill (pass 66) is cleared by .app-shell's --space-96
+   bottom padding, which is what that token is for; the content only adds the
+   iOS home-indicator inset the pill also sits above. */
 .app-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-bottom: calc(56px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* A write that failed or a record that couldn't be read (pass 57): an inline
@@ -1680,75 +1680,6 @@
   color: var(--ink-soft);
   cursor: default;
 }
-/* ------------------------------------------------------------- tab bar ---
-   Fixed to the bottom. On a phone it spans the whole viewport, edge to edge.
-   Width is 100vw, not left:0 + right:0 — a fixed element honours the classic
-   desktop scrollbar and would otherwise leave a ~15px strip beside it; 100vw
-   runs the bar the full width, with the scrollbar overlaying its trailing edge
-   (the tab labels are centred in their cells, so nothing is clipped). From
-   600px up the bar is capped and centred on the column; a purpose-built
-   desktop layout is a post-v1 job. Press + selected states only.             */
-
-.tabbar {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100vw;
-  z-index: 30;
-  display: flex;
-  background: var(--bg-canvas);
-  border-top: var(--border-width-hairline) solid var(--line);
-  /* clear the home indicator below and any side cutout when rotated */
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-}
-
-@media (min-width: 600px) {
-  .tabbar {
-    left: 50%;
-    width: var(--app-max-width);
-    transform: translateX(-50%);
-  }
-}
-
-.tabbar__btn {
-  flex: 1;
-  min-height: 46px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font: var(--text-nav);
-  color: var(--ink-muted);
-  background: transparent;
-  border: none;
-  border-top: 2px solid transparent;
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.tabbar__btn.is-active,
-.tabbar__btn.is-parent-active {
-  color: var(--ink);
-  border-top-color: var(--accent);
-}
-.tabbar__btn:active {
-  background: var(--bg-raised);
-}
-.tabbar__btn:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-/* Desktop-only nav items (pass 51 — Recipes). The phone bar is four icons
-   edge to edge with no room for a fifth; the side rail below --bp-desktop
-   never renders, so this stays hidden until the rail does. The screen still
-   opens on a phone (pass 48), and while it's open the bar lights its parent
-   (.is-parent-active, above); the rail shows the item itself, so there the
-   parent is left alone (see the desktop block). */
-.tabbar__btn--wide-only {
-  display: none;
-}
-
 /* -------------------------------------------------------------- weight ---
    Weekly weigh-in, the 4-week trend it feeds, and a history list.           */
 
@@ -2770,35 +2701,6 @@
   color: var(--ink-soft);
 }
 
-/* ------------------------------------------------------------- tabbar ---
-   Icon above label. Three tabs side by side crowd the labels at 390px;
-   stacking buys the width back. The icon (20px) + gap + 11px label only need
-   ~40px; the bar sat at 54px, leaving a dead band above and below on tall
-   phones. 44px is the tap-target floor and matches the .app-content clearance
-   (56px, which also covers the 2px transparent border-top).                   */
-
-.tabbar--icons .tabbar__btn {
-  flex-direction: column;
-  gap: 2px;
-  min-height: 44px;
-  padding: 2px 0 4px;
-}
-
-.tabbar__icon {
-  display: flex;
-  width: 20px;
-  height: 20px;
-}
-.tabbar__icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.tabbar--icons .tabbar__label {
-  font-size: 11px;
-  line-height: 1.2;
-}
-
 /* ============================================================================
    today-weight consolidation — what Today and Weight take from the Settings
    pass so the three screens share one vocabulary. Merged from
@@ -3048,14 +2950,6 @@
   animation: ack-fade 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* a small give on the tab icon when pressed */
-.tabbar__btn .tabbar__icon {
-  transition: transform 0.12s var(--ease-out);
-}
-.tabbar__btn:active .tabbar__icon {
-  transform: scale(0.92);
-}
-
 /* pane entry crossfade — app.js toggles .tab-switching on a pane as it mounts
    to re-trigger it (pass 33 moved this from the shared content element onto the
    individual pane, so one arriving pane does not re-animate its siblings) */
@@ -3100,29 +2994,11 @@
   }
 }
 
-/* The nav wordmark exists in the markup at every width but only shows on the
-   desktop side nav — on a phone the bar is four icons wide and a title there
-   would cost a tab. */
-.tabbar__brand {
-  display: none;
-}
-/* Same deal as the wordmark: the phone's bar is four icons edge to edge and
-   has nowhere to put this. It only exists on the desktop nav column. */
-.tabbar__glance {
-  display: none;
-}
-/* The pinned/hover switch (pass 47) — desktop-and-hover-capable only, same
-   reasoning as the two rules above, plus there is nothing for it to control
-   on a device that can't hover in the first place. See the combined media
-   query further down for where it turns back on. */
-.tabbar__pin {
-  display: none;
-}
-
 /* ==================================================== desktop shell (35) ===
    Above --bp-desktop (1024px — repeated as a literal, since a custom property
-   cannot drive an @media condition) the bottom tab bar becomes a left side
-   nav and the content column widens from --app-max-width to --container-app.
+   cannot drive an @media condition) the floating tab pill gives way to the
+   256px side nav, and the content column widens from --app-max-width to the
+   design's 1080px --container-app, padded 36 / 48 as in the handoff.
    The chief beneficiary is the Tauri desktop build, which until now shipped
    the phone layout stretched across a monitor.
 
@@ -3139,8 +3015,8 @@
 @media (min-width: 1024px) {
   .app-shell--tabbed {
     max-width: none;
-    padding: calc(var(--space-32) + env(safe-area-inset-top))
-      calc(var(--gutter-desktop) + env(safe-area-inset-right)) var(--space-32)
+    padding: calc(36px + env(safe-area-inset-top))
+      calc(var(--gutter-desktop) + env(safe-area-inset-right)) var(--gutter-desktop)
       calc(var(--panel-nav-width) + var(--gutter-desktop) + env(safe-area-inset-left));
   }
 
@@ -3149,137 +3025,7 @@
     width: 100%;
     max-width: var(--container-app);
     margin: 0 auto;
-    /* nothing is fixed over the bottom any more, so the phone's bar clearance
-       goes away and only ordinary end-of-page breathing room is left */
-    padding-bottom: var(--space-32);
-  }
-
-  .tabbar {
-    top: 0;
-    bottom: 0;
-    left: 0;
-    /* undo the 600px rule, which centres a capped bar on the phone column */
-    width: var(--panel-nav-width);
-    transform: none;
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-4);
-    background: var(--bg-raised);
-    border-top: none;
-    border-right: var(--border-width-hairline) solid var(--line);
-    padding: calc(var(--space-24) + env(safe-area-inset-top)) var(--space-12) var(--space-24)
-      calc(var(--space-12) + env(safe-area-inset-left));
-  }
-
-  /* The wordmark. Hidden on the phone, where the bar is four icons wide and a
-     title would cost a tab; on the nav column it is what stops the panel
-     reading as a floating list of buttons. */
-  .tabbar__brand {
-    display: block;
-    width: 100%;
-    text-align: left;
-    font: var(--text-display-sm);
-    color: var(--ink);
-    padding: 0 var(--space-12) var(--space-24);
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  .tabbar__brand:active {
-    color: var(--accent);
-  }
-  .tabbar__brand:focus-visible {
-    outline: none;
-    border-radius: var(--radius-field);
-    box-shadow: var(--focus-ring);
-  }
-
-  /* Icon beside label, not above it — the stack exists to buy label width at
-     390px, and a 240px column has width to spare. Rows sit at their natural
-     height instead of splitting the bar between them. */
-  .tabbar--icons .tabbar__btn {
-    flex: 0 0 auto;
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: var(--space-12);
-    min-height: 44px;
-    padding: var(--space-8) var(--space-12);
-    border-top: none;
-    border-left: 2px solid transparent;
-    border-radius: var(--radius-sm);
-  }
-
-  /* the rail has room for the fifth item the phone bar can't fit */
-  .tabbar__btn--wide-only {
-    display: inline-flex;
-  }
-  .tabbar--icons .tabbar__label {
-    font: var(--text-nav);
-  }
-  .tabbar__btn.is-active {
-    border-top-color: transparent;
-    border-left-color: var(--accent);
-    background: var(--bg-raised);
-  }
-  /* the rail lights Recipes itself, so its phone-only parent stays plain */
-  .tabbar__btn.is-parent-active:not(.is-active) {
-    color: var(--ink-muted);
-  }
-
-  /* ---- the nav's foot: today at a glance ----
-     `margin-top: auto` pushes it to the bottom of the column, which is the
-     240px of dead space the four nav items leave. Reference, not a control:
-     nothing here is tappable, the type is caption-sized, and the only colour
-     is the intake status the rest of the app already speaks. */
-  /* Pass 39 makes it an actual card rather than a bordered strip taped to the
-     bottom of the column. The app says "grouped reference" with an eyebrow over
-     a card everywhere else — Settings, Weight, Plan — and the nav foot was the
-     one place saying it with a hairline instead, which is why it read as
-     bolted on. `margin-top: auto` still pins it to the bottom; the auto is on
-     the top edge only, the sides are the nav's own gutter. */
-  .tabbar__glance {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    /* Flush with the nav buttons above it: the column already pads itself by
-       --space-12, so any margin here inset the card further than the tabs and
-       made it read as a narrower, unrelated thing. */
-    margin: auto 0 0;
-    padding: var(--space-12);
-    border-radius: var(--radius-card);
-    background: var(--bg-raised);
-  }
-  /* The label is a .group__label now (see navGlance) and inherits the eyebrow
-     treatment from there; this only adds the gap to the rows beneath it. */
-  .tabbar__glance .group__label {
-    padding-bottom: var(--space-4);
-  }
-  .tabbar__glance-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--space-12);
-  }
-  .tabbar__glance-key {
-    font: var(--text-body-sm);
-    color: var(--ink-muted);
-  }
-  .tabbar__glance-val {
-    font: var(--text-caption);
-    color: var(--ink);
-    font-variant-numeric: tabular-nums;
-  }
-  /* Stated at two classes on purpose. The bare .is-* status rules are declared
-     far earlier in the file, so at equal specificity this later rule would win
-     and the intake colour would silently never appear. */
-  .tabbar__glance-val.is-on-track {
-    color: var(--intake-on-track);
-  }
-  .tabbar__glance-val.is-partial {
-    color: var(--intake-partial);
-  }
-  .tabbar__glance-val.is-low {
-    color: var(--intake-low);
+    padding-bottom: 0;
   }
 
   /* ---- the food table becomes a table ----
@@ -3327,195 +3073,372 @@
   }
 }
 
-/* ============================================ desktop side nav rail (47) ===
-   The desktop nav column above is always 240px and always there — this adds
-   a second mode, off by default, where it collapses to a --panel-nav-width-
-   collapsed rail and expands over the content on hover or keyboard focus.
-   Gated behind (hover: hover) and (pointer: fine) *in addition to* the width
-   breakpoint: a touch-capable device at desktop width has no way to trigger
-   a hover state at all, so offering this mode there would just leave the
-   rail permanently collapsed and its four destinations unreadable. Such a
-   device always gets the plain always-visible column above, regardless of
-   what the user picked (`.tabbar__pin` only renders where this query
-   matches, so the choice is never even offered there).
+/* ============================================================ shell (66) ===
+   The navigation frame, from the handoff's PhoneNav and SideNav
+   (src/components/nav.jsx). Below 1024px: a floating 64px pill, --nav-inset
+   in from the sides and --nav-lift up, over a fade into the canvas. From
+   1024px: the 256px side nav with the wordmark, all five destinations and the
+   Today glance card at its foot. Both are always in the markup; each is
+   display: none outside its range, so only one is ever announced.          */
 
-   `.app-shell--nav-hover` is the one class this whole block keys off — App.jsx
-   toggles it on #app when profile.navPref is "hover", independent of
-   `.app-shell--tabbed` (view.kind) which can stay "shell" the entire time. */
+.r-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: var(--r-wordmark-size);
+  font-weight: var(--display-weight);
+  line-height: 1;
+  color: var(--ink);
+}
+.r-wordmark__sun {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--sun);
+  box-shadow: 0 0 14px 2px var(--sun-halo);
+}
+.r-wordmark--reel {
+  display: inline-block;
+  font-style: italic;
+  white-space: nowrap;
+}
+.r-wordmark__i {
+  position: relative;
+  display: inline-block;
+}
+.r-wordmark__dot {
+  position: absolute;
+  left: 50%;
+  top: 0.04em;
+  width: 0.19em;
+  height: 0.19em;
+  border-radius: 50%;
+  transform: translateX(-28%);
+  background: var(--sun);
+  box-shadow: 0 0 0.28em 0.06em var(--sun-halo);
+}
+
+/* ------------------------------------------------------------ phone nav --- */
+
+.r-phonenav__fade {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 29;
+  height: calc(110px + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, transparent, var(--bg-canvas) 70%);
+  pointer-events: none;
+}
+
+/* Inset from the viewport on a phone; from 600px it keeps to the centred
+   phone column rather than stretching four tabs across a tablet. */
+.r-phonenav {
+  --r-edge: max(var(--nav-inset), calc((100% - var(--app-max-width)) / 2 + var(--nav-inset)));
+  position: fixed;
+  left: calc(var(--r-edge) + env(safe-area-inset-left));
+  right: calc(var(--r-edge) + env(safe-area-inset-right));
+  bottom: calc(var(--nav-lift) + env(safe-area-inset-bottom));
+  z-index: 30;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  height: var(--nav-h);
+  padding: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--nav-bg);
+  box-shadow: var(--nav-edge), var(--nav-shadow);
+}
+.r-phonenav__tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--nav-ink);
+  font-family: var(--font-caption);
+  font-size: var(--nav-label-size);
+  font-weight: var(--nav-label-weight);
+  line-height: 1.2;
+  letter-spacing: var(--label-tracking);
+  text-transform: var(--label-transform);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--dur-instant) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.r-phonenav__tab.is-active {
+  background: var(--nav-active-bg);
+  color: var(--nav-active-ink);
+  box-shadow: var(--nav-active-glow);
+}
+.r-phonenav__dot {
+  position: absolute;
+  top: 6px;
+  right: 14px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--nav-dot);
+}
+
+/* ------------------------------------------------------------- side nav --- */
+
+.r-sidenav {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .r-phonenav,
+  .r-phonenav__fade {
+    display: none;
+  }
+
+  .r-sidenav {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: calc(var(--panel-nav-width) + env(safe-area-inset-left));
+    overflow-y: auto;
+    padding: calc(28px + env(safe-area-inset-top)) var(--space-16) var(--space-20)
+      calc(var(--space-16) + env(safe-area-inset-left));
+    background: var(--bg-sunken);
+    box-shadow: inset -1px 0 0 var(--line);
+  }
+
+  /* The wordmark routes to Today: a mark at the top of a nav reads as home. */
+  .r-sidenav__brand {
+    display: flex;
+    margin-bottom: var(--space-24);
+    padding: 0 var(--space-12);
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: none;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .r-sidenav__item {
+    flex: none;
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    height: var(--control-h);
+    padding: 0 14px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--nav-ink);
+    font-family: var(--font-caption);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: var(--label-tracking);
+    text-align: left;
+    text-transform: var(--label-transform);
+    cursor: pointer;
+    transition:
+      transform var(--dur-instant) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out);
+  }
+  .r-sidenav__item.is-active {
+    background: var(--nav-active-bg);
+    color: var(--nav-active-ink);
+    box-shadow: var(--nav-active-glow);
+  }
+  .r-sidenav__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .r-sidenav__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--nav-dot);
+  }
+
+  /* the foot: today at a glance. Reference, not a control. */
+  .r-sidenav__glance {
+    margin-top: auto;
+    padding: var(--space-16);
+    border-radius: var(--radius-card);
+    background: var(--bg-raised);
+    box-shadow: var(--shadow-card);
+    font-variant-numeric: tabular-nums;
+  }
+  .r-sidenav__glance-label {
+    font-size: var(--due-label-size);
+    font-weight: 700;
+    letter-spacing: var(--due-label-tracking);
+    text-transform: var(--caption-transform);
+    color: var(--ink-muted);
+  }
+  .r-sidenav__glance-figure {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .r-sidenav__glance-kcal {
+    font-family: var(--font-numeric);
+    font-size: 28px;
+    font-weight: var(--numeric-weight);
+    line-height: 1;
+    letter-spacing: var(--numeric-tracking);
+  }
+  .r-sidenav__glance-target {
+    font-size: var(--type-small);
+    color: var(--ink-muted);
+  }
+  .r-sidenav__glance-status {
+    margin-top: var(--space-8);
+    font-size: var(--type-small);
+  }
+  .r-sidenav__glance-latest {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    font-size: var(--type-small);
+    color: var(--ink-muted);
+  }
+  .r-sidenav__glance-latest b {
+    color: var(--ink);
+  }
+
+  /* The main column and a 340px support column beside it, as the desktop
+     screens lay out Today, Weight and Plan. One column until there is room. */
+  .r-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+}
+@media (min-width: 1280px) {
+  .r-columns {
+    grid-template-columns: minmax(0, 1fr) var(--panel-support-width);
+  }
+}
+
+.r-sidenav__pin {
+  display: none;
+}
+
+/* the nav states: press, focus, hover (fine pointers only) */
+.r-phonenav__tab:active,
+.r-sidenav__item:active {
+  transform: scale(0.97);
+}
+.r-phonenav__tab:focus-visible,
+.r-sidenav__item:focus-visible,
+.r-sidenav__brand:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+@media (hover: hover) and (pointer: fine) {
+  .r-phonenav__tab:not(.is-active):hover,
+  .r-sidenav__item:not(.is-active):hover {
+    background-image: linear-gradient(var(--hover-wash), var(--hover-wash));
+    color: var(--ink);
+  }
+}
+
+/* ------------------------------------------- the on-hover rail (47, 66) ---
+   The side nav's second mode, off by default: profile.navPref "hover" puts
+   .app-shell--nav-hover on #app, and the nav rests as a --panel-nav-width-
+   collapsed rail of icons that widens over the content on hover or keyboard
+   focus. The rail itself is undesigned in the v3.0 handoff (roadmap: it waits
+   until the redesign is done), so this keeps pass 47's behaviour on the new
+   nav without restyling it. Gated on (hover: hover) and (pointer: fine) too:
+   a touch device at desktop width couldn't open it, so it always gets the
+   pinned nav, and the toggle isn't offered there.
+
+   Nothing that stays visible moves as the rail opens: the side padding is
+   12px in both states, which puts the sun and each 20px icon on the rail's
+   centre line, and everything a lone icon can't carry (the word, the labels,
+   the glance card and the toggle) fades in place. Motion is tidied in the
+   motion pass (76).                                                       */
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-  .tabbar__pin {
+  .r-sidenav__pin {
     display: block;
     margin-top: var(--space-12);
   }
 
-  /* The reserved gutter shrinks to match the rail's resting width. This is a
-     discrete state — set once by a tap on the toggle below, not something
-     that moves on every pointer event — so it is fine for it to affect
-     layout directly, unlike the width change below. */
   .app-shell--nav-hover.app-shell--tabbed {
     padding-left: calc(
       var(--panel-nav-width-collapsed) + var(--gutter-desktop) + env(safe-area-inset-left)
     );
   }
 
-  /* The rail widens and narrows on an ease (pass 50). It was a bare snap
-     originally, on the reasoning that tweening `width` forces a per-frame
-     layout pass — true, but the pass is confined to this element's own
-     subtree: the rail is `position: fixed` and the reading column's gutter is
-     reserved off --panel-nav-width-collapsed independently, so the column
-     never reflows and the only thing relaid out each frame is the rail's own
-     handful of rows. On mouse-out the snap read as janky (it chopped the
-     labels/glance out before their fade could play); easing the width lets
-     the narrowing rail carry that content off-screen in step with the fade.
-     `overflow` still flips instantly to hidden on collapse (so nothing spills
-     as the rail closes) but waits out the widen on expand — a 0s transition
-     with a delay, so the value is discrete, only its timing moves. */
-  .app-shell--nav-hover .tabbar {
-    width: var(--panel-nav-width-collapsed);
+  .app-shell--nav-hover .r-sidenav {
+    width: calc(var(--panel-nav-width-collapsed) + env(safe-area-inset-left));
     overflow: hidden;
+    padding-left: calc(var(--space-12) + env(safe-area-inset-left));
+    padding-right: var(--space-12);
     transition:
       width var(--dur-base) var(--ease-out),
       overflow 0s;
   }
-  .app-shell--nav-hover .tabbar:hover,
-  .app-shell--nav-hover .tabbar:focus-within {
-    width: var(--panel-nav-width);
-    overflow: visible;
+  .app-shell--nav-hover .r-sidenav:hover,
+  .app-shell--nav-hover .r-sidenav:focus-within {
+    width: calc(var(--panel-nav-width) + env(safe-area-inset-left));
+    overflow-y: auto;
     transition:
       width var(--dur-base) var(--ease-out),
       overflow 0s var(--dur-base);
   }
+  .app-shell--nav-hover .r-sidenav__brand {
+    padding: 0 var(--space-12) 0 13px;
+  }
+  .app-shell--nav-hover .r-sidenav__item {
+    width: calc(var(--panel-nav-width) - 2 * var(--space-12));
+    padding: 0 var(--space-12) 0 14px;
+  }
 
-  /* Everything a bare icon can't carry on its own — the wordmark, a nav
-     button's label, the glance card, and the pin toggle itself — stays at
-     its normal size and position throughout (nothing here ever moves the
-     four nav icons), just invisible and clipped away by the rail's own
-     overflow at rest. `:focus-within` above means tabbing into a collapsed
-     rail expands it exactly like a hover would, so a keyboard user is never
-     worse off than a mouse. */
-  .app-shell--nav-hover .tabbar__brand-word,
-  .app-shell--nav-hover .tabbar__label,
-  .app-shell--nav-hover .tabbar__glance,
-  .app-shell--nav-hover .tabbar__pin {
+  .app-shell--nav-hover .r-wordmark__word,
+  .app-shell--nav-hover .r-sidenav__label,
+  .app-shell--nav-hover .r-sidenav__dot,
+  .app-shell--nav-hover .r-sidenav__glance,
+  .app-shell--nav-hover .r-sidenav__pin {
     opacity: 0;
-    transform: translateX(-4px);
-    transition:
-      opacity var(--dur-base) var(--ease-out),
-      transform var(--dur-base) var(--ease-out);
+    transition: opacity var(--dur-base) var(--ease-out);
   }
-  .app-shell--nav-hover .tabbar:hover .tabbar__brand-word,
-  .app-shell--nav-hover .tabbar:hover .tabbar__label,
-  .app-shell--nav-hover .tabbar:hover .tabbar__glance,
-  .app-shell--nav-hover .tabbar:hover .tabbar__pin,
-  .app-shell--nav-hover .tabbar:focus-within .tabbar__brand-word,
-  .app-shell--nav-hover .tabbar:focus-within .tabbar__label,
-  .app-shell--nav-hover .tabbar:focus-within .tabbar__glance,
-  .app-shell--nav-hover .tabbar:focus-within .tabbar__pin {
+  .app-shell--nav-hover
+    .r-sidenav:hover
+    :is(.r-wordmark__word, .r-sidenav__label, .r-sidenav__dot, .r-sidenav__glance, .r-sidenav__pin),
+  .app-shell--nav-hover
+    .r-sidenav:focus-within
+    :is(
+      .r-wordmark__word,
+      .r-sidenav__label,
+      .r-sidenav__dot,
+      .r-sidenav__glance,
+      .r-sidenav__pin
+    ) {
     opacity: 1;
-    transform: translateX(0);
   }
-
-  /* The wordmark. An empty 72px strip above the icons read as a broken
-     header, so the collapsed rail keeps the wordmark's own first letter
-     where the word goes.
-
-     "R" and "ise" are two halves of one wordmark, not two competing copies
-     of it, and that is the whole trick — two earlier attempts got it wrong
-     in ways worth naming. Animating a separate one-letter mark's width down
-     to 0 while a full "Rise" grew beside it dragged the word's left edge
-     leftward as it arrived, so the word flew in from the right. Overlapping
-     the two and crossfading their opacity instead fixed the direction but
-     made the R visibly flicker, since two copies of the same glyph at 50%
-     alpha composite to ~75%, not 100%. Splitting the word after its first
-     letter removes both problems by construction: there is only ever one R,
-     it never animates, and "ise" is an ordinary label that clips to nothing
-     and unspools rightward out of it.
-
-     The brand row keeps its left-aligned, --space-sm-padded position in both
-     states (no re-centring on expand), and the border-left mirrors the
-     transparent 2px active edge every .tabbar--icons .tabbar__btn carries so
-     the brand's content box lines up with the icon column below it. */
-  .app-shell--nav-hover .tabbar__brand {
-    border-left: 2px solid transparent;
-  }
-  /* The mark is inert: no opacity, no width, no transition. It is the "R" of
-     the wordmark itself, so it simply stays put in both states and the word
-     beside it is the only thing that moves. Both are inline-blocks aligned by
-     `bottom` rather than baseline, because the word's `overflow: hidden`
-     makes its baseline its own bottom edge — matching that on the mark is
-     what keeps the two halves of "Rise" sitting on one line. */
-  .app-shell--nav-hover .tabbar__brand-mark {
-    display: inline-block;
-    vertical-align: bottom;
-  }
-  .app-shell--nav-hover .tabbar__brand-word {
-    display: inline-block;
-    vertical-align: bottom;
-    max-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    transition: max-width var(--dur-base) var(--ease-out);
-  }
-  .app-shell--nav-hover .tabbar:hover .tabbar__brand-word,
-  .app-shell--nav-hover .tabbar:focus-within .tabbar__brand-word {
-    max-width: 6rem;
-  }
-
-  /* A collapsed row keeps its lone icon centred; the expanded row (icon, then
-     label, left-aligned) is what .tabbar--icons .tabbar__btn already does at
-     240px, so hovering/focusing only has to restore the bits the collapse
-     changed.
-
-     `padding-left` is deliberately NOT touched: the row inherits --space-12
-     from .tabbar--icons .tabbar__btn, and in a 72px rail (less the rail's own
-     --space-12 gutter and the 2px active-edge border) --space-12 lands the
-     20px icon dead centre. Keeping it identical to the expanded row means the
-     icon does not move at all as the rail opens — only the label's width and
-     the gap behind it animate. `gap` still collapses to 0 because flex gap
-     reserves space next to a zero-width item, which would otherwise shove the
-     lone icon half a gap off centre; it (and the now-pointless right padding)
-     ease back on --dur-base so the label's left edge doesn't lurch. The
-     label's own width eases 0 ↔ a real length (not `none`, which can't tween)
-     so the opacity fade on it plays over a box that is genuinely narrowing. */
-  .app-shell--nav-hover .tabbar--icons .tabbar__btn {
-    gap: 0;
-    padding-right: 0;
-    transition: gap var(--dur-base) var(--ease-out);
-  }
-  .app-shell--nav-hover .tabbar--icons .tabbar__label {
-    max-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    transition: max-width var(--dur-base) var(--ease-out);
-  }
-  .app-shell--nav-hover .tabbar.tabbar--icons:hover .tabbar__btn,
-  .app-shell--nav-hover .tabbar.tabbar--icons:focus-within .tabbar__btn {
-    gap: var(--space-12);
-    padding-right: var(--space-12);
-  }
-  .app-shell--nav-hover .tabbar.tabbar--icons:hover .tabbar__label,
-  .app-shell--nav-hover .tabbar.tabbar--icons:focus-within .tabbar__label {
-    max-width: 10rem;
+  /* Collapsed, each item is as wide as the rail's inside, so the active pill
+     shrinks to a 48px lozenge round its icon rather than being cut off. */
+  .app-shell--nav-hover .r-sidenav:not(:hover, :focus-within) .r-sidenav__item {
+    width: calc(var(--panel-nav-width-collapsed) - 2 * var(--space-12));
   }
 }
-
-/* Reduced motion: drop back to the original instant snap for the whole rail —
-   no eased width, no deferred overflow, no gliding icons. The content
-   opacity/transform fades above are already neutralised by tokens.css's
-   blanket `transition-duration: .01ms`, but that rule does not touch
-   `transition-delay`, so the deferred `overflow` flip is cleared here too. */
-@media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
-  .app-shell--nav-hover .tabbar,
-  .app-shell--nav-hover .tabbar:hover,
-  .app-shell--nav-hover .tabbar:focus-within,
-  .app-shell--nav-hover .tabbar--icons .tabbar__btn,
-  .app-shell--nav-hover .tabbar--icons .tabbar__label,
-  .app-shell--nav-hover .tabbar__brand-mark,
-  .app-shell--nav-hover .tabbar__brand-word {
-    transition: none;
-  }
-}
-
 /* ======================================================= hover states (35) ==
    The one place the "no hover anywhere" note at the top of this file is
    relaxed, and only where a pointer actually exists: (hover: hover) and
@@ -3529,22 +3452,6 @@
    hover — motion belongs to :active.                                         */
 
 @media (hover: hover) and (pointer: fine) {
-  /* nav */
-  .tabbar__btn:hover,
-  .tabbar__btn.is-parent-active:not(.is-active):hover {
-    color: var(--ink);
-    background: var(--bg-raised);
-  }
-  /* The wordmark routes to Today, so it takes a hover like any other nav
-     target. Colour only — the nav buttons step their background, and a filled
-     display-sized wordmark would read as a fifth tab. */
-  .tabbar__brand:hover {
-    color: var(--accent);
-  }
-  .tabbar__btn.is-active:hover {
-    background: var(--bg-raised);
-  }
-
   /* buttons — a filled control has no lighter token between its rest coral
      and its coral-700 press, and inventing a coral-600 is exactly what
      design-system.md forbids, so the fill is dimmed rather than re-coloured.
