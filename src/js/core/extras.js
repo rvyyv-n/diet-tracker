@@ -27,8 +27,12 @@ export function dayExtras(day) {
  * non-negative number — bad or missing input becomes 0, never NaN poisoning
  * the day total. The entry gets its own id so it can be removed later without
  * relying on its position in the list.
+ *
+ * `at` ("HH:MM", pass 67) is when it was logged, so Today can place it among
+ * the blocks. Optional: an extra logged before pass 67, or onto yesterday,
+ * has none and sits after the timed rows.
  */
-export function addExtra(day, { name, kcal, proteinG } = {}) {
+export function addExtra(day, { name, kcal, proteinG, at } = {}) {
   const cleanName = String(name ?? "").trim();
   if (!cleanName) return day;
   const entry = {
@@ -37,6 +41,7 @@ export function addExtra(day, { name, kcal, proteinG } = {}) {
     kcal: sanitiseNumber(kcal),
     proteinG: sanitiseNumber(proteinG),
   };
+  if (/^\d\d:\d\d$/.test(at ?? "")) entry.at = at;
   return { ...day, extras: [...dayExtras(day), entry] };
 }
 

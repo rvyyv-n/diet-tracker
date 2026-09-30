@@ -101,20 +101,6 @@ and desktop test pass, and the release.
 
 Model: Sonnet 5.5, high effort. Targets: today, weight. This is the two screens used every day.
 
-- [ ] **Pass 67 · `today`** — Today, phone and desktop.
-  - Reads: `screens/Rise Today Phone.dc.html`, the Today frames in
-    `Rise Desktop.dc.html`, `ui_kits/rise/TodayScreen.jsx`.
-  - Does: DotStrip, DayTotal with the sun and horizon, BlockList, BlockRow,
-    NowMarker and DueCard (emphasis only, earlier blocks recede but stay
-    tappable); Shake's "Most skipped" tag while it is upcoming; "Yesterday
-    isn't finished" and "This day is closed."; the Log food, Swap, Add a block
-    and Calendar sheets (520px dialogs on desktop) in `LogFood.jsx`; the tick
-    toast with Undo; the storage-full banner. On desktop the screen sits in
-    `.r-columns` (pass 66), with the 7 days, Log food / Add a block and
-    Appetite in the 340px support column, as the desktop frame lays them out.
-  - Done when: a Today grid matches the design in both Looks, light and dark,
-    at 390 and 1440, with nothing clipping at 320.
-
 - [ ] **Pass 68 · `weight`** — Weight, phone and desktop.
   - Reads: `screens/Rise Weight Phone.dc.html`, `WeightChart.jsx`,
     `SuggestionCard.jsx`, `ui_kits/rise/WeightScreen.jsx`.

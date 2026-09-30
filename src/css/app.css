@@ -74,25 +74,9 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* A write that failed or a record that couldn't be read (pass 57): an inline
-   banner above the screens, not a toast — toasts and their z-index scale are
-   still open in design-system.md. Existing tokens only; the error colour is
-   the one .field__hint--error already uses. */
+/* The storage banner (pass 57, a Banner since pass 67), above the screens. */
 .write-failure {
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
   margin-bottom: var(--space-16);
-  padding: var(--space-8) var(--space-16);
-  background: var(--bg-raised);
-  border: var(--border-width-hairline) solid var(--danger);
-  border-radius: var(--radius-card);
-}
-
-.write-failure__body {
-  flex: 1;
-  font: var(--text-body-sm);
-  color: var(--danger);
 }
 
 @media (min-width: 1024px) {
@@ -496,14 +480,6 @@
   color: var(--intake-low);
 }
 
-/* --------------------------------------------------------------- today ---
-   The daily checklist. Big tap rows (--row-min), a mono running total in
-   the intake-status colour, an inline rotation swap. Press states only.      */
-
-.today {
-  gap: var(--space-16);
-}
-
 /* A screen title with a small line tucked beneath it (Today, Weight). The
    eyebrow sits under the title at --space-4 — reverted from pass 10's
    --space-2 (2px): that read as misaligned rather than tight, and sits
@@ -517,23 +493,6 @@
   margin-bottom: var(--space-12);
 }
 
-.today__daterow {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: var(--space-12);
-}
-.today__daterow .btn--text {
-  margin-left: auto;
-  padding-block: 0;
-}
-
-.today__closed {
-  width: 100%;
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-}
-
 /* The one line under a screen title (phase + week on Today, week + count on
    Weight, a plain label on Settings). An uppercase tracked caption — the same
    register as .group__label — so it reads as an eyebrow and leaves the serif
@@ -545,49 +504,8 @@
   color: var(--ink-muted);
 }
 
-/* The target ladder under the banner — all three rungs, current one picked out.
-   Quiet by default so it reads as reference, not instruction. */
-.phase-ladder {
-  font: var(--text-caption);
-  color: var(--ink-soft);
-}
-.phase-ladder__now {
-  color: var(--ink-muted);
-  font-weight: var(--weight-medium);
-}
-
-/* adjustment suggestion --------------------------------------------------
-   Sits under the phase line. Informational, not an alert — a coral left edge
-   for "the plan wants to change", never the red status colour.               */
-
-.suggestion {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
-.suggestion__headline {
-  font: var(--text-title-sm);
-  color: var(--ink);
-}
-
-.suggestion__detail {
-  font: var(--text-body-sm);
-  color: var(--text-body);
-}
-
-.suggestion__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
-  margin-top: var(--space-4);
-}
-.suggestion__actions .btn--text {
-  padding-inline: var(--space-8);
-}
-
-/* the one-time v2 "what's new" card reuses .suggestion's card shell; its own
-   list needs the usual <ul> reset (see pass 37/38's note on this) */
+/* the one-time v2 "what's new" card: its list needs the usual <ul> reset
+   (see pass 37/38's note on this) */
 .whatsnew__list {
   margin: 0;
   padding: 0;
@@ -597,88 +515,6 @@
   gap: var(--space-4);
   font: var(--text-body-sm);
   color: var(--text-body);
-}
-
-/* running total --------------------------------------------------------- */
-
-.daytotal {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.daytotal__figure {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-8);
-}
-
-.daytotal__kcal {
-  font: var(--text-metric);
-  font-variant-numeric: tabular-nums;
-}
-
-.daytotal__target {
-  font: var(--text-metric-sm);
-  color: var(--ink-muted);
-}
-
-/* The day-total bar (pass 42). Its own margin rather than relying on the card's
-   gap, because it sits between the figure and the remaining line and wants to
-   read as part of the figure, not as a third row of the stack.
-
-   Capped at 12rem rather than the card's full width (reusing the width
-   .today-actions already settled on for its trigger buttons, not inventing a
-   new one): full-bleed had it read as a hard rule splitting the card in two,
-   dead centre under the kcal figure, rather than a small accent belonging to
-   the number just above it. align-self: flex-start keeps it pinned to that
-   figure's left edge instead of stretching with .daytotal's flex column.
-
-   The fill takes .is-on-track / .is-partial / .is-low, which are colour rules —
-   so it sets `background` from the same tokens explicitly rather than
-   inheriting, and repeats the three selectors below. */
-.daytotal__bar {
-  display: block;
-  align-self: flex-start;
-  width: 100%;
-  max-width: 12rem;
-  height: 3px;
-  margin: var(--space-4) 0 var(--space-4);
-  border-radius: var(--radius-pill);
-  background: var(--line);
-  overflow: hidden;
-}
-.daytotal__bar-fill {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--ink-soft);
-  /* Same node every render (Today.jsx only ever changes its width/class), so
-     the fill actually grows into place as a block gets ticked or food gets
-     logged, rather than jumping to the new total. */
-  transition:
-    width var(--dur-base) var(--ease-out),
-    background-color var(--dur-fast) var(--ease-out);
-}
-.daytotal__bar-fill.is-on-track {
-  background: var(--intake-on-track);
-}
-.daytotal__bar-fill.is-partial {
-  background: var(--intake-partial);
-}
-.daytotal__bar-fill.is-low {
-  background: var(--intake-low);
-}
-
-.daytotal__remaining {
-  font: var(--text-body-md);
-  color: var(--ink);
-}
-
-.daytotal__protein {
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
 }
 
 /* empty states (pass 41) --------------------------------------------------
@@ -712,85 +548,6 @@
   color: var(--ink-muted);
 }
 
-/* backfill nudge ------------------------------------------------------ */
-
-.backfill {
-  width: 100%;
-  padding: var(--space-12) var(--space-16);
-  text-align: left;
-  font: var(--text-body-sm);
-  color: var(--text-body);
-  background: var(--bg-raised);
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-field);
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.backfill:active {
-  background: var(--bg-raised);
-}
-.backfill:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-/* checklist --------------------------------------------------------- */
-
-.checklist {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
-.block-row {
-  background: var(--bg-raised);
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-card);
-  overflow: hidden;
-}
-
-/* The block whose nominal time has most recently passed — today only. The coral
-   edge says "you're here now"; it replaces the inline "now" label, which crowded
-   the block name off a 390px row. (This edge used to flag B2, the shake, as the
-   highest skip risk — that treatment was dropped for this one.) */
-.block-row--now {
-  border-color: var(--accent);
-  border-left-width: 3px;
-}
-
-.block-row__lead {
-  display: flex;
-  align-items: stretch;
-}
-
-.block-row__main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
-  min-height: var(--row-min);
-  padding: var(--space-12) var(--space-16);
-  text-align: left;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.block-row__main:active {
-  background: var(--bg-sunken);
-}
-.block-row__main:disabled {
-  cursor: default;
-}
-.block-row__main:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
 .block-row__tick {
   flex: none;
   display: inline-flex;
@@ -813,61 +570,6 @@
 .block-row__tick.is-done {
   background: var(--accent);
   border-color: var(--accent);
-}
-
-.block-row__body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.block-row__name {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-8);
-  min-width: 0;
-  font: var(--text-title-sm);
-  color: var(--ink);
-}
-/* Only the name itself clips — the time chip after it keeps its width so it
-   can't be the thing that gets cut. */
-.block-row__label {
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.block-row__desc {
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.block-row.is-done .block-row__name {
-  color: var(--ink-muted);
-}
-.block-row.is-done .block-row__desc {
-  text-decoration: line-through;
-}
-
-/* time-of-day cue (pass 18) — a small nominal time after the block name. The
-   current block is picked out by a coral edge (block-row--now), not a word
-   here; blocks whose time has passed dim a little. Typography only — no red,
-   nothing that reads as "overdue". */
-.block-row__time {
-  flex: none;
-  font: var(--text-caption);
-  font-weight: var(--weight-regular);
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
-}
-.block-row--past:not(.is-done) {
-  opacity: 0.62;
 }
 
 .block-row__kcal {
@@ -896,118 +598,6 @@
   font-weight: var(--weight-regular);
   color: var(--ink-soft);
 }
-.block-row.is-done .block-row__kcal {
-  color: var(--ink-muted);
-}
-
-/* Its own recessed strip, so it reads as a distinct control rather than a word
-   floating at the row's edge. */
-.block-row__swap {
-  flex: none;
-  align-self: stretch;
-  padding: 0 var(--space-16);
-  font: var(--text-caption);
-  font-weight: var(--weight-medium);
-  color: var(--ink-muted);
-  background: var(--bg-sunken);
-  border: none;
-  border-left: var(--border-width-hairline) solid var(--line);
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.block-row__swap:active {
-  color: var(--accent);
-  background: var(--bg-raised);
-}
-.block-row__swap:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-/* rotation picker ------------------------------------------------------
-   Reads as a nested panel, not more checklist rows: recessed surface, a left
-   indent, and a radio dot so the current pick is unmistakable.               */
-
-.rotation {
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-4) 0;
-  background: var(--bg-raised);
-  border-top: var(--border-width-hairline) solid var(--line);
-}
-
-.rotation__opt {
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
-  padding: var(--space-8) var(--space-16) var(--space-8) var(--space-24);
-  text-align: left;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.rotation__opt:active {
-  background: var(--bg-sunken);
-}
-.rotation__opt:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-.rotation__opt.is-picked {
-  background: var(--accent-tint);
-}
-
-.rotation__radio {
-  flex: none;
-  font-size: 11px;
-  line-height: 1;
-  color: var(--ink-soft);
-}
-.rotation__opt.is-picked .rotation__radio {
-  color: var(--accent);
-}
-
-.rotation__opt-desc {
-  flex: 1;
-  font: var(--text-body-sm);
-  line-height: 1.35;
-  color: var(--text-body);
-}
-.rotation__opt.is-picked .rotation__opt-desc {
-  color: var(--ink);
-  font-weight: var(--weight-medium);
-}
-
-.rotation__opt-kcal {
-  flex: none;
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-/* manual add-on blocks (pass 8) -------------------------------------------
-   A bonus block is one added by hand for that day only: it adds kcal when
-   ticked but never grows the adherence denominator. It reads like a plan row
-   with a quiet tag; the drop control (×) removes it. The same × on a plan
-   add-on row means "not having this today". */
-
-.block-row__tag {
-  flex: none;
-  display: inline-block;
-  padding: 1px 6px;
-  font: var(--text-caption);
-  font-weight: var(--weight-medium);
-  color: var(--ink-muted);
-  background: var(--bg-raised);
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-sm);
-  vertical-align: middle;
-}
-.block-row--bonus {
-  border-style: dashed;
-}
-
 .block-row__drop {
   flex: none;
   align-self: stretch;
@@ -1035,126 +625,6 @@
   box-shadow: var(--focus-ring);
 }
 
-.addblock {
-  display: flex;
-  flex-direction: column;
-}
-
-/* The two entry triggers as one strip under the checklist (pass 40). They used
-   to sit loose in the page as two small pills with nothing bounding them,
-   which read as leftovers between the block list and the appetite chips. A
-   hairline above and the triggers side by side makes them the checklist's
-   footer instead. They wrap to a column at narrow widths rather than
-   shrinking below a comfortable tap width. */
-.today-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-8);
-  padding-top: var(--space-12);
-  border-top: var(--border-width-hairline) solid var(--line);
-}
-/* Each trigger becomes a bounded control rather than bare text — same hairline
-   and radius as the panel each one opens, so the closed and open states read
-   as the same object. .addblock keeps its column flow so the panel still drops
-   directly beneath its own trigger. */
-.today-actions > .addblock {
-  flex: 1 1 12rem;
-}
-.today-actions .addblock__trigger {
-  align-self: stretch;
-  justify-content: center;
-  padding: var(--space-12);
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-field);
-}
-
-.addblock__trigger {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  align-self: flex-start;
-  padding: var(--space-8) var(--space-12);
-  font: var(--text-caption);
-  font-weight: var(--weight-medium);
-  color: var(--ink-muted);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.addblock__trigger:active {
-  color: var(--accent);
-}
-.addblock__trigger:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-.addblock__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  font-size: 14px;
-  line-height: 1;
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-sm);
-}
-
-.addblock__panel {
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-card);
-}
-
-/* .rotation is designed as a full-bleed recessed strip nested inside a block
-   row: no radius, a hairline only on top, and --space-4 of vertical breathing
-   room. Bounded in .addblock__panel it is a different object — it has a border
-   and a 12px radius — and there that padding left the hover, press and picked
-   fills floating 4px short of the top and bottom edges with square corners
-   inside a rounded box. The rows reach the edge here and follow the corner.
-
-   overflow: hidden would have clipped them to the radius in one line, but a
-   .rotation__opt focus ring is a box-shadow 4px OUTSIDE the row, so the first
-   and last row would have lost half their focus ring. Rounding the rows
-   themselves costs three rules and keeps the ring whole.
-
-   The inner radius is the outer radius less the border it sits inside —
-   derived from the tokens, not a new value. */
-.rotation.addblock__panel {
-  padding: 0;
-}
-.rotation.addblock__panel .rotation__opt:first-child {
-  border-start-start-radius: calc(var(--radius-card) - var(--border-width-hairline));
-  border-start-end-radius: calc(var(--radius-card) - var(--border-width-hairline));
-}
-.rotation.addblock__panel .rotation__opt:last-child {
-  border-end-start-radius: calc(var(--radius-card) - var(--border-width-hairline));
-  border-end-end-radius: calc(var(--radius-card) - var(--border-width-hairline));
-}
-
-/* off-plan extras (pass 25) ------------------------------------------------
-   A logged extra reads as a lighter block-row: reuses .block-row__kcal and
-   .block-row__drop rather than inventing a parallel kcal/remove treatment.
-   The entry panel reuses .addblock / .addblock__panel wholesale — same
-   "closed panel, + trigger" register as adding a plan block — and adds only
-   what's genuinely new: the pick/type mode toggle and the two small forms. */
-
-.extras {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-12);
-}
-
-.extras__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
 .extras__row {
   display: flex;
   align-items: center;
@@ -1176,25 +646,6 @@
   color: var(--ink);
 }
 
-/* .block-row__swap / .block-row__drop are edge strips on a plan .block-row,
-   which clips them (overflow: hidden), so their outer corners follow the card.
-   A free-standing .extras__row is padded and does not clip, so the same strips
-   floated as sharp-cornered rectangles (see the pass-28 recipe rows). Round
-   them to --radius-field and drop the now-orphaned divider — the row's own
-   gap separates them. .extras__pick-row keeps the clipped edge treatment. */
-.extras__row:not(.extras__pick-row) .block-row__swap,
-.extras__row:not(.extras__pick-row) .block-row__drop {
-  border-left: none;
-  border-radius: var(--radius-field);
-}
-
-.extras__panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-16);
-  padding: var(--space-16);
-}
-
 .extras__modeseg {
   align-self: flex-start;
 }
@@ -1212,54 +663,6 @@
 .extras__row-fields .field {
   flex: 1;
   min-width: 0;
-}
-
-/* recipe book (pass 26) -----------------------------------------------------
-   A logged extra can be saved to a small reusable book: the Save control on
-   its row is the rotation Swap strip (.block-row__swap), reused rather than a
-   new treatment. The "Log food" panel gains a Recipes tab whose rows are
-   .extras__row cards with a button face — one tap inserts the recipe as an
-   extra — and the shared × to drop it from the book. */
-
-.extras__save[disabled] {
-  color: var(--ink-soft);
-  cursor: default;
-}
-
-.extras__recipes {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
-/* Padding moves onto the button face so the whole row is the tap target and
-   the × sits flush; overflow clips the stretched × to the card radius. */
-.extras__pick-row {
-  gap: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-.extras__pick {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
-  min-height: var(--row-min);
-  padding: var(--space-12) var(--space-16);
-  text-align: left;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.extras__pick:active {
-  background: var(--bg-sunken);
-}
-.extras__pick:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
 }
 
 /* recipe editor (pass 28) ------------------------------------------------
@@ -1314,131 +717,6 @@
   margin: 0;
   font: var(--text-body-sm);
   color: var(--danger);
-}
-
-/* appetite check (pass 9) ----------------------------------------------
-   A three-way tap scale, low on Today under a .group__label. Entirely
-   optional — no prompt, no red state for a blank day. */
-
-.appetite {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
-.appetite__chips {
-  display: flex;
-  gap: var(--space-8);
-}
-
-.appetite__chip {
-  flex: 1;
-  min-height: var(--row-min);
-  padding: var(--space-8) var(--space-12);
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-  background: var(--bg-raised);
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-field);
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.appetite__chip:active {
-  background: var(--bg-sunken);
-}
-.appetite__chip:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-.appetite__chip.is-picked {
-  color: var(--ink);
-  font-weight: var(--weight-medium);
-  border-color: var(--accent);
-  background: var(--accent-tint);
-}
-
-/* adherence dot strip (pass 15) --------------------------------------------
-   One dot per day over ~6 weeks under the checklist, coloured by that day's
-   intake status; a day with nothing ticked stays blank. Tapping a dot views
-   that day. Not an alarm — same intake-status scale as the day total, no red
-   used as a warning beyond what that scale already means. */
-
-.daystrip {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
-/* label left, the "older days" calendar trigger right — same shape as the
-   weigh-in date row on Weight. */
-.daystrip__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-12);
-}
-.daystrip__head .cal {
-  flex: none;
-}
-.daystrip__head .cal__trigger {
-  width: auto;
-  height: auto;
-  padding: 4px var(--space-8);
-  font: var(--text-body-sm);
-}
-.daystrip__head .cal__value {
-  flex: none;
-  overflow: visible;
-}
-/* the trigger hugs the right edge, so open the panel leftward from there */
-.daystrip__head .cal__panel {
-  left: auto;
-  right: 0;
-}
-
-.daystrip__row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.daystrip__dot {
-  flex: none;
-  width: 13px;
-  height: 13px;
-  padding: 0;
-  border-radius: var(--radius-pill);
-  background: var(--bg-sunken);
-  border: var(--border-width-hairline) solid var(--line);
-  cursor: pointer;
-  transition:
-    var(--transition-control),
-    transform 0.12s var(--ease-out);
-}
-.daystrip__dot:active {
-  transform: scale(0.82);
-}
-.daystrip__dot:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-.daystrip__dot.is-on-track {
-  background: var(--intake-on-track);
-  border-color: transparent;
-}
-.daystrip__dot.is-partial {
-  background: var(--intake-partial);
-  border-color: transparent;
-}
-.daystrip__dot.is-low {
-  background: var(--intake-low);
-  border-color: transparent;
-}
-/* the day currently on screen — a ring in the canvas colour then a muted halo */
-.daystrip__dot.is-viewing {
-  box-shadow:
-    0 0 0 2px var(--bg-canvas),
-    0 0 0 3px var(--ink-muted);
 }
 
 /* --------------------------------------------------- date controls ---
@@ -2274,9 +1552,7 @@
 }
 
 /* The eyebrow above a card. Flex since pass 39, so it can carry a leading
-   glyph — see groupLabel() in ui/dom.js. inline-flex rather than flex because
-   .daystrip__head lays this out beside the calendar button and a block-level
-   label there would eat the whole row. */
+   glyph — see groupLabel() in ui/dom.js. */
 .group__label {
   display: inline-flex;
   align-items: center;
@@ -2304,7 +1580,7 @@
 }
 
 /* -------------------------------------------------------------- panel ---
-   The import preview. Recessed inside the card, like .rotation.             */
+   The import preview. Recessed inside the card.                             */
 
 .set-panel {
   display: flex;
@@ -2707,20 +1983,6 @@
    docs/handoff/additions.css.
    ========================================================================== */
 
-/* ---------------------------------------------------------- suggestion ---
-   Was a 3px coral left edge — but so is .block-row--now, and the two could
-   appear together carrying different meanings. The "now" row keeps the edge;
-   the suggestion becomes a recessed panel, the treatment .rotation and
-   .set-panel already use for "something opened here". Coral now only appears
-   on Apply.                                                                  */
-
-.suggestion {
-  padding: var(--space-16);
-  background: var(--bg-raised);
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-card);
-}
-
 /* ---------------------------------------------------------------- tick ---
    The checklist tick was a text glyph, whose weight tracked the body font.
    Now the Lucide check, from the same set as the Settings rows.              */
@@ -2895,25 +2157,7 @@
    (the blanket rule lives in tokens.css). Press + focus states only, as ever.
    ========================================================================== */
 
-/* .block-row / .block-row__tick used to carry a background/border-color
-   transition here, meant to ease a tick's colour change. It never ran: the
-   vanilla Today rebuilt its whole subtree on every commit, so the ticked row
-   was a freshly inserted node with its final colour already set and nothing
-   to transition from. Pass 46 brought it back on `.block-row__tick` itself
-   now that Today is React and the row keeps its DOM identity across a tap. */
-.block-row__name,
-.block-row__desc,
-.block-row__kcal,
-.daytotal__kcal,
-.daytotal__remaining,
-.daytotal__protein {
-  transition:
-    color 0.15s ease,
-    opacity 0.15s ease;
-}
-
-/* anything that expands in place — the rotation picker, the import preview,
-   the reset confirm — slides down a few pixels as it fades in. Gated behind
+/* anything that expands in place — the import preview, the reset confirm — slides down a few pixels as it fades in. Gated behind
    `.is-entering` rather than the bare class: the same full-rebuild render
    model above recreates an already-open panel on every unrelated re-render
    (ticking one block replays every other open panel's drop), so the caller
@@ -2929,7 +2173,6 @@
     transform: translateY(0);
   }
 }
-.rotation.is-entering,
 .set-panel.is-entering,
 .set-confirm.is-entering {
   animation: accordion-drop 0.16s cubic-bezier(0.16, 1, 0.3, 1);
@@ -3471,11 +2714,6 @@
   }
 
   /* tap rows — press is --bg-sunken, so hover takes --bg-raised */
-  .backfill:hover,
-  .block-row__main:hover,
-  .rotation__opt:hover,
-  .extras__pick:hover,
-  .appetite__chip:hover,
   .grocery__row:hover,
   .set2-row:hover,
   .set2-profile:hover,
@@ -3488,7 +2726,6 @@
   }
 
   /* small icon triggers — press is --bg-raised, so hover takes soft */
-  .block-row__swap:hover,
   .block-row__drop:hover {
     background: var(--bg-raised);
   }
@@ -3503,17 +2740,6 @@
     background-image: linear-gradient(var(--hover-wash), var(--hover-wash));
   }
 
-  /* text-only triggers have no fill to step, so they step one shade toward
-     their own press colour instead */
-  .addblock__trigger:hover {
-    color: var(--ink);
-  }
-  /* Bounded in the actions strip it has a fill to step, so it takes the tap-row
-     treatment rather than the text-only one. */
-  .today-actions .addblock__trigger:hover {
-    color: var(--ink);
-    background: var(--bg-raised);
-  }
   .about2__link:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -4705,6 +3931,10 @@
   box-shadow: var(--shadow-float);
   color: var(--ink);
 }
+/* focused on open so the keyboard starts inside; the panel itself draws no ring */
+.r-sheet__panel:focus {
+  outline: none;
+}
 .r-sheet__grabber {
   flex: none;
   width: 40px;
@@ -5053,6 +4283,452 @@ button.r-listrow {
   border-top: 1px solid var(--line);
   font-size: 13px;
   color: var(--ink-muted);
+}
+
+/* ------------------------------------------------------- today (pass 67) ---
+   Today runs edge to edge on a phone: the day total and the block list pad
+   themselves by --gutter, so the screen cancels the shell's side padding. On
+   desktop it sits in .r-columns: the total and the list in the main column,
+   the week card, the two buttons and Appetite in the support column. */
+
+.r-today {
+  display: flex;
+  flex-direction: column;
+  margin: 0 calc(-1 * (var(--space-16) + env(safe-area-inset-right))) 0
+    calc(-1 * (var(--space-16) + env(safe-area-inset-left)));
+}
+@media (min-width: 600px) {
+  .r-today {
+    margin: 0 calc(-1 * (var(--space-24) + env(safe-area-inset-right))) 0
+      calc(-1 * (var(--space-24) + env(safe-area-inset-left)));
+  }
+}
+.r-today .r-columns {
+  gap: 14px;
+}
+.r-today__main,
+.r-today__support {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.r-today__strip {
+  margin-top: var(--space-8);
+  padding: 0 var(--gutter);
+}
+.r-today__banner,
+.r-today__card {
+  margin: var(--space-16) var(--gutter) 0;
+}
+.r-today__card-title {
+  margin-bottom: var(--space-8);
+  font-size: var(--type-title);
+  font-weight: 700;
+}
+.r-today__card .r-button {
+  margin-top: 14px;
+}
+.r-today__total {
+  margin-top: 22px;
+}
+/* the full date leads the eyebrow on desktop only; the strip says it on a phone */
+.r-today__date {
+  display: none;
+}
+.r-today__blocks {
+  margin-top: 26px;
+}
+.r-today__support {
+  gap: 22px;
+  padding: 0 var(--gutter);
+}
+.r-today__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.r-today__actions .r-button {
+  padding: 0 var(--space-12);
+}
+
+/* Phone rows carry the name and kcal only; desktop adds the description and
+   protein (below). */
+.r-blockrow__desc,
+.r-blockrow__protein {
+  display: none;
+}
+
+.r-appetite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+}
+.r-appetite__label {
+  margin-right: var(--space-4);
+  font-family: var(--section-font);
+  font-size: var(--section-size);
+  font-weight: var(--section-weight);
+  letter-spacing: var(--section-tracking);
+  text-transform: var(--section-transform);
+  color: var(--section-ink);
+}
+.r-appetite__chips {
+  display: flex;
+  gap: var(--space-8);
+}
+
+/* On the narrowest phones the strip and Calendar share 280px: the dots close
+   up a little and the button slims, so neither runs under the other. */
+@media (max-width: 360px) {
+  .r-today .r-dotstrip__day {
+    width: 19px;
+  }
+  .r-today .r-dotstrip__calendar {
+    padding: 0 var(--space-12);
+  }
+}
+
+/* the seven days as a card: desktop only, the phone has the dot strip */
+.r-weekcard {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .r-today {
+    margin: 0;
+  }
+  .r-today__strip {
+    display: none;
+  }
+  .r-today__date {
+    display: inline;
+  }
+  .r-today__banner,
+  .r-today__card {
+    margin: 0 0 var(--space-16);
+  }
+  .r-today__total {
+    margin-top: 0;
+  }
+  .r-today .r-daytotal {
+    margin: 0 calc(-1 * var(--gutter));
+  }
+  .r-today .r-daytotal__kcal {
+    font-size: calc(var(--type-hero) * 1.15);
+  }
+  .r-today .r-daytotal__target {
+    font-size: 24px;
+  }
+  .r-today .r-blocklist {
+    padding-right: 0;
+  }
+  .r-today .r-blocklist::before {
+    left: 83px;
+  }
+  .r-today .r-blockrow {
+    position: relative;
+    grid-template-columns: 58px 28px minmax(0, 1fr) 110px;
+    column-gap: 14px;
+    min-height: 54px;
+    padding: var(--space-4) 78px var(--space-4) 0;
+  }
+  .r-today .r-blockrow__mark {
+    margin: 0 -8px;
+  }
+  .r-today .r-blockrow__name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: var(--space-8);
+    font-size: var(--type-title);
+  }
+  .r-today .r-blockrow__tag {
+    margin-left: 0;
+  }
+  .r-today .r-blockrow__desc {
+    display: block;
+    flex-basis: 100%;
+    font-size: var(--type-small);
+    color: var(--ink-muted);
+  }
+  /* the link gets its own column at the row's end */
+  .r-today .r-blockrow__link {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 64px;
+    margin: 0;
+    text-align: right;
+    transform: translateY(-50%);
+  }
+  .r-today .r-blockrow__kcal {
+    text-align: right;
+  }
+  .r-today .r-blockrow__protein {
+    display: inline;
+    font-size: var(--type-small);
+    font-weight: 400;
+    color: var(--ink-muted);
+  }
+  .r-today .r-now {
+    height: 28px;
+  }
+  .r-today .r-now__line {
+    right: -24px;
+    top: 14px;
+  }
+  .r-today .r-now__sun {
+    left: 76px;
+    top: 6px;
+  }
+  .r-today .r-now__time {
+    left: 6px;
+    top: 5px;
+  }
+  .r-today .r-due {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-20);
+    margin-left: 72px;
+    padding: 18px var(--space-20);
+  }
+  .r-today .r-due__figures {
+    display: none;
+  }
+  .r-today .r-due__actions {
+    display: flex;
+    margin-top: 0;
+  }
+
+  .r-today__support {
+    gap: 18px;
+    padding: 6px 0 0;
+  }
+  .r-weekcard {
+    display: block;
+    padding: 18px;
+    border-radius: var(--radius-card);
+    background: var(--bg-raised);
+    box-shadow: var(--shadow-card);
+  }
+  .r-appetite {
+    display: block;
+    padding: 18px;
+    border-radius: var(--radius-card);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .r-appetite__chips {
+    margin-top: var(--space-12);
+  }
+  .r-appetite .r-chip {
+    padding: 0 var(--space-16);
+  }
+}
+@media (min-width: 1280px) {
+  .r-today .r-columns {
+    gap: 40px;
+  }
+}
+
+/* The due card's figures move into its description line on desktop. */
+.r-due__inline {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .r-today .r-due__inline {
+    display: inline;
+  }
+  .r-today .r-due__inline b {
+    color: var(--due-ink);
+  }
+}
+
+.r-weekcard__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.r-weekcard__title {
+  margin: 0;
+  font-family: var(--section-font);
+  font-size: var(--section-size);
+  font-weight: var(--section-weight);
+  line-height: 1.3;
+  letter-spacing: var(--section-tracking);
+  text-transform: var(--section-transform);
+  color: var(--section-ink);
+}
+.r-weekcard__days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: 14px;
+}
+.r-weekcard__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-4) 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--ink-muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.r-weekcard__day:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.r-weekcard__dot-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+}
+.r-weekcard__day .r-dotstrip__dot {
+  width: 16px;
+  height: 16px;
+}
+.r-weekcard__day.r-dotstrip__day--today .r-dotstrip__dot {
+  width: 22px;
+  height: 22px;
+  --r-dot-ring: inset 0 0 0 2px var(--ink);
+}
+.r-weekcard__day.is-selected:not(.r-dotstrip__day--today) .r-dotstrip__dot {
+  --r-dot-ring: 0 0 0 2px var(--bg-raised), 0 0 0 3.5px var(--ink);
+}
+.r-weekcard__n {
+  color: var(--ink);
+}
+.r-weekcard__day.r-dotstrip__day--today .r-weekcard__n {
+  font-weight: 700;
+}
+.r-weekcard__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 14px;
+  padding-top: var(--space-12);
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+/* The toast clears the side nav on desktop and sits low in the main pane. */
+@media (min-width: 1024px) {
+  .r-toast--float {
+    left: calc(50% + var(--panel-nav-width) / 2);
+    bottom: calc(32px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ------------------------------------------------ today's sheets (pass 67) --- */
+
+.r-sheet__note {
+  margin: 0;
+  font-size: var(--type-small);
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+.r-sheet__options {
+  padding: 0 14px;
+  border-radius: var(--radius-card);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.r-sheet__actions {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+}
+.r-sheet--dialog .r-sheet__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.r-sheet__aside {
+  align-self: center;
+}
+
+.r-recipes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+.r-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--control-h);
+  padding: 0 var(--space-16);
+  border-radius: var(--radius-field);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+  color: var(--ink-muted);
+}
+.r-search:focus-within {
+  box-shadow:
+    inset 0 0 0 1.5px var(--ink),
+    var(--focus-ring);
+}
+.r-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--type-body);
+}
+.r-logrow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  border-bottom: 1px solid var(--line);
+}
+.r-logrow__name {
+  min-height: var(--icon-button);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 17px;
+  text-align: left;
+  cursor: pointer;
+}
+.r-logrow__name:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+.r-logrow__figures {
+  text-align: right;
+  font-size: var(--type-body);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.r-logrow__protein {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+.r-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-12);
+  min-height: var(--control-h);
+  font-size: var(--type-body);
 }
 
 /* --------------------------------------------------- shared states (65) --- */

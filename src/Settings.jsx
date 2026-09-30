@@ -16,6 +16,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { justOpened } from "./js/ui/dom.js";
+import { downloadBackup } from "./js/ui/download.js";
 import {
   SCHEMA_VERSION,
   clear as clearStorage,
@@ -29,7 +30,6 @@ import {
   assertImportable,
   countRecords,
   parseBackup,
-  noteExport,
   lastExportedAt,
   takeSnapshot,
   snapshotInfo,
@@ -44,7 +44,7 @@ import {
 } from "./js/core/profile.js";
 import { setThemePref, THEME_PREFS } from "./js/core/theme.js";
 import { phaseById } from "./js/core/plan.js";
-import { humanDate, todayISO } from "./js/core/dates.js";
+import { humanDate } from "./js/core/dates.js";
 import { APP_VERSION, REPO_URL } from "./js/core/appinfo.js";
 import { checkForUpdate, updateStatus, detectBuild } from "./js/core/updates.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
@@ -235,30 +235,9 @@ export default function Settings({ onEditSetup, onReset }) {
     setUpdatePhase(ok ? "idle" : "error");
   }
 
-  /**
-   * A file download, not a clipboard copy (pass 17). navigator.clipboard is
-   * undefined outside a secure context — any origin that isn't https or
-   * localhost, which includes a plain LAN IP — so a clipboard write used to
-   * throw before either branch of its `.then()` ever ran: the button did
-   * visibly nothing. A Blob download needs no permission and no secure
-   * context, so it works everywhere the app does.
-   */
+  /** The backup as a file (ui/download.js), then a brief "Downloaded". */
   function exportDownload() {
-    const json = JSON.stringify(exportAll(), null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `rise-backup-${todayISO()}.json`;
-    // Safari needs the anchor actually in the DOM for .click() to trigger a
-    // real download rather than silently no-op — same family of issue as the
-    // clipboard one above, so not worth risking again.
-    document.body.append(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    noteExport();
-
+    downloadBackup();
     setJustDownloaded(true);
     setTimeout(() => setJustDownloaded(false), 2000);
   }

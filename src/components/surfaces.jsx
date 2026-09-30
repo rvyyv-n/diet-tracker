@@ -5,7 +5,7 @@
  * navigation surfaces (PhoneNav, SideNav) belong to the shell, pass 66.
  */
 
-import { Children, cloneElement, isValidElement, useEffect } from "react";
+import { Children, cloneElement, isValidElement, useEffect, useRef } from "react";
 import { Button, Icon, IconButton, Radio } from "./core.jsx";
 
 const cx = (...names) => names.filter(Boolean).join(" ");
@@ -14,17 +14,29 @@ const cx = (...names) => names.filter(Boolean).join(" ");
  * A modal surface with its scrim: a bottom sheet with a grabber on phone, a
  * 520px centred dialog on desktop (`variant="dialog"`, `navInset` keeps it
  * centred on the main pane). Fixed to the viewport; `contained` pins it
- * inside a positioned parent instead, for previews. Escape closes it.
+ * inside a positioned parent instead, for previews. Escape closes it. With
+ * no title (the calendar draws its own month bar) the head is left out and
+ * `label` names the dialog. Focus moves into the panel on open and back to
+ * where it was on close.
  */
 export function Sheet({
   variant = "sheet",
   title,
+  label,
   meta,
   navInset = 0,
   contained,
   onClose,
   children,
 }) {
+  const panelRef = useRef(null);
+  useEffect(() => {
+    if (contained) return undefined;
+    const back = document.activeElement;
+    panelRef.current?.focus();
+    return () => back?.focus?.();
+  }, [contained]);
+
   useEffect(() => {
     if (!onClose || contained) return undefined;
     const onKey = (e) => e.key === "Escape" && onClose();
@@ -39,12 +51,21 @@ export function Sheet({
       style={navInset ? { "--r-sheet-inset": `${navInset}px` } : undefined}
     >
       <div className="r-sheet__scrim" onClick={onClose} />
-      <div role="dialog" aria-modal="true" aria-label={title} className="r-sheet__panel">
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title || label}
+        tabIndex={-1}
+        className="r-sheet__panel"
+      >
         {dialog ? null : <div className="r-sheet__grabber" aria-hidden="true" />}
-        <div className="r-sheet__head">
-          <h2 className="r-sheet__title">{title}</h2>
-          {meta ? <span className="r-sheet__meta">{meta}</span> : null}
-        </div>
+        {title || meta ? (
+          <div className="r-sheet__head">
+            <h2 className="r-sheet__title">{title}</h2>
+            {meta ? <span className="r-sheet__meta">{meta}</span> : null}
+          </div>
+        ) : null}
         {children}
       </div>
     </div>

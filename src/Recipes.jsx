@@ -92,8 +92,8 @@ export default function Recipes() {
         </div>
         <Group label="Recipe book" icon="book-open">
           <p className="screen__intro">
-            Tap a recipe to log it on today, or Edit to change what it&rsquo;s built from. New
-            recipes also appear under Today &rarr; Log food.
+            Log puts a recipe on today; its name opens it to edit. New recipes also show under Today
+            &rarr; Log food.
           </p>
           <ExtrasRecipeForm
             day={day}

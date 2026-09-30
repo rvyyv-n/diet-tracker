@@ -39,6 +39,8 @@ import Settings from "./Settings.jsx";
 import Recipes from "./Recipes.jsx";
 import { Segmented } from "./components/core.jsx";
 import { PhoneNav, SideNav } from "./components/nav.jsx";
+import { Banner } from "./components/surfaces.jsx";
+import { downloadBackup } from "./js/ui/download.js";
 
 const Intro = lazy(() => import("./Intro.jsx"));
 const Welcome = lazy(() => import("./Welcome.jsx"));
@@ -293,33 +295,39 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
 
 /** What a failed write means, stated plainly — see storage.js onWriteFailure(). */
 const WRITE_FAILURE_COPY = {
-  quota:
-    "Not saved — storage for Rise is full on this device. Export your data from Settings to keep a copy.",
-  blocked: "Not saved — storage is blocked for this site.",
-  corrupt:
-    "Some saved data couldn't be read and was set aside. What's on screen may be incomplete.",
+  quota: {
+    title: "Storage is full",
+    sub: "Ticks may not save. Download a backup.",
+    action: "Backup",
+  },
+  blocked: { title: "Storage is blocked", sub: "Nothing saves on this site until it's allowed." },
+  corrupt: {
+    title: "Some saved data couldn't be read",
+    sub: "It was set aside. What's on screen may be incomplete.",
+  },
 };
 
 /**
- * An inline banner above the screens for a write that didn't land or a record
- * that couldn't be read (pass 57). The screens re-read storage on every
- * render, so a failed tick already bounces back; this says why. It shows the
- * latest failure only, and a dismissed notice comes back on the next one.
- * Inline rather than a toast: toasts and their z-index scale are still open
- * in design-system.md.
+ * The storage banner above the screens, for a write that didn't land or a
+ * record that couldn't be read (pass 57, restyled in pass 67). The screens
+ * re-read storage on every render, so a failed tick already bounces back;
+ * this says why. It shows the latest failure only; storage full offers the
+ * backup download, the others a Dismiss.
  */
 function WriteFailureNotice() {
   const [kind, setKind] = useState(null);
   useEffect(() => onWriteFailure((_name, next) => setKind(next)), []);
   if (!kind) return null;
+  const copy = WRITE_FAILURE_COPY[kind] ?? WRITE_FAILURE_COPY.blocked;
   return (
-    <div className="write-failure" role="alert">
-      <p className="write-failure__body">
-        {WRITE_FAILURE_COPY[kind] ?? WRITE_FAILURE_COPY.blocked}
-      </p>
-      <button className="btn btn--text" type="button" onClick={() => setKind(null)}>
-        Dismiss
-      </button>
+    <div className="write-failure">
+      <Banner
+        kind="storage"
+        title={copy.title}
+        sub={copy.sub}
+        action={copy.action ?? "Dismiss"}
+        onAction={copy.action ? downloadBackup : () => setKind(null)}
+      />
     </div>
   );
 }

@@ -12,7 +12,7 @@ import path from "node:path";
  * whose <meta name="theme-color"> values have to be literal hex.
  */
 const LEFTOVER = {
-  "src/css/app.css": { hex: 0, time: 8 },
+  "src/css/app.css": { hex: 0, time: 5 },
   "src/js/core/theme.js": { hex: 4, time: 0 },
 };
 

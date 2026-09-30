@@ -112,16 +112,21 @@ export function BlockList({ children }) {
 /**
  * One meal block: time, marker, name, kcal. States: idle, done, receded
  * (earlier and unticked — quieter, never red), closed and closedDone (a past
- * day), off (off-plan food).
+ * day), off (off-plan food). `desc` and `protein` show on desktop only, where
+ * the row has the room; `link` (Swap, Remove) sits after the name on a phone
+ * and in its own column on desktop. `linkLabel` names it for a screen reader.
  */
 export function BlockRow({
   time,
   name,
+  desc,
   kcal,
+  protein,
   state = "idle",
   tag,
   tagEmphasis,
   link,
+  linkLabel,
   onToggle,
   onLink,
 }) {
@@ -135,7 +140,7 @@ export function BlockRow({
       <button
         type="button"
         className="r-blockrow__mark"
-        aria-label={name}
+        aria-label={state === "off" ? `${name}, off plan` : name}
         aria-pressed={state === "off" ? undefined : done}
         onClick={onToggle}
         disabled={!onToggle}
@@ -146,17 +151,26 @@ export function BlockRow({
         </span>
       </button>
       <span className="r-blockrow__name">
-        {name}
+        <span className="r-blockrow__title">{name}</span>
         {link ? (
-          <button type="button" className="r-blockrow__link" onClick={onLink}>
+          <button
+            type="button"
+            className="r-blockrow__link"
+            aria-label={linkLabel}
+            onClick={onLink}
+          >
             {link}
           </button>
         ) : null}
         {tag ? (
           <span className={cx("r-blockrow__tag", tagEmphasis && "is-emphasis")}>{tag}</span>
         ) : null}
+        {desc ? <span className="r-blockrow__desc">{desc}</span> : null}
       </span>
-      <span className="r-blockrow__kcal">{nf(kcal)}</span>
+      <span className="r-blockrow__kcal">
+        {nf(kcal)}
+        {protein != null ? <span className="r-blockrow__protein"> · {protein} g</span> : null}
+      </span>
     </div>
   );
 }
@@ -180,7 +194,15 @@ export function DueCard({ label, name, desc, kcal, protein, swappable, onTick, o
         <div className="r-due__text">
           <div className="r-due__label">{label}</div>
           <div className="r-due__name">{name}</div>
-          {desc ? <div className="r-due__desc">{desc}</div> : null}
+          {desc ? (
+            <div className="r-due__desc">
+              {desc}
+              <span className="r-due__inline">
+                {" · "}
+                <b>{nf(kcal)} kcal</b> · {protein} g
+              </span>
+            </div>
+          ) : null}
         </div>
         <div className="r-due__figures">
           <div className="r-due__kcal">{nf(kcal)}</div>
@@ -201,7 +223,11 @@ export function DueCard({ label, name, desc, kcal, protein, swappable, onTick, o
   );
 }
 
-/** An engine suggestion. Offers Not now and Apply; nothing changes without a tap. */
+/**
+ * An engine suggestion. Offers Not now and Apply; nothing changes without a
+ * tap. With no `onApply` (a check-up that only informs) it offers the dismiss
+ * alone.
+ */
 export function SuggestionCard({
   title,
   body,
@@ -220,7 +246,7 @@ export function SuggestionCard({
         <Button variant="secondary" onClick={onDismiss}>
           {dismissLabel}
         </Button>
-        <Button onClick={onApply}>{applyLabel}</Button>
+        {onApply ? <Button onClick={onApply}>{applyLabel}</Button> : null}
       </div>
     </div>
   );

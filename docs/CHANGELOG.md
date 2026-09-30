@@ -56,6 +56,24 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   nav unchanged. New tokens: `--panel-support-width`, `--nav-inset`,
   `--nav-lift`; `--panel-detail-width` is gone.
 
+- **pass 67 — Today, phone and desktop:** Today is rebuilt on the tracking
+  components. On a phone it runs edge to edge: the seven-day dot strip with
+  Calendar, one banner at most ("Yesterday isn't finished" with Open, or
+  "This day is closed."), the day total on its horizon, and the block list
+  with the now marker and the due card. The due card is the latest unticked
+  block whose time has come; earlier ones recede but stay tappable, and the
+  most-skipped block carries its tag while it is still to come. On desktop
+  the screen sits in `.r-columns`, with the week card, Log food / Add a
+  block and Appetite in the support column, and rows gain their description
+  and protein. Log food, Swap, Add a block and the Calendar are sheets in
+  `LogFood.jsx`, 520px dialogs on desktop; Swap applies on Done, and a phase
+  add-on is dropped for the day from its Swap sheet. A tick, a log or an add
+  shows a toast with Undo. Logged food keeps the time it was logged (`at`)
+  and sits among the blocks by it; the Custom tab can save to the recipe
+  book, replacing the Save button on a logged row. The storage banner is a
+  `Banner` whose Backup downloads the file (`ui/download.js`, shared with
+  Settings). No new tokens.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on
