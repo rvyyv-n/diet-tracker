@@ -3372,8 +3372,8 @@
    Nothing that stays visible moves as the rail opens: the side padding is
    12px in both states, which puts the sun and each 20px icon on the rail's
    centre line, and everything a lone icon can't carry (the word, the labels,
-   the glance card and the toggle) fades in place. Motion is tidied in the
-   motion pass (76).                                                       */
+   the glance card and the toggle) fades in place. The rail is restyled in
+   pass 77 (rail).                                                         */
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .r-sidenav__pin {
     display: block;

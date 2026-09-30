@@ -1,11 +1,11 @@
 ---
 name: build-pass
-description: Run a v3.0 build pass by number or name - "build pass 1" to "build pass 7", or its name (foundation, components and shell, daily screens, plan settings and recipes, first run and identity, audit and README, motion), or one of its targets (tokens, looks, components, shell, today, weight, plan, settings, recipes, firstrun, icons, sweep, readme, motion, or pass 63 to 76). Use whenever the user names one, or says "next build pass". Builds each target in the group from docs/roadmap.md in order, one commit per target, verifies, updates docs and stops.
+description: Run a v3.0 build pass by number or name - "build pass 1" to "build pass 7", or its name (foundation, components and shell, daily screens, plan settings and recipes, first run and identity, audit and README, motion), or one of its targets (tokens, looks, components, shell, today, weight, plan, settings, recipes, firstrun, icons, sweep, readme, motion, rail, or pass 63 to 77). Use whenever the user names one, or says "next build pass". Builds each target in the group from docs/roadmap.md in order, one commit per target, verifies, updates docs and stops.
 ---
 
 # Build a build pass
 
-A build pass is a group of targets, each a numbered roadmap pass (63 to 76). The table of build passes, each target's Reads / Does / Done when, and the model for each build pass live in `docs/roadmap.md` under "v3.0". That file is the spec. This skill is the protocol.
+A build pass is a group of targets, each a numbered roadmap pass (63 to 77). The table of build passes, each target's Reads / Does / Done when, and the model for each build pass live in `docs/roadmap.md` under "v3.0". That file is the spec. This skill is the protocol.
 
 ## 1. Identify what to run
 

@@ -90,7 +90,7 @@ a fresh thread. The design refs are paths inside the private design export
 | 4          | Plan, settings and recipes | `plan` (69), `settings` (70), `recipes` (71) | Sonnet 5.5, high effort |
 | 5          | First run and identity     | `firstrun` (72), `icons` (73)                | Sonnet 5.5, high effort |
 | 6          | Audit and README           | `sweep` (74), `readme` (75)                  | Opus, high effort       |
-| 7          | Motion                     | `motion` (76)                                | Sonnet 5.5, high effort |
+| 7          | Motion                     | `motion` (76), `rail` (77)                   | Sonnet 5.5, high effort |
 
 Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
@@ -109,7 +109,9 @@ Model: Sonnet 5.5, high effort. Targets: today, weight. This is the two screens 
     tappable); Shake's "Most skipped" tag while it is upcoming; "Yesterday
     isn't finished" and "This day is closed."; the Log food, Swap, Add a block
     and Calendar sheets (520px dialogs on desktop) in `LogFood.jsx`; the tick
-    toast with Undo; the storage-full banner.
+    toast with Undo; the storage-full banner. On desktop the screen sits in
+    `.r-columns` (pass 66), with the 7 days, Log food / Add a block and
+    Appetite in the 340px support column, as the desktop frame lays them out.
   - Done when: a Today grid matches the design in both Looks, light and dark,
     at 390 and 1440, with nothing clipping at 320.
 
@@ -119,7 +121,8 @@ Model: Sonnet 5.5, high effort. Targets: today, weight. This is the two screens 
   - Does: the chart with its full-bleed horizon and HTML axis labels, the pace
     dot (nothing on Weight is red), StatRow, the suggestion card with Apply and
     Not now (never self-applying), the weigh-in sheet and dialog with the save
-    toast and Undo, and the weight-history empty state.
+    toast and Undo, and the weight-history empty state. On desktop, the
+    support column of `.r-columns`, as the desktop frame lays it out.
   - Done when: the grid matches in all combinations, and the engine's
     suggestion still only applies on the button.
 
@@ -133,7 +136,8 @@ Model: Sonnet 5.5, high effort. Targets: plan, settings, recipes. This is the re
   - Does: GroceryList with the aisle marks, quantities that changed on a phase
     change shown in `--accent-text` until the Monday reset, carried-over ticks,
     and the Clear toast with Undo; PhaseLadder with status words (Now, Done, If
-    stalled); the link to Recipes at the foot of Plan.
+    stalled); the link to Recipes at the foot of Plan. On desktop, the
+    support column of `.r-columns`, as the desktop frame lays it out.
   - Done when: the grid matches, and `scaleGroceryQty` behaviour is unchanged.
 
 - [ ] **Pass 70 · `settings`** — Settings and the Look picker.
@@ -197,7 +201,7 @@ Model: Opus, high effort. Targets: sweep, readme. This is the cross-cutting audi
 
 #### Build pass 7 — Motion
 
-Model: Sonnet 5.5, high effort. Targets: motion. This is animation, last. Switch to Opus only if the choreography needs planning.
+Model: Sonnet 5.5, high effort. Targets: motion, rail. This is animation, last, then the one undesigned surface. Switch to Opus only if the choreography needs planning.
 
 - [ ] **Pass 76 · `motion`** — animation, last.
   - Reads: `guidelines/motion.html`, the motion notes in `product-rules.md`.
@@ -209,9 +213,22 @@ Model: Sonnet 5.5, high effort. Targets: motion. This is animation, last. Switch
   - Done when: nothing animates that the design doesn't describe, and reduced
     motion is fully still.
 
+- [ ] **Pass 77 · `rail`** — the on-hover desktop rail, restyled.
+  - Reads: `components/surfaces/SideNav.jsx`, `Wordmark.jsx`, the nav tokens
+    in `docs/design-system.md`. The handoff has no rail frame, so its look is
+    a stop-and-ask: propose it with options before building.
+  - Does: the collapsed 72px rail (`navPref: "hover"`, pass 47) in the v3.0
+    nav's style, in both Looks: the sun, the icons with the active pill and
+    sun dot, and the wordmark, labels, glance card and Pinned / On hover
+    toggle hidden until it opens; opening and closing use the `motion`
+    durations.
+  - Done when: the rail opens on hover and keyboard focus at 1440 in both
+    Looks, light and dark; nothing that stays visible moves as it opens; and
+    touch devices still get the pinned nav.
+
 Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
 `insight_copy_states_facts`). The collapsible desktop rail (pass 40b) is
-undesigned and waits until the redesign is done.
+undesigned, so it is restyled last, as pass 77, once the redesign is done.
 
 ## later
 
