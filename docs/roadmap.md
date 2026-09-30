@@ -71,16 +71,38 @@ The brief is `docs/design-overhaul-brief.md`. Paste it into a new Claude
 Design thread with the codebase attached and the Bookcook design system
 selected. Until the handoff lands, `tokens_reuse_first` still governs.
 
-- [ ] **Claude Design thread** (owner) — after Bookcook's mockups and design
-  system are final: directions → design system → hero screens → the rest,
-  then export with Send to Claude Code.
-- [ ] **Tokens and fonts** — the handoff's tokens replace `tokens.css`,
-  `design-system.md` is rewritten against them, and fonts are vendored.
-- [ ] **Shared components** — `src/components/` and `src/js/ui/` restyled
-  against the component sheet.
-- [ ] **Screens, one pass each** — Today, Weight, Plan, Recipes, Settings,
-  first run, then the smaller surfaces.
-- [ ] **Motion** — last, per `animations_last`.
+The Claude Design handoff has landed (2026-10-01). It ships two Looks, Paper
+(default) and Reel, each with light and dark, switched by `data-look` and
+`data-theme` on `<html>`. Components read semantic tokens only. The export is
+kept private and is not committed.
+
+- [ ] **Pass 63 — tokens and fonts.** The handoff's tokens replace
+  `tokens.css` (old aliases mapped to the new names, accent `#E0673F`),
+  `design-system.md` is rewritten against them, Fraunces, Atkinson Next,
+  Newsreader and Barlow Semi Condensed are self-hosted as woff2 (Inter goes),
+  and the service worker precache and `CACHE_NAME` are updated.
+- [ ] **Pass 64 — Look and theme plumbing.** `lookPref` next to `themePref`,
+  and "System" resolved in JS.
+- [ ] **Pass 65 — shared components.** `src/components/` and `src/js/ui/`
+  restyled, including the inferred states (Toggle off, Button disabled and
+  pressed, hover).
+- [ ] **Pass 66 — nav and shell.** Floating phone nav, and the 256px desktop
+  nav with the Today glance card.
+- [ ] **Pass 67 — Today.**
+- [ ] **Pass 68 — Weight.**
+- [ ] **Pass 69 — Plan.**
+- [ ] **Pass 70 — Settings,** with the Look picker.
+- [ ] **Pass 71 — Recipes.**
+- [ ] **Pass 72 — first run,** with the optional Look step, plus intro,
+  confirms and empty states.
+- [ ] **Pass 73 — sweep.** Sheets, 320px and 1440px checks, contrast.
+- [ ] **Pass 74 — app icon and logo redraw** (the 2.3 icons predate the new
+  palette).
+- [ ] **Pass 75 — motion,** last, per `animations_last`.
+
+Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
+`insight_copy_states_facts`). The collapsible desktop rail (pass 40b) is
+undesigned and waits until the redesign is done.
 
 ## later
 - [ ] **v2.3.0 phone and desktop pass** — Plan → Recipes and back on a real
