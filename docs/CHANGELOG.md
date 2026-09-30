@@ -17,6 +17,17 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   dark wait for the Look plumbing (pass 64). New tokens: `--accent-tint`,
   `--space-96`, `--text-eyebrow` and the composite `--text-*` shorthands.
 
+- **pass 64 — Look and theme plumbing:** the profile gains `lookPref`
+  ("paper" | "reel", default paper) beside `themePref`, and both survive a
+  reload and an export/import. `theme.js` writes `data-look` and
+  `data-theme` and resolves "System" in JS, so the stylesheet has no
+  `prefers-color-scheme` block; `setLookPref` is ready for the Settings
+  picker. `index.html` sets both attributes and one `<meta name="theme-color">`
+  before first paint, and the status-bar colour follows the Look. A pinned or
+  system Dark now works in either Look; Reel renders with its own fonts and
+  tokens, but no screen is restyled for it yet. Unit tests cover the
+  resolution, the profile default and the backup round trip.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on

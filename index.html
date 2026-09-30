@@ -1,32 +1,37 @@
 <!doctype html>
-<html lang="en" data-look="paper">
+<html lang="en" data-look="paper" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
-    <!-- The status-bar / task-switcher colour, one per scheme. A pinned Light or
-         Dark theme (Settings) adds a third, media-less <meta> from
-         src/js/core/theme.js that overrides both. -->
-    <meta name="theme-color" content="#F7F1E8" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0B0A09" media="(prefers-color-scheme: dark)" />
+    <!-- The status-bar / task-switcher colour. One tag: the first-paint script
+         below and src/js/core/theme.js set its content to the page canvas of
+         the current Look and theme. The value here is Paper light, for a
+         browser that runs neither. -->
+    <meta id="tc" name="theme-color" content="#F7F1E8" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Rise" />
     <script>
-      // Pin the theme before first paint so a chosen Light/Dark doesn't flash
-      // the OS default. Mirrors src/js/core/theme.js; reads localStorage
-      // directly because the ES modules load later. The prefers-color-scheme
-      // path needs no JS — this only runs when a theme is explicitly pinned.
+      // Set the Look and theme before first paint so a chosen one doesn't flash
+      // the default. Mirrors src/js/core/theme.js (resolveAppearance); reads
+      // localStorage directly because the ES modules load later. "System" is
+      // resolved here from prefers-color-scheme.
       try {
-        var t = JSON.parse(localStorage.getItem("wgt:profile") || "{}").themePref;
-        if (t === "light" || t === "dark") {
-          document.documentElement.setAttribute("data-theme", t);
-          var m = document.createElement("meta");
-          m.name = "theme-color";
-          m.id = "tc-forced";
-          m.content = t === "dark" ? "#0B0A09" : "#F7F1E8";
-          document.head.appendChild(m);
-        }
+        var p = JSON.parse(localStorage.getItem("wgt:profile") || "{}");
+        var look = p.lookPref === "reel" ? "reel" : "paper";
+        var dark =
+          p.themePref === "dark" ||
+          (p.themePref !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+        var root = document.documentElement;
+        root.setAttribute("data-look", look);
+        root.setAttribute("data-theme", dark ? "dark" : "light");
+        document
+          .getElementById("tc")
+          .setAttribute(
+            "content",
+            { paper: ["#F7F1E8", "#0B0A09"], reel: ["#F3EDE3", "#0E0D0B"] }[look][dark ? 1 : 0],
+          );
       } catch (e) {}
     </script>
     <title>Rise: Diet Tracker</title>

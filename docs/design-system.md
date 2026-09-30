@@ -184,7 +184,6 @@ Each was weighed and kept on purpose; do not "correct" them.
 | Topic                | Export says                         | Rise does                                   | Why                                                                       |
 | -------------------- | ----------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------- |
 | Nav width, column    | 256px nav, 1080 column, 340 support | 240px nav, 960 column, 360 detail (for now) | The shell target (pass 66) rebuilds the frame against the desktop handoff |
-| Dark theme switch    | (Looks notes) resolve System in JS  | as the export                               | Until pass 64, only a pinned Dark works; System follows light             |
 | Accent tint          | not defined                         | `--accent-tint`, `color-mix` of `--accent`  | One definition serves both Looks; dark raises the mix from 12% to 20%     |
 | Copernicus, StyreneB | n/a                                 | dropped                                     | The v2 faces were licensed stand-ins; the Looks bring their own           |
 

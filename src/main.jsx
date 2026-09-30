@@ -1,8 +1,8 @@
 /**
  * Vite/React entry point (pass 45). Replaces src/js/app.js as the script
- * index.html loads. Theme pinning still has to happen before React mounts
- * anything (it sets a class/attribute index.html's own inline pre-paint script
- * doesn't cover — see core/theme.js), and persistence/update checks are still
+ * index.html loads. The Look and theme are set before first paint by
+ * index.html's inline script and kept by core/theme.js, which has to start
+ * before React mounts anything; persistence/update checks are still
  * fire-and-forget side effects with no UI of their own, so none of the three
  * belong inside App's render.
  */
@@ -14,8 +14,8 @@ import { requestPersistence } from "./js/core/persist.js";
 import { autoCheckForUpdate } from "./js/core/updates.js";
 import { initReminders } from "./js/core/reminders.js";
 
-// Re-apply the stored theme (index.html already set it pre-paint for a pinned
-// choice) and start following the OS while the pref is "system".
+// Re-apply the stored Look and theme (index.html already set them pre-paint)
+// and start following the OS while the theme pref is "system".
 initTheme();
 
 createRoot(document.getElementById("app")).render(<App />);

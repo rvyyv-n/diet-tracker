@@ -86,7 +86,6 @@ a fresh thread. The design refs are paths inside the private design export
 
 | Build pass | Name                       | Targets (pass numbers)                       | Model                   |
 | ---------- | -------------------------- | -------------------------------------------- | ----------------------- |
-| 1          | Foundation                 | `tokens` (63), `looks` (64)                  | Sonnet 5.5, high effort |
 | 2          | Components and shell       | `components` (65), `shell` (66)              | Opus, high effort       |
 | 3          | Daily screens              | `today` (67), `weight` (68)                  | Sonnet 5.5, high effort |
 | 4          | Plan, settings and recipes | `plan` (69), `settings` (70), `recipes` (71) | Sonnet 5.5, high effort |
@@ -98,22 +97,6 @@ Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
 
 ### Build passes
-
-#### Build pass 1 — Foundation
-
-Model: Sonnet 5.5, high effort. Targets: tokens, looks. This is the design foundation: tokens, fonts and Look plumbing. Nothing looks finished yet.
-
-- [ ] **Pass 64 · `looks`** — Look and theme plumbing.
-  - Reads: `guidelines/looks.html`, the Looks and themes notes in the design
-    system readme.
-  - Does: `lookPref` on the profile next to `themePref` (default `paper`,
-    migration-safe); `theme.js` writes `data-look` and `data-theme` and
-    resolves "System" in JS, with no duplicated dark block in a media query;
-    `index.html`'s first-paint script sets both; `<meta name="theme-color">`
-    values follow the Look; unit tests for the profile and the resolution
-    logic.
-  - Done when: both attributes are set on load with no flash, and switching
-    either persists across a reload and an export/import.
 
 #### Build pass 2 — Components and shell
 

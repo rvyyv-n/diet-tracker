@@ -404,7 +404,7 @@ function ProfileGroup({ profile }) {
 }
 
 /**
- * The theme toggle (pass 19). "System" — the default — follows the OS
+ * The theme toggle (pass 19). "System" — the default — is resolved in JS from the OS
  * `prefers-color-scheme`; "Light" / "Dark" pin it. The choice is stored on
  * the profile and applied by core/theme.js, which also runs the cross-fade,
  * so this only has to render the current state and forward the tap.

@@ -35,7 +35,9 @@ export const DEFAULT_PROFILE = {
   introSeen: false, // the first-run splash has been shown once (pass 11).
   themePref: "system", // "system" | "light" | "dark" — the appearance choice
   //                         (pass 19); applied by core/theme.js, "system"
-  //                         follows prefers-color-scheme.
+  //                         follows prefers-color-scheme, resolved in JS.
+  lookPref: "paper", // "paper" | "reel" — the Look (pass 64), beside themePref.
+  //                         An unknown value reads as Paper; see core/theme.js.
   overviewMetrics: {}, // { [metricId]: false } for a readout the user hid on
   //                         Today's day-total card (pass 32). An absent id reads
   //                         as shown, so a metric added later defaults visible.

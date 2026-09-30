@@ -13,7 +13,7 @@ import path from "node:path";
  */
 const LEFTOVER = {
   "src/css/app.css": { hex: 0, time: 9 },
-  "src/js/core/theme.js": { hex: 2, time: 0 },
+  "src/js/core/theme.js": { hex: 4, time: 0 },
 };
 
 const walk = (dir) =>
