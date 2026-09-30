@@ -28,6 +28,21 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   tokens, but no screen is restyled for it yet. Unit tests cover the
   resolution, the profile default and the backup round trip.
 
+- **pass 65 — the shared component set:** the handoff's 31 components plus
+  its icon set are ported into `src/components/` (`core.jsx`, `tracking.jsx`,
+  `surfaces.jsx`) as `r-` classes in `app.css`, reading semantic tokens only.
+  One state model covers them all: hover (fine pointers only) lays a wash one
+  step below the press wash, press scales to .97, `:focus-visible` adds the
+  focus ring beside the control's own ring, and the inferred states (Toggle
+  off, Button disabled and pressed) are drawn. The listbox and calendar
+  popover take the new look: TextField trigger, IconButton month nav, ink for
+  the picked day. `dev/components.html` (dev server only) shows every
+  component in all four Look and theme pairs. The app layer of `tokens.css`
+  now re-reads on any nested `data-look`, which the Look picker needs. The
+  screens are unchanged; they adopt the components from pass 67. New tokens:
+  `--hover-wash`, `--press-wash`, `--chart-sky-top`, `--chart-sky-bottom`,
+  `--radius-sheet`.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on

@@ -102,22 +102,6 @@ and desktop test pass, and the release.
 
 Model: Opus, high effort. Targets: components, shell. This is the shared component set and the navigation frame. Every later screen copies the patterns set here, so this one gets the stronger model.
 
-- [ ] **Pass 65 · `components`** — the shared component set.
-  - Reads: `components/**` (`.jsx`, `.d.ts`, `.prompt.md`),
-    `guidelines/porting-to-code.md` step 4.
-  - Does: ports Button, IconButton, Chip, Segmented, Toggle, Radio, TextField,
-    Card, Eyebrow, SectionHeading, StatusDot, DotStrip, DayTotal, BlockList,
-    BlockRow, NowMarker, DueCard, SuggestionCard, StatRow, PhaseLadder,
-    GroceryList, WeightChart, Sheet, Toast, Banner, ConfirmPanel, EmptyState,
-    ListRow, ListGroup, OptionRow and CalendarGrid into `src/components/` as
-    class-based CSS in `app.css` (variable names kept); hover under
-    `(hover: hover) and (pointer: fine)`, press scale .97, a `:focus-visible`
-    ring; draws the inferred states (Toggle off, Button disabled and pressed);
-    restyles the `src/js/ui/` popover, listbox and date pickers; reconciles
-    `shared.jsx`.
-  - Done when: every component renders in both Looks and themes on a scratch
-    page, and the screens still work unchanged.
-
 - [ ] **Pass 66 · `shell`** — navigation and layout frame.
   - Reads: `components/surfaces/PhoneNav.jsx`, `SideNav.jsx`,
     `screens/Rise Desktop.dc.html`, `ui_kits/rise/DesktopApp.jsx`.

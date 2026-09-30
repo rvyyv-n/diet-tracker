@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" data-look="paper" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rise components</title>
+    <!-- Dev only: the dev server serves this page, the build never includes it
+         (Vite builds index.html alone). Every v3.0 component in every Look and
+         theme, side by side. ?only=reel-dark shows one panel. -->
+    <link rel="stylesheet" href="/src/css/tokens.css" />
+    <link rel="stylesheet" href="/src/css/app.css" />
+    <style>
+      body {
+        margin: 0;
+      }
+      .dev-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        align-items: start;
+      }
+      .dev-gallery__panel {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-24);
+        min-width: 0;
+        padding: var(--space-24) var(--gutter) var(--space-48);
+        background-color: var(--bg-canvas);
+        background-image: var(--texture);
+        color: var(--ink);
+        font: var(--text-body-md);
+      }
+      .dev-gallery__section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-12);
+      }
+      .dev-gallery__name {
+        font: var(--text-caption);
+        color: var(--ink-muted);
+      }
+      .dev-gallery__row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-8);
+      }
+      .dev-gallery__bleed {
+        margin: 0 calc(-1 * var(--gutter));
+      }
+      .dev-gallery__bleed-left {
+        margin-left: calc(-1 * var(--gutter));
+        margin-right: calc(-1 * var(--gutter));
+      }
+      .dev-gallery__stage {
+        position: relative;
+        height: 600px;
+        overflow: hidden;
+        border-radius: var(--radius-card);
+        box-shadow: inset 0 0 0 1px var(--line);
+      }
+      .dev-gallery__stage--short {
+        height: 320px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./components.jsx"></script>
+  </body>
+</html>
