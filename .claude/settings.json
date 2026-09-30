@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run check)",
+      "Bash(npm run lint)",
+      "Bash(npm test)",
+      "Bash(npm test *)",
+      "Bash(npm run build)",
+      "Bash(npm run test:visual)",
+      "Bash(npm run test:offline)",
+      "Bash(npx prettier --check *)",
+      "Bash(node scripts/shot.mjs *)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:5199/)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/format.mjs\"",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

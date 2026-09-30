@@ -12,7 +12,11 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "check": "vitest run && eslint . && prettier --check . --log-level warn && vite build"
+    "check": "vitest run && eslint . && prettier --check . --log-level warn && vite build",
+    "test:visual": "playwright test e2e/visual.spec.js",
+    "test:visual:update": "playwright test e2e/visual.spec.js --update-snapshots",
+    "test:offline": "playwright test e2e/offline.spec.js",
+    "shot": "node scripts/shot.mjs"
   },
   "dependencies": {
     "motion": "^13.2.0",

@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import { configDefaults } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 // manifest.json, sw.js and assets/ live in public/ and are copied to the
@@ -23,5 +24,7 @@ export default defineConfig({
     environment: "node",
     setupFiles: ["./test/setup.js"],
     restoreMocks: true,
+    // e2e/ belongs to Playwright.
+    exclude: [...configDefaults.exclude, "e2e/**"],
   },
 });

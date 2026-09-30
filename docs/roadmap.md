@@ -29,8 +29,8 @@ tokens_reuse_first:
   decision: "reuse tokens.css first; new UI may add its own tokens without sign-off, recorded in tokens.css and design-system.md (relaxed 2026-09-24)"
   why: "the export is settled; asking before every new value slowed new screens, and one home for tokens is what actually stops drift"
 design_overhaul_v3:
-  decision: "v3.0 is a full visual and UI/UX overhaul; Claude Design has full freedom over the look, adapting the owner's Bookcook design system to Rise. The product rules (never nag, inverted intake colours, past days closed, no Today date stepper, suggest-never-apply, offline) still hold (2026-09-26)"
-  why: "the owner loved what Claude Design made for Bookcook; the 2026-09-03 export was a marketing-site system reconciled into an app, and a design made for the app should replace it rather than be patched onto it"
+  decision: "v3.0 is a full visual and UI/UX overhaul; the designer has full freedom over the look, adapting the owner's Bookcook design system to Rise. The product rules (never nag, inverted intake colours, past days closed, no Today date stepper, suggest-never-apply, offline) still hold (2026-09-26)"
+  why: "the owner loved the design made for Bookcook; the 2026-09-03 export was a marketing-site system reconciled into an app, and a design made for the app should replace it rather than be patched onto it"
 animations_last:
   decision: "motion polish and component-framework adoption come after every feature phase"
   why: "effects applied to surfaces that aren't final have to be ported twice"
@@ -67,14 +67,11 @@ re-propose without a reason that wasn't already weighed:
 
 ## v3.0 — the design overhaul
 
-The brief is `docs/design-overhaul-brief.md`. Paste it into a new Claude
-Design thread with the codebase attached and the Bookcook design system
-selected. Until the handoff lands, `tokens_reuse_first` still governs.
-
-The Claude Design handoff has landed (2026-10-01). It ships two Looks, Paper
-(default) and Reel, each with light and dark, switched by `data-look` and
-`data-theme` on `<html>`. Components read semantic tokens only. The export is
-kept private and is not committed.
+The brief is `docs/design-overhaul-brief.md`. The design handoff landed on
+2026-10-01 and supersedes `tokens_reuse_first` for everything it covers. It
+ships two Looks, Paper (default) and Reel, each with light and dark, switched
+by `data-look` and `data-theme` on `<html>`. Components read semantic tokens
+only. The export is kept private and is not committed.
 
 - [ ] **Pass 63 — tokens and fonts.** The handoff's tokens replace
       `tokens.css` (old aliases mapped to the new names, accent `#E0673F`),
@@ -149,4 +146,4 @@ understands the `public/` convention that `manifest.json`, `sw.js` and
 `assets/` now live under, which a plain `python -m http.server` does not:
 that would 404 on all three). `file://` breaks ES-module imports regardless of
 server. `npm run build` produces the real deployable output in `dist/`.
-Ensure `CLAUDE.md` is manually copied to the root, as it is gitignored.
+Ensure the local project brief (gitignored) is copied to the root by hand.

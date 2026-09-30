@@ -88,3 +88,8 @@ dev-seed.html
 # wrangler local secrets (the VAPID private key). Never committed.
 server/.dev.vars
 server/.wrangler/
+
+# ---- Screenshots and visual-test output --------------------------
+/shots/
+/test-results/
+/playwright-report/
