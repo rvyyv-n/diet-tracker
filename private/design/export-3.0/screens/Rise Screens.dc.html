@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<style>body{margin:0;background:#E9E4DC;color:#1a1a1a;font-family:system-ui,sans-serif;-webkit-font-smoothing:antialiased}a{color:#A8441F}a:hover{color:#7D3014}</style>
+</helmet>
+
+<section data-screen-label="Turn 9 · Desktop states" style="padding:40px 44px 60px;width:3100px;box-sizing:border-box">
+<div style="font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:rgba(0,0,0,.5)">RISE 3.0 · STAGE 4 · DESKTOP 1440 × 900 · SCREENS, DIALOGS, EMPTY STATES</div>
+<div style="font:600 30px/1.15 system-ui;margin-top:8px;max-width:900px">The rest of desktop: Recipes and Settings, the empty states, and every sheet as a dialog.</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:20px;font:14px/1.55 system-ui;color:rgba(0,0,0,.72);max-width:1300px">
+<div><b style="color:#1a1a1a">Sheets become dialogs.</b> The phone’s bottom sheets open as 520px dialogs centred on the main pane, with the nav still visible under the scrim. Same content and buttons, plus a close button.</div>
+<div><b style="color:#1a1a1a">Recipes.</b> On desktop it’s a nav item, not a link from Plan. Recipe book and food table on the left, with the table’s column key, which is desktop-only. Meals on the right.</div>
+<div><b style="color:#1a1a1a">Settings.</b> Two columns. Appearance, with larger Look tiles, gets the wider one; Profile, Overview and Data stack on the right.</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:48px 40px;margin-top:36px">
+<div id="9a" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">9a</span><span style="font:600 15px system-ui">Recipes</span></div>
+<dc-import name="Rise Desktop" screen="recipes" overlay="none" look="paper" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="9b" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">9b</span><span style="font:600 15px system-ui">Recipes · none saved</span></div>
+<dc-import name="Rise Desktop" screen="recipesEmpty" overlay="none" look="paper" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Same empty state as phone.</div></div>
+<div id="9c" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">9c</span><span style="font:600 15px system-ui">Settings · Paper</span></div>
+<dc-import name="Rise Desktop" screen="settings" overlay="none" look="paper" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="9d" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">9d</span><span style="font:600 15px system-ui">Settings · Reel dark</span></div>
+<dc-import name="Rise Desktop" screen="settings" overlay="none" look="reel" theme="dark" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="9e" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">9e</span><span style="font:600 15px system-ui">Weight · no weigh-ins</span></div>
+<dc-import name="Rise Desktop" screen="weightEmpty" overlay="none" look="paper" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Horizon and first date only; Weigh in is the only action.</div></div>
+<div id="9f" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">9f</span><span style="font:600 15px system-ui">Weigh-in dialog</span></div>
+<dc-import name="Rise Desktop" screen="weight" overlay="weighin" look="paper" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="9g" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">9g</span><span style="font:600 15px system-ui">Log food dialog</span></div>
+<dc-import name="Rise Desktop" screen="today" overlay="log" look="paper" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="9h" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">9h</span><span style="font:600 15px system-ui">Swap dialog</span></div>
+<dc-import name="Rise Desktop" screen="today" overlay="swap" look="reel" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="9i" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">9i</span><span style="font:600 15px system-ui">Add a block dialog</span></div>
+<dc-import name="Rise Desktop" screen="today" overlay="addblock" look="paper" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Shake 2 picked.</div></div>
+<div id="9j" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">9j</span><span style="font:600 15px system-ui">Saved toast · Weight</span></div>
+<dc-import name="Rise Desktop" screen="weight" overlay="toast" look="paper" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Toasts sit at the foot of the main pane, never over the nav.</div></div>
+<div id="9k" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">9k</span><span style="font:600 15px system-ui">Cleared toast · Plan</span></div>
+<dc-import name="Rise Desktop" screen="plan" overlay="toast" look="reel" theme="dark" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+</div>
+</section>
+
+<section data-screen-label="Turn 8 · Smaller surfaces, phone" style="padding:40px 44px 60px;width:1820px;box-sizing:border-box">
+<div style="font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:rgba(0,0,0,.5)">RISE 3.0 · STAGE 4 · SHEETS, CONFIRMS · PHONE 390 × 844</div>
+<div style="font:600 30px/1.15 system-ui;margin-top:8px;max-width:900px">The sheets and confirms not covered in Turns 1–2.</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:20px;font:14px/1.55 system-ui;color:rgba(0,0,0,.72);max-width:1300px">
+<div><b style="color:#1a1a1a">Add a block.</b> A bonus block for today only. It adds kcal but never counts against adherence.</div>
+<div><b style="color:#1a1a1a">Calendar.</b> The month behind the 7-day strip, with the same three status dots and a key. Days before the plan started are blank.</div>
+<div><b style="color:#1a1a1a">Destructive actions.</b> Recipe delete and Reset all data both confirm inline in a danger outline, and state what goes and what stays. No toast Undo for either.</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:48px 40px;margin-top:36px">
+<div id="8a" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">8a</span><span style="font:600 15px system-ui">Add a block</span></div>
+<dc-import name="Rise Today Phone" state="add" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="8b" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">8b</span><span style="font:600 15px system-ui">Calendar</span></div>
+<dc-import name="Rise Today Phone" state="calendar" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="8c" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">8c</span><span style="font:600 15px system-ui">Calendar · Reel dark</span></div>
+<dc-import name="Rise Today Phone" state="calendar" look="reel" theme="dark" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="8d" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">8d</span><span style="font:600 15px system-ui">Recipe editor</span></div>
+<dc-import name="Rise Secondary Phone" screen="recipeEdit" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Total updates as items change. Delete sits top right, away from Save.</div></div>
+<div id="8e" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">8e</span><span style="font:600 15px system-ui">Recipe delete · confirm</span></div>
+<dc-import name="Rise Secondary Phone" screen="recipeDelete" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="8f" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">8f</span><span style="font:600 15px system-ui">Reset all data · confirm</span></div>
+<dc-import name="Rise Secondary Phone" screen="reset" look="paper" theme="light" tall="true" hint-size="390px,1600px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Names the records it removes, and that setup offers a restore.</div></div>
+</div>
+</section>
+
+<section data-screen-label="Turn 7 · Empty states and 320px" style="padding:40px 44px 60px;width:1820px;box-sizing:border-box">
+<div style="font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:rgba(0,0,0,.5)">RISE 3.0 · STAGE 4 · EDGE CASES · EMPTY STATES · 320 × 844</div>
+<div style="font:600 30px/1.15 system-ui;margin-top:8px;max-width:900px">The two empty surfaces, and the hero screens squeezed to 320px.</div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin-top:20px;font:14px/1.55 system-ui;color:rgba(0,0,0,.72);max-width:1300px">
+<div><b style="color:#1a1a1a">Empty states.</b> Only two surfaces can ever be empty: weight history before the first weigh-in, and the recipe book before the first save. Each gets one muted glyph and one line, and no second button, because the action that fills it is already on screen above.</div>
+<div><b style="color:#1a1a1a">320px.</b> The iPhone SE / small Android floor. The same components at 320: rows wrap rather than truncate, and hit targets stay at 44px or more.</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:48px 40px;margin-top:36px">
+<div id="7a" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">7a</span><span style="font:600 15px system-ui">Weight · no weigh-ins</span></div>
+<dc-import name="Rise Weight Phone" state="empty" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">The Weigh in button is the only action on screen.</div></div>
+<div id="7b" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">7b</span><span style="font:600 15px system-ui">Recipes · none saved</span></div>
+<dc-import name="Rise Secondary Phone" screen="recipesEmpty" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">New recipe sits directly above the empty state.</div></div>
+<div id="7c" style="display:flex;flex-direction:column;gap:12px;width:320px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">7c</span><span style="font:600 15px system-ui">Today · 320</span></div>
+<dc-import name="Rise Today Phone" state="afternoon" look="paper" theme="light" tall="false" width="320" hint-size="320px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="7d" style="display:flex;flex-direction:column;gap:12px;width:320px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">7d</span><span style="font:600 15px system-ui">Today · Reel · 320</span></div>
+<dc-import name="Rise Today Phone" state="afternoon" look="reel" theme="light" tall="false" width="320" hint-size="320px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Reel’s 86px hero is the widest figure in the system.</div></div>
+<div id="7e" style="display:flex;flex-direction:column;gap:12px;width:320px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">7e</span><span style="font:600 15px system-ui">Weight · 320</span></div>
+<dc-import name="Rise Weight Phone" state="normal" look="paper" theme="light" tall="false" width="320" hint-size="320px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="7f" style="display:flex;flex-direction:column;gap:12px;width:320px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">7f</span><span style="font:600 15px system-ui">Plan · 320</span></div>
+<dc-import name="Rise Plan Phone" state="normal" look="paper" theme="light" tall="false" width="320" hint-size="320px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">The longest grocery name wraps to two lines.</div></div>
+<div id="7g" style="display:flex;flex-direction:column;gap:12px;width:320px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">7g</span><span style="font:600 15px system-ui">Settings · 320</span></div>
+<dc-import name="Rise Secondary Phone" screen="settings" look="paper" theme="light" tall="false" width="320" hint-size="320px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Look tiles stay side by side.</div></div>
+</div>
+</section>
+
+<section data-screen-label="Turn 6 · Recipes, Settings, first run" style="padding:40px 44px 60px;width:1820px;box-sizing:border-box">
+<div style="font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:rgba(0,0,0,.5)">RISE 3.0 · STAGE 4 · SUPPORTING SCREENS · PHONE 390 × 844</div>
+<div style="font:600 30px/1.15 system-ui;margin-top:8px;max-width:900px">Recipes, Settings with the Look picker, and the optional Look step in first run.</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:20px;font:14px/1.55 system-ui;color:rgba(0,0,0,.72);max-width:1300px">
+<div><b style="color:#1a1a1a">Recipes.</b> Reached from the row at the foot of Plan, so the back link says Plan and the Plan tab stays lit. Recipe book, then meals (one open at a time, share rail under each), then the food table.</div>
+<div><b style="color:#1a1a1a">Look picker.</b> In Settings → Appearance, above Theme. Each tile is a real miniature drawn from that Look’s own tokens, not a screenshot, so it can’t drift from the app.</div>
+<div><b style="color:#1a1a1a">First run.</b> Step 2 of 3, after the profile form. Skip is top right and keeps Paper. The preview swaps to the picked Look straight away; the rest of the screen stays in Paper until you continue.</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:48px 40px;margin-top:36px">
+<div id="6a" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">6a</span><span style="font:600 15px system-ui">Recipes</span></div>
+<dc-import name="Rise Secondary Phone" screen="recipes" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Shake open to show its four options.</div></div>
+<div id="6b" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">6b</span><span style="font:600 15px system-ui">Recipes · uncropped</span></div>
+<dc-import name="Rise Secondary Phone" screen="recipes" look="paper" theme="light" tall="true" hint-size="390px,1700px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="6c" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">6c</span><span style="font:600 15px system-ui">Settings · Paper</span></div>
+<dc-import name="Rise Secondary Phone" screen="settings" look="paper" theme="light" tall="true" hint-size="390px,1500px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Paper selected. Theme stays its own control: System, Light, Dark.</div></div>
+<div id="6d" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">6d</span><span style="font:600 15px system-ui">Settings · Reel dark</span></div>
+<dc-import name="Rise Secondary Phone" screen="settings" look="reel" theme="dark" tall="true" hint-size="390px,1500px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Reel picked: the whole app changes, and the tiles still show both Looks honestly.</div></div>
+<div id="6e" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">6e</span><span style="font:600 15px system-ui">First run · Paper picked</span></div>
+<dc-import name="Rise Secondary Phone" screen="firstrun" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">The default, so Continue and Skip end in the same place.</div></div>
+<div id="6f" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">6f</span><span style="font:600 15px system-ui">First run · Reel picked</span></div>
+<dc-import name="Rise Secondary Phone" screen="firstrunReel" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Preview only; the Look applies on Continue.</div></div>
+</div>
+</section>
+
+<section data-screen-label="Turn 5 · Paper dark" style="padding:40px 44px 60px;width:1820px;box-sizing:border-box">
+<div style="font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:rgba(0,0,0,.5)">RISE 3.0 · STAGE 3 · HERO SCREENS · PAPER DARK · PHONE 390 × 844</div>
+<div style="font:600 30px/1.15 system-ui;margin-top:8px;max-width:900px">The default Look at night. Same markup; only the Paper dark token block changes.</div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin-top:20px;font:14px/1.55 system-ui;color:rgba(0,0,0,.72);max-width:900px">
+<div><b style="color:#1a1a1a">What differs from Reel dark.</b> Paper keeps the due card as a raised card with a coral outline. Reel fills it with the sun. The nav’s active tab inverts to paper, not the sun gradient.</div>
+<div><b style="color:#1a1a1a">Status colours.</b> Green, gold and rose are lifted one step for dark ground, and every one still sits beside its word.</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:48px 40px;margin-top:36px">
+<div id="5a" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">5a</span><span style="font:600 15px system-ui">Today · afternoon</span></div>
+<dc-import name="Rise Today Phone" state="afternoon" look="paper" theme="dark" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="5b" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">5b</span><span style="font:600 15px system-ui">Today · late</span></div>
+<dc-import name="Rise Today Phone" state="late" look="paper" theme="dark" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">The receded block holds its contrast on dark.</div></div>
+<div id="5c" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">5c</span><span style="font:600 15px system-ui">Weight · normal</span></div>
+<dc-import name="Rise Weight Phone" state="normal" look="paper" theme="dark" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="5d" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">5d</span><span style="font:600 15px system-ui">Weight · stall</span></div>
+<dc-import name="Rise Weight Phone" state="stall" look="paper" theme="dark" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Gold pace dot and suggestion card on dark.</div></div>
+<div id="5e" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">5e</span><span style="font:600 15px system-ui">Plan · midweek</span></div>
+<dc-import name="Rise Plan Phone" state="normal" look="paper" theme="dark" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="5f" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">5f</span><span style="font:600 15px system-ui">Plan · Phase 3 applied</span></div>
+<dc-import name="Rise Plan Phone" state="phase3" look="paper" theme="dark" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+</div>
+</section>
+
+<section data-screen-label="Turn 4 · Desktop 1440" style="padding:40px 44px 60px;width:3100px;box-sizing:border-box">
+<div style="font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:rgba(0,0,0,.5)">RISE 3.0 · STAGE 3 · HERO SCREENS · DESKTOP 1440 × 900 · SIDE NAV</div>
+<div style="font:600 30px/1.15 system-ui;margin-top:8px;max-width:900px">Today, Weight and Plan at 1440. Side nav above 1024px, one main pane. Paper on the left, Reel on the right.</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:20px;font:14px/1.55 system-ui;color:rgba(0,0,0,.72);max-width:1300px">
+<div><b style="color:#1a1a1a">Nav.</b> Five items. Recipes gets its own row here, which the phone bar has no room for. The Today card at the foot of the nav shows the day’s total and the latest weigh-in from any screen.</div>
+<div><b style="color:#1a1a1a">Layout.</b> Main content in a 1080px column: the primary content on the left, and a 340px support column for the week, weigh-in, targets and Recipes. Nothing is stretched to full width.</div>
+<div><b style="color:#1a1a1a">What changes from phone.</b> The day strip becomes a labelled 7-day card with a key. The Weight chart gets gridlines, a legend and a third stat. Groceries lay out in two columns.</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:56px 48px;margin-top:36px">
+<div id="4a" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">4a</span><span style="font:600 15px system-ui">Today · Paper light</span></div>
+<dc-import name="Rise Desktop" screen="today" look="paper" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">16:10, the sample day. The due card sits inline with the timeline; Swap and Tick sit on its right edge.</div></div>
+<div id="4b" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">4b</span><span style="font:600 15px system-ui">Today · Reel dark</span></div>
+<dc-import name="Rise Desktop" screen="today" look="reel" theme="dark" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="4c" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">4c</span><span style="font:600 15px system-ui">Weight · Paper light</span></div>
+<dc-import name="Rise Desktop" screen="weight" look="paper" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">The chart is the whole left column. History moves to the support column, all seven weeks.</div></div>
+<div id="4d" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">4d</span><span style="font:600 15px system-ui">Weight · Reel light</span></div>
+<dc-import name="Rise Desktop" screen="weight" look="reel" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="4e" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">4e</span><span style="font:600 15px system-ui">Plan · Paper light</span></div>
+<dc-import name="Rise Desktop" screen="plan" look="paper" theme="light" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Aisles in two columns, targets and Recipes beside them.</div></div>
+<div id="4f" style="display:flex;flex-direction:column;gap:12px;width:1440px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">4f</span><span style="font:600 15px system-ui">Plan · Reel dark</span></div>
+<dc-import name="Rise Desktop" screen="plan" look="reel" theme="dark" hint-size="1440px,900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+</div>
+</section>
+
+<section data-screen-label="Turn 3 · Plan phone" style="padding:40px 44px 60px;width:1820px;box-sizing:border-box">
+<div style="font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:rgba(0,0,0,.5)">RISE 3.0 · STAGE 3 · HERO SCREENS · ★3 PLAN · PHONE 390 × 844</div>
+<div style="font:600 30px/1.15 system-ui;margin-top:8px;max-width:900px">Plan: the week’s groceries, the phase ladder, and the way into Recipes. Paper throughout; Reel in 3g and 3h.</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:20px;font:14px/1.55 system-ui;color:rgba(0,0,0,.72);max-width:1300px">
+<div><b style="color:#1a1a1a">Order.</b> Same as the shipped Plan tab: phase header, Groceries, Targets, then one row into Recipes. Recipes has no phone tab, so this row is how a phone gets there.</div>
+<div><b style="color:#1a1a1a">Groceries.</b> Four aisles, 18 items, quantities scaled from the Phase 2 baseline to the live phase and rounded to a size you can buy. Unmeasured staples show by name only. The list clears itself each Monday; Clear does it early, with Undo.</div>
+<div><b style="color:#1a1a1a">Ladder.</b> Coral dot marks the live rung, and the word “Now” sits next to it, so colour is never the only signal. Past rungs say “Done”; Pushed says “If stalled”.</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:48px 40px;margin-top:36px">
+<div id="3a" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">3a</span><span style="font:600 15px system-ui">Week 6 · midweek</span></div>
+<dc-import name="Rise Plan Phone" state="normal" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">7 of 18 ticked. Ticked rows go muted and struck through; they stay in place so the list order never jumps.</div></div>
+<div id="3b" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">3b</span><span style="font:600 15px system-ui">Monday · fresh list</span></div>
+<dc-import name="Rise Plan Phone" state="monday" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">The reset states itself once, then the note goes away.</div></div>
+<div id="3c" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">3c</span><span style="font:600 15px system-ui">All ticked</span></div>
+<dc-import name="Rise Plan Phone" state="done" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Nothing celebrates. The count reads 18 of 18.</div></div>
+<div id="3d" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">3d</span><span style="font:600 15px system-ui">Phase 3 applied</span></div>
+<dc-import name="Rise Plan Phone" state="phase3" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Quantities that changed turn coral-text for the rest of the week; ticks carry over.</div></div>
+<div id="3e" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">3e</span><span style="font:600 15px system-ui">Clear, with Undo</span></div>
+<dc-import name="Rise Plan Phone" state="cleared" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Clear empties the ticks early. Undo puts them back.</div></div>
+<div id="3i" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">3i</span><span style="font:600 15px system-ui">Week 1 · Ramp-up</span></div>
+<dc-import name="Rise Plan Phone" state="ramp" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Phase 1 scales the list down (milk 6 L, eggs 18). Target reads “Week 3”, not “If stalled”: it comes on by date, Pushed only on a suggestion.</div></div>
+<div id="3f" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">3f</span><span style="font:600 15px system-ui">Uncropped</span></div>
+<dc-import name="Rise Plan Phone" state="normal" look="paper" theme="light" tall="true" hint-size="390px,1900px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">The same week, whole screen: ladder and Recipes row below the list.</div></div>
+<div id="3g" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">3g</span><span style="font:600 15px system-ui">Reel · light</span></div>
+<dc-import name="Rise Plan Phone" state="normal" look="reel" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Same components, same markup.</div></div>
+<div id="3h" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">3h</span><span style="font:600 15px system-ui">Reel · dark</span></div>
+<dc-import name="Rise Plan Phone" state="normal" look="reel" theme="dark" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+</div>
+</section>
+
+<section data-screen-label="Turn 2 · Weight phone" style="padding:40px 44px 60px;width:1820px;box-sizing:border-box">
+<div style="font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:rgba(0,0,0,.5)">RISE 3.0 · STAGE 3 · HERO SCREENS · ★2 WEIGHT · PHONE 390 × 844</div>
+<div style="font:600 30px/1.15 system-ui;margin-top:8px;max-width:900px">Weight, matched to the approved 5a / 5b mocks. Paper throughout; Reel in 2g and 2h.</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:20px;font:14px/1.55 system-ui;color:rgba(0,0,0,.72);max-width:1300px">
+<div><b style="color:#1a1a1a">Order.</b> As in the mocks: week eyebrow, hero kg, pace line, chart, stat row, Next weigh-in card with its Weigh in button, History. The suggestion card slots in under the chart only when the engine has one.</div>
+<div><b style="color:#1a1a1a">How the chart reads.</b> Dots are weigh-ins, the line is the 4-week average (shorter window at the start), the band is 0.25–0.40 kg/week from the first weigh-in, the sun sits on the latest average. Paper fills the band coral; Reel fills it with the sky gradient.</div>
+<div><b style="color:#1a1a1a">Rules held.</b> Pace dot is green on pace, gold below pace, neutral with no trend. Nothing is red. The suggestion never applies itself.</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:48px 40px;margin-top:36px">
+<div id="2a" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">2a</span><span style="font:600 15px system-ui">Week 6 · normal</span></div>
+<dc-import name="Rise Weight Phone" state="normal" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">63.0 kg, +0.28 kg/week. The dots are weigh-ins, the line is the 4-week average the engine reads, the band is on pace.</div></div>
+<div id="2b" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">2b</span><span style="font:600 15px system-ui">First week · no trend yet</span></div>
+<dc-import name="Rise Weight Phone" state="first" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Dots on the horizon only; the chart says when the average line will appear.</div></div>
+<div id="2c" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">2c</span><span style="font:600 15px system-ui">Stall · Phase 3 suggestion</span></div>
+<dc-import name="Rise Weight Phone" state="stall" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Gold, not red. The card gives the rule that fired, then Apply / Not now.</div></div>
+<div id="2d" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">2d</span><span style="font:600 15px system-ui">Weigh-in sheet → saved</span></div>
+<dc-import name="Rise Weight Phone" state="entry" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<dc-import name="Rise Weight Phone" state="saved" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">“Weigh in” opens the sheet: date, weight, kg/lb, Save. Saving closes it; a “Saved” toast with Undo, the hero and chart update.</div></div>
+<div id="2e" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">2e</span><span style="font:600 15px system-ui">Editing a history entry</span></div>
+<dc-import name="Rise Weight Phone" state="edit" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Inline, with Cancel and Save.</div></div>
+<div id="2f" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">2f</span><span style="font:600 15px system-ui">Full scroll length</span></div>
+<dc-import name="Rise Weight Phone" state="normal" look="paper" theme="light" tall="true" hint-size="390px,1500px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">The same week, uncropped.</div></div>
+<div id="2g" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">2g</span><span style="font:600 15px system-ui">Look B · Reel · light</span></div>
+<dc-import name="Rise Weight Phone" state="normal" look="reel" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+<div id="2h" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">2h</span><span style="font:600 15px system-ui">Look B · Reel · dark</span></div>
+<dc-import name="Rise Weight Phone" state="normal" look="reel" theme="dark" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)"></div></div>
+</div>
+</section>
+
+<section data-screen-label="Turn 1 · Today phone" style="padding:40px 44px 60px;width:1820px;box-sizing:border-box">
+<div style="font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:rgba(0,0,0,.5)">RISE 3.0 · STAGE 3 · HERO SCREENS · ★1 TODAY · PHONE 390 × 844</div>
+<div style="font:600 30px/1.15 system-ui;margin-top:8px;max-width:900px">Today, matched to the approved 5a / 5b mocks. Look A (Paper) throughout; Look B (Reel) in 1j and 1k.</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:20px;font:14px/1.55 system-ui;color:rgba(0,0,0,.72);max-width:1300px">
+<div><b style="color:#1a1a1a">Order.</b> As in the mocks: dot strip with Calendar, phase eyebrow, hero kcal on a full-bleed horizon with the sun at the fill end, timeline with the now line and due card, Log food / Add a block, Appetite. 1i shows the full length.</div>
+<div><b style="color:#1a1a1a">Decisions.</b> The status word sits right of the eyebrow so colour is never the only signal; at zero it reads “Not started” in neutral ink. Shake carries “most skipped” while upcoming and drops it once it recedes.</div>
+<div><b style="color:#1a1a1a">Look picker.</b> Yes in Settings → Appearance beside System / Light / Dark, and yes in first run as one optional step with a live preview (default Paper, skippable). Both come in later stages.</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:48px 40px;margin-top:36px">
+<div id="1a" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">1a</span><span style="font:600 15px system-ui">Morning</span></div>
+<dc-import name="Rise Today Phone" state="morning" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Nothing ticked. Breakfast is due; yesterday’s backfill prompt sits under the strip.</div></div>
+<div id="1b" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">1b</span><span style="font:600 15px system-ui">Mid-afternoon · Snack due</span></div>
+<dc-import name="Rise Today Phone" state="afternoon" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">The sample day: 2,285 / 3,110 kcal.</div></div>
+<div id="1c" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">1c</span><span style="font:600 15px system-ui">Afternoon · Shake not ticked</span></div>
+<dc-import name="Rise Today Phone" state="late" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Earlier unticked block recedes in tone and size, never red. Still tappable.</div></div>
+<div id="1d" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">1d</span><span style="font:600 15px system-ui">All done</span></div>
+<dc-import name="Rise Today Phone" state="done" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Target reached, no praise. Tick toast with Undo.</div></div>
+<div id="1e" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">1e</span><span style="font:600 15px system-ui">Closed past day</span></div>
+<dc-import name="Rise Today Phone" state="closed" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Sat 26. The lock banner states it; markers fade, Swap and Log food go away.</div></div>
+<div id="1f" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">1f</span><span style="font:600 15px system-ui">Log food panel</span></div>
+<dc-import name="Rise Today Phone" state="log" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Recipes · Foods · Custom.</div></div>
+<div id="1g" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">1g</span><span style="font:600 15px system-ui">Rotation picker</span></div>
+<dc-import name="Rise Today Phone" state="swap" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Three options, today only.</div></div>
+<div id="1h" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">1h</span><span style="font:600 15px system-ui">Storage-full banner</span></div>
+<dc-import name="Rise Today Phone" state="storage" look="paper" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Danger ring on the icon and outline only; states the fact and the fix.</div></div>
+<div id="1i" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">1i</span><span style="font:600 15px system-ui">Full scroll length</span></div>
+<dc-import name="Rise Today Phone" state="afternoon" look="paper" theme="light" tall="true" hint-size="390px,1440px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">The same day, uncropped.</div></div>
+<div id="1j" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">1j</span><span style="font:600 15px system-ui">Look B · Reel · light</span></div>
+<dc-import name="Rise Today Phone" state="afternoon" look="reel" theme="light" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Same components, same markup.</div></div>
+<div id="1k" style="display:flex;flex-direction:column;gap:12px;width:390px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:700 12px ui-monospace,Menlo,monospace;background:#1a1a1a;color:#fff;border-radius:6px;padding:3px 7px">1k</span><span style="font:600 15px system-ui">Look B · Reel · dark</span></div>
+<dc-import name="Rise Today Phone" state="afternoon" look="reel" theme="dark" tall="false" hint-size="390px,844px"></dc-import>
+<div style="font:13px/1.45 system-ui;color:rgba(0,0,0,.62)">Night basis; the due card becomes the sun.</div></div>
+</div>
+</section>
+</x-dc>
+</body>
+</html>

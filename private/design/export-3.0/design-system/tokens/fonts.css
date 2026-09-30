@@ -1,0 +1,6 @@
+/* Fonts. Fraunces + Atkinson Next are self-hosted (assets/fonts). Newsreader + Barlow Semi Condensed (Reel look) still load from Google Fonts — self-host before shipping (offline-first rule). */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap');
+@font-face{font-family:'Fraunces';src:url(../assets/fonts/fraunces-normal.woff2) format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Fraunces';src:url(../assets/fonts/fraunces-italic.woff2) format('woff2');font-weight:100 900;font-style:italic;font-display:swap}
+@font-face{font-family:'Atkinson Next';src:url(../assets/fonts/atkinson-next.woff2) format('woff2');font-weight:200 800;font-display:swap}
+

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="styles/rise-tokens.css">
+</helmet>
+<div data-look="{{ look }}" data-theme="{{ theme }}" data-screen-label="Desktop" style="position:relative;width:1440px;height:900px;overflow:hidden;border-radius:14px;background-color:var(--bg-canvas);background-image:var(--texture);color:var(--ink);font-family:var(--font-body);display:grid;grid-template-columns:256px minmax(0,1fr);box-shadow:0 30px 60px -30px rgba(60,40,20,.45),0 0 0 1px rgba(0,0,0,.08)">
+
+<nav style="display:flex;flex-direction:column;gap:4px;padding:28px 16px 20px;background:var(--bg-sunken);box-shadow:inset -1px 0 0 var(--line)">
+<div style="display:flex;align-items:center;gap:10px;padding:0 12px 24px"><span style="width:22px;height:22px;border-radius:50%;background:var(--sun);box-shadow:0 0 14px 2px var(--sun-halo)"></span><span style="font-family:var(--font-display);font-size:26px;font-weight:var(--display-weight);line-height:1">Rise</span></div>
+<sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+<div style="display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:14px;height:48px;padding:0 14px;border-radius:24px;background:{{ n.bg }};color:{{ n.ink }};box-shadow:{{ n.glow }};font-family:var(--font-caption);font-size:{{ n.size }};font-weight:700;letter-spacing:var(--label-tracking);text-transform:var(--label-transform)">
+<span style="display:flex">
+<sc-if value="{{ n.iToday }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="M8 12l3 3 5-6"></path></svg></sc-if>
+<sc-if value="{{ n.iPlan }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 9h6M9 13h6M9 17h4"></path></svg></sc-if>
+<sc-if value="{{ n.iRecipes }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></sc-if>
+<sc-if value="{{ n.iWeight }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"></path></svg></sc-if>
+<sc-if value="{{ n.iSettings }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg></sc-if>
+</span><span>{{ n.label }}</span><sc-if value="{{ n.on }}"><span style="width:6px;height:6px;border-radius:50%;background:var(--nav-dot)"></span></sc-if>
+</div>
+</sc-for>
+<div style="margin-top:auto;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:16px">
+<div style="font-size:var(--due-label-size);font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:var(--ink-muted)">Today</div>
+<div style="margin-top:6px;display:flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums"><span style="font-family:var(--font-numeric);font-size:28px;font-weight:var(--numeric-weight);letter-spacing:var(--numeric-tracking);line-height:1">{{ g.kcal }}</span><span style="font-size:14px;color:var(--ink-muted)">/ {{ g.target }} kcal</span></div>
+<div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:14px"><span style="width:8px;height:8px;border-radius:50%;background:{{ g.col }}"></span>{{ g.status }}</div>
+<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums">{{ g.latestPre }}<b style="color:var(--ink)">{{ g.latest }}</b>{{ g.latestPost }}</div>
+</div>
+</nav>
+
+<main style="position:relative;overflow:hidden;padding:36px 48px 48px">
+
+<sc-if value="{{ isToday }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;max-width:1080px">
+<div style="min-width:0">
+<div style="display:flex;justify-content:space-between;align-items:center;font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)"><span>Wednesday 30 September · Phase 2 · Week 6</span><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--intake-partial)"></span>Partial</span></div>
+<div style="display:flex;align-items:baseline;gap:10px;margin-top:4px"><span style="font-family:var(--font-numeric);font-size:calc(var(--type-hero) * 1.15);font-weight:var(--numeric-weight);line-height:1;letter-spacing:var(--numeric-tracking);font-variant-numeric:tabular-nums">2,285</span><span style="font-size:24px;color:var(--ink-muted);font-variant-numeric:tabular-nums">/ 3,110 kcal</span></div>
+<div style="position:relative;height:60px;margin:6px 0 0">
+<div style="position:absolute;left:-24px;right:-24px;top:34px;height:1.5px;background:linear-gradient(90deg,transparent,var(--horizon) 8%,var(--horizon) 92%,transparent)"></div>
+<div style="position:absolute;left:0;width:73.5%;top:33px;height:4px;border-radius:2px;background:var(--intake-partial)"></div>
+<div style="position:absolute;left:calc(73.5% - 70px);top:-35px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,var(--sun-halo),transparent 65%)"></div>
+<div style="position:absolute;left:calc(73.5% - 14px);top:21px;width:28px;height:28px;border-radius:50%;background:var(--sun)"></div>
+<div style="position:absolute;right:0;top:42px;font-size:13px;color:var(--ink-muted);font-variant-numeric:tabular-nums">3,110</div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:17px;font-variant-numeric:tabular-nums"><span><b>825</b> to go · 3 blocks</span><span style="color:var(--ink-muted)">Protein 113/150 g</span></div>
+
+<div style="position:relative;isolation:isolate;margin-top:26px">
+<div style="position:absolute;z-index:-1;left:83px;top:8px;bottom:8px;width:2px;background:var(--line)"></div>
+<sc-for list="{{ tRows }}" as="r" hint-placeholder-count="7">
+<sc-if value="{{ r.isRow }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:58px 28px minmax(0,1fr) 110px auto;align-items:center;column-gap:14px;min-height:54px;border-radius:14px">
+<span style="text-align:right;font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums">{{ r.time }}</span>
+<span style="width:28px;height:28px;border-radius:50%;background:{{ r.mBg }};box-shadow:{{ r.mRing }};color:var(--bg-canvas);display:flex;align-items:center;justify-content:center"><sc-if value="{{ r.check }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if><sc-if value="{{ r.off }}"><span style="width:12px;height:12px;border-radius:3px;transform:rotate(45deg);background:var(--ink)"></span></sc-if></span>
+<span style="min-width:0"><span style="font-size:18px">{{ r.name }}</span><sc-if value="{{ r.tag }}"><span style="margin-left:8px;font-size:14px;color:var(--ink-muted)">{{ r.tag }}</span></sc-if><span style="display:block;font-size:14px;color:var(--ink-muted)">{{ r.desc }}</span></span>
+<span style="text-align:right;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums">{{ r.kcal }}<span style="font-weight:400;color:var(--ink-muted);font-size:14px"> · {{ r.prot }} g</span></span>
+<span style="width:64px;text-align:right;font-size:14px;font-weight:700;color:var(--accent-text)">{{ r.link }}</span>
+</div>
+</sc-if>
+<sc-if value="{{ r.isNow }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;height:28px;margin:4px 0"><div style="position:absolute;left:0;right:-24px;top:14px;height:1.5px;background:linear-gradient(90deg,transparent,var(--now-line) 10%,var(--now-line) 85%,transparent)"></div><span style="position:absolute;left:76px;top:6px;width:16px;height:16px;border-radius:50%;background:var(--sun);box-shadow:0 0 12px 4px var(--sun-halo)"></span><span style="position:absolute;left:6px;top:5px;font-size:13px;font-weight:700;color:var(--accent-text);background:var(--bg-canvas);padding:0 4px;font-variant-numeric:tabular-nums">16:10</span></div>
+</sc-if>
+<sc-if value="{{ r.isDue }}" hint-placeholder-val="{{ false }}">
+<div style="margin:6px 0 10px 72px;border-radius:22px;background:var(--due-bg);color:var(--due-ink);box-shadow:var(--due-edge),var(--due-glow);padding:18px 20px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center">
+<div style="min-width:0"><div style="font-size:var(--due-label-size);font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:var(--due-accent-text)">Due now · 16:00 · Add-on</div><div style="font-family:var(--font-display);font-style:var(--due-title-style);font-weight:var(--display-weight);font-size:var(--type-display-lg);line-height:1.05;margin-top:2px">Snack</div><div style="font-size:14px;color:var(--due-ink-muted);margin-top:4px">Yogurt, dates and almonds · <b style="color:var(--due-ink)">290 kcal</b> · 11 g</div></div>
+<div style="display:flex;gap:10px"><span style="height:52px;padding:0 18px;border-radius:26px;box-shadow:inset 0 0 0 1.5px var(--due-secondary-edge);display:flex;align-items:center;font-size:16px;font-weight:700">Swap</span><span style="height:52px;padding:0 22px;border-radius:26px;background:var(--due-cta-bg);color:var(--due-cta-ink);display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Tick Snack</span></div>
+</div>
+</sc-if>
+</sc-for>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:18px;padding-top:6px">
+<div style="border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:18px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">7 days</span><span style="height:40px;padding:0 14px;border-radius:20px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;font-size:14px;font-weight:700">Calendar</span></div>
+<div style="margin-top:14px;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:13px;color:var(--ink-muted);font-variant-numeric:tabular-nums">
+<sc-for list="{{ week }}" as="d" hint-placeholder-count="7"><span style="display:flex;flex-direction:column;align-items:center;gap:8px"><span>{{ d.day }}</span><span style="width:26px;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:{{ d.s }};height:{{ d.s }};border-radius:50%;background:{{ d.bg }};box-shadow:{{ d.ring }}"></span></span><span style="color:var(--ink);font-weight:{{ d.w }}">{{ d.n }}</span></span></sc-for>
+</div>
+<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink-muted)"><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--intake-on-track)"></span>On track</span><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--intake-partial)"></span>Partial</span><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--intake-low)"></span>Low</span></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><span style="height:52px;border-radius:26px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">+ Log food</span><span style="height:52px;border-radius:26px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">+ Add a block</span></div>
+<div style="border-radius:var(--radius-card);box-shadow:inset 0 0 0 1px var(--line);padding:18px">
+<div style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Appetite</div>
+<div style="margin-top:12px;display:flex;gap:8px"><span style="height:44px;padding:0 16px;border-radius:22px;background:var(--chip-bg);display:flex;align-items:center;font-size:15px">Stuffed</span><span style="height:44px;padding:0 16px;border-radius:22px;background:var(--chip-bg);display:flex;align-items:center;font-size:15px">Fine</span><span style="height:44px;padding:0 16px;border-radius:22px;background:var(--chip-bg);display:flex;align-items:center;font-size:15px">Hungry</span></div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isWeight }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;max-width:1080px">
+<div style="min-width:0">
+<div style="font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">{{ w.eyebrow }}</div>
+<div style="display:flex;align-items:baseline;gap:10px;margin-top:4px"><span style="font-family:var(--font-numeric);font-size:calc(var(--type-hero) * 1.15);font-weight:var(--numeric-weight);line-height:1;letter-spacing:var(--numeric-tracking);font-variant-numeric:tabular-nums">{{ w.latest }}</span><span style="font-size:24px;color:var(--ink-muted)">kg</span></div>
+<div style="margin-top:8px;display:flex;align-items:center;gap:8px;font-size:17px;font-variant-numeric:tabular-nums"><span style="width:10px;height:10px;border-radius:50%;background:var(--intake-on-track)"></span><span><b>{{ w.rate }}</b> · on pace</span></div>
+<div style="position:relative;margin-top:22px">
+<div style="position:absolute;left:-24px;right:-24px;top:{{ w.hy }}px;height:1.5px;background:linear-gradient(90deg,transparent,var(--horizon) 8%,var(--horizon) 92%,transparent)"></div>
+<svg viewBox="0 0 700 280" style="width:100%;display:block;overflow:visible;position:relative">
+<defs><linearGradient id="dsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F29A6E" stop-opacity=".38"></stop><stop offset="1" stop-color="#F8C28E" stop-opacity=".12"></stop></linearGradient><radialGradient id="dsun" cx=".4" cy=".38" r=".6"><stop offset="0" stop-color="#ffd392"></stop><stop offset=".45" stop-color="#f8a959"></stop><stop offset="1" stop-color="#e0673f"></stop></radialGradient><radialGradient id="dglow"><stop offset="0" stop-color="#f8a959" stop-opacity=".5"></stop><stop offset="1" stop-color="#f8a959" stop-opacity="0"></stop></radialGradient></defs>
+<g style="stroke:var(--line)" stroke-width="1"><sc-for list="{{ w.grid }}" as="g" hint-placeholder-count="3"><line x1="0" x2="700" y1="{{ g.y }}" y2="{{ g.y }}" stroke-dasharray="2 5"></line></sc-for></g>
+<polygon points="{{ w.band }}" style="fill:var(--chart-band);opacity:var(--band-flat)"></polygon>
+<polygon points="{{ w.band }}" fill="url(#dsky)" style="opacity:var(--band-sky)"></polygon>
+<polyline points="{{ w.avg }}" fill="none" style="stroke:var(--ink)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+<g style="fill:var(--ink)"><sc-for list="{{ w.pts }}" as="p" hint-placeholder-count="7"><circle cx="{{ p.x }}" cy="{{ p.y }}" r="3.5"></circle></sc-for></g>
+<circle cx="{{ w.sx }}" cy="{{ w.sy }}" r="34" fill="url(#dglow)"></circle><circle cx="{{ w.sx }}" cy="{{ w.sy }}" r="10" fill="url(#dsun)"></circle>
+</svg>
+<div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px;color:var(--ink-muted);font-variant-numeric:tabular-nums"><sc-for list="{{ w.xl }}" as="x" hint-placeholder-count="7"><span>{{ x }}</span></sc-for></div>
+<div style="margin-top:10px;display:flex;gap:18px;font-size:13px;color:var(--ink-muted)"><span style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:var(--ink)"></span>Weigh-in</span><span style="display:flex;align-items:center;gap:6px"><span style="width:16px;height:2.5px;background:var(--ink)"></span>4-week average</span><span style="display:flex;align-items:center;gap:6px"><span style="width:16px;height:10px;border-radius:2px;background:var(--chart-band)"></span>On pace, 0.25–0.40 kg/week</span></div>
+</div>
+<div style="margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums">
+<div style="padding:14px 0"><div style="font-size:26px;font-weight:700">86%</div><div style="font-size:13px;color:var(--ink-muted)">blocks eaten</div></div>
+<div style="padding:14px 16px;border-left:1px solid var(--line)"><div style="font-size:26px;font-weight:700">2,960</div><div style="font-size:13px;color:var(--ink-muted)">kcal / day avg</div></div>
+<div style="padding:14px 16px;border-left:1px solid var(--line)"><div style="font-size:26px;font-weight:700">{{ w.gain }}</div><div style="font-size:13px;color:var(--ink-muted)">since 17 Aug</div></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:18px;padding-top:6px">
+<div style="border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:inset 0 0 0 1px var(--line);padding:18px">
+<div style="font-size:var(--due-label-size);font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:var(--accent-text)">Next weigh-in</div>
+<div style="margin-top:6px;display:flex;align-items:baseline;gap:8px"><span style="font-family:var(--weighin-date-font);font-size:var(--weighin-date-size);font-weight:var(--weighin-date-weight);line-height:1">{{ w.next }}</span><span style="font-size:15px;color:var(--ink-muted)">{{ w.nextIn }}</span></div>
+<div style="margin-top:14px;height:52px;border-radius:26px;background:var(--cta-hero-bg);color:var(--cta-hero-ink);box-shadow:var(--cta-hero-glow);display:flex;align-items:center;justify-content:center;font-size:var(--cta-hero-size);font-weight:700;letter-spacing:var(--cta-hero-tracking);text-transform:var(--cta-hero-transform)">Weigh in</div>
+</div>
+<div>
+<div style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">History</div>
+<div style="margin-top:4px;font-variant-numeric:tabular-nums">
+<sc-for list="{{ w.hist }}" as="h" hint-placeholder-count="7">
+<div style="display:grid;grid-template-columns:1fr auto auto 44px;column-gap:12px;align-items:center;min-height:48px;border-bottom:1px solid var(--line)"><span style="font-size:15px">{{ h.date }}</span><span style="font-size:14px;color:var(--ink-muted)">{{ h.delta }}</span><span style="font-size:16px;font-weight:700">{{ h.kg }}</span><span style="text-align:right;font-size:14px;font-weight:700;color:var(--accent-text)">Edit</span></div>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isPlan }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:1080px">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px">
+<div><div style="font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">Week 6 · Wed 30 Sep</div><div style="margin-top:6px;font-family:var(--font-display);font-weight:var(--display-weight);font-size:calc(var(--type-display-lg) * 1.25);line-height:1.05">Phase 2, Target</div><div style="margin-top:6px;font-size:16px;color:var(--ink-muted);font-variant-numeric:tabular-nums">3,110 kcal · 150 g protein a day</div></div>
+</div>
+<div style="margin-top:26px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;align-items:start">
+<div style="min-width:0">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Groceries</span><span style="font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums"><b style="color:var(--ink)">{{ doneN }} of 18</b> ticked · new list Mon 5 Oct</span></div>
+<div style="margin-top:10px;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:6px 20px 18px">
+<div style="display:grid;grid-template-columns:1fr 1fr;column-gap:32px">
+<sc-for list="{{ aisles }}" as="a" hint-placeholder-count="4">
+<div style="padding-top:14px"><div style="font-family:var(--font-caption);font-size:var(--caption-size);font-weight:var(--caption-weight);letter-spacing:var(--caption-tracking);text-transform:var(--caption-transform)">{{ a.name }}</div>
+<div style="margin-top:4px"><sc-for list="{{ a.items }}" as="it" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:22px minmax(0,1fr) auto;align-items:center;column-gap:12px;min-height:46px;border-top:1px solid var(--line)"><span style="width:22px;height:22px;border-radius:7px;background:{{ it.boxBg }};box-shadow:{{ it.boxRing }};display:flex;align-items:center;justify-content:center;color:var(--bg-canvas)"><sc-if value="{{ it.on }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if></span><span style="font-size:16px;color:{{ it.ink }};text-decoration:{{ it.strike }};text-decoration-color:var(--ink-soft)">{{ it.name }}</span><span style="font-size:15px;font-weight:700;color:{{ it.ink }};font-variant-numeric:tabular-nums">{{ it.qty }}</span></div>
+</sc-for></div></div>
+</sc-for>
+</div>
+<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px;color:var(--ink-muted)">Quantities for Phase 2.</span><span style="height:40px;padding:0 16px;border-radius:20px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;font-size:15px;font-weight:700;color:{{ clearInk }}">Clear</span></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:18px">
+<div><div style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Targets</div>
+<div style="margin-top:10px;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:6px">
+<sc-for list="{{ ladder }}" as="r" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:12px minmax(0,1fr) auto;column-gap:12px;align-items:center;padding:12px;border-radius:16px;background:{{ r.bg }}"><span style="width:12px;height:12px;border-radius:50%;background:{{ r.dotBg }};box-shadow:{{ r.dotRing }}"></span><span style="min-width:0"><span style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap"><span style="font-size:16px;font-weight:700;color:{{ r.nameInk }}">{{ r.name }}</span><span style="font-family:var(--font-caption);font-size:var(--due-label-size);font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:{{ r.statusInk }}">{{ r.status }}</span></span><span style="display:block;font-size:13px;color:var(--ink-muted);margin-top:2px">{{ r.when }}</span></span><span style="text-align:right;font-variant-numeric:tabular-nums"><span style="display:block;font-size:16px;font-weight:700;color:{{ r.nameInk }}">{{ r.kcal }}</span><span style="display:block;font-size:13px;color:var(--ink-muted)">{{ r.prot }}</span></span></div>
+</sc-for>
+<div style="padding:10px 12px 8px;font-size:14px;line-height:1.45;color:var(--ink-muted)">Phase 3 is only ever suggested from Weight, never switched on by itself.</div>
+</div></div>
+<div style="border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:inset 0 0 0 1px var(--line);padding:16px;display:grid;grid-template-columns:minmax(0,1fr) 18px;gap:12px;align-items:center"><span><span style="display:block;font-size:16px;font-weight:700">Recipes</span><span style="display:block;font-size:14px;line-height:1.4;color:var(--ink-muted);margin-top:2px">Also in the side nav. Meal options, the food table and your saved recipes.</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-muted)"><path d="M9 6l6 6-6 6"></path></svg></div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isWeightEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;max-width:1080px">
+<div style="min-width:0">
+<div style="font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">Week 0 · Mon 17 Aug</div>
+<div style="display:flex;align-items:baseline;gap:10px;margin-top:4px"><span style="font-family:var(--font-numeric);font-size:calc(var(--type-hero) * 1.15);font-weight:var(--numeric-weight);line-height:1;color:var(--ink-soft)">—</span><span style="font-size:24px;color:var(--ink-muted)">kg</span></div>
+<div style="margin-top:8px;display:flex;align-items:center;gap:8px;font-size:17px"><span style="width:10px;height:10px;border-radius:50%;background:var(--ink-soft)"></span><span><b>No trend yet</b> · first weigh-in today</span></div>
+<div style="position:relative;margin-top:22px;height:300px"><div style="position:absolute;left:-24px;right:-24px;top:214px;height:1.5px;background:linear-gradient(90deg,transparent,var(--horizon) 8%,var(--horizon) 92%,transparent)"></div><div style="position:absolute;left:0;right:0;top:120px;text-align:center;font-size:15px;color:var(--ink-muted)">Your first weigh-in starts the chart</div><div style="position:absolute;left:0;right:0;top:232px;display:flex;justify-content:space-between;font-size:13px;color:var(--ink-muted)"><span>17 Aug</span><span></span></div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:18px;padding-top:6px">
+<div style="border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:inset 0 0 0 1px var(--line);padding:18px"><div style="font-size:var(--due-label-size);font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:var(--accent-text)">Next weigh-in</div><div style="margin-top:6px;display:flex;align-items:baseline;gap:8px"><span style="font-family:var(--weighin-date-font);font-size:var(--weighin-date-size);font-weight:var(--weighin-date-weight);line-height:1">Today</span><span style="font-size:15px;color:var(--ink-muted)">Mon 17 Aug</span></div><div style="margin-top:14px;height:52px;border-radius:26px;background:var(--cta-hero-bg);color:var(--cta-hero-ink);box-shadow:var(--cta-hero-glow);display:flex;align-items:center;justify-content:center;font-size:var(--cta-hero-size);font-weight:700;letter-spacing:var(--cta-hero-tracking);text-transform:var(--cta-hero-transform)">Weigh in</div></div>
+<div><div style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">History</div>
+<div style="margin-top:10px;padding:28px 20px;border-radius:var(--radius-card);box-shadow:inset 0 0 0 1.5px var(--line);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:var(--ink-soft)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="4"></rect><path d="M8 9.5a5 5 0 0 1 8 0L12 12z"></path></svg><span style="font-size:15px;line-height:1.45;color:var(--ink-muted)">No weigh-ins yet. Each one you save lands here.</span></div></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isRecipes }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:1080px">
+<div style="font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">Recipe book · meals · food table</div>
+<div style="margin-top:6px;font-family:var(--font-display);font-weight:var(--display-weight);font-size:calc(var(--type-display-lg) * 1.25);line-height:1.05">Recipes</div>
+<div style="margin-top:26px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start">
+<div style="min-width:0">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Recipe book</span><span style="height:44px;padding:0 20px;border-radius:22px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;font-size:15px;font-weight:700">+ New recipe</span></div>
+<div style="margin-top:4px;font-size:15px;color:var(--ink-muted)">Log puts a recipe on today. New recipes also show under Today → Log food.</div>
+<sc-if value="{{ recipesEmpty }}" hint-placeholder-val="{{ false }}"><div style="margin-top:14px;padding:40px 20px;border-radius:var(--radius-card);box-shadow:inset 0 0 0 1.5px var(--line);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:var(--ink-soft)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg><span style="font-size:15px;line-height:1.45;color:var(--ink-muted);max-width:300px">No recipes yet. A recipe is built from the food table and logs as one entry.</span></div></sc-if>
+<sc-if value="{{ recipesFull }}" hint-placeholder-val="{{ true }}">
+<div style="margin-top:14px;height:48px;border-radius:var(--radius-field);box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;gap:10px;padding:0 16px;color:var(--ink-muted);font-size:16px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg>Filter recipes</div>
+<div style="margin-top:4px"><sc-for list="{{ recipes }}" as="q" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:14px;align-items:center;min-height:60px;border-bottom:1px solid var(--line)"><span style="font-size:17px">{{ q.name }}</span><span style="font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums">{{ q.kcal }} kcal · {{ q.prot }} g</span><span style="font-size:15px;font-weight:700;color:var(--accent-text)">Edit</span><span style="height:40px;padding:0 16px;border-radius:20px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;font-size:15px;font-weight:700">Log</span></div></sc-for></div>
+</sc-if>
+<div style="margin-top:28px;font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Food table</div>
+<div style="margin-top:10px;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:4px 18px 8px">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 90px 70px 60px;gap:10px;padding:10px 0;font-family:var(--font-caption);font-size:12px;font-weight:700;letter-spacing:var(--label-tracking);text-transform:var(--label-transform);color:var(--ink-muted)"><span>Food</span><span>Amount</span><span style="text-align:right">Kcal</span><span style="text-align:right">Protein</span></div>
+<sc-for list="{{ foods }}" as="f" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:minmax(0,1fr) 90px 70px 60px;gap:10px;align-items:center;min-height:44px;border-top:1px solid var(--line);font-size:15px;font-variant-numeric:tabular-nums"><span>{{ f.name }}</span><span style="color:var(--ink-muted)">{{ f.portion }}</span><span style="text-align:right;font-weight:700">{{ f.kcal }}</span><span style="text-align:right;color:var(--ink-muted)">{{ f.prot }} g</span></div></sc-for>
+</div>
+</div>
+<div style="min-width:0">
+<div style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Meals</div>
+<div style="margin-top:10px;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:0 18px">
+<sc-for list="{{ meals }}" as="m" hint-placeholder-count="6"><div style="border-top:{{ m.bt }}"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto 16px;gap:12px;align-items:center;min-height:54px"><span><span style="font-size:16px;font-weight:700">{{ m.name }}</span><span style="margin-left:8px;font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums">{{ m.time }}</span></span><span style="font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums">{{ m.fig }}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-muted);transform:{{ m.rot }}"><path d="M6 9l6 6 6-6"></path></svg></div><div style="height:3px;border-radius:2px;background:var(--line);margin:-6px 0 8px;overflow:hidden"><div style="height:100%;width:{{ m.share }};background:var(--ink-soft)"></div></div>
+<sc-if value="{{ m.open }}" hint-placeholder-val="{{ false }}"><div style="margin:0 0 10px"><sc-for list="{{ m.opts }}" as="o" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:15px"><span style="color:var(--ink-muted)">{{ o.desc }}</span><span style="font-weight:700;font-variant-numeric:tabular-nums">{{ o.kcal }}</span></div></sc-for></div></sc-if></div></sc-for>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:1080px">
+<div style="font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">45 days logged · 7 weigh-ins · 3 recipes</div>
+<div style="margin-top:6px;font-family:var(--font-display);font-weight:var(--display-weight);font-size:calc(var(--type-display-lg) * 1.25);line-height:1.05">Settings</div>
+<div style="margin-top:26px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:32px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Appearance</div>
+<div style="border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:20px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:17px;font-weight:700">Look</span><span style="font-size:14px;color:var(--ink-muted)">Type, texture and the sun</span></div>
+<div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<sc-for list="{{ tiles }}" as="t" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;gap:10px"><div style="border-radius:20px;padding:3px;box-shadow:{{ t.sel }}"><div data-look="{{ t.look }}" data-theme="{{ t.theme }}" style="border-radius:17px;overflow:hidden;background-color:var(--bg-canvas);background-image:var(--texture);color:var(--ink);font-family:var(--font-body);padding:16px 14px 14px;box-shadow:inset 0 0 0 1px var(--line)"><div style="font-size:11px;font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">Phase 2 · Week 6</div><div style="font-family:var(--font-numeric);font-size:44px;font-weight:var(--numeric-weight);letter-spacing:var(--numeric-tracking);line-height:1;margin-top:2px">2,285</div><div style="position:relative;height:22px"><div style="position:absolute;left:-14px;right:-14px;top:12px;height:1px;background:var(--horizon)"></div><div style="position:absolute;left:0;width:70%;top:11px;height:3px;border-radius:2px;background:var(--intake-partial)"></div><div style="position:absolute;left:calc(70% - 8px);top:5px;width:16px;height:16px;border-radius:50%;background:var(--sun);box-shadow:0 0 10px 3px var(--sun-halo)"></div></div><div style="margin-top:8px;border-radius:12px;background:var(--due-bg);color:var(--due-ink);box-shadow:var(--due-edge);padding:10px 12px"><div style="font-size:10px;font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:var(--due-accent-text)">Due now</div><div style="font-family:var(--font-display);font-style:var(--due-title-style);font-size:22px;line-height:1.1">Snack</div><div style="margin-top:8px;height:20px;border-radius:10px;background:var(--due-cta-bg)"></div></div></div></div><div style="display:flex;align-items:center;gap:8px;padding-left:4px"><span style="width:20px;height:20px;border-radius:50%;box-shadow:{{ t.radio }}"></span><span style="font-size:16px;font-weight:700">{{ t.name }}</span><span style="font-size:13px;color:var(--ink-muted)">{{ t.note }}</span></div></div></sc-for>
+</div>
+<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:center"><span><span style="display:block;font-size:17px;font-weight:700">Theme</span><span style="display:block;font-size:14px;color:var(--ink-muted)">System follows your device</span></span><div style="height:48px;border-radius:24px;background:var(--bg-sunken);padding:4px;display:grid;grid-template-columns:repeat(3,1fr);box-sizing:border-box;font-size:15px;font-weight:700"><span style="border-radius:20px;background:var(--ink);color:var(--ink-inverse);display:flex;align-items:center;justify-content:center">System</span><span style="display:flex;align-items:center;justify-content:center;color:var(--ink-muted)">Light</span><span style="display:flex;align-items:center;justify-content:center;color:var(--ink-muted)">Dark</span></div></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Profile</div>
+<div style="border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:14px 16px;display:grid;grid-template-columns:44px minmax(0,1fr) 16px;gap:14px;align-items:center"><span style="width:44px;height:44px;border-radius:50%;background:var(--bg-sunken);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700">S</span><span><span style="display:block;font-size:17px;font-weight:700">Sam</span><span style="display:block;font-size:14px;color:var(--ink-muted)">Target · 178 cm · +0.3 kg/wk</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-muted)"><path d="M9 6l6 6-6 6"></path></svg></div>
+<div style="margin-top:16px;font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Overview</div>
+<div style="border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:0 16px"><sc-for list="{{ overview }}" as="o" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;min-height:60px;border-top:{{ o.bt }}"><span><span style="display:block;font-size:16px;font-weight:700">{{ o.name }}</span><span style="display:block;font-size:14px;color:var(--ink-muted)">{{ o.hint }}</span></span><span style="width:52px;height:32px;border-radius:16px;background:var(--ink);position:relative"><span style="position:absolute;right:3px;top:3px;width:26px;height:26px;border-radius:50%;background:var(--bg-canvas)"></span></span></div></sc-for></div>
+<div style="margin-top:16px;font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Data</div>
+<div style="border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:0 16px"><sc-for list="{{ data }}" as="d" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) 16px;gap:14px;align-items:center;min-height:56px;border-top:{{ d.bt }}"><span><span style="display:block;font-size:16px;font-weight:700;color:{{ d.ink }}">{{ d.name }}</span><span style="display:block;font-size:14px;color:var(--ink-muted)">{{ d.hint }}</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-muted)"><path d="M9 6l6 6-6 6"></path></svg></div></sc-for></div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:60px;background:linear-gradient(to bottom,transparent,var(--bg-canvas));pointer-events:none"></div>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:50%;transform:translateX(-50%);bottom:32px;display:flex;align-items:center;gap:16px;height:52px;padding:0 8px 0 20px;border-radius:26px;background:var(--bg-inverse);color:var(--ink-inverse);box-shadow:var(--shadow-float);font-size:15px;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>{{ toast }}<span style="height:40px;padding:0 16px;display:flex;align-items:center;font-weight:700;color:var(--accent)">Undo</span></div>
+</sc-if>
+</main>
+
+<sc-if value="{{ hasDialog }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding-left:256px">
+<div style="width:520px;border-radius:28px;background-color:var(--bg-raised);background-image:var(--texture);box-shadow:var(--shadow-float);padding:24px 26px 26px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-md)">{{ dlg.title }}</span><span style="display:flex;align-items:center;gap:12px"><span style="font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--ink-muted)">{{ dlg.meta }}</span><span style="width:40px;height:40px;border-radius:20px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></span></div>
+<sc-if value="{{ dlg.note }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px;line-height:1.45;color:var(--ink-muted)">{{ dlg.note }}</div></sc-if>
+<sc-if value="{{ dlg.isWeigh }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:end"><label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:14px;font-weight:700">Date</span><span style="height:64px;border-radius:var(--radius-field);background:var(--bg-canvas);box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;padding:0 16px;font-size:17px">Mon 5 Oct</span></label><label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:14px;font-weight:700">Weight</span><span style="height:64px;border-radius:var(--radius-field);background:var(--bg-canvas);box-shadow:inset 0 0 0 1.5px var(--ink),var(--focus-ring);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-family:var(--font-numeric);font-size:34px;font-weight:var(--numeric-weight);font-variant-numeric:tabular-nums">63.4<span style="font-family:var(--font-body);font-size:15px;font-weight:700;color:var(--ink-muted)">kg · <span style="font-weight:400">lb</span></span></span></label></div>
+<div style="font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums">+0.4 kg since Mon 28 Sep</div>
+</sc-if>
+<sc-if value="{{ dlg.hasList }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ dlg.isLog }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:24px;background:var(--bg-sunken);height:48px;box-sizing:border-box;font-size:15px;font-weight:700"><span style="border-radius:20px;background:var(--ink);color:var(--bg-canvas);display:flex;align-items:center;justify-content:center">Recipes</span><span style="display:flex;align-items:center;justify-content:center;color:var(--ink-muted)">Foods</span><span style="display:flex;align-items:center;justify-content:center;color:var(--ink-muted)">Custom</span></div></sc-if>
+<div style="border-radius:20px;box-shadow:inset 0 0 0 1px var(--line);overflow:hidden"><sc-for list="{{ dlg.rows }}" as="o" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:28px minmax(0,1fr) auto auto;gap:12px;align-items:center;min-height:60px;padding:0 14px;border-top:{{ o.bt }};background:{{ o.bg }}"><span style="width:22px;height:22px;border-radius:50%;box-shadow:{{ o.ring }}"></span><span style="min-width:0"><span style="display:block;font-size:16px">{{ o.name }}</span><span style="display:block;font-size:13px;color:var(--ink-muted)">{{ o.sub }}</span></span><span style="font-size:16px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums">{{ o.kcal }}<span style="display:block;font-size:13px;font-weight:400;color:var(--ink-muted)">{{ o.prot }} g</span></span><span style="font-size:14px;font-weight:700;color:var(--accent-text)">{{ o.act }}</span></div></sc-for></div>
+</sc-if>
+<div style="display:flex;justify-content:flex-end;gap:10px;font-size:16px;font-weight:700"><span style="height:52px;padding:0 20px;border-radius:26px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center">Cancel</span><span style="height:52px;padding:0 26px;border-radius:26px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center">{{ dlg.cta }}</span></div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;today&quot;,&quot;weight&quot;,&quot;weightEmpty&quot;,&quot;plan&quot;,&quot;recipes&quot;,&quot;recipesEmpty&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;today&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;overlay&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;log&quot;,&quot;swap&quot;,&quot;addblock&quot;,&quot;weighin&quot;,&quot;toast&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;look&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;paper&quot;,&quot;reel&quot;],&quot;default&quot;:&quot;paper&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const P = this.props, scr0 = P.screen ?? 'today', ov = P.overlay ?? 'none';
+    const scr = { weightEmpty: 'weight', recipesEmpty: 'recipes' }[scr0] || scr0;
+    const look = P.look ?? 'paper', theme = P.theme ?? 'light';
+    const nav = [['today', 'Today'], ['plan', 'Plan'], ['recipes', 'Recipes'], ['weight', 'Weight'], ['settings', 'Settings']].map(([id, label]) => {
+      const on = id === scr, sub = id === 'recipes';
+      return { label, on, ['i' + id[0].toUpperCase() + id.slice(1)]: true,
+        bg: on ? 'var(--nav-active-bg)' : 'transparent', ink: on ? 'var(--nav-active-ink)' : 'var(--nav-ink)', glow: on ? 'var(--nav-active-glow)' : 'none', size: 'var(--label-size)' };
+    });
+    const ring = 'inset 0 0 0 1.5px var(--ink-soft)', ink = 'var(--ink)';
+    const tRows = [
+      { isRow: true, time: '08:00', name: 'Breakfast', desc: 'Eggs, flatbreads, milk, butter', kcal: 705, prot: 34, check: true, mBg: ink, mRing: 'none', link: '' },
+      { isRow: true, time: '11:00', name: 'Shake', desc: 'Milk, banana, PB, oats', kcal: 580, prot: 22, check: true, mBg: ink, mRing: 'none', link: '' },
+      { isRow: true, time: '13:30', name: 'Lunch', desc: 'Chicken curry and rice', kcal: 580, prot: 33, check: true, mBg: ink, mRing: 'none', link: '' },
+      { isRow: true, time: '14:20', name: 'Chicken wrap', tag: 'off plan', desc: 'Logged from Recipes', kcal: 420, prot: 24, off: true, mBg: 'transparent', mRing: 'none', link: 'Remove' },
+      { isNow: true }, { isDue: true },
+      { isRow: true, time: '19:30', name: 'Dinner', desc: 'Egg curry, lentil stew, flatbreads', kcal: 700, prot: 37, mBg: 'var(--bg-canvas)', mRing: ring, link: 'Swap' },
+      { isRow: true, time: '22:00', name: 'Pre-bed', tag: 'add-on', desc: 'Milk and peanut butter', kcal: 255, prot: 12, mBg: 'var(--bg-canvas)', mRing: ring, link: '' }
+    ];
+    const col = { G: 'var(--intake-on-track)', P: 'var(--intake-partial)', L: 'var(--intake-low)' };
+    const week = [['Thu', 24, 'G'], ['Fri', 25, 'G'], ['Sat', 26, 'P'], ['Sun', 27, 'L'], ['Mon', 28, 'G'], ['Tue', 29, 'G'], ['Wed', 30, 'T']].map(([day, n, k]) =>
+      k === 'T' ? { day, n, s: '22px', bg: 'transparent', ring: 'inset 0 0 0 2px var(--ink)', w: 700 } : { day, n, s: '16px', bg: col[k], ring: 'none', w: 400 });
+    const saved = scr0 === 'weight' && ov === 'toast';
+    const kg = [61.4, 61.7, 62.1, 62.2, 62.2, 62.6, 63.0].concat(saved ? [63.4] : []), n = kg.length;
+    const avg = kg.map((_, i) => { const s = kg.slice(Math.max(0, i - 3), i + 1); return s.reduce((a, b) => a + b, 0) / s.length; });
+    const X = i => 16 + i * 668 / (n - 1), Y = v => 236 - (v - 61.2) * 110;
+    const M = ['Aug', 'Sep', 'Oct'], lbl = i => { const d = new Date(Date.UTC(2026, 7, 17 + 7 * i)); return d.getUTCDate() + ' ' + M[d.getUTCMonth() - 7]; };
+    const dayN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const w = {
+      hy: 236 * 0 + 0, pts: kg.map((v, i) => ({ x: X(i).toFixed(1), y: Y(v).toFixed(1) })),
+      avg: avg.map((v, i) => X(i).toFixed(1) + ',' + Y(v).toFixed(1)).join(' '),
+      band: X(0) + ',' + Y(kg[0]) + ' ' + X(n - 1) + ',' + Y(kg[0] + 0.25 * (n - 1)) + ' ' + X(n - 1) + ',' + Y(kg[0] + 0.4 * (n - 1)),
+      sx: X(n - 1).toFixed(1), sy: Y(avg[n - 1]).toFixed(1),
+      grid: [61.5, 62.5, 63.5].map(v => ({ y: Y(v).toFixed(1) })),
+      xl: kg.map((_, i) => lbl(i)),
+      hist: kg.map((v, i) => ({ date: 'Mon ' + lbl(i), kg: v.toFixed(1), delta: i ? (v - kg[i - 1] >= 0 ? '+' : '−') + Math.abs(v - kg[i - 1]).toFixed(1) : 'start' })).reverse()
+    };
+    w.hy = null;
+    Object.assign(w, { eyebrow: saved ? 'Week 7 · Mon 5 Oct' : 'Week 6 · Mon 28 Sep', latest: kg[n - 1].toFixed(1), rate: saved ? '+0.33 kg/week' : '+0.28 kg/week', next: saved ? 'Mon 12 Oct' : 'Mon 5 Oct', nextIn: saved ? 'in 7 days' : 'in 5 days', gain: '+' + (kg[n - 1] - kg[0]).toFixed(1) + ' kg' });
+    const L = [
+      ['Dairy & eggs', [['Full-Fat Milk', '7.5 L'], ['Eggs', '24'], ['Yogurt', '1.5 kg'], ['Clarified Butter', '250 g']]],
+      ['Pantry', [['Peanut Butter', '1 kg'], ['Oats', '500 g'], ['Rice', '2 kg'], ['Wholemeal Flour', ''], ['Oil', '1 L'], ['Honey', '']]],
+      ['Protein', [['Chicken', '1.5 kg'], ['Minced Beef', '500 g'], ['Dried Lentils', '1 kg'], ['Dried Chickpeas', '1 kg']]],
+      ['Produce', [['Bananas', '24'], ['Dates', '500 g'], ['Almonds', '250 g'], ['Potatoes, Onions, Tomatoes', '']]]
+    ];
+    const tk = scr === 'plan' && ov === 'toast' ? [] : ['Full-Fat Milk', 'Eggs', 'Yogurt', 'Peanut Butter', 'Oats', 'Chicken', 'Bananas'];
+    const aisles = L.map(([name, items]) => ({ name, items: items.map(([nm, qty]) => { const on = tk.includes(nm); return { name: nm, qty, on, boxBg: on ? 'var(--ink)' : 'transparent', boxRing: on ? 'none' : ring, ink: on ? 'var(--ink-muted)' : 'var(--ink)', strike: on ? 'line-through' : 'none' }; }) }));
+    const ladder = [['Ramp-up', 'Weeks 1–2', '2,565', 127, 'Done', -1], ['Target', 'Week 3 onward', '3,110', 150, 'Now', 0], ['Pushed', 'Stalled 2 weeks, or training begins', '3,690', 172, 'If stalled', 1]].map(([name, when, k, p, status, rel]) => ({
+      name, when, status, kcal: k + ' kcal', prot: p + ' g protein', bg: rel === 0 ? 'var(--bg-sunken)' : 'transparent',
+      statusInk: rel === 0 ? 'var(--accent-text)' : 'var(--ink-muted)', nameInk: rel === 0 ? 'var(--ink)' : 'var(--ink-muted)',
+      dotBg: rel === 0 ? 'var(--accent)' : rel < 0 ? 'var(--ink-soft)' : 'transparent', dotRing: rel > 0 ? ring : 'none' }));
+    const on7 = 'inset 0 0 0 7px var(--ink)';
+    const opt = (arr) => arr.map(([name, sub, kcal, prot, sel, act], i) => ({ name, sub, kcal, prot, act: act || '', ring: act ? 'none' : (sel ? on7 : ring), bg: sel ? 'var(--bg-sunken)' : 'transparent', bt: i ? '1px solid var(--line)' : 'none' }));
+    const D = {
+      log: { title: 'Log food', meta: 'Wed 30 Sep', cta: 'Done', hasList: true, isLog: true, rows: opt([['Overnight oats', '5 items', 620, 23, 0, 'Log'], ['Chicken wrap', '4 items', 420, 24, 0, 'Log'], ['Peanut butter banana toast', '3 items', 480, 15, 0, 'Log']]) },
+      swap: { title: 'Swap Snack', meta: 'Today only', cta: 'Done', hasList: true, rows: opt([['Yogurt, dates and almonds', 'Current', 290, 11, 1], ['Banana and peanut butter', '', 295, 9, 0], ['Yogurt, oats and honey', '', 290, 11, 0]]) },
+      addblock: { title: 'Add a block', meta: 'Today only', note: "A bonus block counts toward today's kcal but never against adherence.", cta: 'Add Shake 2', hasList: true, rows: opt([['Shake 2', 'Standard shake', 580, 22, 1], ['Extra snack', 'Banana and peanut butter', 295, 9, 0], ['Extra pre-bed', 'Milk and peanut butter', 255, 12, 0], ['Heavy shake', 'Adds oats and dates', 790, 27, 0]]) },
+      weighin: { title: 'Weigh-in', meta: 'Week 7', note: 'Morning, after the bathroom, before food or water.', cta: 'Save', isWeigh: true }
+    };
+    const dlg = D[ov] || null;
+    const toast = ov !== 'toast' ? '' : scr === 'weight' ? 'Saved · 63.4 kg' : scr === 'plan' ? 'Cleared 7 ticks' : 'Snack ticked · 290 kcal';
+    const R = [['Breakfast', '08:00', [['Eggs (3) + flatbreads (2) + milk + butter', 705], ['Eggs (3) + flaky flatbread + milk + butter', 705], ['Eggs (2) + bread + peanut butter + milk', 700]]], ['Shake', '11:00', [['Standard: milk, PB, banana, oats', 580], ['No blender: milk, PB, banana, honey', 545], ['Heavy: adds oats and dates', 790], ['Mass: 2 bananas, almonds, sugar', 1050]]], ['Lunch', '13:30', [['Chicken curry (150 g) + rice', 580], ['Minced beef + flatbreads + salad', 630], ['Chickpeas + flatbread + yogurt', 565]]], ['Snack', '16:00', [['Yogurt + dates + almonds', 290]]], ['Dinner', '19:30', [['Egg curry + lentil stew + flatbreads', 700]]], ['Pre-bed', '22:00', [['Milk + peanut butter', 255]]]];
+    const meals = R.map(([name, time, o], i) => { const ks = o.map(x => x[1]), mx = Math.max(...ks), mn = Math.min(...ks); return { name, time, fig: mn === mx ? mx + ' kcal' : mn + '–' + mx.toLocaleString('en-US') + ' kcal', share: Math.round(mx / 3110 * 100) + '%', open: i === 1, rot: i === 1 ? 'rotate(180deg)' : 'none', bt: i ? '1px solid var(--line)' : 'none', opts: o.map(([desc, k]) => ({ desc, kcal: k.toLocaleString('en-US') })) }; });
+    const foods = [['Full-Fat Milk', '250 ml', 160, 8], ['Large Egg', '1', 75, 6], ['Peanut Butter', '1 tbsp', 95, 4], ['Flatbread', '1 medium', 140, 4], ['Cooked Rice', '1 cup', 250, 5], ['Lentil Stew', '1 cup', 220, 14], ['Full-Fat Yogurt', '200 g', 130, 8]].map(([name, portion, kcal, prot]) => ({ name, portion, kcal, prot }));
+    const tiles = [['paper', 'Paper', 'Default'], ['reel', 'Reel', '']].map(([l, name, note]) => ({ look: l, theme, name, note, sel: l === look ? '0 0 0 2px var(--ink)' : 'none', radio: l === look ? on7 : ring }));
+    return { look, theme, nav, isToday: scr === 'today', isWeight: scr0 === 'weight', isWeightEmpty: scr0 === 'weightEmpty', isPlan: scr === 'plan', isRecipes: scr === 'recipes', isSettings: scr === 'settings',
+      recipesEmpty: scr0 === 'recipesEmpty', recipesFull: scr0 !== 'recipesEmpty',
+      recipes: [{ name: 'Overnight oats', kcal: 620, prot: 23 }, { name: 'Chicken wrap', kcal: 420, prot: 24 }, { name: 'Peanut butter banana toast', kcal: 480, prot: 15 }],
+      meals, foods, tiles,
+      overview: [{ name: 'Protein line', hint: 'Protein against the daily target.', bt: 'none' }, { name: 'Remaining line', hint: 'Kcal and blocks still to go.', bt: '1px solid var(--line)' }],
+      data: [{ name: 'Export data', hint: 'Exported 3 days ago.', ink: 'var(--ink)', bt: 'none' }, { name: 'Import data', hint: 'From a backup file or pasted JSON.', ink: 'var(--ink)', bt: '1px solid var(--line)' }, { name: 'Check for updates', hint: 'Up to date · v3.0.0', ink: 'var(--ink)', bt: '1px solid var(--line)' }, { name: 'Reset all data', hint: 'Asks twice. Undo lasts until you close the app.', ink: 'var(--danger)', bt: '1px solid var(--line)' }],
+      hasDialog: !!dlg, dlg: dlg || {}, toast, doneN: tk.length, clearInk: tk.length ? 'var(--ink)' : 'var(--ink-soft)',
+      g: scr0 === 'weightEmpty' ? { kcal: '0', target: '2,565', col: 'var(--ink-soft)', status: 'Not started · 4 blocks', latestPre: '', latest: 'No weigh-ins yet', latestPost: '' }
+        : { kcal: '2,285', target: '3,110', col: 'var(--intake-partial)', status: 'Partial · 3 blocks left', latestPre: 'Latest ', latest: saved ? '63.4 kg' : '63.0 kg', latestPost: saved ? ' · Mon 5 Oct' : ' · Mon 28 Sep' },
+      tRows, week, w: Object.assign(w, { hy: Math.round(Y(kg[0])) }), aisles, ladder };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!-- @dsCard group="Components" viewport="780x1500" name="Tracking" subtitle="Day total, block rows, due-now, dot strip, suggestion, plan and weight" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;background:#e9e2d6;font-family:var(--font-body)}.pair{display:grid;grid-template-columns:390px 390px;gap:0}.look{width:390px;box-sizing:border-box;padding:16px 0 20px;background-color:var(--bg-canvas);background-image:var(--texture);color:var(--ink);position:relative;overflow:hidden}.pad{padding:0 20px}.cap{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.06em;color:var(--ink-muted);margin:14px 20px 8px;text-transform:uppercase}</style>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script><script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script><script type="text/babel" src="../../dev-bundle.jsx"></script></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.RiseDS || Object.getOwnPropertyNames(window).map(k=>{try{return window[k]}catch(e){}}).find(v=>v&&typeof v==='object'&&v.Button&&v.Toggle&&v.DayTotal);
+
+const {DotStrip,DayTotal,BlockList,BlockRow,NowMarker,DueCard,SuggestionCard,StatRow,PhaseLadder,GroceryList,WeightChart,StatusDot,SectionHeading} = NS;
+function Panel({look,theme}){
+  const days=[{status:'on-track'},{status:'on-track'},{status:'partial'},{status:'low'},{status:'on-track'},{status:'on-track',selected:false},{status:'today',selected:true}];
+  return <div className="look" data-look={look} data-theme={theme}>
+    <div className="pad"><DotStrip days={days} label="Wed 30"/></div>
+    <div style={{height:16}}/>
+    <DayTotal eyebrow="Phase 2 · Week 6" kcal={2285} target={3110} status="partial" remaining={<><b>825</b> to go · 3 blocks</>} protein={113} proteinTarget={150}/>
+    <div style={{height:20}}/>
+    <BlockList>
+      <BlockRow time="08:00" name="Breakfast" kcal={705} state="done"/>
+      <BlockRow time="11:00" name="Shake" kcal={580} state="done"/>
+      <BlockRow time="14:20" name="Chicken wrap" kcal={420} state="off" link="Remove"/>
+      <NowMarker time="16:10"/>
+      <DueCard label="Due now · 16:00 · Add-on" name="Snack" desc="Yogurt, dates and almonds" kcal={290} protein={11} swappable/>
+      <BlockRow time="19:30" name="Dinner" kcal={700} state="idle"/>
+      <BlockRow time="22:00" name="Pre-bed" kcal={255} state="idle" tag="add-on"/>
+    </BlockList>
+    <p className="cap">receded · closed</p>
+    <BlockList><BlockRow time="10:00" name="Shake" kcal={580} state="receded"/><BlockRow time="13:30" name="Lunch" kcal={580} state="closed"/><BlockRow time="16:00" name="Snack" kcal={290} state="closedDone"/></BlockList>
+    <p className="cap">weight</p>
+    <div className="pad"><WeightChart weights={[61.4,61.7,62.1,62.2,62.2,62.6,63.0]} labels={['4 Aug','8 Sep','30 Sep']} bandLow={[61.3,61.5,61.8,62,62.2,62.4,62.7]} bandHigh={[61.9,62.1,62.4,62.6,62.8,63,63.3]}/></div>
+    <div className="pad" style={{marginTop:16}}><StatRow stats={[{value:'86%',label:'blocks eaten'},{value:'2,960',label:'kcal / day avg'}]}/></div>
+    <div className="pad" style={{marginTop:16}}><SuggestionCard title="Move to Phase 3" body="The 4-week average has been under 0.20 kg/week for two weeks. Phase 3 adds Shake 2 at 17:00."/></div>
+    <p className="cap">plan</p>
+    <div className="pad"><PhaseLadder rungs={[{name:'Ramp-up',status:'Done',when:'Weeks 1–2',kcal:'2,565 kcal',protein:'128 g protein',state:'past'},{name:'Target',status:'Now',when:'Week 3 on',kcal:'3,110 kcal',protein:'150 g protein',state:'now'},{name:'Pushed',status:'If stalled',when:'Adds Shake 2',kcal:'3,690 kcal',protein:'172 g protein',state:'next'}]}/></div>
+    <div className="pad" style={{marginTop:16}}><GroceryList scaleNote="Quantities for Phase 2." aisles={[{name:'Dairy',icon:'dairy',items:[{name:'Full-fat milk',qty:'7.5 L',done:true},{name:'Yogurt',qty:'2 kg'}]},{name:'Produce',icon:'produce',items:[{name:'Bananas',qty:'7',changed:true}]}]}/></div>
+  </div>;
+}
+
+function App(){return <div className="pair"><Panel look="paper" theme="light"/><Panel look="reel" theme="dark"/></div>}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

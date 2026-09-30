@@ -4,8 +4,7 @@ Read before building any UI.
 
 The source is the v3.0 design handoff (2026-10-01), adapted from the owner's
 Bookcook system. It ships two **Looks**, Paper (default) and Reel, each with light
-and dark. The export itself is private (`private/design/export-3.0/`, never
-committed); this document is what the app implements of it.
+and dark. The export itself is at `private/design/export-3.0/`; this document is what the app implements of it.
 
 **`src/css/tokens.css` is the implementation and the tie-breaker.** Nothing here
 should contradict it; if it does, the file is right and this document is stale.

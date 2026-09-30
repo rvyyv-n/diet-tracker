@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="styles/rise-tokens.css">
+</helmet>
+<div data-look="{{ look }}" data-theme="{{ theme }}" data-screen-label="Plan" style="position:relative;width:{{ frameW }};height:{{ frameH }};overflow:hidden;border-radius:44px;background-color:var(--bg-canvas);background-image:var(--texture);color:var(--ink);font-family:var(--font-body);box-shadow:0 30px 60px -30px rgba(60,40,20,.45),0 0 0 1px rgba(0,0,0,.06)">
+<div style="padding:0 0 110px">
+<div style="height:44px;display:flex;align-items:center;padding:0 28px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums">{{ clock }}</div>
+<div style="padding:0 20px;margin-top:10px;font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">{{ eyebrow }}</div>
+<div style="padding:0 20px;margin-top:6px;font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-lg);line-height:1.1">{{ title }}</div>
+<div style="padding:0 20px;margin-top:6px;font-size:16px;color:var(--ink-muted);font-variant-numeric:tabular-nums">{{ targetLine }}</div>
+
+<sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}">
+<div style="margin:16px 20px 0;border-radius:18px;box-shadow:inset 0 0 0 1.5px var(--line-strong);padding:12px 16px;display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.45"><svg style="flex:none;margin-top:2px" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.01"></path></svg><span><b>{{ noteB }}</b> {{ noteT }}</span></div>
+</sc-if>
+
+<div style="padding:0 20px;margin-top:24px;display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+<span style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Groceries</span>
+<span style="font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums"><b style="color:var(--ink)">{{ done }} of {{ total }}</b> ticked · new list {{ resetDay }}</span>
+</div>
+<div style="margin:10px 20px 0;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:6px 16px 16px">
+<sc-for list="{{ aisles }}" as="a" hint-placeholder-count="4">
+<div style="padding-top:14px">
+<div style="display:flex;align-items:center;gap:8px;font-family:var(--font-caption);font-size:var(--caption-size);font-weight:var(--caption-weight);letter-spacing:var(--caption-tracking);text-transform:var(--caption-transform);color:var(--ink)"><span style="color:var(--ink-soft);display:flex">
+<sc-if value="{{ a.gDairy }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-3.5 0-6 5-6 9a6 6 0 0 0 12 0c0-4-2.5-9-6-9z"></path></svg></sc-if>
+<sc-if value="{{ a.gPantry }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"></rect><path d="M5 9v10a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19V9M10 13h4"></path></svg></sc-if>
+<sc-if value="{{ a.gProtein }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 4.5a5 5 0 0 1 0 7.1l-3.9 3.9-4.1-4.1 3.9-3.9a5 5 0 0 1 4.1-3z"></path><path d="M7.5 11.4 4 15a2 2 0 1 0 2.5 3A2 2 0 1 0 9 20.5l3.6-3.5"></path></svg></sc-if>
+<sc-if value="{{ a.gProduce }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10z"></path><path d="M2 21c0-3 1.9-5.4 5.2-6"></path></svg></sc-if>
+</span>{{ a.name }}</div>
+<div style="margin-top:4px">
+<sc-for list="{{ a.items }}" as="it" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;column-gap:14px;min-height:52px;border-top:1px solid var(--line)">
+<span style="width:24px;height:24px;border-radius:7px;background:{{ it.boxBg }};box-shadow:{{ it.boxRing }};display:flex;align-items:center;justify-content:center;color:var(--bg-canvas)"><sc-if value="{{ it.on }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if></span>
+<span style="font-size:17px;color:{{ it.ink }};text-decoration:{{ it.strike }};text-decoration-color:var(--ink-soft)">{{ it.name }}</span>
+<span style="font-size:15px;font-weight:700;color:{{ it.qtyInk }};font-variant-numeric:tabular-nums">{{ it.qty }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+<div style="margin-top:12px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px">
+<span style="font-size:14px;color:var(--ink-muted);line-height:1.4">{{ scaleNote }}</span>
+<span style="flex:none;height:40px;padding:0 16px;border-radius:20px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;font-size:15px;font-weight:700;color:{{ clearInk }}">Clear</span>
+</div>
+</div>
+
+<div style="padding:0 20px;margin-top:28px;font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Targets</div>
+<div style="margin:10px 20px 0;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:6px">
+<sc-for list="{{ ladder }}" as="r" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:12px minmax(0,1fr) auto;column-gap:14px;align-items:center;padding:12px 12px;border-radius:16px;background:{{ r.bg }}">
+<span style="width:12px;height:12px;border-radius:50%;box-sizing:border-box;background:{{ r.dotBg }};box-shadow:{{ r.dotRing }}"></span>
+<span style="min-width:0"><span style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:17px;font-weight:700;color:{{ r.nameInk }}">{{ r.name }}</span><span style="font-family:var(--font-caption);font-size:var(--due-label-size);font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:{{ r.statusInk }}">{{ r.status }}</span></span><span style="display:block;font-size:14px;color:var(--ink-muted);margin-top:2px">{{ r.when }}</span></span>
+<span style="text-align:right;font-variant-numeric:tabular-nums"><span style="display:block;font-size:17px;font-weight:700;color:{{ r.nameInk }}">{{ r.kcal }}</span><span style="display:block;font-size:14px;color:var(--ink-muted)">{{ r.prot }}</span></span>
+</div>
+</sc-for>
+<div style="padding:10px 12px 8px;font-size:14px;line-height:1.45;color:var(--ink-muted)">{{ ladderNote }}</div>
+</div>
+
+<div style="margin:18px 20px 0;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:inset 0 0 0 1px var(--line);padding:14px 14px 14px 16px;display:grid;grid-template-columns:40px minmax(0,1fr) 20px;column-gap:14px;align-items:center">
+<span style="width:40px;height:40px;border-radius:12px;background:var(--bg-sunken);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></span>
+<span style="min-width:0"><span style="display:block;font-size:17px;font-weight:700">Recipes</span><span style="display:block;font-size:14px;line-height:1.4;color:var(--ink-muted);margin-top:2px">Every meal option, the food table and your saved recipes.</span></span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-muted)"><path d="M9 6l6 6-6 6"></path></svg>
+</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:110px;background:linear-gradient(to bottom,transparent,var(--bg-canvas) 70%);pointer-events:none"></div>
+<div style="position:absolute;left:12px;right:12px;bottom:14px;height:64px;border-radius:32px;background:var(--nav-bg);box-shadow:var(--nav-edge),var(--nav-shadow);display:grid;grid-template-columns:repeat(4,1fr);padding:6px;box-sizing:border-box;font-family:var(--font-caption);font-size:var(--nav-label-size);font-weight:var(--nav-label-weight);letter-spacing:var(--label-tracking);text-transform:var(--label-transform);color:var(--nav-ink)">
+<span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="M8 12l3 3 5-6"></path></svg>Today</span>
+<span style="position:relative;border-radius:26px;background:var(--nav-active-bg);color:var(--nav-active-ink);box-shadow:var(--nav-active-glow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="position:absolute;top:6px;right:14px;width:6px;height:6px;border-radius:50%;background:var(--nav-dot)"></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 9h6M9 13h6M9 17h4"></path></svg>Plan</span>
+<span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"></path></svg>Weight</span>
+<span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>Settings</span>
+</div>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:50%;transform:translateX(-50%);bottom:92px;display:flex;align-items:center;gap:16px;height:52px;padding:0 8px 0 20px;border-radius:26px;background:var(--bg-inverse);color:var(--ink-inverse);box-shadow:var(--shadow-float);font-size:15px;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>{{ toast }}<span style="height:40px;padding:0 16px;display:flex;align-items:center;font-weight:700;color:var(--accent)">Undo</span></div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;normal&quot;,&quot;monday&quot;,&quot;done&quot;,&quot;phase3&quot;,&quot;ramp&quot;,&quot;cleared&quot;],&quot;default&quot;:&quot;normal&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;look&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;paper&quot;,&quot;reel&quot;],&quot;default&quot;:&quot;paper&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;tall&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;width&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:390,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const P = this.props, S = P.state ?? 'normal';
+    const look = P.look ?? 'paper', theme = P.theme ?? 'light';
+    const tall = P.tall === true || P.tall === 'true';
+    const L = [
+      { s: 'Dairy & eggs', g: 'Dairy', items: [['Full-Fat Milk', 7.5, 'L', 0.5], ['Eggs', 24, null, 6], ['Yogurt', 1.5, 'kg', 0.25], ['Clarified Butter', 250, 'g', 50]] },
+      { s: 'Pantry', g: 'Pantry', items: [['Peanut Butter', 1, 'kg', 0.25], ['Oats', 500, 'g', 100], ['Rice', 2, 'kg', 0.5], ['Wholemeal Flour', null], ['Oil', 1, 'L', 0.5], ['Honey', null]] },
+      { s: 'Protein', g: 'Protein', items: [['Chicken', 1.5, 'kg', 0.25], ['Minced Beef', 500, 'g', 100], ['Dried Lentils', 1, 'kg', 0.25], ['Dried Chickpeas', 1, 'kg', 0.25]] },
+      { s: 'Produce', g: 'Produce', items: [['Bananas', 24, null, 6], ['Dates', 500, 'g', 100], ['Almonds', 250, 'g', 50], ['Potatoes, Onions, Tomatoes', null]] }
+    ];
+    const PH = [
+      { id: 1, name: 'Ramp-up', when: 'Weeks 1–2', kcal: 2565, p: 127 },
+      { id: 2, name: 'Target', when: 'Week 3 onward', kcal: 3110, p: 150 },
+      { id: 3, name: 'Pushed', when: 'Stalled 2 weeks, or training begins', kcal: 3690, p: 172 }
+    ];
+    const mid = ['Full-Fat Milk', 'Eggs', 'Yogurt', 'Peanut Butter', 'Oats', 'Chicken', 'Bananas'];
+    const all = L.flatMap(a => a.items.map(i => i[0]));
+    const C = {
+      normal: { ph: 2, wk: 6, clock: '16:10', date: 'Wed 30 Sep', ticked: mid, reset: 'Mon 5 Oct' },
+      monday: { ph: 2, wk: 7, clock: '08:05', date: 'Mon 5 Oct', ticked: [], reset: 'Mon 12 Oct', note: ['New week, new list.', "Last week's ticks cleared themselves overnight."] },
+      done: { ph: 2, wk: 6, clock: '18:40', date: 'Wed 30 Sep', ticked: all, reset: 'Mon 5 Oct' },
+      phase3: { ph: 3, wk: 7, clock: '09:20', date: 'Tue 6 Oct', ticked: ['Full-Fat Milk', 'Eggs'], reset: 'Mon 12 Oct', note: ['Quantities went up with Phase 3.', 'Anything you already ticked stays ticked.'] },
+      ramp: { ph: 1, wk: 1, clock: '10:30', date: 'Tue 18 Aug', ticked: ['Full-Fat Milk'], reset: 'Mon 24 Aug' },
+      cleared: { ph: 2, wk: 6, clock: '16:12', date: 'Wed 30 Sep', ticked: [], reset: 'Mon 5 Oct', toast: 'Cleared 7 ticks' }
+    };
+    const c = C[S] || C.normal, fmt = n => n.toLocaleString('en-US');
+    const base = 3110, tgt = PH[c.ph - 1].kcal;
+    const scale = (q, st) => { if (q == null) return null; const v = Math.round(q * tgt / base / st) * st; return Math.max(st, Math.round(v * 100) / 100); };
+    let done = 0, total = 0;
+    const aisles = L.map(a => ({
+      name: a.s, gDairy: a.g === 'Dairy', gPantry: a.g === 'Pantry', gProtein: a.g === 'Protein', gProduce: a.g === 'Produce',
+      items: a.items.map(([n, q, u, st]) => {
+        const on = c.ticked.includes(n), v = scale(q, st); total++; if (on) done++;
+        const changed = c.ph !== 2 && q != null && v !== q;
+        return {
+          name: n, on, qty: v == null ? '' : (u ? String(v).replace(/^0\./, '0.') + ' ' + u : String(v)),
+          boxBg: on ? 'var(--ink)' : 'transparent', boxRing: on ? 'none' : 'inset 0 0 0 1.5px var(--ink-soft)',
+          ink: on ? 'var(--ink-muted)' : 'var(--ink)', strike: on ? 'line-through' : 'none',
+          qtyInk: on ? 'var(--ink-muted)' : (changed && S === 'phase3' ? 'var(--accent-text)' : 'var(--ink)')
+        };
+      })
+    }));
+    const ladder = PH.map(p => {
+      const now = p.id === c.ph, past = p.id < c.ph;
+      return {
+        name: p.name, when: p.when, kcal: fmt(p.kcal) + ' kcal', prot: p.p + ' g protein',
+        status: now ? 'Now' : past ? 'Done' : (p.id === 3 ? 'If stalled' : 'Week 3'),
+        statusInk: now ? 'var(--accent-text)' : 'var(--ink-muted)',
+        bg: now ? 'var(--bg-sunken)' : 'transparent',
+        dotBg: now ? 'var(--accent)' : past ? 'var(--ink-soft)' : 'transparent',
+        dotRing: now || past ? 'none' : 'inset 0 0 0 1.5px var(--ink-soft)',
+        nameInk: now ? 'var(--ink)' : 'var(--ink-muted)'
+      };
+    });
+    const ph = PH[c.ph - 1];
+    return {
+      look, theme, clock: c.clock, frameW: (P.width ?? 390) + 'px', frameH: tall ? 'auto' : '844px',
+      eyebrow: 'Week ' + c.wk + ' · ' + c.date,
+      title: 'Phase ' + ph.id + ', ' + ph.name,
+      targetLine: fmt(ph.kcal) + ' kcal · ' + ph.p + ' g protein a day',
+      hasNote: !!c.note, noteB: c.note ? c.note[0] : '', noteT: c.note ? c.note[1] : '',
+      done, total, resetDay: c.reset, aisles, ladder,
+      scaleNote: c.ph === 2 ? 'Quantities for Phase 2.' : 'Scaled to Phase ' + c.ph + ', ' + fmt(tgt) + ' kcal.',
+      clearInk: done ? 'var(--ink)' : 'var(--ink-soft)',
+      ladderNote: c.ph === 3 ? 'Phase 3 adds Shake 2 at 17:00. Weight suggests moving back if the gain runs fast.' : c.ph === 1 ? 'Two weeks at Ramp-up, then Target. Jumping straight in is what makes week one collapse.' : 'Phase 3 is only ever suggested from Weight, never switched on by itself.',
+      toast: c.toast || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

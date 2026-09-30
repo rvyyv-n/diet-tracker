@@ -1,0 +1,68 @@
+/* Look: PAPER (default). Base palette --p-*, then semantic tokens, light + dark. Switch: <html data-look="paper" data-theme="light|dark"> */
+/* =====================================================================
+   LOOK: PAPER  (default)
+   ===================================================================== */
+:root,[data-look="paper"]{
+  --p-paper-50:#FFFDF8;--p-paper-100:#F7F1E8;--p-paper-200:#EFE6D8;--p-paper-300:#E4D9CA;--p-paper-400:#CDBFAE;
+  --p-ink-900:#1C1916;--p-ink-700:#4A423A;--p-ink-600:#5A5047;--p-ink-400:#8F8172;
+  --p-coral-500:#E0673F;--p-coral-600:#D65C34;--p-coral-700:#C9532E;--p-coral-800:#A8441F;--p-coral-200:#F2C6B4;
+  --p-green-600:#3F8F55;--p-gold-600:#B8870F;--p-rose-600:#C23A4B;
+
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Atkinson Next',system-ui,sans-serif;
+  --font-numeric:'Atkinson Next',system-ui,sans-serif;
+  --font-caption:'Atkinson Next',system-ui,sans-serif;
+  --display-weight:420;--display-style:normal;--due-title-style:normal;
+  --numeric-weight:700;--numeric-tracking:-.03em;
+  --caption-size:14px;--caption-weight:700;--caption-tracking:0;--caption-transform:none;
+  --label-transform:none;--label-tracking:0;--label-size:16px;
+
+  --type-hero:76px;--type-display-lg:32px;--type-display-md:24px;--type-title:18px;--type-body:16px;--type-small:14px;--type-micro:12px;
+
+  --radius-sm:8px;--radius-md:14px;--radius-card:22px;--radius-field:14px;--radius-pill:999px;
+  --texture:none;
+}
+:root,[data-look="paper"]{
+  --bg-canvas:var(--p-paper-100);--bg-raised:var(--p-paper-50);--bg-sunken:var(--p-paper-200);--bg-inverse:var(--p-ink-900);
+  --ink:var(--p-ink-900);--ink-muted:var(--p-ink-600);--ink-soft:var(--p-ink-400);--ink-inverse:var(--p-paper-100);
+  --line:var(--p-paper-300);--line-strong:var(--p-paper-400);
+  --accent:var(--p-coral-500);--accent-hover:var(--p-coral-600);--accent-pressed:var(--p-coral-700);--accent-disabled:var(--p-coral-200);
+  --accent-ink:var(--p-ink-900);--accent-text:var(--p-coral-800);
+  --danger:var(--p-rose-600);--danger-ink:#FFFFFF;
+  --focus-ring:0 0 0 2px var(--bg-canvas),0 0 0 4px var(--p-coral-500);
+
+  --intake-on-track:var(--p-green-600);--intake-partial:var(--p-gold-600);--intake-low:var(--p-rose-600);
+  --intake-on-track-wash:#DCEBDF;--intake-partial-wash:#F2E6C4;--intake-low-wash:#F4D8DB;
+
+  --due-bg:var(--p-paper-50);--due-ink:var(--p-ink-900);--due-ink-muted:var(--p-ink-600);--due-accent-text:var(--p-coral-800);
+  --due-edge:inset 0 0 0 1.5px var(--p-coral-500);--due-glow:0 22px 44px -22px rgba(224,103,63,.55);
+  --due-cta-bg:var(--p-coral-500);--due-cta-ink:var(--p-ink-900);--due-secondary-edge:var(--p-paper-400);
+  --now-line:var(--p-coral-500);--sun-halo:rgba(248,169,89,.42);
+
+  --nav-bg:var(--p-paper-50);--nav-edge:inset 0 0 0 1px var(--p-paper-300);--nav-shadow:0 12px 28px -14px rgba(80,50,25,.4);
+  --nav-ink:var(--p-ink-600);--nav-active-bg:var(--p-ink-900);--nav-active-ink:var(--p-paper-100);--nav-active-glow:0 8px 18px -8px rgba(224,103,63,.7);
+
+  --shadow-card:0 1px 2px rgba(80,50,25,.08),0 16px 32px -20px rgba(80,50,25,.3);
+  --shadow-float:0 20px 48px -18px rgba(60,40,20,.45);
+  --scrim:rgba(28,25,22,.4);
+  --chart-band:rgba(224,103,63,.14);
+}
+[data-look="paper"][data-theme="dark"]{
+  --bg-canvas:#0B0A09;--bg-raised:#1F1D1A;--bg-sunken:#171513;--bg-inverse:#F3EDE3;
+  --ink:#F3EDE3;--ink-muted:#B9AD9F;--ink-soft:#766A5C;--ink-inverse:#0B0A09;
+  --line:#2A2622;--line-strong:#3A352F;
+  --accent:#E0673F;--accent-hover:#E8774F;--accent-pressed:#C9532E;--accent-disabled:#5A2E20;
+  --accent-ink:#121110;--accent-text:#F08A64;
+  --danger:#E8697A;--danger-ink:#121110;
+  --intake-on-track:#5DB872;--intake-partial:#D9A520;--intake-low:#E8697A;
+  --intake-on-track-wash:#1E3324;--intake-partial-wash:#3A3015;--intake-low-wash:#3A1E22;
+  --due-bg:#1F1D1A;--due-ink:#F3EDE3;--due-ink-muted:#B9AD9F;--due-accent-text:#F08A64;
+  --due-edge:inset 0 0 0 1.5px #E0673F;--due-glow:0 0 44px -10px rgba(224,103,63,.45);
+  --due-cta-bg:#E0673F;--due-cta-ink:#121110;--due-secondary-edge:#4A433C;
+  --sun-halo:rgba(248,169,89,.32);
+  --nav-bg:#1F1D1A;--nav-edge:inset 0 0 0 1px #34302B;--nav-shadow:none;
+  --nav-ink:#B9AD9F;--nav-active-bg:#F3EDE3;--nav-active-ink:#0B0A09;--nav-active-glow:0 0 22px -6px rgba(248,169,89,.55);
+  --shadow-card:inset 0 0 0 1px #2E2A26;--shadow-float:inset 0 0 0 1px #34302B,0 24px 48px -16px rgba(0,0,0,.7);
+  --scrim:rgba(0,0,0,.6);--chart-band:rgba(240,138,100,.2);
+}
+

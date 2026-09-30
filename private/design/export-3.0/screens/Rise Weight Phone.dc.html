@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="styles/rise-tokens.css">
+</helmet>
+<div data-look="{{ look }}" data-theme="{{ theme }}" data-screen-label="Weight" style="position:relative;width:{{ frameW }};height:{{ frameH }};overflow:hidden;border-radius:44px;background-color:var(--bg-canvas);background-image:var(--texture);color:var(--ink);font-family:var(--font-body);box-shadow:0 30px 60px -30px rgba(60,40,20,.45),0 0 0 1px rgba(0,0,0,.06)">
+<div style="padding:0 0 110px">
+<div style="height:44px;display:flex;align-items:center;padding:0 28px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums">{{ clock }}</div>
+<div style="padding:0 20px;margin-top:10px;font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">{{ eyebrow }}</div>
+<div style="padding:0 20px;display:flex;align-items:baseline;gap:8px"><span style="font-family:var(--font-numeric);font-size:var(--type-hero);font-weight:var(--numeric-weight);line-height:1;letter-spacing:var(--numeric-tracking);font-variant-numeric:tabular-nums">{{ latest }}</span><span style="font-size:22px;color:var(--ink-muted)">kg</span></div>
+<div style="padding:0 20px;margin-top:8px;display:flex;align-items:center;gap:8px;font-size:17px;font-variant-numeric:tabular-nums"><span style="flex:none;width:10px;height:10px;border-radius:50%;background:{{ rateColor }}"></span><span><b>{{ rateB }}</b>{{ rateT }}</span></div>
+
+<div style="position:relative;margin:16px 20px 0"><div style="position:absolute;left:-20px;right:-20px;top:144px;height:1.5px;background:linear-gradient(90deg,transparent,var(--horizon) 12%,var(--horizon) 88%,transparent)"></div>
+<svg viewBox="-8 0 364 176" style="width:100%;display:block;overflow:visible;position:relative">
+<defs>
+<linearGradient id="wsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F29A6E" stop-opacity=".38"></stop><stop offset="1" stop-color="#F8C28E" stop-opacity=".12"></stop></linearGradient>
+<radialGradient id="wsun" cx=".4" cy=".38" r=".6"><stop offset="0" stop-color="#ffd392"></stop><stop offset=".45" stop-color="#f8a959"></stop><stop offset="1" stop-color="#e0673f"></stop></radialGradient>
+<radialGradient id="wglow"><stop offset="0" stop-color="#f8a959" stop-opacity=".5"></stop><stop offset="1" stop-color="#f8a959" stop-opacity="0"></stop></radialGradient>
+</defs>
+<sc-if value="{{ chart.hasTrend }}" hint-placeholder-val="{{ true }}">
+<polygon points="{{ chart.band }}" style="fill:var(--chart-band);opacity:var(--band-flat)"></polygon>
+<polygon points="{{ chart.band }}" fill="url(#wsky)" style="opacity:var(--band-sky)"></polygon>
+</sc-if>
+<sc-if value="{{ chart.hasTrend }}" hint-placeholder-val="{{ true }}">
+<polyline points="{{ chart.avg }}" fill="none" style="stroke:var(--ink)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+</sc-if>
+<g style="fill:var(--ink)"><sc-for list="{{ chart.pts }}" as="p" hint-placeholder-count="7"><circle cx="{{ p.x }}" cy="{{ p.y }}" r="3"></circle></sc-for></g>
+<sc-if value="{{ chart.hasTrend }}" hint-placeholder-val="{{ true }}">
+<circle cx="{{ chart.sx }}" cy="{{ chart.sy }}" r="26" fill="url(#wglow)"></circle><circle cx="{{ chart.sx }}" cy="{{ chart.sy }}" r="8" fill="url(#wsun)"></circle>
+</sc-if>
+</svg>
+<sc-if value="{{ chart.noTrend }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:0;right:0;top:64px;text-align:center;font-size:14px;color:var(--ink-muted)">{{ noTrendMsg }}</div></sc-if>
+<div style="display:flex;justify-content:space-between;margin-top:-12px;font-size:12px;color:var(--ink-muted);font-variant-numeric:tabular-nums"><span>{{ chart.l0 }}</span><span>{{ chart.l1 }}</span><span>{{ chart.l2 }}</span></div>
+</div>
+
+<sc-if value="{{ stall }}" hint-placeholder-val="{{ false }}">
+<div style="margin:18px 20px 0;border-radius:22px;background:var(--bg-raised);box-shadow:var(--shadow-card);padding:18px">
+<div style="font-size:var(--due-label-size);font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:var(--accent-text)">Suggestion</div>
+<div style="font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-md);line-height:1.2;margin-top:6px">Move to Phase 3</div>
+<div style="font-size:15px;line-height:1.5;color:var(--ink-muted);margin-top:6px">The 4-week average has been under 0.20 kg/week for two weeks. Phase 3 adds Shake 2 at 17:00: 3,690 kcal and 172 g protein a day.</div>
+<div style="margin-top:14px;display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:16px;font-weight:700"><span style="height:52px;padding:0 18px;border-radius:26px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center">Not now</span><span style="height:52px;border-radius:26px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center">Apply</span></div>
+</div>
+</sc-if>
+
+<div style="padding:0 20px;margin-top:16px;display:grid;grid-template-columns:repeat(2,1fr);font-variant-numeric:tabular-nums;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+<div style="padding:12px 0"><div style="font-size:24px;font-weight:700">{{ adherence }}</div><div style="font-size:13px;color:var(--ink-muted)">blocks eaten</div></div>
+<div style="padding:12px 0 12px 12px;border-left:1px solid var(--line)"><div style="font-size:24px;font-weight:700">{{ intake }}</div><div style="font-size:13px;color:var(--ink-muted)">kcal / day avg</div></div>
+</div>
+
+<div style="margin:18px 20px 0;border-radius:22px;background:var(--bg-raised);box-shadow:inset 0 0 0 1px var(--line);padding:16px 14px 16px 18px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px">
+<div style="min-width:0"><div style="font-size:var(--due-label-size);font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:var(--accent-text)">Next weigh-in</div><div style="margin-top:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-family:var(--weighin-date-font);font-size:var(--weighin-date-size);font-weight:var(--weighin-date-weight);line-height:1">{{ nextDate }}</span><span style="font-size:15px;color:var(--ink-muted)">{{ nextIn }}</span></div></div>
+<span style="height:52px;padding:0 20px;border-radius:26px;background:var(--cta-hero-bg);color:var(--cta-hero-ink);box-shadow:var(--cta-hero-glow);display:flex;align-items:center;font-size:var(--cta-hero-size);font-weight:700;letter-spacing:var(--cta-hero-tracking);text-transform:var(--cta-hero-transform);white-space:nowrap">Weigh in</span>
+</div>
+
+<div style="padding:0 20px;margin-top:24px;font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">History</div>
+<sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}"><div style="margin:10px 20px 0;padding:24px 20px;border-radius:var(--radius-card);box-shadow:inset 0 0 0 1.5px var(--line);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:var(--ink-soft)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="4"></rect><path d="M8 9.5a5 5 0 0 1 8 0L12 12z"></path></svg><span style="font-size:15px;line-height:1.45;color:var(--ink-muted);max-width:260px">No weigh-ins yet. Each one you save lands here.</span></div></sc-if>
+<div style="padding:0 20px;margin-top:4px;font-variant-numeric:tabular-nums">
+<sc-for list="{{ history }}" as="h" hint-placeholder-count="4">
+<sc-if value="{{ h.isView }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:1fr auto auto 56px;column-gap:12px;align-items:center;min-height:52px;border-bottom:1px solid var(--line)"><span style="font-size:16px">{{ h.date }}</span><span style="font-size:14px;color:var(--ink-muted)">{{ h.delta }}</span><span style="font-size:17px;font-weight:700">{{ h.kg }}</span><span style="text-align:right;font-size:15px;font-weight:700;color:var(--accent-text)">Edit</span></div>
+</sc-if>
+<sc-if value="{{ h.isEdit }}" hint-placeholder-val="{{ false }}">
+<div style="padding:10px 0 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px">
+<div style="display:grid;grid-template-columns:1fr 150px;gap:12px;align-items:center"><span style="font-size:16px">{{ h.date }}</span><span style="height:48px;border-radius:var(--radius-field);background:var(--bg-raised);box-shadow:inset 0 0 0 1.5px var(--ink),var(--focus-ring);display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-size:20px;font-weight:700">{{ h.kg }}<span style="font-size:15px;font-weight:400;color:var(--ink-muted)">kg</span></span></div>
+<div style="display:flex;justify-content:flex-end;gap:8px;font-size:15px;font-weight:700"><span style="height:44px;padding:0 16px;display:flex;align-items:center;color:var(--ink-muted)">Cancel</span><span style="height:44px;padding:0 20px;border-radius:22px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center">Save</span></div>
+</div>
+</sc-if>
+</sc-for>
+</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:110px;background:linear-gradient(to bottom,transparent,var(--bg-canvas) 70%);pointer-events:none"></div>
+<div style="position:absolute;left:12px;right:12px;bottom:14px;height:64px;border-radius:32px;background:var(--nav-bg);box-shadow:var(--nav-edge),var(--nav-shadow);display:grid;grid-template-columns:repeat(4,1fr);padding:6px;box-sizing:border-box;font-family:var(--font-caption);font-size:var(--nav-label-size);font-weight:var(--nav-label-weight);letter-spacing:var(--label-tracking);text-transform:var(--label-transform);color:var(--nav-ink)">
+<span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="M8 12l3 3 5-6"></path></svg>Today</span>
+<span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 9h6M9 13h6M9 17h4"></path></svg>Plan</span>
+<span style="position:relative;border-radius:26px;background:var(--nav-active-bg);color:var(--nav-active-ink);box-shadow:var(--nav-active-glow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="position:absolute;top:6px;right:14px;width:6px;height:6px;border-radius:50%;background:var(--nav-dot)"></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"></path></svg>Weight</span>
+<span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>Settings</span>
+</div>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:50%;transform:translateX(-50%);bottom:92px;display:flex;align-items:center;gap:16px;height:52px;padding:0 8px 0 20px;border-radius:26px;background:var(--bg-inverse);color:var(--ink-inverse);box-shadow:var(--shadow-float);font-size:15px;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>{{ toast }}<span style="height:40px;padding:0 16px;display:flex;align-items:center;font-weight:700;color:var(--accent)">Undo</span></div>
+</sc-if>
+
+<sc-if value="{{ entry }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--scrim)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background-color:var(--bg-raised);background-image:var(--texture);box-shadow:var(--shadow-float);padding:10px 20px 28px;display:flex;flex-direction:column;gap:14px">
+<div style="width:40px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto"></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-md)">Weigh-in</span><span style="font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--ink-muted)">Week 7</span></div>
+<div style="font-size:14px;line-height:1.45;color:var(--ink-muted)">Morning, after the bathroom, before food or water.</div>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:14px;font-weight:700">Date</span><span style="height:48px;border-radius:var(--radius-field);background:var(--bg-canvas);box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:16px">Mon 5 Oct<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2.5"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg></span></label>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:10px;align-items:end">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:14px;font-weight:700">Weight</span><span style="height:64px;border-radius:var(--radius-field);background:var(--bg-canvas);box-shadow:inset 0 0 0 1.5px var(--ink),var(--focus-ring);display:flex;align-items:center;padding:0 16px;font-family:var(--font-numeric);font-size:36px;font-weight:var(--numeric-weight);font-variant-numeric:tabular-nums">63.4<span style="width:2px;height:30px;background:var(--accent);margin-left:3px"></span></span></label>
+<div style="height:48px;margin-bottom:8px;border-radius:24px;background:var(--bg-sunken);padding:4px;display:grid;grid-template-columns:1fr 1fr;box-sizing:border-box;font-size:15px;font-weight:700"><span style="border-radius:20px;background:var(--ink);color:var(--ink-inverse);display:flex;align-items:center;justify-content:center">kg</span><span style="display:flex;align-items:center;justify-content:center;color:var(--ink-muted)">lb</span></div>
+</div>
+<div style="font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums">+0.4 kg since Mon 28 Sep</div>
+<div style="display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:17px;font-weight:700"><span style="height:52px;padding:0 18px;border-radius:26px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center">Cancel</span><span style="height:52px;border-radius:26px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center">Save</span></div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;normal&quot;,&quot;empty&quot;,&quot;first&quot;,&quot;stall&quot;,&quot;entry&quot;,&quot;saved&quot;,&quot;edit&quot;],&quot;default&quot;:&quot;normal&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;look&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;paper&quot;,&quot;reel&quot;],&quot;default&quot;:&quot;paper&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;tall&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;width&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:390,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const P = this.props, S = P.state ?? 'normal';
+    const look = P.look ?? 'paper', theme = P.theme ?? 'light';
+    const tall = P.tall === true || P.tall === 'true';
+    const base = [61.4, 61.7, 62.1, 62.2, 62.2, 62.6, 63.0];
+    const C = {
+      normal: { w: base, clock: '16:10', rb: '+0.28 kg/week', rt: ' · on pace', col: 'var(--intake-on-track)', adh: '86%', kc: '2,960' },
+      first: { w: [61.4, 61.7], clock: '07:40', rb: 'Trend in 2 weeks', rt: ' · 2 of 4 weigh-ins', col: 'var(--ink-soft)', adh: '92%', kc: '2,420', noTrend: true },
+      stall: { w: [61.4, 61.8, 62.2, 62.5, 62.6, 62.6, 62.7], clock: '16:10', rb: '+0.12 kg/week', rt: ' · below pace, 2 weeks', col: 'var(--intake-partial)', adh: '90%', kc: '3,020', stall: true },
+      entry: { w: base, clock: '07:40', rb: '+0.28 kg/week', rt: ' · on pace', col: 'var(--intake-on-track)', adh: '86%', kc: '2,960', entry: true, wk7: true },
+      saved: { w: base.concat([63.4]), clock: '07:41', rb: '+0.33 kg/week', rt: ' · on pace', col: 'var(--intake-on-track)', adh: '86%', kc: '2,960', toast: 'Saved · 63.4 kg', wk7: true },
+      empty: { w: [], clock: '07:30', rb: 'No trend yet', rt: ' · first weigh-in today', col: 'var(--ink-soft)', adh: '—', kc: '—', noTrend: true, empty: true },
+      edit: { w: base, clock: '16:10', rb: '+0.28 kg/week', rt: ' · on pace', col: 'var(--intake-on-track)', adh: '86%', kc: '2,960', edit: true }
+    };
+    const c = C[S] || C.normal, w = c.w, n = w.length;
+    const D = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const day = i => new Date(Date.UTC(2026, 7, 17 + 7 * i));
+    const dt = i => { const d = day(i); return D[d.getUTCDay()] + ' ' + d.getUTCDate() + ' ' + M[d.getUTCMonth()]; };
+    const short = i => { const d = day(i); return d.getUTCDate() + ' ' + M[d.getUTCMonth()]; };
+    const hasTrend = !c.noTrend;
+    const avg = w.map((_, i) => { const s = w.slice(Math.max(0, i - 3), i + 1); return s.reduce((a, b) => a + b, 0) / s.length; });
+    const Y = v => 131.3 - (v - 61.4) * 46.625;
+    const span = Math.max(n - 1, 6), X = i => 10 + i * 320 / span;
+    const last = n - 1, lx = X(last);
+    const chart = {
+      hasTrend, noTrend: !hasTrend,
+      pts: w.map((v, i) => ({ x: X(i).toFixed(1), y: Y(v).toFixed(1) })),
+      avg: avg.map((v, i) => X(i).toFixed(1) + ',' + Y(v).toFixed(1)).join(' '),
+      band: '10,' + Y(w[0]).toFixed(1) + ' ' + lx.toFixed(1) + ',' + Y(w[0] + 0.25 * last).toFixed(1) + ' ' + lx.toFixed(1) + ',' + Y(w[0] + 0.40 * last).toFixed(1),
+      sx: lx.toFixed(1), sy: Y(avg[last]).toFixed(1),
+      l0: short(0), l1: hasTrend ? 'W' + Math.round(last / 2) : '', l2: 'W' + last, lx: Math.min(322, lx + 0)
+    };
+    if (!hasTrend) chart.l2 = 'W' + last;
+    if (c.empty) { chart.l1 = ''; chart.l2 = ''; }
+    const hist = [];
+    for (let i = last; i >= Math.max(0, last - 4); i--) {
+      const d = i > 0 ? w[i] - w[i - 1] : null;
+      hist.push({ date: dt(i), kg: w[i].toFixed(1), delta: d === null ? 'start' : (d >= 0 ? '+' : '−') + Math.abs(d).toFixed(1), isEdit: !!c.edit && i === last, isView: !(c.edit && i === last) });
+    }
+    const nd = day(n), nxt = D[nd.getUTCDay()] + ' ' + nd.getUTCDate() + ' ' + M[nd.getUTCMonth()];
+    return {
+      look, theme, clock: c.clock, frameW: (P.width ?? 390) + 'px', frameH: tall ? '1060px' : '844px',
+      eyebrow: c.empty ? 'Week 0 · Mon 17 Aug' : c.wk7 && !c.toast ? 'Week 7 · Mon 5 Oct' : 'Week ' + (n - 1) + ' · ' + dt(last),
+      latest: n ? w[last].toFixed(1) : '—', empty: !!c.empty, hasHist: !c.empty, noTrendMsg: c.empty ? 'Your first weigh-in starts the chart' : 'The average line appears after 4 weigh-ins', rateB: c.rb, rateT: c.rt, rateColor: c.col,
+      chart, stall: !!c.stall, adherence: c.adh, intake: c.kc,
+      nextDate: c.entry || c.empty ? 'Today' : nxt, nextIn: c.empty ? 'Mon 17 Aug' : c.entry ? 'Mon 5 Oct' : (n === 7 ? 'in 5 days' : 'in 7 days'),
+      history: hist, toast: c.toast || '', entry: !!c.entry
+    };
+  }
+}
+</script>
+</body>
+</html>

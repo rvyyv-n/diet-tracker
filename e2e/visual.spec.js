@@ -30,7 +30,7 @@ const cases = [
   })),
 ];
 
-test.skip(!hasSeed, "dev-seed.html is missing (untracked; ask the owner for a copy)");
+test.skip(!hasSeed, "dev-seed.html is missing");
 
 for (const c of cases) {
   const name = `${c.tag}-${c.look}-${c.theme}-${c.screen}`;

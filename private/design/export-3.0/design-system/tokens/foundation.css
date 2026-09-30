@@ -1,0 +1,25 @@
+/* Look-independent: spacing, sizing, motion, sun gradients. */
+/* ---------- shared: spacing, motion, sizing (Look-independent) ---------- */
+:root{
+  --space-2:2px;--space-4:4px;--space-8:8px;--space-12:12px;--space-16:16px;--space-20:20px;--space-24:24px;--space-32:32px;--space-48:48px;
+  --gutter:20px;
+  --row-min:56px;            /* tick rows — one-handed, mid-meal */
+  --control-h:48px;          /* fields, segmented */
+  --button-h:52px;--button-h-sm:40px;
+  --icon-button:44px;
+  --nav-h:64px;
+
+  --dur-instant:90ms;        /* press feedback */
+  --dur-fast:160ms;          /* hover, toggles */
+  --dur-base:260ms;          /* sheet, toast */
+  --dur-slow:520ms;          /* sun travel on the horizon */
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);   /* tick pop, sun settle */
+  --ease-in-out:cubic-bezier(.65,0,.35,1);
+
+  --sun:radial-gradient(circle at 40% 38%,#ffd392,#f8a959 42%,#eb7b49 72%,#e0673f);
+  --sun-wide:radial-gradient(120% 140% at 50% 110%,#ffd392 0%,#f8a959 35%,#e0673f 80%);
+}
+
+/* Motion off */
+@media (prefers-reduced-motion:reduce){:root{--dur-instant:0ms;--dur-fast:0ms;--dur-base:0ms;--dur-slow:0ms}}

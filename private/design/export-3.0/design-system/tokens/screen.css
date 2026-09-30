@@ -1,0 +1,27 @@
+/* Screen-level tokens (eyebrow, section heading, hero CTA, nav dot, weigh-in date, chart band) from the approved 5a/5b mocks. Per-Look. */
+/* ---------- screen-level tokens (from the approved 5a / 5b mocks) ---------- */
+:root,[data-look="paper"]{
+  --eyebrow-size:15px;--eyebrow-weight:700;--eyebrow-tracking:0;--eyebrow-transform:none;--eyebrow-ink:var(--p-ink-700);
+  --due-label-size:13px;--due-label-tracking:0;
+  --section-font:var(--font-display);--section-size:18px;--section-weight:400;--section-tracking:0;--section-transform:none;--section-ink:var(--ink);
+  --horizon:rgba(28,25,22,.35);
+  --nav-dot:radial-gradient(circle at 40% 38%,#ffd392,#f8a959 45%,#e0673f);--nav-label-size:12px;--nav-label-weight:700;
+  --cta-hero-bg:var(--accent);--cta-hero-ink:var(--accent-ink);--cta-hero-glow:none;--cta-hero-size:16px;--cta-hero-tracking:0;--cta-hero-transform:none;
+  --chip-bg:var(--bg-sunken);
+  --weighin-date-font:var(--font-display);--weighin-date-size:22px;--weighin-date-weight:400;
+  --band-flat:1;--band-sky:0;
+}
+[data-look="paper"][data-theme="dark"]{--eyebrow-ink:#CFC4B6;--horizon:rgba(243,237,227,.35)}
+[data-look="reel"]{
+  --eyebrow-size:12px;--eyebrow-weight:600;--eyebrow-tracking:.22em;--eyebrow-transform:uppercase;--eyebrow-ink:var(--ink-muted);
+  --due-label-size:11px;--due-label-tracking:.18em;
+  --section-font:var(--font-caption);--section-size:11px;--section-weight:600;--section-tracking:.22em;--section-transform:uppercase;--section-ink:var(--ink-muted);
+  --horizon:rgba(18,17,16,.35);
+  --nav-dot:transparent;--nav-label-size:11px;--nav-label-weight:600;
+  --cta-hero-bg:var(--sun-wide);--cta-hero-ink:#121110;--cta-hero-glow:0 0 22px -6px rgba(248,169,89,.6);--cta-hero-size:13px;--cta-hero-tracking:.16em;--cta-hero-transform:uppercase;
+  --chip-bg:var(--bg-sunken);
+  --weighin-date-font:var(--font-numeric);--weighin-date-size:30px;--weighin-date-weight:600;
+  --band-flat:0;--band-sky:1;
+}
+[data-look="reel"][data-theme="dark"]{--eyebrow-ink:#CFC4B6;--horizon:rgba(243,237,227,.35)}
+

@@ -8,7 +8,7 @@ import { dismissWhatsNew, hasSeed, seedApp } from "./seed.js";
 // The documented outbound call: the update check in Settings and on load.
 const UPDATE_CHECK = "https://api.github.com/repos/rvyyv-n/diet-tracker/releases/latest";
 
-test.skip(!hasSeed, "dev-seed.html is missing (untracked; ask the owner for a copy)");
+test.skip(!hasSeed, "dev-seed.html is missing");
 
 test("no request leaves localhost", async ({ page }) => {
   const external = [];

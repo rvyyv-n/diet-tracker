@@ -1,7 +1,7 @@
 // Dev helper: screenshot the running app with Playwright.
 //
-// It seeds four weeks of demo data first (dev-seed.html, untracked, so it has to
-// exist), pins the clock, and turns reduced motion on. One JSON argument:
+// It seeds four weeks of demo data first (dev-seed.html), pins the clock, and
+// turns reduced motion on. One JSON argument:
 //
 //   node scripts/shot.mjs '{"path":"/?tab=weight","width":390,"height":844,"look":"reel","theme":"dark","out":"shots/x.png"}'
 //

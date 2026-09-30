@@ -1,0 +1,13 @@
+<!-- @dsCard group="Components" viewport="820x580" name="Desktop shell" subtitle="Side nav with wordmark and Today glance" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css">
+<style>body{margin:0;background:#e9e2d6;font-family:var(--font-body)}.pair{display:grid;grid-template-columns:390px 390px;gap:0}.look{width:390px;box-sizing:border-box;padding:16px 0 20px;background-color:var(--bg-canvas);background-image:var(--texture);color:var(--ink);position:relative;overflow:hidden}.pad{padding:0 20px}.cap{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.06em;color:var(--ink-muted);margin:14px 20px 8px;text-transform:uppercase}</style>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script><script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../_ds_bundle.js"></script><script type="text/babel" src="../dev-bundle.jsx"></script></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.RiseDS || Object.getOwnPropertyNames(window).map(k=>{try{return window[k]}catch(e){}}).find(v=>v&&typeof v==='object'&&v.Button&&v.Toggle&&v.DayTotal);
+
+const {SideNav} = NS;
+function App(){return <div style={{display:'flex',gap:0}}>
+ {[['paper','light'],['reel','dark']].map(([l,t])=><div key={l} data-look={l} data-theme={t} style={{width:256,height:560,background:'var(--bg-canvas)',color:'var(--ink)'}}><SideNav active="today" glance={{kcal:'2,285',target:'3,110',status:'partial',latest:'63.0 kg'}}/></div>)}</div>}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

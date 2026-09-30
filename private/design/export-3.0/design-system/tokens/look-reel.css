@@ -1,0 +1,63 @@
+/* Look: REEL. Same semantic names as Paper; only values differ. Switch: <html data-look="reel" data-theme="light|dark"> */
+/* =====================================================================
+   LOOK: REEL
+   ===================================================================== */
+[data-look="reel"]{
+  --font-display:'Newsreader',Georgia,serif;
+  --font-body:'Barlow Semi Condensed',system-ui,sans-serif;
+  --font-numeric:'Barlow Semi Condensed',system-ui,sans-serif;
+  --font-caption:'Barlow Semi Condensed',system-ui,sans-serif;
+  --display-weight:400;--display-style:normal;--due-title-style:italic;
+  --numeric-weight:600;--numeric-tracking:-.01em;
+  --caption-size:11px;--caption-weight:600;--caption-tracking:.22em;--caption-transform:uppercase;
+  --label-transform:uppercase;--label-tracking:.14em;--label-size:13px;
+  --type-hero:86px;--type-display-lg:40px;--type-display-md:26px;--type-title:19px;--type-body:16px;--type-small:14px;--type-micro:11px;
+  --radius-sm:10px;--radius-md:16px;--radius-card:24px;--radius-field:999px;--radius-pill:999px;
+  --texture:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .25 0 0 0 0 .14 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  --bg-canvas:#F3EDE3;--bg-raised:#FFFAF2;--bg-sunken:#E9E1D4;--bg-inverse:#121110;
+  --ink:#121110;--ink-muted:#6E655B;--ink-soft:#8C8378;--ink-inverse:#F3EDE3;
+  --line:#DDD3C4;--line-strong:#C9BBA9;
+  --accent:#E0673F;--accent-hover:#D65C34;--accent-pressed:#C9532E;--accent-disabled:#F2C6B4;
+  --accent-ink:#121110;--accent-text:#B44A26;
+  --danger:#C23A4B;--danger-ink:#FFFFFF;
+  --focus-ring:0 0 0 2px var(--bg-canvas),0 0 0 4px #E0673F;
+  --intake-on-track:#3D9656;--intake-partial:#C4910F;--intake-low:#C23A4B;
+  --intake-on-track-wash:#D6EEDC;--intake-partial-wash:#F3E3B0;--intake-low-wash:#F4D8DB;
+
+  --due-bg:radial-gradient(120% 90% at 0% 0%,rgba(248,169,89,.32),rgba(248,169,89,0) 55%),#1F1D1A;
+  --due-ink:#F3EDE3;--due-ink-muted:#B9AD9F;--due-accent-text:#F4A07E;
+  --due-edge:inset 0 0 0 0 transparent;--due-glow:0 22px 44px -22px rgba(18,17,16,.7);
+  --due-cta-bg:#E0673F;--due-cta-ink:#121110;--due-secondary-edge:rgba(243,237,227,.35);
+  --now-line:#E0673F;--sun-halo:rgba(248,169,89,.42);
+
+  --nav-bg:#121110;--nav-edge:inset 0 0 0 0 transparent;--nav-shadow:0 14px 30px -14px rgba(0,0,0,.6);
+  --nav-ink:#A99E91;--nav-active-bg:var(--sun-wide);--nav-active-ink:#121110;--nav-active-glow:0 0 22px -4px rgba(248,169,89,.6);
+
+  --shadow-card:inset 0 0 0 1px #DDD3C4;
+  --shadow-float:0 20px 48px -18px rgba(18,17,16,.5);
+  --scrim:rgba(18,17,16,.45);
+  --chart-band:rgba(224,103,63,.16);
+}
+[data-look="reel"][data-theme="dark"]{
+  --texture:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .92 0 0 0 0 .8 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --bg-canvas:#0E0D0B;--bg-raised:#1F1D1A;--bg-sunken:#171513;--bg-inverse:#F3EDE3;
+  --ink:#F3EDE3;--ink-muted:#A99E91;--ink-soft:#6E655B;--ink-inverse:#121110;
+  --line:#2A2622;--line-strong:#3A352F;
+  --accent:#E0673F;--accent-hover:#E8774F;--accent-pressed:#C9532E;--accent-disabled:#5A2E20;
+  --accent-ink:#121110;--accent-text:#F08A64;
+  --danger:#E8697A;--danger-ink:#121110;
+  --intake-on-track:#5DB872;--intake-partial:#D9A520;--intake-low:#E8697A;
+  --intake-on-track-wash:#1E3324;--intake-partial-wash:#3A3015;--intake-low-wash:#3A1E22;
+  --due-bg:radial-gradient(120% 100% at 0% 0%,#F29A6E,#E0673F 60%);
+  --due-ink:#121110;--due-ink-muted:#2A1A12;--due-accent-text:#121110;
+  --due-edge:inset 0 0 0 0 transparent;--due-glow:0 0 56px -12px rgba(224,103,63,.6);
+  --due-cta-bg:#121110;--due-cta-ink:#F3EDE3;--due-secondary-edge:rgba(18,17,16,.5);
+  --sun-halo:rgba(248,169,89,.32);
+  --nav-bg:#1F1D1A;--nav-edge:inset 0 0 0 1px #34302B;--nav-shadow:0 14px 30px -14px rgba(0,0,0,.7);
+  --nav-ink:#A99E91;
+  --shadow-card:inset 0 0 0 1px #2A2622;--shadow-float:inset 0 0 0 1px #34302B,0 24px 48px -16px rgba(0,0,0,.7);
+  --scrim:rgba(0,0,0,.6);--chart-band:rgba(240,138,100,.2);
+}
+
+

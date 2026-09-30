@@ -3,7 +3,12 @@
 # a real profile, weight history, or the source plan documents stays local.
 profile.local.json
 data.local.json
-/private/
+/private/*
+# The v3.0 design export is tracked (the rest of private/ is not), so cloud
+# sessions have it without an upload.
+!/private/design/
+/private/design/*
+!/private/design/export-3.0/
 
 # Source plan documents — contain personal health data
 *.docx
@@ -77,11 +82,7 @@ coverage/
 # of the project.
 /restore-instructions.png
 
-# Project brief — kept local for now
-CLAUDE.md
-
-# dev-only, untracked
-dev-seed.html
+# dev-seed.html and CLAUDE.md are tracked (demo data and the project brief).
 *.log
 
 # ---- Reminder Worker -------------------------------------------------

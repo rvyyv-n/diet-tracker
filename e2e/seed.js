@@ -1,7 +1,7 @@
 import fs from "node:fs";
 
-// The demo history comes from dev-seed.html, which is untracked (it is shared
-// by hand). Specs skip with a clear message when it isn't there.
+// The demo history comes from dev-seed.html. Specs skip with a clear message
+// when it isn't there.
 export const hasSeed = fs.existsSync("dev-seed.html");
 
 /** A fixed afternoon, so greetings, "today" and the seeded history never drift. */

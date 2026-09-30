@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="styles/rise-tokens.css">
+</helmet>
+<div data-look="{{ look }}" data-theme="{{ theme }}" data-screen-label="{{ label }}" style="position:relative;width:{{ frameW }};height:{{ frameH }};overflow:hidden;border-radius:44px;background-color:var(--bg-canvas);background-image:var(--texture);color:var(--ink);font-family:var(--font-body);box-shadow:0 30px 60px -30px rgba(60,40,20,.45),0 0 0 1px rgba(0,0,0,.06)">
+<div style="padding:0 0 110px">
+<div style="height:44px;display:flex;align-items:center;padding:0 28px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums">{{ clock }}</div>
+
+<sc-if value="{{ isRecipes }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 12px;margin-top:2px"><span style="height:44px;padding:0 8px;display:inline-flex;align-items:center;gap:4px;font-size:16px;font-weight:700;color:var(--accent-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>Plan</span></div>
+<div style="padding:0 20px;font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">Recipe book · meals · food table</div>
+<div style="padding:0 20px;margin-top:4px;font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-lg);line-height:1.1">Recipes</div>
+
+<div style="padding:0 20px;margin-top:24px;font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Recipe book</div>
+<div style="padding:0 20px;margin-top:6px;font-size:15px;line-height:1.45;color:var(--ink-muted)">Log puts a recipe on today. New recipes also show under Today → Log food.</div>
+<div style="margin:12px 20px 0;height:52px;border-radius:26px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">+ New recipe</div>
+<sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+<div style="margin:14px 20px 0;padding:28px 20px;border-radius:var(--radius-card);box-shadow:inset 0 0 0 1.5px var(--line);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:var(--ink-soft)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg><span style="font-size:15px;line-height:1.45;color:var(--ink-muted);max-width:260px">No recipes yet. A recipe is built from the food table and logs as one entry.</span></div>
+</sc-if>
+<sc-if value="{{ hasRecipes }}" hint-placeholder-val="{{ true }}">
+<div style="margin:12px 20px 0;height:48px;border-radius:var(--radius-field);box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;gap:10px;padding:0 16px;color:var(--ink-muted);font-size:16px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg>Filter recipes</div>
+<div style="padding:0 20px;margin-top:4px">
+<sc-for list="{{ recipes }}" as="q" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;min-height:64px;border-bottom:1px solid var(--line)">
+<span style="min-width:0"><span style="display:block;font-size:17px">{{ q.name }}</span><span style="display:block;font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums">{{ q.kcal }} kcal · {{ q.prot }} g · {{ q.n }} items</span></span>
+<span style="height:44px;padding:0 10px;display:flex;align-items:center;font-size:15px;font-weight:700;color:var(--accent-text)">Edit</span>
+<span style="height:44px;padding:0 18px;border-radius:22px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;font-size:15px;font-weight:700">Log</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<div style="padding:0 20px;margin-top:28px;font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Meals</div>
+<div style="margin:10px 20px 0;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:0 16px">
+<sc-for list="{{ meals }}" as="m" hint-placeholder-count="6">
+<div style="border-top:{{ m.bt }}">
+<div style="display:grid;grid-template-columns:20px minmax(0,1fr) auto 16px;gap:12px;align-items:center;min-height:56px">
+<span style="display:flex;color:var(--ink-soft)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l2.5 2"></path></svg></span>
+<span style="min-width:0"><span style="font-size:17px;font-weight:700">{{ m.name }}</span><span style="margin-left:8px;font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums">{{ m.time }}</span></span>
+<span style="font-size:15px;color:var(--ink-muted);font-variant-numeric:tabular-nums">{{ m.fig }}</span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-muted);transform:{{ m.rot }}"><path d="M6 9l6 6 6-6"></path></svg>
+</div>
+<div style="height:3px;border-radius:2px;background:var(--line);margin:-6px 0 8px 32px;overflow:hidden"><div style="height:100%;width:{{ m.share }};background:var(--ink-soft)"></div></div>
+<sc-if value="{{ m.open }}" hint-placeholder-val="{{ false }}">
+<div style="margin:0 0 12px 32px">
+<sc-for list="{{ m.opts }}" as="o" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.4"><span style="color:var(--ink-muted)">{{ o.desc }}</span><span style="font-weight:700;font-variant-numeric:tabular-nums">{{ o.kcal }}</span></div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+
+<div style="padding:0 20px;margin-top:28px;font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Food table</div>
+<div style="margin:10px 20px 0;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:0 16px">
+<sc-for list="{{ foods }}" as="f" hint-placeholder-count="5">
+<div style="padding:12px 0;border-top:{{ f.bt }}"><div style="font-size:16px">{{ f.name }}</div><div style="font-size:14px;color:var(--ink-muted);font-variant-numeric:tabular-nums">{{ f.meta }}</div></div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px;margin-top:10px;font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">45 days logged · 7 weigh-ins · 3 recipes</div>
+<div style="padding:0 20px;margin-top:4px;font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-lg);line-height:1.1">Settings</div>
+
+<div style="margin:22px 20px 0;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:14px 14px 14px 16px;display:grid;grid-template-columns:44px minmax(0,1fr) 16px;gap:14px;align-items:center">
+<span style="width:44px;height:44px;border-radius:50%;background:var(--bg-sunken);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700">S</span>
+<span><span style="display:block;font-size:17px;font-weight:700">Sam</span><span style="display:block;font-size:14px;color:var(--ink-muted)">Target · 178 cm · +0.3 kg/wk</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-muted)"><path d="M9 6l6 6-6 6"></path></svg>
+</div>
+
+<div style="padding:0 20px;margin-top:28px;font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Appearance</div>
+<div style="margin:10px 20px 0;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:17px;font-weight:700">Look</span><span style="font-size:14px;color:var(--ink-muted)">Type, texture and the sun</span></div>
+<div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<sc-for list="{{ tiles }}" as="t" hint-placeholder-count="2">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="border-radius:18px;padding:3px;box-shadow:{{ t.sel }}">
+<div data-look="{{ t.look }}" data-theme="{{ t.theme }}" style="border-radius:15px;overflow:hidden;background-color:var(--bg-canvas);background-image:var(--texture);color:var(--ink);font-family:var(--font-body);padding:12px 10px 10px;box-shadow:inset 0 0 0 1px var(--line)">
+<div style="font-size:9px;font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">Phase 2 · Week 6</div>
+<div style="font-family:var(--font-numeric);font-size:30px;font-weight:var(--numeric-weight);letter-spacing:var(--numeric-tracking);line-height:1;margin-top:2px">2,285</div>
+<div style="position:relative;height:18px"><div style="position:absolute;left:-10px;right:-10px;top:10px;height:1px;background:var(--horizon)"></div><div style="position:absolute;left:0;width:70%;top:9px;height:3px;border-radius:2px;background:var(--intake-partial)"></div><div style="position:absolute;left:calc(70% - 6px);top:4px;width:12px;height:12px;border-radius:50%;background:var(--sun);box-shadow:0 0 8px 2px var(--sun-halo)"></div></div>
+<div style="margin-top:6px;border-radius:10px;background:var(--due-bg);color:var(--due-ink);box-shadow:var(--due-edge);padding:8px 9px"><div style="font-size:8px;font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:var(--due-accent-text)">Due now</div><div style="font-family:var(--font-display);font-style:var(--due-title-style);font-size:17px;line-height:1.1">Snack</div><div style="margin-top:6px;height:16px;border-radius:8px;background:var(--due-cta-bg)"></div></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;padding-left:4px"><span style="width:20px;height:20px;border-radius:50%;box-shadow:{{ t.radio }}"></span><span style="font-size:16px;font-weight:700">{{ t.name }}</span><span style="font-size:13px;color:var(--ink-muted)">{{ t.note }}</span></div>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:17px;font-weight:700">Theme</span><span style="font-size:14px;color:var(--ink-muted)">System follows your device</span></div>
+<div style="margin-top:10px;height:48px;border-radius:24px;background:var(--bg-sunken);padding:4px;display:grid;grid-template-columns:repeat(3,1fr);box-sizing:border-box;font-size:15px;font-weight:700">
+<sc-for list="{{ themes }}" as="s" hint-placeholder-count="3"><span style="border-radius:20px;background:{{ s.bg }};color:{{ s.fg }};display:flex;align-items:center;justify-content:center">{{ s.label }}</span></sc-for>
+</div>
+</div>
+
+<div style="padding:0 20px;margin-top:28px;font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Overview</div>
+<div style="margin:10px 20px 0;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:0 16px">
+<sc-for list="{{ overview }}" as="o" hint-placeholder-count="2">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;min-height:64px;border-top:{{ o.bt }}"><span><span style="display:block;font-size:16px;font-weight:700">{{ o.name }}</span><span style="display:block;font-size:14px;color:var(--ink-muted)">{{ o.hint }}</span></span><span style="width:52px;height:32px;border-radius:16px;background:var(--ink);position:relative"><span style="position:absolute;right:3px;top:3px;width:26px;height:26px;border-radius:50%;background:var(--bg-canvas)"></span></span></div>
+</sc-for>
+</div>
+
+<div style="padding:0 20px;margin-top:28px;font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink)">Data</div>
+<div style="margin:10px 20px 0;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:var(--shadow-card);padding:0 16px">
+<sc-for list="{{ data }}" as="d" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 16px;gap:14px;align-items:center;min-height:60px;border-top:{{ d.bt }}"><span><span style="display:block;font-size:16px;font-weight:700;color:{{ d.ink }}">{{ d.name }}</span><span style="display:block;font-size:14px;color:var(--ink-muted)">{{ d.hint }}</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-muted)"><path d="M9 6l6 6-6 6"></path></svg></div>
+</sc-for>
+</div>
+<sc-if value="{{ resetOpen }}" hint-placeholder-val="{{ false }}">
+<div style="margin:12px 20px 0;border-radius:var(--radius-card);background:var(--bg-raised);box-shadow:inset 0 0 0 1.5px var(--danger);padding:18px">
+<div style="font-size:18px;font-weight:700">Erase everything?</div>
+<div style="margin-top:6px;font-size:15px;line-height:1.5;color:var(--ink-muted)">This removes your profile, 45 days, 7 weigh-ins and 3 recipes from this browser, and starts the plan over at week 1. A copy is kept, and setup offers to restore it.</div>
+<div style="margin-top:14px;display:flex;gap:10px;font-size:16px;font-weight:700"><span style="height:52px;padding:0 20px;border-radius:26px;background:var(--danger);color:var(--danger-ink);display:flex;align-items:center">Erase everything</span><span style="height:52px;padding:0 14px;display:flex;align-items:center">Cancel</span></div>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ isFirst }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px;margin-top:10px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)">Step 2 of 3 · Optional</span><span style="height:44px;padding:0 4px;display:flex;align-items:center;font-size:16px;font-weight:700;color:var(--accent-text)">Skip</span></div>
+<div style="padding:0 20px;display:flex;gap:6px"><span style="flex:1;height:4px;border-radius:2px;background:var(--ink)"></span><span style="flex:1;height:4px;border-radius:2px;background:var(--accent)"></span><span style="flex:1;height:4px;border-radius:2px;background:var(--line-strong)"></span></div>
+<div style="padding:0 20px;margin-top:18px;font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-lg);line-height:1.1">Pick a Look</div>
+<div style="padding:0 20px;margin-top:8px;font-size:16px;line-height:1.45;color:var(--ink-muted)">Changes the type and texture, not what the app does. You can switch any time in Settings.</div>
+
+<div style="margin:18px 20px 0;border-radius:24px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--line),var(--shadow-card)">
+<div data-look="{{ pick }}" data-theme="{{ theme }}" style="background-color:var(--bg-canvas);background-image:var(--texture);color:var(--ink);font-family:var(--font-body);padding:18px 18px 16px">
+<div style="display:flex;justify-content:space-between;font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)"><span>Phase 1 · Week 1</span><span>Preview</span></div>
+<div style="display:flex;align-items:baseline;gap:6px;margin-top:2px"><span style="font-family:var(--font-numeric);font-size:54px;font-weight:var(--numeric-weight);letter-spacing:var(--numeric-tracking);line-height:1;font-variant-numeric:tabular-nums">705</span><span style="font-size:16px;color:var(--ink-muted)">/ 2,565 kcal</span></div>
+<div style="position:relative;height:30px"><div style="position:absolute;left:-18px;right:-18px;top:17px;height:1.5px;background:linear-gradient(90deg,transparent,var(--horizon) 12%,var(--horizon) 88%,transparent)"></div><div style="position:absolute;left:0;width:27%;top:16px;height:4px;border-radius:2px;background:var(--intake-partial)"></div><div style="position:absolute;left:calc(27% - 10px);top:8px;width:20px;height:20px;border-radius:50%;background:var(--sun);box-shadow:0 0 14px 4px var(--sun-halo)"></div></div>
+<div style="margin-top:10px;border-radius:18px;background:var(--due-bg);color:var(--due-ink);box-shadow:var(--due-edge),var(--due-glow);padding:14px 16px">
+<div style="display:flex;justify-content:space-between;gap:10px"><div><div style="font-size:var(--due-label-size);font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:var(--due-accent-text)">Due now · 11:00</div><div style="font-family:var(--font-display);font-style:var(--due-title-style);font-weight:var(--display-weight);font-size:28px;line-height:1.05">Shake</div></div><div style="text-align:right;font-variant-numeric:tabular-nums"><div style="font-size:22px;font-weight:700">580</div><div style="font-size:13px;color:var(--due-ink-muted)">kcal · 22 g</div></div></div>
+<div style="margin-top:12px;height:44px;border-radius:22px;background:var(--due-cta-bg);color:var(--due-cta-ink);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700">Tick Shake</div>
+</div>
+</div>
+</div>
+
+<div style="margin:16px 20px 0;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<sc-for list="{{ picks }}" as="p" hint-placeholder-count="2">
+<div style="min-height:72px;border-radius:20px;padding:12px 14px;box-sizing:border-box;background:var(--bg-raised);box-shadow:{{ p.ring }};display:grid;grid-template-columns:20px 1fr;gap:10px;align-items:start"><span style="margin-top:2px;width:20px;height:20px;border-radius:50%;box-shadow:{{ p.radio }}"></span><span><span style="display:block;font-size:17px;font-weight:700">{{ p.name }}</span><span style="display:block;font-size:13px;line-height:1.35;color:var(--ink-muted)">{{ p.note }}</span></span></div>
+</sc-for>
+</div>
+<div style="margin:16px 20px 0;height:52px;border-radius:26px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700">Continue with {{ pickName }}</div>
+</sc-if>
+</div>
+
+<sc-if value="{{ editOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--scrim);z-index:2"></div>
+<div style="position:absolute;z-index:3;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background-color:var(--bg-raised);background-image:var(--texture);box-shadow:var(--shadow-float);padding:10px 20px 28px;display:flex;flex-direction:column;gap:14px">
+<div style="width:40px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto"></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-md)">Edit recipe</span><span style="font-size:15px;font-weight:700;color:var(--danger)">Delete</span></div>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:14px;font-weight:700">Name</span><span style="height:48px;border-radius:var(--radius-field);background:var(--bg-canvas);box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;padding:0 16px;font-size:16px">Overnight oats</span></label>
+<div><div style="font-size:14px;font-weight:700">Built from</div>
+<sc-for list="{{ editItems }}" as="e" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto 44px;gap:8px;align-items:center;min-height:48px;border-bottom:1px solid var(--line)"><span style="font-size:16px">{{ e.name }}<span style="color:var(--ink-muted);font-size:14px"> · {{ e.portion }}</span></span><span style="font-size:15px;font-weight:700;font-variant-numeric:tabular-nums">{{ e.kcal }}</span><span style="height:44px;display:flex;align-items:center;justify-content:flex-end;color:var(--ink-muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div></sc-for>
+<div style="margin-top:8px;height:44px;display:flex;align-items:center;font-size:15px;font-weight:700;color:var(--accent-text)">+ Add from the food table</div></div>
+<sc-if value="{{ delConfirm }}" hint-placeholder-val="{{ false }}">
+<div style="border-radius:18px;box-shadow:inset 0 0 0 1.5px var(--danger);padding:14px 16px"><div style="font-size:16px;font-weight:700">Delete “Overnight oats”?</div><div style="font-size:14px;color:var(--ink-muted);margin-top:2px">This cannot be undone. Days it was logged on keep their kcal.</div><div style="margin-top:10px;display:flex;gap:8px;font-size:15px;font-weight:700"><span style="height:44px;padding:0 16px;border-radius:22px;background:var(--danger);color:var(--danger-ink);display:flex;align-items:center">Delete</span><span style="height:44px;padding:0 12px;display:flex;align-items:center">Cancel</span></div></div>
+</sc-if>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center"><span style="font-size:15px;color:var(--ink-muted);font-variant-numeric:tabular-nums"><b style="color:var(--ink);font-size:17px">620 kcal</b> · 23 g protein</span><span style="height:52px;padding:0 28px;border-radius:26px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;font-size:17px;font-weight:700">Save</span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasNav }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:0;right:0;bottom:0;height:110px;background:linear-gradient(to bottom,transparent,var(--bg-canvas) 70%);pointer-events:none"></div>
+<div style="position:absolute;left:12px;right:12px;bottom:14px;height:64px;border-radius:32px;background:var(--nav-bg);box-shadow:var(--nav-edge),var(--nav-shadow);display:grid;grid-template-columns:repeat(4,1fr);padding:6px;box-sizing:border-box;font-family:var(--font-caption);font-size:var(--nav-label-size);font-weight:var(--nav-label-weight);letter-spacing:var(--label-tracking);text-transform:var(--label-transform);color:var(--nav-ink)">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+<span style="position:relative;border-radius:26px;background:{{ t.bg }};color:{{ t.ink }};box-shadow:{{ t.glow }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+<sc-if value="{{ t.on }}"><span style="position:absolute;top:6px;right:14px;width:6px;height:6px;border-radius:50%;background:var(--nav-dot)"></span></sc-if>
+<sc-if value="{{ t.iToday }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="M8 12l3 3 5-6"></path></svg></sc-if>
+<sc-if value="{{ t.iPlan }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 9h6M9 13h6M9 17h4"></path></svg></sc-if>
+<sc-if value="{{ t.iWeight }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"></path></svg></sc-if>
+<sc-if value="{{ t.iSettings }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg></sc-if>
+{{ t.label }}</span>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;recipes&quot;,&quot;recipesEmpty&quot;,&quot;recipeEdit&quot;,&quot;recipeDelete&quot;,&quot;settings&quot;,&quot;reset&quot;,&quot;firstrun&quot;,&quot;firstrunReel&quot;],&quot;default&quot;:&quot;recipes&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;look&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;paper&quot;,&quot;reel&quot;],&quot;default&quot;:&quot;paper&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;tall&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;width&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:390,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const P = this.props, scr = P.screen ?? 'recipes';
+    const look = P.look ?? 'paper', theme = P.theme ?? 'light';
+    const tall = P.tall === true || P.tall === 'true';
+    const w = P.width ?? 390;
+    const isRecipes = ['recipes', 'recipesEmpty', 'recipeEdit', 'recipeDelete'].includes(scr), isSettings = scr === 'settings' || scr === 'reset', isFirst = scr === 'firstrun' || scr === 'firstrunReel';
+    const pick = scr === 'firstrunReel' ? 'reel' : 'paper';
+    const on = 'inset 0 0 0 7px var(--ink)', off = 'inset 0 0 0 1.5px var(--ink-soft)';
+    const parent = isRecipes ? 'plan' : 'settings';
+    const tabs = [['today', 'Today'], ['plan', 'Plan'], ['weight', 'Weight'], ['settings', 'Settings']].map(([id, label]) => {
+      const a = id === parent;
+      return { label, on: a, ['i' + id[0].toUpperCase() + id.slice(1)]: true, bg: a ? 'var(--nav-active-bg)' : 'transparent', ink: a ? 'var(--nav-active-ink)' : 'inherit', glow: a ? 'var(--nav-active-glow)' : 'none' };
+    });
+    const R = [
+      ['Breakfast', '08:00', [['Eggs (3) + flatbreads (2) + milk + butter', 705], ['Eggs (3) + flaky flatbread + milk + butter', 705], ['Eggs (2) + bread + peanut butter + milk', 700]]],
+      ['Shake', '11:00', [['Standard: milk, PB, banana, oats', 580], ['No blender: milk, PB, banana, honey', 545], ['Heavy: adds oats and dates', 790], ['Mass: 2 bananas, almonds, sugar', 1050]]],
+      ['Lunch', '13:30', [['Chicken curry (150 g) + rice', 580], ['Minced beef + flatbreads + salad', 630], ['Chickpeas + flatbread + yogurt', 565]]],
+      ['Snack', '16:00', [['Yogurt + dates + almonds', 290]]],
+      ['Dinner', '19:30', [['Egg curry + lentil stew + flatbreads', 700]]],
+      ['Pre-bed', '22:00', [['Milk + peanut butter', 255]]]
+    ];
+    const meals = R.map(([name, time, o], i) => {
+      const mx = Math.max(...o.map(x => x[1])), mn = Math.min(...o.map(x => x[1]));
+      return { name, time, fig: mn === mx ? mx + ' kcal' : mn + '–' + mx.toLocaleString('en-US'), share: Math.round(mx / 3110 * 100) + '%',
+        open: i === 1, rot: i === 1 ? 'rotate(180deg)' : 'none', bt: i ? '1px solid var(--line)' : 'none',
+        opts: o.map(([desc, k]) => ({ desc, kcal: k.toLocaleString('en-US') })) };
+    });
+    const foods = [['Full-Fat Milk', '250 ml · 160 kcal · 8 g'], ['Large Egg', '1 · 75 kcal · 6 g'], ['Peanut Butter', '1 tbsp · 95 kcal · 4 g'], ['Flatbread', '1 medium · 140 kcal · 4 g'], ['Cooked Rice', '1 cup · 250 kcal · 5 g']].map(([name, meta], i) => ({ name, meta, bt: i ? '1px solid var(--line)' : 'none' }));
+    const tiles = [['paper', 'Paper', 'Default'], ['reel', 'Reel', '']].map(([l, name, note]) => ({ look: l, theme, name, note, sel: l === look ? '0 0 0 2px var(--ink)' : 'none', radio: l === look ? on : off }));
+    const themes = ['System', 'Light', 'Dark'].map(l => ({ label: l, bg: l === 'System' ? 'var(--ink)' : 'transparent', fg: l === 'System' ? 'var(--ink-inverse)' : 'var(--ink-muted)' }));
+    const picks = [['paper', 'Paper', 'Clean sans, warm paper. The default.'], ['reel', 'Reel', 'Film grain, serif italics, a bigger sun.']].map(([l, name, note]) => ({ name, note, ring: l === pick ? 'inset 0 0 0 2px var(--ink)' : 'inset 0 0 0 1px var(--line)', radio: l === pick ? on : off }));
+    return {
+      look, theme, clock: isFirst ? '09:02' : '16:20', label: isRecipes ? 'Recipes' : isSettings ? 'Settings' : 'First run · Look',
+      frameW: w + 'px', frameH: tall ? 'auto' : '844px',
+      isRecipes, isSettings, isFirst, hasNav: !isFirst, tabs,
+      empty: scr === 'recipesEmpty', hasRecipes: scr !== 'recipesEmpty',
+      recipes: [{ name: 'Overnight oats', kcal: 620, prot: 23, n: 5 }, { name: 'Chicken wrap', kcal: 420, prot: 24, n: 4 }, { name: 'Peanut butter banana toast', kcal: 480, prot: 15, n: 3 }],
+      meals, foods, tiles, themes,
+      overview: [{ name: 'Protein line', hint: 'Protein against the daily target.', bt: 'none' }, { name: 'Remaining line', hint: 'Kcal and blocks still to go.', bt: '1px solid var(--line)' }],
+      data: [{ name: 'Export data', hint: 'Exported 3 days ago.', ink: 'var(--ink)', bt: 'none' }, { name: 'Import data', hint: 'From a backup file or pasted JSON.', ink: 'var(--ink)', bt: '1px solid var(--line)' }, { name: 'Check for updates', hint: 'Up to date · v3.0.0', ink: 'var(--ink)', bt: '1px solid var(--line)' }, { name: 'Reset all data', hint: 'Asks twice. Undo lasts until you close the app.', ink: 'var(--danger)', bt: '1px solid var(--line)' }],
+      resetOpen: scr === 'reset', editOpen: scr === 'recipeEdit' || scr === 'recipeDelete', delConfirm: scr === 'recipeDelete',
+      editItems: [['Dry Oats', '50 g', 190], ['Full-Fat Milk', '250 ml', 160], ['Full-Fat Yogurt', '100 g', 70], ['Peanut Butter', '1 tbsp', 95], ['Banana', '1 medium', 105]].map(([name, portion, kcal]) => ({ name, portion, kcal })),
+      pick, pickName: pick === 'reel' ? 'Reel' : 'Paper', picks
+    };
+  }
+}
+</script>
+</body>
+</html>

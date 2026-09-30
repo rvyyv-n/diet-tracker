@@ -20,7 +20,7 @@ Each build pass lists its model in the roadmap. If this session is on a differen
 
 ## 3. For each target, in order
 
-**Read first.** The target's entry in `docs/roadmap.md`, plus the Architectural Decisions and Not doing sections. Its "Reads" files in the private design export at `private/design/export-3.0/` (paths are relative to `design-system/` or `screens/`); read only what the target lists. The tokens are the source of truth, so never re-derive a value from a screenshot. After `tokens` lands, read `docs/design-system.md` too. Anything the roadmap marks as an open decision is a stop-and-ask: ask a short question with options.
+**Read first.** The target's entry in `docs/roadmap.md`, plus the Architectural Decisions and Not doing sections. Its "Reads" files in the design export at `private/design/export-3.0/` (paths are relative to `design-system/` or `screens/`); read only what the target lists. The tokens are the source of truth, so never re-derive a value from a screenshot. After `tokens` lands, read `docs/design-system.md` too. Anything the roadmap marks as an open decision is a stop-and-ask: ask a short question with options.
 
 **Plan in under ten lines, then build.** One target is one commit: typically 3 to 8 files and a few hundred lines. If it will be much larger, split it into `pass N step M` commits that each build, and say so first.
 

@@ -1,0 +1,37 @@
+<!-- @dsCard group="Components" viewport="780x1120" name="Surfaces" subtitle="Nav, sheet, dialog, toast, banner, confirm, empty state, settings rows, calendar" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;background:#e9e2d6;font-family:var(--font-body)}.pair{display:grid;grid-template-columns:390px 390px;gap:0}.look{width:390px;box-sizing:border-box;padding:16px 0 20px;background-color:var(--bg-canvas);background-image:var(--texture);color:var(--ink);position:relative;overflow:hidden}.pad{padding:0 20px}.cap{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.06em;color:var(--ink-muted);margin:14px 20px 8px;text-transform:uppercase}</style>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script><script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script><script type="text/babel" src="../../dev-bundle.jsx"></script></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.RiseDS || Object.getOwnPropertyNames(window).map(k=>{try{return window[k]}catch(e){}}).find(v=>v&&typeof v==='object'&&v.Button&&v.Toggle&&v.DayTotal);
+
+const {PhoneNav,SideNav,Sheet,Toast,Banner,ConfirmPanel,EmptyState,ListRow,ListGroup,OptionRow,CalendarGrid,Toggle,Segmented,Button} = NS;
+function Panel({look,theme}){
+  const days=Array.from({length:30},(_,i)=>({n:i+1,status:i===29?'today':[5,12].includes(i)?'low':[8,18,25,26].includes(i)?'partial':'on-track'}));
+  return <div className="look" data-look={look} data-theme={theme}>
+    <div className="pad" style={{display:'grid',gap:10}}>
+      <Banner kind="closed" title="This day is closed." sub="Saturday 26 September · view only"/>
+      <Banner kind="backfill" title="Yesterday isn't finished" sub="Tue 29 · 2,855 of 3,110 kcal" action="Open"/>
+      <Banner kind="storage" title="Storage is full" sub="Ticks may not save. Download a backup." action="Backup"/>
+    </div>
+    <p className="cap">settings rows</p>
+    <div className="pad"><ListGroup><ListRow title="Protein line" hint="Protein against the daily target." trailing={<Toggle checked label="Protein line"/>}/><ListRow title="Export data" hint="Exported 3 days ago." trailing="chevron" onClick={()=>{}}/></ListGroup></div>
+    <div className="pad" style={{marginTop:12}}><ConfirmPanel title="Erase everything?" body="This removes your profile, 45 days, 7 weigh-ins and 3 recipes, and starts the plan over at week 1." confirmLabel="Erase everything"/></div>
+    <div className="pad" style={{marginTop:12}}><EmptyState icon="recipes">No recipes yet. Save what you eat off-plan and it appears here.</EmptyState></div>
+    <p className="cap">toast</p>
+    <div className="pad"><Toast placement="static" message="Pre-bed ticked · 255 kcal"/></div>
+    <p className="cap">phone nav</p>
+    <div style={{position:'relative',height:96}}><PhoneNav active="weight"/></div>
+    <p className="cap">sheet (swap)</p>
+    <div style={{position:'relative',height:330,background:'var(--bg-canvas)'}}>
+      <Sheet title="Swap Snack" meta="Today only"><div style={{marginTop:10}}><OptionRow name="Yogurt, dates and almonds" note="Current" kcal={290} protein={11} selected/><OptionRow name="Banana and peanut butter" kcal={295} protein={9}/><OptionRow name="Yogurt, oats and honey" kcal={290} protein={11} last/></div><div style={{marginTop:14}}><Button fullWidth>Done</Button></div></Sheet>
+    </div>
+    <p className="cap">calendar</p>
+    <div className="pad"><CalendarGrid month="September" leadingBlanks={1} days={days} note="Days before 17 Aug have no plan." nextDisabled/></div>
+  </div>;
+}
+
+function App(){return <div className="pair"><Panel look="paper" theme="light"/><Panel look="reel" theme="dark"/></div>}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

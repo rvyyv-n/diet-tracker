@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="styles/rise-tokens.css">
+</helmet>
+<div data-look="{{ look }}" data-theme="{{ theme }}" data-screen-label="Today" style="position:relative;width:{{ frameW }};height:{{ frameH }};overflow:hidden;border-radius:44px;background-color:var(--bg-canvas);background-image:var(--texture);color:var(--ink);font-family:var(--font-body);box-shadow:0 30px 60px -30px rgba(60,40,20,.45),0 0 0 1px rgba(0,0,0,.06)">
+<div style="padding:0 0 110px">
+<div style="height:44px;display:flex;align-items:center;padding:0 28px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums">{{ clock }}</div>
+
+<div style="padding:0 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+<div style="display:flex;gap:8px;align-items:center">
+<sc-for list="{{ strip }}" as="d" hint-placeholder-count="7"><span style="width:{{ d.s }};height:{{ d.s }};border-radius:50%;background:{{ d.bg }};box-shadow:{{ d.ring }}"></span></sc-for>
+<span style="font-size:15px;font-weight:700;margin-left:4px">{{ dayLabel }}</span>
+</div>
+<span style="height:44px;padding:0 16px;border-radius:22px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;font-size:15px;font-weight:700">Calendar</span>
+</div>
+
+<sc-if value="{{ hasBanner }}" hint-placeholder-val="{{ false }}">
+<div style="margin:16px 20px 0;display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 6px 8px 14px;border-radius:var(--radius-md);background:{{ banner.bg }};box-shadow:{{ banner.ring }}">
+<sc-if value="{{ banner.iLock }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="flex:none"><rect x="5" y="10.5" width="14" height="10" rx="2"></rect><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"></path></svg></sc-if>
+<sc-if value="{{ banner.iDot }}"><span style="flex:none;width:10px;height:10px;border-radius:50%;background:var(--intake-partial)"></span></sc-if>
+<sc-if value="{{ banner.iWarn }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 4l9 16H3z"></path><path d="M12 10v4M12 17.2v.1"></path></svg></sc-if>
+<span style="flex:1;min-width:0;font-size:15px;line-height:1.35"><b>{{ banner.title }}</b><span style="display:block;color:var(--ink-muted);font-size:14px">{{ banner.sub }}</span></span>
+<sc-if value="{{ banner.hasAction }}"><span style="flex:none;height:44px;padding:0 12px;display:flex;align-items:center;font-size:15px;font-weight:700;color:var(--accent-text)">{{ banner.action }}</span></sc-if>
+</div>
+</sc-if>
+
+<div style="padding:0 20px;margin-top:22px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--eyebrow-ink)"><span>{{ eyebrow }}</span><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:{{ tot.color }}"></span>{{ tot.status }}</span></div>
+<div style="padding:0 20px;display:flex;align-items:baseline;gap:8px;margin-top:2px"><span style="font-family:var(--font-numeric);font-size:var(--type-hero);font-weight:var(--numeric-weight);line-height:1;letter-spacing:var(--numeric-tracking);font-variant-numeric:tabular-nums">{{ tot.kcal }}</span><span style="font-size:20px;color:var(--ink-muted);font-variant-numeric:tabular-nums">/ 3,110 kcal</span></div>
+<div style="position:relative;height:56px;margin-top:6px">
+<div style="position:absolute;left:0;right:0;top:34px;height:1.5px;background:linear-gradient(90deg,transparent,var(--horizon) 12%,var(--horizon) 88%,transparent)"></div>
+<div style="position:absolute;left:20px;width:calc((100% - 40px) * {{ tot.frac }});top:33px;height:4px;border-radius:2px;background:{{ tot.color }}"></div>
+<div style="position:absolute;left:calc(20px + (100% - 40px) * {{ tot.frac }} - 60px);top:-25px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,var(--sun-halo),transparent 65%);pointer-events:none"></div>
+<div style="position:absolute;left:calc(20px + (100% - 40px) * {{ tot.frac }} - 12px);top:23px;width:24px;height:24px;border-radius:50%;background:var(--sun)"></div>
+<sc-if value="{{ tot.showEnd }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;right:20px;top:40px;font-size:13px;color:var(--ink-muted);font-variant-numeric:tabular-nums">3,110</div></sc-if>
+</div>
+<div style="padding:0 20px;margin-top:4px;display:flex;justify-content:space-between;gap:8px;font-size:17px;font-variant-numeric:tabular-nums"><span><b>{{ tot.leftN }}</b>{{ tot.leftT }}</span><span style="color:var(--ink-muted)">Protein {{ tot.prot }}/150 g</span></div>
+
+<div style="position:relative;isolation:isolate;margin-top:26px;padding:0 20px 0 0">
+<div style="position:absolute;z-index:-1;left:87px;top:8px;bottom:8px;width:2px;background:var(--line)"></div>
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+<sc-if value="{{ r.isRow }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:58px 32px minmax(0,1fr) auto;align-items:center;column-gap:12px;min-height:58px;padding-left:4px">
+<span style="text-align:right;font-size:14px;line-height:1.15;color:{{ r.tc }};font-variant-numeric:tabular-nums">{{ r.time }}<sc-if value="{{ r.isOff }}"><br><span style="font-size:11px">off plan</span></sc-if></span>
+<span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center"><span style="width:{{ r.ms }};height:{{ r.ms }};border-radius:50%;background:{{ r.mBg }};box-shadow:{{ r.mRing }};color:var(--bg-canvas);display:flex;align-items:center;justify-content:center"><sc-if value="{{ r.isCheck }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if><sc-if value="{{ r.isOff }}"><span style="width:12px;height:12px;border-radius:3px;transform:rotate(45deg);background:var(--ink)"></span></sc-if></span></span>
+<span style="min-width:0;font-size:{{ r.ns }};color:{{ r.nc }}">{{ r.name }}<sc-if value="{{ r.link }}"><span style="color:var(--accent-text);font-size:14px;font-weight:700;margin-left:6px">{{ r.link }}</span></sc-if><sc-if value="{{ r.tag }}"><span style="color:{{ r.tagc }};font-size:14px;font-weight:{{ r.tagw }};margin-left:6px">{{ r.tag }}</span></sc-if></span>
+<span style="font-size:16px;font-weight:{{ r.kw }};color:{{ r.kc }};font-variant-numeric:tabular-nums">{{ r.kcal }}</span>
+</div>
+</sc-if>
+<sc-if value="{{ r.isNow }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;height:30px;margin:4px 0">
+<div style="position:absolute;left:0;right:-20px;top:15px;height:1.5px;background:linear-gradient(90deg,transparent,var(--now-line) 18%,var(--now-line) 80%,transparent)"></div>
+<span style="position:absolute;left:80px;top:8px;width:16px;height:16px;border-radius:50%;background:var(--sun);box-shadow:0 0 12px 4px var(--sun-halo)"></span>
+<span style="position:absolute;left:8px;top:6px;font-size:13px;font-weight:700;color:var(--accent-text);background:var(--bg-canvas);padding:0 4px;font-variant-numeric:tabular-nums">{{ r.time }}</span>
+</div>
+</sc-if>
+<sc-if value="{{ r.isDue }}" hint-placeholder-val="{{ false }}">
+<div style="margin:6px 0 10px 64px;border-radius:22px;background:var(--due-bg);color:var(--due-ink);box-shadow:var(--due-edge),var(--due-glow);padding:16px 16px 14px 18px">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+<div style="min-width:0"><div style="font-size:var(--due-label-size);font-weight:700;letter-spacing:var(--due-label-tracking);text-transform:var(--caption-transform);color:var(--due-accent-text)">{{ r.label }}</div><div style="font-family:var(--font-display);font-style:var(--due-title-style);font-weight:var(--display-weight);font-size:var(--type-display-lg);line-height:1.05;margin-top:2px">{{ r.name }}</div><div style="font-size:14px;color:var(--due-ink-muted);margin-top:4px">{{ r.desc }}</div></div>
+<div style="text-align:right;flex:none;font-variant-numeric:tabular-nums"><div style="font-size:26px;font-weight:700;line-height:1">{{ r.kcal }}</div><div style="font-size:14px;color:var(--due-ink-muted)">kcal · {{ r.prot }} g</div></div>
+</div>
+<div style="margin-top:14px;display:grid;grid-template-columns:{{ r.cols }};gap:10px">
+<sc-if value="{{ r.swap }}"><span style="height:52px;padding:0 18px;border-radius:26px;box-shadow:inset 0 0 0 1.5px var(--due-secondary-edge);display:flex;align-items:center;font-size:16px;font-weight:700">Swap</span></sc-if>
+<span style="height:52px;border-radius:26px;background:var(--due-cta-bg);color:var(--due-cta-ink);display:flex;align-items:center;justify-content:center;gap:8px;font-size:17px;font-weight:700"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Tick {{ r.name }}</span>
+</div>
+</div>
+</sc-if>
+</sc-for>
+</div>
+
+<sc-if value="{{ open }}" hint-placeholder-val="{{ true }}">
+<div style="padding:0 20px;margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px"><span style="height:52px;border-radius:26px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">+ Log food</span><span style="height:52px;border-radius:26px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">+ Add a block</span></div>
+</sc-if>
+<div style="padding:0 20px;margin-top:22px;display:flex;align-items:center;gap:8px"><span style="font-family:var(--section-font);font-size:var(--section-size);font-weight:var(--section-weight);letter-spacing:var(--section-tracking);text-transform:var(--section-transform);color:var(--section-ink);margin-right:4px">Appetite</span>
+<sc-for list="{{ chips }}" as="c" hint-placeholder-count="3"><span style="height:44px;padding:0 14px;border-radius:22px;background:{{ c.bg }};color:{{ c.fg }};display:flex;align-items:center;font-size:15px">{{ c.label }}</span></sc-for>
+</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:110px;background:linear-gradient(to bottom,transparent,var(--bg-canvas) 70%);pointer-events:none"></div>
+<div style="position:absolute;left:12px;right:12px;bottom:14px;height:64px;border-radius:32px;background:var(--nav-bg);box-shadow:var(--nav-edge),var(--nav-shadow);display:grid;grid-template-columns:repeat(4,1fr);padding:6px;box-sizing:border-box;font-family:var(--font-caption);font-size:var(--nav-label-size);font-weight:var(--nav-label-weight);letter-spacing:var(--label-tracking);text-transform:var(--label-transform);color:var(--nav-ink)">
+<span style="position:relative;border-radius:26px;background:var(--nav-active-bg);color:var(--nav-active-ink);box-shadow:var(--nav-active-glow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="position:absolute;top:6px;right:14px;width:6px;height:6px;border-radius:50%;background:var(--nav-dot)"></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="M8 12l3 3 5-6"></path></svg>Today</span>
+<span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 9h6M9 13h6M9 17h4"></path></svg>Plan</span>
+<span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"></path></svg>Weight</span>
+<span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>Settings</span>
+</div>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:50%;transform:translateX(-50%);bottom:92px;display:flex;align-items:center;gap:16px;height:52px;padding:0 8px 0 20px;border-radius:26px;background:var(--bg-inverse);color:var(--ink-inverse);box-shadow:var(--shadow-float);font-size:15px;white-space:nowrap">{{ toast }}<span style="height:40px;padding:0 16px;display:flex;align-items:center;font-weight:700;color:var(--accent)">Undo</span></div>
+</sc-if>
+
+<sc-if value="{{ isLog }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--scrim)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background-color:var(--bg-raised);background-image:var(--texture);box-shadow:var(--shadow-float);padding:10px 20px 28px">
+<div style="width:40px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto 14px"></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-md)">Log food</span><span style="font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--ink-muted)">Wed 30 Sep</span></div>
+<div style="margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:24px;background:var(--bg-sunken);height:48px;box-sizing:border-box;font-size:15px;font-weight:700">
+<span style="border-radius:20px;background:var(--ink);color:var(--bg-canvas);display:flex;align-items:center;justify-content:center">Recipes</span><span style="display:flex;align-items:center;justify-content:center;color:var(--ink-muted)">Foods</span><span style="display:flex;align-items:center;justify-content:center;color:var(--ink-muted)">Custom</span>
+</div>
+<div style="margin-top:12px;height:48px;border-radius:var(--radius-field);box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;gap:10px;padding:0 16px;color:var(--ink-muted);font-size:16px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg>Filter recipes</div>
+<div style="margin-top:6px">
+<sc-for list="{{ recipes }}" as="q" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;min-height:64px;border-bottom:1px solid var(--line)">
+<span style="font-size:17px">{{ q.name }}</span>
+<span style="text-align:right;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums">{{ q.kcal }}<span style="display:block;font-size:13px;font-weight:400;color:var(--ink-muted)">{{ q.prot }} g</span></span>
+<span style="height:44px;padding:0 18px;border-radius:22px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;font-size:15px;font-weight:700">Log</span>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:12px;height:52px;border-radius:26px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">+ New recipe</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isAdd }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--scrim)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background-color:var(--bg-raised);background-image:var(--texture);box-shadow:var(--shadow-float);padding:10px 20px 28px">
+<div style="width:40px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto 14px"></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-md)">Add a block</span><span style="font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--ink-muted)">Today only</span></div>
+<div style="margin-top:6px;font-size:14px;line-height:1.45;color:var(--ink-muted)">A bonus block counts toward today's kcal but never against adherence.</div>
+<div style="margin-top:12px;border-radius:var(--radius-card);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden">
+<sc-for list="{{ adds }}" as="a" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:12px;align-items:center;min-height:64px;padding:0 14px;border-top:{{ a.bt }};background:{{ a.bg }}"><span style="width:22px;height:22px;border-radius:50%;box-shadow:{{ a.ring }}"></span><span style="min-width:0"><span style="display:block;font-size:17px">{{ a.name }}</span><span style="display:block;font-size:13px;color:var(--ink-muted)">{{ a.desc }}</span></span><span style="font-size:16px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums">{{ a.kcal }}<span style="display:block;font-size:13px;font-weight:400;color:var(--ink-muted)">{{ a.prot }} g</span></span></div>
+</sc-for>
+</div>
+<div style="margin-top:14px;display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:17px;font-weight:700"><span style="height:52px;padding:0 18px;border-radius:26px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center">Cancel</span><span style="height:52px;border-radius:26px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center">Add Shake 2</span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isCal }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--scrim)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background-color:var(--bg-raised);background-image:var(--texture);box-shadow:var(--shadow-float);padding:10px 20px 28px">
+<div style="width:40px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto 14px"></div>
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-md)">September</span><span style="display:flex;gap:4px"><span style="width:44px;height:44px;border-radius:22px;box-shadow:inset 0 0 0 1.5px var(--line-strong);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></span><span style="width:44px;height:44px;border-radius:22px;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink-soft);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></span></span></div>
+<div style="margin-top:14px;display:grid;grid-template-columns:repeat(7,1fr);row-gap:4px;text-align:center;font-variant-numeric:tabular-nums">
+<sc-for list="{{ calHead }}" as="d" hint-placeholder-count="7"><span style="font-size:12px;color:var(--ink-muted);padding-bottom:4px">{{ d }}</span></sc-for>
+<sc-for list="{{ cal }}" as="d" hint-placeholder-count="35"><span style="height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:14px;box-shadow:{{ d.ring }};font-size:15px;color:{{ d.ink }};font-weight:{{ d.w }}">{{ d.n }}<span style="width:6px;height:6px;border-radius:50%;background:{{ d.dot }}"></span></span></sc-for>
+</div>
+<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink-muted)"><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--intake-on-track)"></span>On track</span><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--intake-partial)"></span>Partial</span><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--intake-low)"></span>Low</span><span>Days before 17 Aug have no plan.</span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSwap }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--scrim)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background-color:var(--bg-raised);background-image:var(--texture);box-shadow:var(--shadow-float);padding:10px 20px 28px">
+<div style="width:40px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto 14px"></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-display);font-weight:var(--display-weight);font-size:var(--type-display-md)">Swap Snack</span><span style="font-size:var(--eyebrow-size);font-weight:var(--eyebrow-weight);letter-spacing:var(--eyebrow-tracking);text-transform:var(--eyebrow-transform);color:var(--ink-muted)">Today only</span></div>
+<div style="margin-top:10px">
+<sc-for list="{{ swaps }}" as="o" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:12px;align-items:center;min-height:64px;border-bottom:1px solid var(--line)"><span style="width:22px;height:22px;border-radius:50%;box-shadow:{{ o.ring }}"></span><span><span style="display:block;font-size:17px">{{ o.name }}</span><sc-if value="{{ o.current }}"><span style="font-size:13px;color:var(--ink-muted)">Current</span></sc-if></span><span style="font-size:16px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums">{{ o.kcal }}<span style="display:block;font-size:13px;font-weight:400;color:var(--ink-muted)">{{ o.prot }} g</span></span></div>
+</sc-for>
+</div>
+<div style="margin-top:14px;height:52px;border-radius:26px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700">Done</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;morning&quot;,&quot;afternoon&quot;,&quot;late&quot;,&quot;done&quot;,&quot;closed&quot;,&quot;log&quot;,&quot;swap&quot;,&quot;add&quot;,&quot;calendar&quot;,&quot;storage&quot;],&quot;default&quot;:&quot;afternoon&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;look&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;paper&quot;,&quot;reel&quot;],&quot;default&quot;:&quot;paper&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;tall&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;width&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:390,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const P = this.props, S = P.state ?? 'afternoon';
+    const look = P.look ?? 'paper', theme = P.theme ?? 'light';
+    const tall = P.tall === true || P.tall === 'true';
+    const B = [
+      { id: 'b1', t: '08:00', n: 'Breakfast', d: 'Eggs, flatbreads, milk, butter', k: 705, p: 34, swap: 1 },
+      { id: 'b2', t: '11:00', n: 'Shake', d: 'Milk, banana, PB, oats', k: 580, p: 22, key: 1 },
+      { id: 'b3', t: '13:30', n: 'Lunch', d: 'Chicken curry and rice', k: 580, p: 33, swap: 1 },
+      { id: 'a1', t: '16:00', n: 'Snack', d: 'Yogurt, dates and almonds', k: 290, p: 11, swap: 1, add: 1 },
+      { id: 'b4', t: '19:30', n: 'Dinner', d: 'Egg curry, lentil stew, flatbreads', k: 700, p: 37, swap: 1 },
+      { id: 'a2', t: '22:00', n: 'Pre-bed', d: 'Milk and peanut butter', k: 255, p: 12, add: 1 }
+    ];
+    const WRAP = { id: 'wrap', t: '14:20', n: 'Chicken wrap', k: 420, p: 24, off: 1 };
+    const aft = { clock: '16:10', ticked: ['b1', 'b2', 'b3'], wrap: true, due: 'a1' };
+    const C = {
+      morning: { clock: '08:10', ticked: [], due: 'b1', banner: 'backfill' },
+      afternoon: aft,
+      late: { clock: '16:10', ticked: ['b1', 'b3'], wrap: true, due: 'a1' },
+      done: { clock: '22:10', ticked: ['b1', 'b2', 'b3', 'a1', 'b4', 'a2'], toast: 'Pre-bed ticked · 255 kcal', appetite: 'Fine' },
+      closed: { clock: '09:41', ticked: ['b1', 'b2', 'b3', 'a1', 'b4'], closed: true, appetite: 'Fine', banner: 'closed' },
+      log: { ...aft, overlay: 'log' },
+      swap: { ...aft, overlay: 'swap' },
+      add: { ...aft, overlay: 'add' },
+      calendar: { ...aft, overlay: 'calendar' },
+      storage: { ...aft, banner: 'storage' }
+    };
+    const c = C[S] || aft;
+    const fmt = n => n.toLocaleString('en-US');
+    const items = B.concat(c.wrap ? [WRAP] : []).sort((a, b) => a.t < b.t ? -1 : 1);
+    const tk = i => i.off || c.ticked.includes(i.id);
+    let kcal = 0, prot = 0, left = 0;
+    items.forEach(i => { if (tk(i)) { kcal += i.k; prot += i.p; } else left++; });
+    const frac = Math.min(1, kcal / 3110);
+    let status = 'Low', color = 'var(--intake-low)';
+    if (kcal === 0) { status = 'Not started'; color = 'var(--ink-soft)'; }
+    else if (kcal >= 3110) { status = 'On track'; color = 'var(--intake-on-track)'; }
+    else if (frac >= 0.55) { status = 'Partial'; color = 'var(--intake-partial)'; }
+    const gap = 3110 - kcal;
+    const tot = { kcal: fmt(kcal), frac: frac.toFixed(3), color, status, prot, showEnd: frac < 0.9,
+      leftN: gap <= 0 ? fmt(-gap) : fmt(gap),
+      leftT: gap <= 0 ? ' over target' : c.closed ? ' under target' : ' to go · ' + left + ' block' + (left === 1 ? '' : 's') };
+    const rows = [];
+    items.forEach(i => {
+      const done = tk(i), isDue = !c.closed && i.id === c.due;
+      if (isDue) {
+        rows.push({ isNow: true, time: c.clock });
+        rows.push({ isDue: true, name: i.n, desc: i.d, kcal: i.k, prot: i.p, swap: !!i.swap, cols: i.swap ? 'auto 1fr' : '1fr',
+          label: 'Due now · ' + i.t + (i.add ? ' · Add-on' : '') + (i.key ? ' · Most skipped' : '') });
+        return;
+      }
+      const receded = !done && !c.closed && i.t < c.clock;
+      const r = { isRow: true, time: i.t, name: i.n, kcal: i.k, isCheck: false, isOff: !!i.off, ms: '28px',
+        mBg: 'var(--bg-canvas)', mRing: 'inset 0 0 0 1.5px var(--ink-soft)', tc: 'var(--ink-muted)', nc: 'var(--ink)', ns: '18px', kw: 700, kc: 'var(--ink)',
+        link: i.off ? (c.closed ? '' : 'Remove') : (i.swap && !c.closed && !receded ? 'Swap' : ''),
+        tag: i.add ? 'add-on' : (i.key && !done && !c.closed ? 'most skipped' : ''), tagc: i.key ? 'var(--accent-text)' : 'var(--ink-muted)', tagw: i.key ? 700 : 400 };
+      if (i.off) Object.assign(r, { mBg: 'transparent', mRing: 'none' });
+      else if (done) Object.assign(r, { isCheck: true, mBg: 'var(--ink)', mRing: 'none' });
+      if (receded) Object.assign(r, { mRing: 'inset 0 0 0 1.5px var(--line-strong)', tc: 'var(--ink-soft)', nc: 'var(--ink-muted)', ns: '16px', kw: 400, kc: 'var(--ink-muted)', tag: i.add ? 'add-on' : '', tagc: 'var(--ink-muted)', tagw: 400 });
+      if (c.closed) Object.assign(r, { ms: '24px', nc: 'var(--ink-muted)', ns: '16px', kw: 400, kc: 'var(--ink-muted)', tc: 'var(--ink-soft)', mBg: done ? 'var(--ink-soft)' : 'transparent', mRing: done ? 'none' : 'inset 0 0 0 1.5px var(--line-strong)' });
+      rows.push(r);
+    });
+    const col = { G: 'var(--intake-on-track)', P: 'var(--intake-partial)', L: 'var(--intake-low)' };
+    const days = [[24, 'G'], [25, 'G'], [26, 'P'], [27, 'L'], [28, 'G'], [29, 'G'], [30, 'T']];
+    if (S === 'morning') days[5][1] = 'P';
+    const sel = c.closed ? 26 : 30;
+    const strip = days.map(([d, k]) => {
+      if (d === 30) {
+        if (sel === 30) return { s: '20px', bg: 'transparent', ring: 'inset 0 0 0 2px var(--ink)' };
+        return { s: '14px', bg: 'transparent', ring: 'inset 0 0 0 1.5px var(--ink-soft)' };
+      }
+      if (d === sel) return { s: '20px', bg: col[k], ring: '0 0 0 2px var(--bg-canvas),0 0 0 3.5px var(--ink)' };
+      return { s: '14px', bg: col[k], ring: 'none' };
+    });
+    const bn = {
+      closed: { iLock: true, title: 'This day is closed.', sub: 'Saturday 26 September · view only', bg: 'var(--bg-sunken)', ring: 'none' },
+      backfill: { iDot: true, title: "Yesterday isn't finished", sub: 'Tue 29 · 2,855 of 3,110 kcal', action: 'Open', bg: 'transparent', ring: 'inset 0 0 0 1.5px var(--line-strong)' },
+      storage: { iWarn: true, title: 'Storage is full', sub: 'Ticks may not save. Download a backup.', action: 'Backup', bg: 'transparent', ring: 'inset 0 0 0 1.5px var(--danger)' }
+    }[c.banner];
+    const chips = ['Stuffed', 'Fine', 'Hungry'].map(l => c.appetite === l ? { label: l, bg: 'var(--ink)', fg: 'var(--bg-canvas)' } : { label: l, bg: 'var(--chip-bg)', fg: 'var(--ink)' });
+    const on = 'inset 0 0 0 7px var(--ink)', off = 'inset 0 0 0 1.5px var(--ink-soft)';
+    return {
+      look, theme, clock: c.clock, frameW: (P.width ?? 390) + 'px', frameH: tall ? '1180px' : '844px',
+      strip, dayLabel: c.closed ? 'Sat 26' : 'Wed 30', eyebrow: c.closed ? 'Phase 2 · Week 5' : 'Phase 2 · Week 6',
+      hasBanner: !!bn, banner: Object.assign({ hasAction: !!(bn && bn.action) }, bn || {}),
+      tot, rows, open: !c.closed, chips, toast: c.toast || '',
+      isLog: c.overlay === 'log', isSwap: c.overlay === 'swap', isAdd: c.overlay === 'add', isCal: c.overlay === 'calendar',
+      adds: [['Shake 2', 'Standard shake, from the Phase 3 list', 580, 22, 1], ['Extra snack', 'Banana and peanut butter', 295, 9, 0], ['Extra pre-bed', 'Milk and peanut butter', 255, 12, 0], ['Heavy shake', 'Adds oats and dates', 790, 27, 0]].map(([name, desc, k, p, s], i) => ({ name, desc, kcal: k, prot: p, ring: s ? on : off, bg: s ? 'var(--bg-sunken)' : 'transparent', bt: i ? '1px solid var(--line)' : 'none' })),
+      calHead: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+      cal: (() => { const out = []; const lead = 1; for (let i = 0; i < lead; i++) out.push({ n: '', ring: 'none', dot: 'transparent', ink: 'var(--ink)', w: 400 }); const bad = { 6: 'L', 13: 'P', 19: 'P', 26: 'P', 27: 'L', 9: 'P' }; for (let d = 1; d <= 30; d++) { const k = d === 30 ? 'T' : (bad[d] || 'G'); out.push({ n: d, ring: d === 30 ? 'inset 0 0 0 2px var(--ink)' : 'none', dot: k === 'T' ? 'transparent' : col[k], ink: 'var(--ink)', w: d === 30 ? 700 : 400 }); } return out; })(),
+      recipes: [{ name: 'Overnight oats', kcal: 620, prot: 23 }, { name: 'Chicken wrap', kcal: 420, prot: 24 }, { name: 'Peanut butter banana toast', kcal: 480, prot: 15 }],
+      swaps: [{ name: 'Yogurt, dates and almonds', current: true, ring: on, kcal: 290, prot: 11 }, { name: 'Banana and peanut butter', ring: off, kcal: 295, prot: 9 }, { name: 'Yogurt, oats and honey', ring: off, kcal: 290, prot: 11 }]
+    };
+  }
+}
+</script>
+</body>
+</html>

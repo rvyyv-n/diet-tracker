@@ -1,0 +1,29 @@
+<!-- @dsCard group="Components" viewport="700x900" name="Core" subtitle="Icon, Wordmark, Button, IconButton, Chip, Segmented, Toggle, TextField, Card, headings" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;background:var(--bg-canvas);color:var(--ink);font-family:var(--font-body)}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.cap{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.06em;color:var(--ink-muted);margin:0 0 8px;text-transform:uppercase}.sec{margin-bottom:20px}.look{padding:20px;background:var(--bg-canvas);color:var(--ink);position:relative;overflow:hidden}</style>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script><script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script><script type="text/babel" src="../../dev-bundle.jsx"></script></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.RiseDS || Object.getOwnPropertyNames(window).map(k=>{try{return window[k]}catch(e){}}).find(v=>v&&typeof v==='object'&&v.Button&&v.Toggle&&v.DayTotal);
+
+const {Icon,Wordmark,Button,IconButton,Chip,Segmented,Toggle,Radio,TextField,Card,Eyebrow,SectionHeading} = NS;
+function Panel({look,theme}){
+  const [seg,setSeg]=React.useState('system'); const [t,setT]=React.useState(true); const [chip,setChip]=React.useState('Fine');
+  return <div className="look" data-look={look} data-theme={theme}>
+    <div className="sec"><p className="cap">{look} · {theme} — buttons</p><div className="row">
+      <Button icon="check">Tick Snack</Button><Button variant="hero">Weigh in</Button><Button variant="secondary">+ Log food</Button><Button variant="text">Skip</Button><Button variant="danger">Erase everything</Button><Button disabled>Disabled</Button><Button size="sm" variant="secondary">Clear</Button></div></div>
+    <div className="sec"><p className="cap">controls</p><div className="row">
+      <IconButton icon="chevronLeft" label="Previous"/><IconButton icon="chevronRight" label="Next" disabled/>
+      {['Stuffed','Fine','Hungry'].map(c=><Chip key={c} selected={chip===c} onClick={()=>setChip(chip===c?'':c)}>{c}</Chip>)}
+      <Toggle checked={t} label="x" onChange={setT}/><Toggle checked={!t} label="y" onChange={()=>setT(!t)}/><Radio selected/><Radio/></div></div>
+    <div className="sec"><Segmented options={[{value:'system',label:'System'},{value:'light',label:'Light'},{value:'dark',label:'Dark'}]} value={seg} onChange={setSeg}/></div>
+    <div className="sec row" style={{alignItems:'flex-start'}}><div style={{width:200}}><TextField label="Weight" unit="kg" value="63.0" hint="Latest 63.0 kg"/></div><div style={{width:200}}><TextField label="Weight" unit="kg" value="6x" error="Enter a number"/></div></div>
+    <div className="sec row" style={{alignItems:'flex-end',gap:24}}><Wordmark variant="nav"/><Wordmark variant="reel" size={56}/></div>
+    <Eyebrow>Phase 2 · Week 6</Eyebrow><div style={{height:8}}/><SectionHeading meta="9 of 23 ticked">Groceries</SectionHeading>
+    <div style={{height:12}}/><Card padding={16}>Raised card</Card>
+  </div>;
+}
+function App(){return <div><Panel look="paper" theme="light"/><Panel look="reel" theme="dark"/></div>}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

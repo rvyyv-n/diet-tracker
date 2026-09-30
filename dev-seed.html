@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rise — seed test data</title>
+    <style>
+      body { font: 15px/1.5 system-ui, sans-serif; max-width: 640px; margin: 48px auto; padding: 0 20px; }
+      h1 { font-size: 22px; }
+      button { font: inherit; padding: 10px 16px; margin: 4px 8px 4px 0; cursor: pointer; }
+      pre { background: #f4f2ee; padding: 12px; overflow-x: auto; font-size: 13px; }
+      .note { color: #666; }
+    </style>
+  </head>
+  <body>
+    <h1>Rise — dev seed</h1>
+    <p class="note">
+      Not part of the app. It writes a plausible 4-week history into
+      <code>localStorage</code> so every feature has something to show, then
+      sends you to the app. Demo data only; safe to commit.
+    </p>
+    <p>
+      <button id="seed">Seed data and open the app</button>
+      <button id="wipe">Wipe all Rise data</button>
+    </p>
+    <pre id="out">Nothing written yet.</pre>
+
+    <script type="module">
+      import { SCHEMA_VERSION } from "./src/js/core/storage.js";
+      import { todayISO, addDays, startOfWeekISO } from "./src/js/core/dates.js";
+      import { defaultRotations } from "./src/js/core/plan.js";
+
+      const out = document.getElementById("out");
+
+      // crypto.randomUUID only exists in a secure context, so it is absent when
+      // this page is opened over a LAN IP rather than localhost (testing from a
+      // phone). The ids only have to be unique within the seed.
+      let uid = 0;
+      const uuid = () =>
+        crypto.randomUUID ? crypto.randomUUID() : `seed-${Date.now().toString(36)}-${uid++}`;
+      const put = (name, data) =>
+        localStorage.setItem("wgt:" + name, JSON.stringify({ ...data, schemaVersion: SCHEMA_VERSION }));
+
+      // Deterministic pseudo-random, so a reseed reproduces the same history.
+      let seed = 20260904;
+      const rand = () => ((seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648);
+      const pick = (list) => list[Math.floor(rand() * list.length)];
+
+      const BREAKFAST = ["BR1", "BR2", "BR3"];
+      const LUNCH = ["L1", "L2", "L3"];
+      const DINNER = ["D1", "D2", "D3", "D4", "D5", "D6"];
+      const SNACK = ["SN1", "SN2", "SN3", "SN4", "SN5"];
+      const SHAKE = ["standard", "no_blender", "heavy"];
+      const EXTRAS = ["Chai with sugar", "Samosa", "Mango lassi", "Dark chocolate (2 squares)", "Handful of cashews"];
+
+      function seedAll() {
+        const today = todayISO();
+        // Four weeks back, aligned to a Monday, so weeks 1-2 sit in phase 1 and
+        // the rest in phase 2 — the phase ladder is visible in the history.
+        const start = startOfWeekISO(addDays(today, -27));
+
+        put("profile", {
+          name: "Test",
+          birthDate: "1999-06-14",
+          heightCm: 178,
+          heightUnit: "cm",
+          startWeightKg: 61.4,
+          weightUnit: "kg",
+          targetRateKgPerWeek: 0.3,
+          startDate: start,
+          currentPhaseId: 2,
+          addOns: ["A1", "A2"],
+          dismissedSuggestion: null,
+          introSeen: true,
+          themePref: "system",
+          overviewMetrics: {},
+        });
+
+        // --- days -------------------------------------------------------
+        const days = {};
+        let carried = defaultRotations();
+        for (let i = 27; i >= 0; i--) {
+          const date = addDays(today, -i);
+          const week = Math.floor((27 - i) / 7) + 1;
+          const phaseId = week <= 2 ? 1 : 2;
+          const addOns = phaseId === 2 ? ["A1", "A2"] : [];
+
+          // Rotations mostly stick and occasionally change — pass 14's behaviour.
+          const rotations = { ...carried };
+          if (rand() < 0.35) rotations.breakfast = pick(BREAKFAST);
+          if (rand() < 0.5) rotations.lunch = pick(LUNCH);
+          if (rand() < 0.6) rotations.dinner = pick(DINNER);
+          if (rand() < 0.4) rotations.snack = pick(SNACK);
+          if (rand() < 0.25) rotations.shake = pick(SHAKE);
+          carried = rotations;
+
+          const blocks = ["B1", "B2", "B3", "B4", ...addOns];
+          const completed = {};
+          for (const id of blocks) {
+            // Adherence climbs over the weeks, and the pre-bed block is the one
+            // most often skipped — that gives the most-skipped readout a story.
+            const base = 0.62 + week * 0.07;
+            const p = id === "A2" ? base - 0.3 : id === "A1" ? base - 0.1 : base;
+            if (rand() < p) completed[id] = true;
+          }
+          // Today is deliberately part-done, so the checklist has work left.
+          if (i === 0) {
+            delete completed.B4;
+            delete completed.A1;
+            delete completed.A2;
+            completed.B1 = true;
+            completed.B2 = true;
+          }
+
+          const day = {
+            date,
+            phaseId,
+            addOns,
+            bonus: rand() < 0.1 ? ["A3"] : [],
+            completed,
+            rotations,
+            appetite: rand() < 0.6 ? pick(["stuffed", "fine", "hungry"]) : null,
+            extras: [],
+          };
+
+          // A handful of off-plan extras, so the totals and Today show them.
+          if (rand() < 0.3) {
+            day.extras.push({
+              id: uuid(),
+              name: pick(EXTRAS),
+              kcal: 120 + Math.floor(rand() * 260),
+              proteinG: Math.floor(rand() * 8),
+            });
+          }
+          days[date] = day;
+        }
+        put("days", { days });
+
+        // --- weights ----------------------------------------------------
+        // A weekly weigh-in gaining ~0.3 kg/wk with real noise, plus a flat
+        // fortnight in the middle so the adjustment engine has something to say.
+        const weights = {};
+        let kg = 61.4;
+        for (let w = 0; w <= 4; w++) {
+          const date = addDays(start, w * 7);
+          if (date > today) break;
+          weights[date] = Math.round(kg * 10) / 10;
+          kg += (w === 2 || w === 3 ? 0.05 : 0.32) + (rand() - 0.5) * 0.18;
+        }
+        put("weights", { weights });
+
+        // --- recipes ----------------------------------------------------
+        const iso = (d) => new Date(d + "T12:00:00Z").toISOString();
+        const recipe = (name, items, useCount, lastDaysAgo) => ({
+          id: uuid(),
+          name,
+          items,
+          kcal: items.reduce((a, it) => a + it.kcal, 0),
+          proteinG: items.reduce((a, it) => a + it.proteinG, 0),
+          createdAt: iso(start),
+          lastUsedAt: iso(addDays(today, -lastDaysAgo)),
+          useCount,
+        });
+        put("recipes", {
+          recipes: [
+            recipe("Chai with sugar", [{ name: "Chai with sugar", kcal: 140, proteinG: 4 }], 9, 1),
+            recipe(
+              "Overnight oats",
+              [
+                { name: "Dry oats (60 g)", kcal: 228, proteinG: 8 },
+                { name: "Full-fat milk (250 ml)", kcal: 160, proteinG: 8 },
+                { name: "Peanut butter (1 tbsp)", kcal: 95, proteinG: 4 },
+                { name: "Honey (1 tbsp)", kcal: 64, proteinG: 0 },
+              ],
+              6,
+              2,
+            ),
+            recipe(
+              "Post-gym shake",
+              [
+                { name: "Whey (1 scoop)", kcal: 120, proteinG: 24 },
+                { name: "Banana", kcal: 105, proteinG: 1 },
+                { name: "Full-fat milk (300 ml)", kcal: 192, proteinG: 10 },
+              ],
+              4,
+              4,
+            ),
+            recipe(
+              "Cheese toastie",
+              [
+                { name: "Bread (2 slices)", kcal: 160, proteinG: 5 },
+                { name: "Cheddar (40 g)", kcal: 166, proteinG: 10 },
+                { name: "Butter (1 tsp)", kcal: 40, proteinG: 0 },
+              ],
+              2,
+              9,
+            ),
+            recipe(
+              "Mango lassi",
+              [
+                { name: "Yogurt (200 g)", kcal: 130, proteinG: 8 },
+                { name: "Mango pulp (150 g)", kcal: 90, proteinG: 1 },
+                { name: "Sugar (1 tbsp)", kcal: 48, proteinG: 0 },
+              ],
+              1,
+              12,
+            ),
+          ],
+        });
+
+        // --- grocery ----------------------------------------------------
+        // Part-ticked for the current week, so both the partial state and the
+        // Monday reset are reachable. This record carries no schemaVersion.
+        localStorage.setItem(
+          "wgt:grocery",
+          JSON.stringify({
+            weekStart: startOfWeekISO(today),
+            checked: {
+              "Dairy & eggs|Full-fat milk": true,
+              "Dairy & eggs|Eggs": true,
+              "Dairy & eggs|Yogurt": true,
+              "Pantry|Rice": true,
+              "Pantry|Oats": true,
+            },
+          }),
+        );
+
+        // Mark the update check as just-run so it does not fire on first load.
+        localStorage.setItem("wgt:update", JSON.stringify({ lastCheck: Date.now() }));
+
+        return { start, today, days: Object.keys(days).length, weighIns: Object.keys(weights).length };
+      }
+
+      document.getElementById("seed").addEventListener("click", () => {
+        let info;
+        try {
+          info = seedAll();
+        } catch (err) {
+          out.textContent = "Seed failed: " + (err && err.stack ? err.stack : String(err));
+          return;
+        }
+        out.textContent =
+          "Seeded.\n" +
+          "plan start   " + info.start + "\n" +
+          "today        " + info.today + "\n" +
+          "days         " + info.days + "\n" +
+          "weigh-ins    " + info.weighIns + "\n" +
+          "recipes      5\n\nOpening the app…";
+        setTimeout(() => (location.href = "./index.html"), 600);
+      });
+
+      document.getElementById("wipe").addEventListener("click", () => {
+        Object.keys(localStorage)
+          .filter((k) => k.startsWith("wgt:"))
+          .forEach((k) => localStorage.removeItem(k));
+        out.textContent = "All wgt:* keys removed. Reload the app for first-run.";
+      });
+    </script>
+  </body>
+</html>

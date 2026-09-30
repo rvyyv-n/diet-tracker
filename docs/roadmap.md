@@ -71,7 +71,7 @@ The brief is `docs/design-overhaul-brief.md`. The design handoff landed on
 2026-10-01 and supersedes `tokens_reuse_first` for everything it covers. It
 ships two Looks, Paper (default) and Reel, each with light and dark, switched
 by `data-look` and `data-theme` on `<html>`. Components read semantic tokens
-only. The export is kept private and is not committed.
+only. The export is committed at `private/design/export-3.0/`.
 
 ### How to run a build pass
 
@@ -81,7 +81,7 @@ of its targets like "tokens" or "pass 63"). It runs to the protocol in the
 verify it and make one commit; then stop and report. Build passes run in
 order because each builds on the one before, and a build pass whose
 predecessor is unticked is flagged before it starts. Start each build pass in
-a fresh thread. The design refs are paths inside the private design export
+a fresh thread. The design refs are paths inside the design export
 (`design-system/…`, `screens/…`).
 
 | Build pass | Name                       | Targets (pass numbers)                       | Model                   |
@@ -275,4 +275,5 @@ understands the `public/` convention that `manifest.json`, `sw.js` and
 `assets/` now live under, which a plain `python -m http.server` does not:
 that would 404 on all three). `file://` breaks ES-module imports regardless of
 server. `npm run build` produces the real deployable output in `dist/`.
-Ensure the local project brief (gitignored) is copied to the root by hand.
+The project brief (`CLAUDE.md`), `dev-seed.html` and the design export are
+tracked, so a clone has them.

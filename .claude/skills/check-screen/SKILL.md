@@ -29,11 +29,11 @@ The full matrix is 2 Looks (`paper`, `reel`) x light/dark x 390 / 320 / 1440 wid
 node scripts/shot.mjs '{"path":"/?tab=today","grid":{"look":["paper","reel"],"theme":["light","dark"]},"cell":420,"out":"shots/check.jpg"}'
 ```
 
-Grid keys are `look`, `theme`, `width`, `height` and `tab`; the last key runs across. `"actions"` opens a sheet or menu, `"full":true` takes the whole page, and a `.jpg` out keeps it small. The demo history is seeded from `dev-seed.html` (untracked) and the clock is pinned to 2026-09-30 15:00.
+Grid keys are `look`, `theme`, `width`, `height` and `tab`; the last key runs across. `"actions"` opens a sheet or menu, `"full":true` takes the whole page, and a `.jpg` out keeps it small. The demo history is seeded from `dev-seed.html` and the clock is pinned to 2026-09-30 15:00.
 
 ## 4. Compare with the handoff
 
-The approved design is in `private/design/export-3.0/` (private, not in the repo): `design-system/` for tokens and components, and `screens/*.dc.html` for each frame, which take `look`, `theme`, `state`, `width` and `tall` props. Read only the part for this screen. The screen must match in size, spacing and layout, with nothing added that the design doesn't have. Also look for text cut off at 320px, low contrast in dark, anything spilling past the frame, and status shown by colour alone.
+The approved design is in `private/design/export-3.0/`: `design-system/` for tokens and components, and `screens/*.dc.html` for each frame, which take `look`, `theme`, `state`, `width` and `tall` props. Read only the part for this screen. The screen must match in size, spacing and layout, with nothing added that the design doesn't have. Also look for text cut off at 320px, low contrast in dark, anything spilling past the frame, and status shown by colour alone.
 
 ## 5. Report
 
