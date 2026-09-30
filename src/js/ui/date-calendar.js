@@ -127,7 +127,7 @@ export function dateCalendar({ value, max = null }) {
   }
 
   function onGridKey(event) {
-    let next = null;
+    let next;
     switch (event.key) {
       case "ArrowLeft": next = addDays(focusISO, -1); break;
       case "ArrowRight": next = addDays(focusISO, 1); break;

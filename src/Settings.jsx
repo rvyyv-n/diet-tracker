@@ -211,7 +211,7 @@ export default function Settings({ onEditSetup, onReset }) {
 
   async function runUpdateCheck() {
     setUpdatePhase("checking");
-    let ok = false;
+    let ok;
     try {
       ({ ok } = await checkForUpdate({ force: true }));
     } catch {

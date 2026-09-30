@@ -1,0 +1,11 @@
+dist
+desktop/dist
+android
+server/.wrangler
+private
+package-lock.json
+public/sw.js
+docs/CHANGELOG.md
+docs/roadmap-history.md
+e2e/snapshots
+test-results

@@ -17,7 +17,7 @@ function seed() {
   storage.save("grocery", { weekStart: "2026-08-31", checked: { milk: true } });
 }
 
-const withoutStamp = ({ exportedAt, ...rest }) => rest;
+const withoutStamp = ({ exportedAt: _exportedAt, ...rest }) => rest;
 
 describe("export and import", () => {
   it("round-trips everything", () => {
