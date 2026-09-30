@@ -86,7 +86,6 @@ a fresh thread. The design refs are paths inside the design export
 
 | Build pass | Name                       | Targets (pass numbers)                       | Model                   |
 | ---------- | -------------------------- | -------------------------------------------- | ----------------------- |
-| 3          | Daily screens              | `today` (67), `weight` (68)                  | Sonnet 5.5, high effort |
 | 4          | Plan, settings and recipes | `plan` (69), `settings` (70), `recipes` (71) | Sonnet 5.5, high effort |
 | 5          | First run and identity     | `firstrun` (72), `icons` (73)                | Sonnet 5.5, high effort |
 | 6          | Audit and README           | `sweep` (74), `readme` (75)                  | Opus, high effort       |
@@ -96,21 +95,6 @@ Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
 
 ### Build passes
-
-#### Build pass 3 — Daily screens
-
-Model: Sonnet 5.5, high effort. Targets: today, weight. This is the two screens used every day.
-
-- [ ] **Pass 68 · `weight`** — Weight, phone and desktop.
-  - Reads: `screens/Rise Weight Phone.dc.html`, `WeightChart.jsx`,
-    `SuggestionCard.jsx`, `ui_kits/rise/WeightScreen.jsx`.
-  - Does: the chart with its full-bleed horizon and HTML axis labels, the pace
-    dot (nothing on Weight is red), StatRow, the suggestion card with Apply and
-    Not now (never self-applying), the weigh-in sheet and dialog with the save
-    toast and Undo, and the weight-history empty state. On desktop, the
-    support column of `.r-columns`, as the desktop frame lays it out.
-  - Done when: the grid matches in all combinations, and the engine's
-    suggestion still only applies on the button.
 
 #### Build pass 4 — Plan, settings and recipes
 

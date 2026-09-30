@@ -74,6 +74,23 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   `Banner` whose Backup downloads the file (`ui/download.js`, shared with
   Settings). No new tokens.
 
+- **pass 68 — Weight, phone and desktop:** Weight is rebuilt on the
+  tracking components. The latest weigh-in leads in the numeric face with
+  its pace beside a dot and a word: green on pace, gold below or above it,
+  grey before four weigh-ins; nothing on Weight is red. The chart runs its
+  horizon full-bleed with HTML axis labels, the on-pace cone from the first
+  weigh-in, the four-week average and the sun on it; desktop adds a legend.
+  The stat row gives blocks eaten and kcal a day over the last four plan
+  weeks (plus the gain so far on desktop). The engine's suggestion card
+  moves here from Today and still changes the plan only on Apply. The
+  next-weigh-in card opens the weigh-in sheet (a dialog on desktop) with the
+  change since the last reading as it is typed; Save shows a toast with
+  Undo. History rows edit in place, and an empty history has its empty
+  state. The weekly review card and its notes are gone, as the design has
+  no place for them; the most-skipped fact now tags the block on Today. On
+  desktop the screen fills `.r-columns`. `useWide` is shared by Today and
+  Weight. No new tokens.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on

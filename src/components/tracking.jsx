@@ -353,7 +353,7 @@ export function WeightChart({
   const id = useId().replace(/:/g, "");
   const n = weights.length;
   const trend = n >= 4;
-  const all = weights.concat(bandLow ?? [], bandHigh ?? []);
+  const all = n ? weights.concat(bandLow ?? [], bandHigh ?? []) : [0];
   const lo = Math.min(...all) - 0.4;
   const hi = Math.max(...all) + 0.4;
   const X = (i) => (n < 2 ? 174 : (i * 348) / (n - 1));
@@ -413,7 +413,7 @@ export function WeightChart({
           </>
         ) : null}
       </div>
-      {!trend && n > 0 ? <div className="r-chart__empty">{emptyText}</div> : null}
+      {!trend ? <div className="r-chart__empty">{emptyText}</div> : null}
       <div className="r-chart__axis">
         {[0, 1, 2].map((i) => (
           <span key={i}>{labels[i]}</span>

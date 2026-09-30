@@ -1,31 +1,38 @@
 /**
- * Weight.jsx — the Weight tab, converted from weight.js (pass 45's second
- * screen). The weekly weigh-in, the trend it produces, and a short history.
+ * Weight.jsx — the weekly weigh-in and the trend it makes, built on the v3.0
+ * tracking components (pass 68). From the top: the latest weight with its
+ * pace, the chart (weigh-ins as dots, the four-week average once there are
+ * four, the on-pace band, the sun on the latest average), the engine's
+ * suggestion when it has one, the stat row, the next weigh-in with its
+ * button, and the history. On desktop the screen splits into `.r-columns`:
+ * the figure, chart and stats in the main column; the next weigh-in, the
+ * suggestion and the history in the 340px support column.
  *
- * The entry card and the history rows lean on two self-contained vanilla
- * widgets — `dateCalendar()` and `weightInput()` — that build their own DOM,
- * hold their own popover/focus state, and hand back an imperative API
- * (`.node`, `.onChange`, `.getKg()`, `.setInvalid()`). Rewriting those in JSX
- * wasn't worth it for this pass: they're small, correct, and used nowhere
- * else that would benefit from a React version. Instead they're rebuilt
- * fresh on every render — the same full-rebuild model the vanilla screen
- * always used — and dropped into the tree with `Imperative`, a one-line
- * adapter that mounts a plain DOM node inside a `display: contents` host.
- * Everything else here (stats, review, chart, group labels) is plain JSX.
+ * The suggestion only ever offers: Apply is the one path that changes the
+ * plan, and nothing here calls applySuggestion() without that tap. Nothing on
+ * Weight is red; off pace is gold, and no trend yet is a quiet grey.
+ *
+ * The date and weight fields are the vanilla `dateCalendar()` and
+ * `weightInput()` widgets (they handle st/lb and the calendar popover),
+ * built once per sheet or row edit and mounted with `Imperative`.
  */
 
 import { useEffect, useRef, useState } from "react";
-import { el, emptyState } from "./js/ui/dom.js";
-import { icon } from "./js/ui/icons.js";
 import { dateCalendar } from "./js/ui/date-calendar.js";
 import { weightInput } from "./js/ui/weight-input.js";
-import { formatWeight, formatWeightDelta, weightRangeText } from "./js/core/units.js";
-import { loadProfile } from "./js/core/profile.js";
-import { TARGET_RATE_KG_PER_WEEK, blockById } from "./js/core/plan.js";
-import { todayISO, humanDate, planWeek } from "./js/core/dates.js";
+import {
+  formatWeight,
+  weightRangeText,
+  weightUnitLabel,
+  kgToLb,
+  KG_MIN,
+  KG_MAX,
+} from "./js/core/units.js";
+import { loadProfile, saveProfile } from "./js/core/profile.js";
+import { TARGET_RATE_KG_PER_WEEK } from "./js/core/plan.js";
+import { todayISO, addDays, planWeek, daysBetween } from "./js/core/dates.js";
 import { allWeights, getWeight, logWeight } from "./js/core/weights.js";
-import { allDays } from "./js/core/days.js";
-import { topLoggedRecipes } from "./js/core/recipes.js";
+import { allDays, getDay, putDay } from "./js/core/days.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
 import {
   weeklyWeights,
@@ -33,15 +40,27 @@ import {
   rollingGain,
   weeklyAdherence,
   weeklyKcal,
-  mostSkippedBlock,
 } from "./js/core/trend.js";
-import { NUM, Icon, Group, Imperative } from "./components/shared.jsx";
+import { evaluate, applySuggestion } from "./js/core/adjust.js";
+import { NUM, Imperative } from "./components/shared.jsx";
+import { Button } from "./components/core.jsx";
+import { Sheet, Toast, EmptyState } from "./components/surfaces.jsx";
+import { WeightChart, SuggestionCard, StatRow } from "./components/tracking.jsx";
+import { useWide } from "./components/useWide.js";
+import { shortDate } from "./LogFood.jsx";
+
+// How long a toast stays before it goes on its own (as on Today).
+const TOAST_MS = 4000;
+
+// The stat row reads the last four plan weeks, the same window as the trend.
+const STAT_WEEKS = 4;
 
 export default function Weight() {
   const paneRef = useRef(null);
-  const [entryDate, setEntryDate] = useState(todayISO());
-  const [editing, setEditing] = useState(null); // ISO date of the history row being edited, or null
-  const [justSaved, setJustSaved] = useState(false); // shows the transient "Saved" badge for ~2s
+  const wide = useWide();
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [editing, setEditing] = useState(null); // the date of the history row being edited
+  const [toast, setToast] = useState(null); // { message, undo }
 
   useEffect(() => {
     const node = paneRef.current;
@@ -63,443 +82,526 @@ export default function Weight() {
     [],
   );
 
+  useEffect(() => {
+    if (!toast) return undefined;
+    const t = setTimeout(() => setToast(null), TOAST_MS);
+    return () => clearTimeout(t);
+  }, [toast]);
+
   const profile = loadProfile();
   const unit = profile.weightUnit || "kg";
   const start = profile.startDate || todayISO();
+  const today = todayISO();
 
   const series = weeklyWeights(allWeights(), start);
   const rolling = rollingGain(weeklyGains(series));
-  const adherence = weeklyAdherence(allDays(), start);
-
   const latest = series.at(-1) ?? null;
-  const latestGain = rolling.at(-1)?.avgKgPerWeek ?? null;
-  const thisWeek = planWeek(start, todayISO());
-  const thisWeekAdherence = adherence.find((a) => a.week === thisWeek)?.pct ?? null;
+  const pace = rolling.at(-1)?.avgKgPerWeek ?? null;
+  const suggestion = liveSuggestion(profile);
 
-  const count = series.length;
-  const subtitle =
-    `Week ${thisWeek}` + (count ? ` · ${count} weigh-in${count === 1 ? "" : "s"}` : "");
+  /** Save a reading and offer Undo, which puts back whatever the date held. */
+  function save(date, kg) {
+    const before = getWeight(date);
+    // A write that didn't land gets no toast; the storage banner says why.
+    if (!logWeight(date, kg)) return false;
+    setToast({
+      message: `Saved · ${formatWeight(kg, unit)}`,
+      undo: () => {
+        logWeight(date, before);
+        setToast(null);
+        bump((n) => n + 1);
+      },
+    });
+    bump((n) => n + 1);
+    return true;
+  }
 
-  const entryNode = entryCard({ entryDate, setEntryDate, justSaved, setJustSaved, unit });
-  const historyNode = historyCard({ series, editing, setEditing, unit });
+  function applySuggestionAndSave() {
+    const next = {
+      ...applySuggestion(profile, suggestion),
+      dismissedSuggestion: { ruleId: suggestion.ruleId, date: today },
+    };
+    saveProfile(next);
+    const rec = getDay(today); // reflect the block change on today straight away
+    if (rec) putDay({ ...rec, addOns: next.addOns });
+    bump((n) => n + 1);
+  }
+
+  function dismissSuggestion() {
+    saveProfile({ ...profile, dismissedSuggestion: { ruleId: suggestion.ruleId, date: today } });
+    bump((n) => n + 1);
+  }
+
+  const next = latest ? addDays(latest.date, 7) : today;
+  const due = next <= today;
+  const nextIn = daysBetween(today, next);
 
   return (
     <div className="pane" data-screen="weight" ref={paneRef}>
-      <section className="screen weight weight--v2">
-        <div className="screen-head">
-          <h1 className="screen__title screen__title--lg">Weight</h1>
-          <p className="phase-banner">{subtitle}</p>
+      <section className="r-weight">
+        <h1 className="sr-only">Weight</h1>
+        <div className="r-columns">
+          <div className="r-weight__main">
+            <p className="r-weight__eyebrow">
+              {latest
+                ? `Week ${latest.week} · ${shortDate(latest.date)}`
+                : `Week ${planWeek(start, today)} · ${shortDate(today)}`}
+            </p>
+            <Figure latest={latest} unit={unit} />
+            <PaceLine count={series.length} pace={pace} unit={unit} />
+            <div className="r-weight__chart">
+              <WeightChart
+                weights={series.map((s) => s.kg)}
+                labels={axisLabels(series)}
+                bandLow={series.map((s) => series[0].kg + 0.25 * (s.week - series[0].week))}
+                bandHigh={series.map((s) => series[0].kg + 0.4 * (s.week - series[0].week))}
+                emptyText={
+                  series.length
+                    ? "The average line appears after 4 weigh-ins"
+                    : "Your first weigh-in starts the chart"
+                }
+              />
+              {series.length >= 4 ? (
+                <div className="r-weight__legend" aria-hidden="true">
+                  <span className="r-weight__key r-weight__key--dot">Weigh-in</span>
+                  <span className="r-weight__key r-weight__key--line">4-week average</span>
+                  <span className="r-weight__key r-weight__key--band">
+                    On pace, {bandText(unit)}
+                  </span>
+                </div>
+              ) : null}
+            </div>
+            {suggestion ? (
+              <div className="r-weight__suggestion r-weight__suggestion--phone">
+                <SuggestionView
+                  suggestion={suggestion}
+                  onApply={applySuggestionAndSave}
+                  onDismiss={dismissSuggestion}
+                />
+              </div>
+            ) : null}
+            <div className="r-weight__stats">
+              <StatRow stats={stats(series, start, unit, wide)} />
+            </div>
+          </div>
+          <aside className="r-weight__support" aria-label="Weigh-ins">
+            <div className="r-nextweigh">
+              <div className="r-nextweigh__text">
+                <div className="r-nextweigh__label">Next weigh-in</div>
+                <div className="r-nextweigh__when">
+                  <span className="r-nextweigh__date">{due ? "Today" : shortDate(next)}</span>
+                  <span className="r-nextweigh__in">
+                    {due ? shortDate(today) : `in ${nextIn} day${nextIn === 1 ? "" : "s"}`}
+                  </span>
+                </div>
+              </div>
+              <Button variant="hero" onClick={() => setSheetOpen(true)}>
+                Weigh in
+              </Button>
+            </div>
+            {suggestion ? (
+              <div className="r-weight__suggestion r-weight__suggestion--wide">
+                <SuggestionView
+                  suggestion={suggestion}
+                  onApply={applySuggestionAndSave}
+                  onDismiss={dismissSuggestion}
+                />
+              </div>
+            ) : null}
+            <History
+              series={series}
+              unit={unit}
+              editing={editing}
+              setEditing={setEditing}
+              save={save}
+            />
+          </aside>
         </div>
-        <Imperative node={entryNode} />
-        <StatsCard
-          latest={latest}
-          latestGain={latestGain}
-          adherencePct={thisWeekAdherence}
-          unit={unit}
-        />
-        <Group label="Weekly review" icon="square-check-big">
-          <ReviewCard series={series} rolling={rolling} start={start} unit={unit} />
-        </Group>
-        <Group label="Trend" icon="trending-up">
-          <ChartCard series={series} />
-        </Group>
-        <Group label="History" icon="calendar-days">
-          <Imperative node={historyNode} />
-        </Group>
       </section>
+      {toast ? <Toast message={toast.message} onUndo={toast.undo} /> : null}
+      {sheetOpen ? (
+        <WeighInSheet
+          dialog={wide}
+          start={start}
+          unit={unit}
+          latest={latest}
+          onClose={() => setSheetOpen(false)}
+          save={save}
+        />
+      ) : null}
     </div>
   );
 }
 
-/**
- * The intake-status class for a weekly gain, against the plan's target rate.
- * Gaining is the goal here, so the inversion in tokens.css applies: *under*
- * the band is the failure state and the one that reads red. Over the band is
- * not a failure, only off-pace, so it takes the partial amber.
- */
-function paceClass(kgPerWeek) {
-  if (kgPerWeek == null) return "";
-  const band = TARGET_RATE_KG_PER_WEEK;
-  if (kgPerWeek < band.min) return "is-low";
-  if (kgPerWeek > band.max) return "is-partial";
-  return "is-on-track";
-}
+// --- data ----------------------------------------------------------------
 
 /**
- * Adherence as a status. The thresholds are the same ones the day strip reads
- * by: a week where most of the plan was eaten is on track, a thin week is low.
+ * The adjustment engine's current call, or null when there's nothing to act on
+ * (on track / not enough data) or the same rule was applied or dismissed within
+ * the last week — roughly, until the next weigh-in can show whether it helped.
  */
-function adherenceClass(pct) {
-  if (pct == null) return "";
-  if (pct >= 80) return "is-on-track";
-  if (pct >= 55) return "is-partial";
-  return "is-low";
-}
-
-function StatsCard({ latest, latestGain, adherencePct, unit }) {
-  const gainClass = paceClass(latestGain);
-  return (
-    <div className="card summary">
-      <StatRow k="Latest" v={latest ? formatWeight(latest.kg, unit) : "—"} />
-      <StatRow
-        k="4-week gain"
-        v={
-          latestGain == null ? (
-            "—"
-          ) : (
-            <span className={gainClass}>{latestGain.toFixed(2)} kg/wk</span>
-          )
-        }
-      />
-      <StatRow
-        k="This week's adherence"
-        v={
-          adherencePct == null ? (
-            "—"
-          ) : (
-            <span className={adherenceClass(adherencePct)}>{adherencePct}%</span>
-          )
-        }
-      />
-    </div>
-  );
-}
-
-function StatRow({ k, v }) {
-  return (
-    <div className="summary__row">
-      <span className="summary__key">{k}</span>
-      <span className="summary__val">{v}</span>
-    </div>
-  );
-}
-
-/**
- * A read of the last *completed* plan week: average intake, adherence, that
- * week's weigh-in and its change from the week before, and whether the
- * 4-week rolling pace sat in the 0.25–0.4 kg/wk band. All of it is already
- * computed in trend.js and shown nowhere else. Reporting only — the
- * adjustment engine keeps its own suggestion card on Today, and the two must
- * not argue.
- *
- * Two muted lines beneath add the most-skipped block across all recorded
- * days and, once there's a repeat, the most-logged recipe from the book. All
- * are descriptive per insight_copy_states_facts: no exhortation, no red.
- */
-function ReviewCard({ series, rolling, start, unit }) {
-  const thisWeek = planWeek(start, todayISO());
-  const kcalSeries = weeklyKcal(allDays(), start);
-  const adhSeries = weeklyAdherence(allDays(), start);
-  const wk = kcalSeries.filter((k) => k.week < thisWeek).at(-1)?.week ?? null;
-
-  if (wk == null) {
-    return (
-      <div className="card">
-        <p className="screen__intro">Your first full plan week will show its review here.</p>
-      </div>
-    );
-  }
-
-  const avgKcal = kcalSeries.find((k) => k.week === wk)?.avgKcal ?? null;
-  const pct = adhSeries.find((a) => a.week === wk)?.pct ?? null;
-  const wkWeight = series.find((s) => s.week === wk) ?? null;
-  const prevWeight = series.filter((s) => s.week < wk).at(-1) ?? null;
-  const kgDelta = wkWeight && prevWeight ? wkWeight.kg - prevWeight.kg : null;
-  const roll = rolling.find((r) => r.week === wk)?.avgKgPerWeek ?? null;
-
-  return (
-    <div className="card summary">
-      <StatRow k="Week" v={`${wk}`} />
-      <StatRow k="Average intake" v={avgKcal == null ? "—" : `${NUM.format(avgKcal)} kcal/day`} />
-      <StatRow
-        k="Adherence"
-        v={pct == null ? "—" : <span className={adherenceClass(pct)}>{pct}%</span>}
-      />
-      <StatRow
-        k="Weigh-in"
-        v={
-          wkWeight == null ? (
-            "—"
-          ) : (
-            <span>
-              {formatWeight(wkWeight.kg, unit)}
-              {kgDelta == null ? null : <WeighInDelta kgDelta={kgDelta} unit={unit} />}
-            </span>
-          )
-        }
-      />
-      <StatRow
-        k="4-week pace"
-        v={roll == null ? "—" : <span className={paceClass(roll)}>{roll.toFixed(2)} kg/wk</span>}
-      />
-      <SkipNote />
-      <LoggedNote />
-    </div>
-  );
-}
-
-/**
- * The week-over-week change, coloured by the same inversion the rest of the
- * screen uses: gaining is the goal, so a loss is the low state.
- *
- * The class is decided from the *formatted* figure, not the raw kg. A delta
- * of -0.001 kg formats as "+0.00 kg" at the display precision, and colouring
- * that red reads as a rendering fault rather than a flat week. Anything that
- * rounds away to zero stays muted, which is the honest answer: nothing moved.
- */
-function WeighInDelta({ kgDelta, unit }) {
-  const text = formatWeightDelta(kgDelta, unit);
-  const moved = /[1-9]/.test(text);
-  const cls = !moved ? "" : kgDelta > 0 ? "is-on-track" : "is-low";
-  return <span className={`review__delta${cls ? " " + cls : ""}`}> ({text})</span>;
-}
-
-/** The block skipped most across every recorded day — a fact, not a nag. */
-function SkipNote() {
-  const worst = mostSkippedBlock(allDays());
-  if (!worst) return null;
-  const name = blockById(worst.blockId)?.name ?? worst.blockId;
-  return (
-    <p className="review__note">
-      <Icon name="square-check-big" size={14} className="review__note-icon" />
-      {`Most often skipped: ${name} — ${worst.missed} of ${worst.of} days it was on the plan.`}
-    </p>
-  );
-}
-
-/**
- * The recipe logged most from the book (pass 29). All-time, not week-scoped
- * — the book keeps only a running `useCount`. Nothing until a recipe has
- * been used at least twice, so it stays quiet for a brand-new book. A tie at
- * the top names both. A fact, like SkipNote — never "you always reach for X".
- */
-function LoggedNote() {
-  const ranked = topLoggedRecipes(2);
-  if (!ranked.length) return null;
-  const top = ranked[0].useCount;
-  const names = ranked.filter((r) => r.useCount === top).map((r) => r.name);
-  const list =
-    names.length <= 2
-      ? names.join(" and ")
-      : `${names.slice(0, 2).join(", ")} and ${names.length - 2} more`;
-  return (
-    <p className="review__note">
-      <Icon name="utensils" size={14} className="review__note-icon" />
-      {`Most logged: ${list} — ${top} time${top === 1 ? "" : "s"}.`}
-    </p>
-  );
-}
-
-/**
- * A weekly-weight line against the target band. The band is a *rate*
- * (0.25–0.4 kg/week), so from the first reading it opens into a cone — being
- * inside it means the gain is on pace. Plain inline SVG, no library.
- */
-function ChartCard({ series }) {
-  if (series.length < 2) {
-    return (
-      <div className="card weight__chart">
-        <p className="screen__intro">Two weigh-ins will draw the trend.</p>
-      </div>
-    );
-  }
-
-  const W = 320;
-  const H = 168;
-  const padL = 12;
-  const padR = 12;
-  const padT = 12;
-  const padB = 22;
-
-  const first = series[0];
-  const n = series.length;
-  const xs = series.map((_, i) => padL + (i * (W - padL - padR)) / (n - 1));
-  const weekDelta = (s) => s.week - first.week;
-
-  const kgs = series.map((s) => s.kg);
-  const dLast = weekDelta(series[n - 1]);
-  const lo = Math.min(...kgs, first.kg, first.kg + 0.25 * dLast);
-  const hi = Math.max(...kgs, first.kg + 0.4 * dLast);
-  const margin = (hi - lo) * 0.12 || 0.5;
-  const yMin = lo - margin;
-  const yMax = hi + margin;
-  const y = (kg) => padT + ((yMax - kg) * (H - padT - padB)) / (yMax - yMin);
-
-  const at = (i, y_) => `${xs[i].toFixed(1)},${y_.toFixed(1)}`;
-  const lower = series.map((s, i) => at(i, y(first.kg + 0.25 * weekDelta(s))));
-  const upper = series.map((s, i) => at(i, y(first.kg + 0.4 * weekDelta(s)))).reverse();
-  const cone = [...lower, ...upper].join(" ");
-  const line = series.map((s, i) => at(i, y(s.kg))).join(" ");
-  const dots = series
-    .map(
-      (s, i) =>
-        `<circle cx="${xs[i].toFixed(1)}" cy="${y(s.kg).toFixed(1)}" r="3" class="wc-dot"/>`,
-    )
-    .join("");
-  const labels = series
-    .map((s, i) => `<text x="${xs[i].toFixed(1)}" y="${H - 6}" class="wc-label">${s.week}</text>`)
-    .join("");
-
-  const svg =
-    `<svg viewBox="0 0 ${W} ${H}" class="wc" role="img" ` +
-    `aria-label="Weekly weight against the 0.25 to 0.4 kg per week target band">` +
-    `<polygon points="${cone}" class="wc-cone"/>` +
-    `<polyline points="${line}" class="wc-line"/>${dots}` +
-    `<line x1="${padL}" y1="${(H - padB).toFixed(1)}" x2="${W - padR}" y2="${(H - padB).toFixed(1)}" class="wc-axis"/>` +
-    `${labels}</svg>`;
-
-  return (
-    <div className="card weight__chart">
-      <div className="weight__chart-svg" dangerouslySetInnerHTML={{ __html: svg }} />
-      <p className="weight__chart-key">
-        Line: your weekly weight. Shaded: on-pace for 0.25–0.4 kg/week.
-      </p>
-    </div>
-  );
-}
-
-/** Vanilla-built (see the file header) — the calendar and weight-input widgets. */
-function entryCard({ entryDate, setEntryDate, justSaved, setJustSaved, unit }) {
-  const today = todayISO();
-  const date = entryDate > today ? today : entryDate;
-  const existing = getWeight(date);
-  const isToday = date === today;
-
-  const cal = dateCalendar({ value: date, max: today });
-  cal.onChange((iso) => setEntryDate(iso));
-
-  const field = weightInput({ unit, kg: existing });
-
-  let restingHint;
-  if (existing != null) restingHint = `Logged for ${humanDate(date)}.`;
-  else if (isToday)
-    restingHint = "Same day each week — morning, after the bathroom, before food or water.";
-  else restingHint = `Backdating to ${humanDate(date)}.`;
-  const hint = el("span", { class: "field__hint" }, restingHint);
-
-  const ack = justSaved ? el("span", { class: "ack" }, "Saved") : null;
-  const save = el("button", { class: "btn btn--primary", type: "button" }, "Save");
-  save.addEventListener("click", () => {
-    const kg = field.getKg();
-    if (kg == null || Number.isNaN(kg) || kg < 25 || kg > 300) {
-      hint.textContent = `Enter a weight, ${weightRangeText(unit)}.`;
-      hint.classList.add("field__hint--error");
-      field.setInvalid(true);
-      return;
-    }
-    // A write that didn't land gets no "Saved"; the banner says why.
-    if (!logWeight(date, kg)) return;
-    setJustSaved(true);
-    setTimeout(() => setJustSaved(false), 2000);
-  });
-
-  return el(
-    "div",
-    { class: "card weight__entry" },
-    el(
-      "div",
-      { class: "field weight__daterow" },
-      el("span", { class: "field__label" }, "Weigh-in date"),
-      cal.node,
-    ),
-    el("div", { class: "field" }, field.node, hint),
-    el("div", { class: "weight__save" }, save, ack),
-  );
-}
-
-function historyCard({ series, editing, setEditing, unit }) {
-  if (!series.length) {
-    return emptyState(
-      "scale",
-      "No weigh-ins yet. Log your first above and the trend starts there.",
-    );
-  }
-  const reversed = [...series].reverse();
-  return el(
-    "div",
-    { class: "card weight__history" },
-    ...reversed.map((w, i) => {
-      const prev = reversed[i + 1];
-      const kgDelta = prev ? w.kg - prev.kg : null;
-      return editing === w.date
-        ? historyRowEditor(w, setEditing, unit)
-        : historyRow(w, kgDelta, setEditing, unit);
-    }),
-  );
-}
-
-function historyRow(w, kgDelta, setEditing, unit) {
-  const pen = el(
-    "button",
+function liveSuggestion(profile) {
+  const start = profile.startDate || todayISO();
+  const series = weeklyWeights(allWeights(), start);
+  const s = evaluate(
     {
-      class: "weight__row-edit",
-      type: "button",
-      "aria-label": `Edit the ${humanDate(w.date)} weigh-in`,
-      onclick: () => setEditing(w.date),
+      rolling: rollingGain(weeklyGains(series)),
+      gains: weeklyGains(series),
+      adherence: weeklyAdherence(allDays(), start),
+      weeklyCount: series.length,
     },
-    icon("pencil", { size: 16 }),
+    profile.addOns ?? [],
   );
-
-  return el(
-    "div",
-    { class: "weight__row" },
-    el("span", { class: "weight__row-wk" }, `Week ${w.week}`),
-    el(
-      "span",
-      { class: "weight__row-main" },
-      el("span", { class: "weight__row-date" }, humanDate(w.date)),
-      kgDelta == null
-        ? null
-        : el(
-            "span",
-            { class: `weight__row-delta is-${deltaDir(kgDelta)}` },
-            formatWeightDelta(kgDelta, unit),
-          ),
-    ),
-    el("span", { class: "weight__row-kg" }, formatWeight(w.kg, unit)),
-    pen,
-  );
+  if (!["add-block", "remove-block", "checkup"].includes(s.kind)) return null;
+  const hushed = profile.dismissedSuggestion;
+  if (hushed && hushed.ruleId === s.ruleId && daysBetween(hushed.date, todayISO()) < 7) {
+    return null;
+  }
+  return s;
 }
 
 /**
- * Direction of a week-over-week change, for colour only. Gain is the goal
- * here (the plan builds weight), so a rise reads green and a drop red; a
- * flat week stays neutral. A hair of tolerance keeps rounding noise off
- * "flat".
+ * The pace against the plan's band, as a word and a colour. Gaining is the
+ * goal, but Weight never goes red: under or over the band is gold, on it is
+ * green.
  */
-function deltaDir(kgDelta) {
-  if (kgDelta > 0.005) return "gain";
-  if (kgDelta < -0.005) return "loss";
-  return "flat";
+function paceStatus(kgPerWeek) {
+  const band = TARGET_RATE_KG_PER_WEEK;
+  if (kgPerWeek < band.min) return { key: "off", word: "below pace" };
+  if (kgPerWeek > band.max) return { key: "off", word: "above pace" };
+  return { key: "on", word: "on pace" };
 }
 
-function historyRowEditor(w, setEditing, unit) {
-  const field = weightInput({ unit, kg: w.kg });
+/** A weekly rate in the user's unit: "+0.28 kg/week", "+0.6 lb/week". */
+function rateText(kgPerWeek, unit) {
+  const lb = unit === "lb" || unit === "st";
+  const v = lb ? kgToLb(kgPerWeek) : kgPerWeek;
+  const sign = v >= 0 ? "+" : "−";
+  return `${sign}${Math.abs(v).toFixed(lb ? 1 : 2)} ${lb ? "lb" : "kg"}/week`;
+}
 
-  const commit = () => {
-    const kg = field.getKg();
-    if (kg == null || Number.isNaN(kg) || kg < 25 || kg > 300) {
-      field.setInvalid(true);
-      return;
-    }
-    logWeight(w.date, kg);
-    setEditing(null);
-  };
-  const cancel = () => setEditing(null);
+/** The band as text in the user's unit: "0.25–0.40 kg/week". */
+function bandText(unit) {
+  const { min, max } = TARGET_RATE_KG_PER_WEEK;
+  if (unit === "lb" || unit === "st") {
+    return `${kgToLb(min).toFixed(1)}–${kgToLb(max).toFixed(1)} lb/week`;
+  }
+  return `${min.toFixed(2)}–${max.toFixed(2)} kg/week`;
+}
 
-  for (const i of field.inputs) {
-    i.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") commit();
-      if (e.key === "Escape") cancel();
+/** The first, middle and last weigh-in dates under the chart. */
+function axisLabels(series) {
+  if (!series.length) return [];
+  const pick = (i) => shortDate(series[i].date, false);
+  const last = series.length - 1;
+  if (last === 0) return [pick(0)];
+  if (last === 1) return [pick(0), "", pick(1)];
+  return [pick(0), pick(Math.round(last / 2)), pick(last)];
+}
+
+/**
+ * The stat row: blocks eaten and average intake over the last four plan
+ * weeks, plus the gain since the first weigh-in on desktop, where the design
+ * has room for a third.
+ */
+function stats(series, start, unit, wide) {
+  const thisWeek = planWeek(start, todayISO());
+  const recent = (list) => list.filter((w) => w.week > thisWeek - STAT_WEEKS);
+  const adh = recent(weeklyAdherence(allDays(), start));
+  const kcal = recent(weeklyKcal(allDays(), start));
+  const avg = (list, key) =>
+    list.length ? Math.round(list.reduce((s, w) => s + w[key], 0) / list.length) : null;
+  const pct = avg(adh, "pct");
+  const kc = avg(kcal, "avgKcal");
+  const out = [
+    { value: pct == null ? "—" : `${pct}%`, label: "blocks eaten" },
+    { value: kc == null ? "—" : NUM.format(kc), label: "kcal / day avg" },
+  ];
+  if (wide) {
+    const first = series[0];
+    const last = series.at(-1);
+    out.push({
+      value: first && last !== first ? gainText(last.kg - first.kg, unit) : "—",
+      label: first ? `since ${shortDate(first.date, false)}` : "since the first weigh-in",
     });
   }
+  return out;
+}
 
-  return el(
-    "div",
-    { class: "weight__row weight__row--edit" },
-    el("span", { class: "weight__row-wk" }, `Week ${w.week}`),
-    el("span", { class: "weight__row-input" }, field.node),
-    el("button", { class: "btn btn--primary btn--sm", type: "button", onclick: commit }, "Save"),
-    el("button", { class: "btn btn--text btn--sm", type: "button", onclick: cancel }, "Cancel"),
+/** A change for the stat row and history: "+1.6 kg", "−0.1", in the user's unit. */
+function gainText(kgDelta, unit, withUnit = true) {
+  const lb = unit === "lb" || unit === "st";
+  const v = lb ? kgToLb(kgDelta) : kgDelta;
+  const sign = v >= 0 ? "+" : "−";
+  return `${sign}${Math.abs(v).toFixed(1)}${withUnit ? ` ${lb ? "lb" : "kg"}` : ""}`;
+}
+
+// --- pieces --------------------------------------------------------------
+
+/** The latest weight in the numeric face, or a dash before the first. */
+function Figure({ latest, unit }) {
+  if (!latest) {
+    return (
+      <div className="r-weight__figure">
+        <span className="r-weight__kg is-empty">—</span>
+        <span className="r-weight__unit">{weightUnitLabel(unit === "st" ? "kg" : unit)}</span>
+      </div>
+    );
+  }
+  if (unit === "st") {
+    return (
+      <div className="r-weight__figure">
+        <span className="r-weight__kg">{formatWeight(latest.kg, "st")}</span>
+      </div>
+    );
+  }
+  return (
+    <div className="r-weight__figure">
+      <span className="r-weight__kg">{formatWeight(latest.kg, unit, { withUnit: false })}</span>
+      <span className="r-weight__unit">{weightUnitLabel(unit)}</span>
+    </div>
+  );
+}
+
+/** The pace line under the figure: a dot and its words, never colour alone. */
+function PaceLine({ count, pace, unit }) {
+  let key = "none";
+  let lead;
+  let rest;
+  if (count === 0) {
+    lead = "No trend yet";
+    rest = " · first weigh-in today";
+  } else if (count < 4) {
+    const left = 4 - count;
+    lead = `Trend in ${left} week${left === 1 ? "" : "s"}`;
+    rest = ` · ${count} of 4 weigh-ins`;
+  } else {
+    const status = paceStatus(pace);
+    key = status.key;
+    lead = rateText(pace, unit);
+    rest = ` · ${status.word}`;
+  }
+  return (
+    <p className={`r-weight__pace r-weight__pace--${key}`}>
+      <span className="r-weight__pace-dot" aria-hidden="true" />
+      <span>
+        <b>{lead}</b>
+        {rest}
+      </span>
+    </p>
+  );
+}
+
+function SuggestionView({ suggestion, onApply, onDismiss }) {
+  const checkup = suggestion.kind === "checkup";
+  return (
+    <SuggestionCard
+      title={suggestion.headline}
+      body={suggestion.detail}
+      onApply={checkup ? undefined : onApply}
+      onDismiss={onDismiss}
+      dismissLabel={checkup ? "Got it" : "Not now"}
+    />
+  );
+}
+
+/** Newest first: date, change from the week before, the reading, and Edit. */
+function History({ series, unit, editing, setEditing, save }) {
+  const rows = [...series].reverse();
+  return (
+    <div className="r-history">
+      <h2 className="r-history__title">History</h2>
+      {rows.length ? (
+        <div className="r-history__rows">
+          {rows.map((w, i) => {
+            const prev = rows[i + 1];
+            return editing === w.date ? (
+              <HistoryEdit
+                key={w.date}
+                entry={w}
+                unit={unit}
+                onCancel={() => setEditing(null)}
+                onSave={(kg) => save(w.date, kg) && setEditing(null)}
+              />
+            ) : (
+              <div key={w.date} className="r-history__row">
+                <span className="r-history__date">{shortDate(w.date)}</span>
+                <span className="r-history__delta">
+                  {prev ? gainText(w.kg - prev.kg, unit, false) : "start"}
+                </span>
+                <span className="r-history__kg">
+                  {formatWeight(w.kg, unit, { withUnit: unit === "st" })}
+                </span>
+                <button
+                  type="button"
+                  className="r-history__edit"
+                  aria-label={`Edit the ${shortDate(w.date)} weigh-in`}
+                  onClick={() => setEditing(w.date)}
+                >
+                  Edit
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="r-history__empty">
+          <EmptyState icon="weight">No weigh-ins yet. Each one you save lands here.</EmptyState>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function useWeightField(unit, kg) {
+  const ref = useRef(null);
+  if (!ref.current) ref.current = weightInput({ unit, kg });
+  return ref.current;
+}
+
+function validKg(kg) {
+  return kg != null && !Number.isNaN(kg) && kg >= KG_MIN && kg <= KG_MAX;
+}
+
+/** A history row open for editing: the reading, Cancel and Save. */
+function HistoryEdit({ entry, unit, onCancel, onSave }) {
+  const field = useWeightField(unit, entry.kg);
+  const commit = () => {
+    const kg = field.getKg();
+    if (!validKg(kg)) {
+      field.setInvalid(true);
+      field.focusEl.focus();
+      return;
+    }
+    onSave(kg);
+  };
+  useEffect(() => field.focusEl.focus(), [field]);
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Enter") commit();
+      if (e.key === "Escape") onCancel();
+    };
+    for (const i of field.inputs) i.addEventListener("keydown", onKey);
+    return () => {
+      for (const i of field.inputs) i.removeEventListener("keydown", onKey);
+    };
+  });
+  return (
+    <div className="r-history__editing">
+      <div className="r-history__edit-line">
+        <span className="r-history__date">{shortDate(entry.date)}</span>
+        <span className="r-history__field">
+          <Imperative node={field.node} />
+          {unit === "st" ? null : <span className="r-history__unit">{weightUnitLabel(unit)}</span>}
+        </span>
+      </div>
+      <div className="r-history__edit-actions">
+        <Button variant="text" size="sm" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button size="sm" onClick={commit}>
+          Save
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The weigh-in: a date (today unless moved back; never ahead) and the reading,
+ * with the change since the latest one as it is typed. Save closes it with a
+ * toast; Cancel or the scrim change nothing.
+ */
+function WeighInSheet({ dialog, start, unit, latest, onClose, save }) {
+  const today = todayISO();
+  const [date, setDate] = useState(today);
+  const [draft, setDraft] = useState(null); // kg typed so far, for the change line
+  const [error, setError] = useState(null);
+  const field = useWeightField(unit, getWeight(today));
+
+  const calRef = useRef(null);
+  if (!calRef.current) calRef.current = dateCalendar({ value: today, max: today });
+  useEffect(() => {
+    calRef.current.onChange((iso) => {
+      setDate(iso);
+      setError(null);
+    });
+  }, []);
+
+  useEffect(() => {
+    const onInput = () => {
+      setDraft(field.getKg());
+      setError(null);
+      field.setInvalid(false);
+    };
+    for (const i of field.inputs) i.addEventListener("input", onInput);
+    field.focusEl.focus();
+    return () => {
+      for (const i of field.inputs) i.removeEventListener("input", onInput);
+    };
+  }, [field]);
+
+  const prev = allWeights()
+    .filter((w) => w.date < date)
+    .at(-1);
+  const change =
+    validKg(draft) && prev
+      ? `${gainText(draft - prev.kg, unit)} since ${shortDate(prev.date)}`
+      : latest
+        ? `Latest ${formatWeight(latest.kg, unit)} · ${shortDate(latest.date)}`
+        : "The first reading starts the chart.";
+
+  function submit() {
+    const kg = field.getKg();
+    if (!validKg(kg)) {
+      setError(`Enter a weight, ${weightRangeText(unit)}.`);
+      field.setInvalid(true);
+      field.focusEl.focus();
+      return;
+    }
+    if (save(date, kg)) onClose();
+  }
+
+  return (
+    <Sheet
+      title="Weigh-in"
+      meta={`Week ${planWeek(start, date)}`}
+      onClose={onClose}
+      {...(dialog ? { variant: "dialog", navInset: 256 } : {})}
+    >
+      <p className="r-sheet__note">Morning, after the bathroom, before food or water.</p>
+      <div className="r-weighin">
+        <div className="r-weighin__field r-weighin__field--date">
+          <span className="r-weighin__label">Date</span>
+          <Imperative node={calRef.current.node} />
+        </div>
+        <div className={`r-weighin__field r-weighin__field--kg${error ? " is-error" : ""}`}>
+          <span className="r-weighin__label">Weight</span>
+          <span className="r-weighin__box">
+            <Imperative node={field.node} />
+            {unit === "st" ? null : (
+              <span className="r-weighin__unit">{weightUnitLabel(unit)}</span>
+            )}
+          </span>
+        </div>
+      </div>
+      <p
+        className={`r-weighin__note${error ? " is-error" : ""}`}
+        role={error ? "alert" : undefined}
+      >
+        {error ?? change}
+      </p>
+      {getWeight(date) != null && !error ? (
+        <p className="r-sheet__note">
+          {shortDate(date)} already has {formatWeight(getWeight(date), unit)}; Save replaces it.
+        </p>
+      ) : null}
+      <div className="r-sheet__actions">
+        <Button variant="secondary" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button onClick={submit}>Save</Button>
+      </div>
+    </Sheet>
   );
 }

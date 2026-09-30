@@ -435,37 +435,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* weekly review card (pass 16) — the week-over-week change tucked after the
-   weigh-in figure, and a muted all-time fact under a hairline.
-   Pass 38 colours the figures: the week's adherence, its weigh-in change and
-   the 4-week pace each carry an intake-status class, so the card can be read
-   at a glance instead of parsed. The status classes are declared after this
-   block and win the colour; --ink-muted here is only the fallback for a
-   delta rendered without one. The copy stays descriptive — the colour reports
-   where the week landed, it does not exhort. */
-.review__delta {
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-}
-.review__note {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-8);
-  padding-top: var(--space-12);
-  border-top: var(--border-width-hairline) solid var(--line);
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-}
-/* The note glyphs sit with the first line of text, not centred on the block,
-   so a note that wraps to two lines keeps its mark against line one. */
-.review__note-icon {
-  flex: none;
-  align-self: flex-start;
-  display: inline-flex;
-  padding-top: 2px;
-  color: var(--ink-soft);
-}
-
 /* ------------------------------------------------------- intake status ---
    The deliberate weight-gain inversion (tokens.css / docs/design-system.md):
    "low" is the failure state, so it is the one that turns red.               */
@@ -958,190 +927,6 @@
   color: var(--ink-soft);
   cursor: default;
 }
-/* -------------------------------------------------------------- weight ---
-   Weekly weigh-in, the 4-week trend it feeds, and a history list.           */
-
-.weight {
-  gap: var(--space-16);
-}
-
-.weight__entry {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-16);
-}
-.weight__entry .btn {
-  align-self: flex-start;
-}
-
-/* the weigh-in date sits on one line — label left, a compact calendar trigger
-   right — rather than stacking full-width above the weight field */
-.weight__daterow {
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-12);
-}
-.weight__daterow .field__label {
-  flex: none;
-}
-.weight__daterow .cal {
-  flex: none;
-}
-.weight__daterow .cal__trigger {
-  width: auto;
-  height: auto;
-  padding: 6px var(--space-12);
-  font: var(--text-body-sm);
-}
-.weight__daterow .cal__value {
-  flex: none;
-  overflow: visible;
-}
-/* the trigger sits at the card's right edge, so the panel opens leftward from
-   there instead of overflowing the viewport */
-.weight__daterow .cal__panel {
-  left: auto;
-  right: 0;
-}
-
-/* trend chart — inline SVG, no library */
-.weight__chart {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-.weight__chart-svg {
-  margin-top: var(--space-4);
-}
-.weight__chart-key {
-  font: var(--text-caption);
-  color: var(--ink-soft);
-}
-
-.wc {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-.wc-cone {
-  fill: var(--chart-band);
-}
-.wc-line {
-  fill: none;
-  stroke: var(--text-body);
-  stroke-width: 2;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-.wc-dot {
-  fill: var(--accent);
-}
-.wc-axis {
-  stroke: var(--line);
-  stroke-width: 1;
-}
-.wc-label {
-  fill: var(--ink-soft);
-  font-family: var(--font-body);
-  font-variant-numeric: tabular-nums;
-  font-size: 10px;
-  text-anchor: middle;
-}
-
-.weight__history {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
-.weight__row {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto auto;
-  /* Centred, not baseline: the left cell is two lines (date over the change)
-     and the reading is one, so a shared baseline pinned the reading to the date
-     and left it sitting high against the pair. */
-  align-items: center;
-  gap: var(--space-12);
-  border-top: var(--border-width-hairline) solid var(--line);
-}
-.weight__row:first-of-type {
-  border-top: none;
-}
-
-/* per-row pencil — edits that week's reading in place. Coral, so the one
-   interactive thing on an otherwise static row reads as tappable. */
-.weight__row-edit {
-  align-self: center;
-  display: inline-flex;
-  padding: 4px;
-  color: var(--accent);
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.weight__row-edit:active {
-  color: var(--accent);
-  background: var(--bg-sunken);
-}
-.weight__row-edit:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-/* the row while it's being edited: label, input, Save, Cancel */
-.weight__row--edit {
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
-}
-.weight__row-input {
-  flex: 1;
-  min-width: 0;
-}
-/* stone entry needs two fields plus Save/Cancel on one row — drop the week
-   label here to buy the width back (read rows already hide it) */
-.weight__row--edit:has(.weight-stlb) .weight__row-wk {
-  display: none;
-}
-
-.weight__row-wk {
-  font: var(--text-caption);
-  color: var(--ink-muted);
-}
-/* date over its week-over-week change, stacked — the change used to sit in its
-   own column and made the read row a cramped four-across grid at 390px. */
-.weight__row-main {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-.weight__row-date {
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-}
-.weight__row-kg {
-  font: var(--text-metric-sm);
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
-/* the change from the previous weigh-in, colour-coded by direction: gain is the
-   plan's goal so it reads green, a drop reads red, a flat week stays neutral. */
-.weight__row-delta {
-  font: var(--text-caption);
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-}
-.weight__row-delta.is-gain {
-  color: var(--intake-on-track);
-}
-.weight__row-delta.is-loss {
-  color: var(--danger);
-}
-
 /* ---------------------------------------------------------------- plan ---
    The Plan tab (pass 30–31): a weekly grocery checklist that self-clears each
    Monday, over a read-only reference sheet built from plan.js. Same rules as
@@ -1992,47 +1777,6 @@
   height: 14px;
 }
 
-/* -------------------------------------------------------------- weight ---
-   "Trend" and "History" moved out of their cards onto .group__label, so the
-   history card is a pure row container — dividers run the full card width.
-
-   The week label is hidden on read rows: at 390px the five-column grid left
-   the date track 58px and a full date wrapped to three lines. The week number
-   and the date carry the same fact, so read rows keep the date and the edit
-   row keeps the label.                                                       */
-
-.weight--v2 .weight__history {
-  padding: 0;
-  gap: 0;
-}
-
-.weight--v2 .weight__row {
-  grid-template-columns: 1fr auto auto;
-  padding: var(--space-12) var(--space-16);
-  border-top-color: var(--line);
-}
-.weight--v2 .weight__row:first-of-type {
-  border-top: none;
-}
-.weight--v2 .weight__row:not(.weight__row--edit) .weight__row-wk {
-  display: none;
-}
-
-.weight--v2 .weight__row--edit .btn {
-  min-height: 44px;
-  padding: 0 var(--space-12);
-}
-
-/* the weigh-in now acknowledges the write, like Export does */
-.weight__save {
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
-}
-.weight__entry .weight__save .btn {
-  align-self: auto;
-}
-
 /* ------------------------------------------------------------- profile ---
    The Settings screen's Profile card — the plan at a glance, the whole card a
    tap target back into the setup form. Replaces the old "Edit setup" row.    */
@@ -2717,8 +2461,7 @@
   .grocery__row:hover,
   .set2-row:hover,
   .set2-profile:hover,
-  .planref__meal-head--btn:hover,
-  .weight__row-edit:hover {
+  .planref__meal-head--btn:hover {
     background: var(--bg-raised);
   }
   .set2-row--static:hover {
@@ -4626,6 +4369,416 @@ button.r-listrow {
   .r-toast--float {
     left: calc(50% + var(--panel-nav-width) / 2);
     bottom: calc(32px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ------------------------------------------------------ weight (pass 68) ---
+   Like Today, Weight runs edge to edge on a phone so the chart's horizon can
+   reach the screen edges; its columns pad themselves by --gutter. On desktop
+   it sits in .r-columns: figure, chart and stats in the main column; the
+   next weigh-in, the suggestion and the history in the support column. */
+
+.r-weight {
+  display: flex;
+  flex-direction: column;
+  margin: 0 calc(-1 * (var(--space-16) + env(safe-area-inset-right))) 0
+    calc(-1 * (var(--space-16) + env(safe-area-inset-left)));
+}
+@media (min-width: 600px) {
+  .r-weight {
+    margin: 0 calc(-1 * (var(--space-24) + env(safe-area-inset-right))) 0
+      calc(-1 * (var(--space-24) + env(safe-area-inset-left)));
+  }
+}
+.r-weight .r-columns {
+  gap: 0;
+}
+.r-weight__main,
+.r-weight__support {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0 var(--gutter);
+}
+.r-weight__eyebrow {
+  margin: 10px 0 0;
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--eyebrow-ink);
+}
+.r-weight__figure {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-8);
+  font-variant-numeric: tabular-nums;
+}
+.r-weight__kg {
+  font-family: var(--font-numeric);
+  font-size: var(--type-hero);
+  font-weight: var(--numeric-weight);
+  line-height: 1;
+  letter-spacing: var(--numeric-tracking);
+}
+.r-weight__kg.is-empty {
+  color: var(--ink-soft);
+}
+.r-weight__unit {
+  font-size: 22px;
+  color: var(--ink-muted);
+}
+.r-weight__pace {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  margin: var(--space-8) 0 0;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+.r-weight__pace-dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ink-soft);
+}
+/* never red on Weight: on pace is green, off pace either way is gold */
+.r-weight__pace--on .r-weight__pace-dot {
+  background: var(--intake-on-track);
+}
+.r-weight__pace--off .r-weight__pace-dot {
+  background: var(--intake-partial);
+}
+.r-weight__chart {
+  margin-top: var(--space-16);
+}
+.r-weight__chart .r-chart {
+  min-height: 120px;
+}
+.r-weight__legend {
+  display: none;
+}
+.r-weight__suggestion {
+  margin-top: 18px;
+}
+.r-weight__suggestion--wide {
+  display: none;
+}
+.r-weight__stats {
+  margin-top: var(--space-16);
+}
+
+.r-nextweigh {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-12);
+  margin-top: 18px;
+  padding: var(--space-16) 14px var(--space-16) 18px;
+  border-radius: var(--radius-card);
+  background: var(--bg-raised);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.r-nextweigh__text {
+  min-width: 0;
+}
+.r-nextweigh__label {
+  font-size: var(--due-label-size);
+  font-weight: 700;
+  letter-spacing: var(--due-label-tracking);
+  text-transform: var(--caption-transform);
+  color: var(--accent-text);
+}
+.r-nextweigh__when {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-8);
+  margin-top: 6px;
+}
+.r-nextweigh__date {
+  font-family: var(--weighin-date-font);
+  font-size: var(--weighin-date-size);
+  font-weight: var(--weighin-date-weight);
+  line-height: 1;
+}
+.r-nextweigh__in {
+  font-size: 15px;
+  color: var(--ink-muted);
+}
+
+.r-history {
+  margin-top: var(--space-24);
+}
+.r-history__title {
+  margin: 0;
+  font-family: var(--section-font);
+  font-size: var(--section-size);
+  font-weight: var(--section-weight);
+  line-height: 1.3;
+  letter-spacing: var(--section-tracking);
+  text-transform: var(--section-transform);
+  color: var(--section-ink);
+}
+.r-history__rows {
+  margin-top: var(--space-4);
+  font-variant-numeric: tabular-nums;
+}
+.r-history__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto 56px;
+  align-items: center;
+  column-gap: var(--space-12);
+  min-height: 52px;
+  border-bottom: 1px solid var(--line);
+}
+.r-history__date {
+  font-size: var(--type-body);
+}
+.r-history__delta {
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+}
+.r-history__kg {
+  font-size: 17px;
+  font-weight: 700;
+}
+.r-history__edit {
+  justify-self: end;
+  min-height: var(--icon-button);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent-text);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.r-history__edit:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+.r-history__editing {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 0 var(--space-12);
+  border-bottom: 1px solid var(--line);
+}
+.r-history__edit-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 170px);
+  align-items: center;
+  gap: var(--space-12);
+}
+.r-history__field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-width: 0;
+}
+.r-history__field .field__control {
+  flex: 1;
+  min-width: 0;
+}
+.r-history__unit {
+  font-size: 15px;
+  color: var(--ink-muted);
+}
+.r-history__edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-8);
+}
+.r-history__empty {
+  margin-top: 10px;
+  border-radius: var(--radius-card);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+}
+
+/* the weigh-in sheet */
+.r-weighin {
+  display: grid;
+  gap: 14px;
+}
+.r-weighin__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.r-weighin__label {
+  font-size: var(--type-small);
+  font-weight: 700;
+}
+.r-weighin__box {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-8);
+  height: 64px;
+  padding: 0 var(--space-16);
+  border-radius: var(--radius-field);
+  background: var(--bg-canvas);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+}
+.r-weighin__box:focus-within {
+  box-shadow:
+    inset 0 0 0 1.5px var(--ink),
+    var(--focus-ring);
+}
+.r-weighin__field.is-error .r-weighin__box {
+  box-shadow: inset 0 0 0 1.5px var(--danger);
+}
+.r-weighin__box .field__control,
+.r-weighin__box .weight-stlb {
+  flex: 1;
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.r-weighin__box .field__input {
+  font-family: var(--font-numeric);
+  font-size: 36px;
+  font-weight: var(--numeric-weight);
+  font-variant-numeric: tabular-nums;
+}
+.r-weighin__unit {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+.r-weighin__note {
+  margin: 0;
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.r-weighin__note.is-error {
+  color: var(--danger);
+}
+.r-sheet--dialog .r-weighin {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+}
+
+@media (min-width: 1024px) {
+  .r-weight {
+    margin: 0;
+  }
+  .r-weight .r-columns {
+    gap: var(--space-24);
+  }
+  .r-weight__main,
+  .r-weight__support {
+    padding: 0;
+  }
+  .r-weight__support {
+    gap: 18px;
+    padding-top: 6px;
+  }
+  .r-weight__eyebrow {
+    margin-top: 0;
+  }
+  .r-weight__figure {
+    gap: 10px;
+    margin-top: var(--space-4);
+  }
+  .r-weight__kg {
+    font-size: calc(var(--type-hero) * 1.15);
+  }
+  .r-weight__unit {
+    font-size: 24px;
+  }
+  .r-weight__chart {
+    margin-top: 22px;
+  }
+  .r-weight__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .r-weight__key {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .r-weight__key::before {
+    content: "";
+    background: var(--ink);
+  }
+  .r-weight__key--dot::before {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+  .r-weight__key--line::before {
+    width: 16px;
+    height: 2.5px;
+  }
+  .r-weight__key--band::before {
+    width: 16px;
+    height: 10px;
+    border-radius: 2px;
+    background: var(--chart-band);
+  }
+  .r-weight__suggestion--phone {
+    display: none;
+  }
+  .r-weight__suggestion--wide {
+    display: block;
+    margin-top: 0;
+  }
+  .r-weight__stats {
+    margin-top: 22px;
+  }
+  .r-weight .r-statrow__cell {
+    padding: 14px 0;
+  }
+  .r-weight .r-statrow__cell + .r-statrow__cell {
+    padding-left: var(--space-16);
+  }
+  .r-weight .r-statrow__value {
+    font-size: 26px;
+  }
+  .r-nextweigh {
+    display: block;
+    margin-top: 0;
+    padding: 18px;
+  }
+  .r-nextweigh .r-button {
+    width: 100%;
+    margin-top: 14px;
+  }
+  .r-history {
+    margin-top: 0;
+  }
+  .r-history__row {
+    grid-template-columns: minmax(0, 1fr) auto auto 44px;
+    min-height: 48px;
+  }
+  .r-history__date {
+    font-size: 15px;
+  }
+  .r-history__kg {
+    font-size: var(--type-body);
+  }
+  .r-history__edit {
+    font-size: var(--type-small);
+  }
+}
+@media (min-width: 1280px) {
+  .r-weight .r-columns {
+    gap: 40px;
   }
 }
 

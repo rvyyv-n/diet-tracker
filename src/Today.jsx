@@ -16,8 +16,8 @@
  * Nothing is ever red for a missed block.
  */
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { loadProfile, saveProfile, overviewMetricShown } from "./js/core/profile.js";
+import { useEffect, useRef, useState } from "react";
+import { loadProfile, overviewMetricShown } from "./js/core/profile.js";
 import {
   activeBlocks,
   blockById,
@@ -42,18 +42,11 @@ import {
 import { dayExtras, removeExtra } from "./js/core/extras.js";
 import { getDay, putDay, allDays } from "./js/core/days.js";
 import { whatsNewSeen, markWhatsNewSeen } from "./js/core/whatsnew.js";
-import { allWeights } from "./js/core/weights.js";
-import {
-  weeklyWeights,
-  weeklyGains,
-  rollingGain,
-  weeklyAdherence,
-  mostSkippedBlock,
-} from "./js/core/trend.js";
-import { evaluate, applySuggestion } from "./js/core/adjust.js";
-import { todayISO, addDays, planWeek, daysBetween } from "./js/core/dates.js";
+import { mostSkippedBlock } from "./js/core/trend.js";
+import { todayISO, addDays, planWeek } from "./js/core/dates.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
 import { NUM } from "./components/shared.jsx";
+import { useWide } from "./components/useWide.js";
 import { Button, Card, Chip } from "./components/core.jsx";
 import { Banner, Toast } from "./components/surfaces.jsx";
 import {
@@ -64,7 +57,6 @@ import {
   BlockRow,
   NowMarker,
   DueCard,
-  SuggestionCard,
 } from "./components/tracking.jsx";
 import {
   LogFoodSheet,
@@ -86,19 +78,6 @@ const STRIP_DAYS = 7;
 
 // How long a toast stays before it goes on its own.
 const TOAST_MS = 4000;
-
-const WIDE = "(min-width: 1024px)";
-
-function subscribeWide(cb) {
-  const mq = matchMedia(WIDE);
-  mq.addEventListener("change", cb);
-  return () => mq.removeEventListener("change", cb);
-}
-
-/** Whether the desktop layout is showing, so sheets open as dialogs. */
-function useWide() {
-  return useSyncExternalStore(subscribeWide, () => matchMedia(WIDE).matches);
-}
 
 export default function Today() {
   const paneRef = useRef(null);
@@ -153,7 +132,6 @@ export default function Today() {
   const profile = loadProfile();
   const day = loadViewDay(profile, viewDate);
   const editable = isDayEditable(day, todayISO());
-  const suggestion = viewDate === todayISO() ? liveSuggestion(profile) : null;
 
   /** Persist a changed day and repaint; `message` shows a toast whose Undo puts `day` back. */
   function commit(nextDay, message) {
@@ -184,25 +162,6 @@ export default function Today() {
       toggleBlock(day, blockId),
       wasDone ? null : `${block.name} ticked · ${NUM.format(kcal)} kcal`,
     );
-  }
-
-  function applySuggestionAndSave() {
-    const next = {
-      ...applySuggestion(profile, suggestion),
-      dismissedSuggestion: { ruleId: suggestion.ruleId, date: todayISO() },
-    };
-    saveProfile(next);
-    const rec = getDay(viewDate); // reflect the block change on today straight away
-    if (rec) putDay({ ...rec, addOns: next.addOns });
-    bump((n) => n + 1);
-  }
-
-  function dismissSuggestion() {
-    saveProfile({
-      ...profile,
-      dismissedSuggestion: { ruleId: suggestion.ruleId, date: todayISO() },
-    });
-    bump((n) => n + 1);
   }
 
   const extrasState = {
@@ -251,20 +210,6 @@ export default function Today() {
               />
             </div>
             <DayBanner day={day} editable={editable} goToDate={goToDate} />
-            {suggestion ? (
-              <div className="r-today__card">
-                <SuggestionCard
-                  title={suggestion.headline}
-                  body={suggestion.detail}
-                  applyLabel={suggestion.kind === "checkup" ? "Got it" : "Apply"}
-                  onApply={
-                    suggestion.kind === "checkup" ? dismissSuggestion : applySuggestionAndSave
-                  }
-                  onDismiss={dismissSuggestion}
-                  dismissLabel="Not now"
-                />
-              </div>
-            ) : null}
             <TotalCard day={day} profile={profile} />
             <Blocks
               day={day}
@@ -345,31 +290,6 @@ function loadViewDay(profile, viewDate) {
   }
   const phaseId = defaultPhaseForWeek(planWeek(profile.startDate || viewDate, viewDate));
   return newDay(viewDate, phaseId, phaseAddOns(phaseId), last?.rotations);
-}
-
-/**
- * The adjustment engine's current call, or null when there's nothing to act on
- * (on track / not enough data) or the same rule was applied or dismissed within
- * the last week — roughly, until the next weigh-in can show whether it helped.
- */
-function liveSuggestion(profile) {
-  const start = profile.startDate || todayISO();
-  const series = weeklyWeights(allWeights(), start);
-  const s = evaluate(
-    {
-      rolling: rollingGain(weeklyGains(series)),
-      gains: weeklyGains(series),
-      adherence: weeklyAdherence(allDays(), start),
-      weeklyCount: series.length,
-    },
-    profile.addOns ?? [],
-  );
-  if (!["add-block", "remove-block", "checkup"].includes(s.kind)) return null;
-  const hushed = profile.dismissedSuggestion;
-  if (hushed && hushed.ruleId === s.ruleId && daysBetween(hushed.date, todayISO()) < 7) {
-    return null;
-  }
-  return s;
 }
 
 const STATUS_WORD = { "on-track": "on track", partial: "partial", low: "low" };
