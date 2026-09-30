@@ -3973,6 +3973,798 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ----------------------------------------------------------- status dot --- */
+
+.r-status--on-track,
+.r-dotstrip__day--on-track,
+.r-calendar__day--on-track {
+  --r-status-color: var(--intake-on-track);
+}
+.r-status--partial,
+.r-dotstrip__day--partial,
+.r-calendar__day--partial {
+  --r-status-color: var(--intake-partial);
+}
+.r-status--low,
+.r-dotstrip__day--low,
+.r-calendar__day--low {
+  --r-status-color: var(--intake-low);
+}
+.r-status--none {
+  --r-status-color: var(--ink-soft);
+}
+
+.r-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.r-status__dot {
+  flex: none;
+  width: var(--r-dot-size, 8px);
+  height: var(--r-dot-size, 8px);
+  border-radius: 50%;
+  background: var(--r-status-color);
+}
+
+/* ------------------------------------------------------------ dot strip --- */
+
+.r-dotstrip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-8);
+}
+.r-dotstrip__days {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+/* 22px wide is the handoff's 14px dot plus its 8px gap, so the dots sit
+   where it draws them while each hit area runs the full 44px tall. */
+.r-dotstrip__day {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: var(--icon-button);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.r-dotstrip__dot {
+  --r-dot-ring: 0 0 0 0 transparent;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--r-status-color, transparent);
+  box-shadow: var(--r-dot-ring);
+  transition: transform var(--dur-instant) var(--ease-out);
+}
+.r-dotstrip__day--none .r-dotstrip__dot {
+  --r-dot-ring: inset 0 0 0 1.5px var(--line-strong);
+}
+.r-dotstrip__day--today .r-dotstrip__dot {
+  --r-dot-ring: inset 0 0 0 1.5px var(--ink-soft);
+}
+.r-dotstrip__day.is-selected .r-dotstrip__dot {
+  width: 20px;
+  height: 20px;
+  --r-dot-ring: 0 0 0 2px var(--bg-canvas), 0 0 0 3.5px var(--ink);
+}
+.r-dotstrip__day--today.is-selected .r-dotstrip__dot {
+  --r-dot-ring: inset 0 0 0 2px var(--ink);
+}
+.r-dotstrip__day:active:not(:disabled) .r-dotstrip__dot {
+  transform: scale(0.97);
+}
+.r-dotstrip__day:focus-visible {
+  outline: none;
+}
+.r-dotstrip__day:focus-visible .r-dotstrip__dot {
+  box-shadow: var(--r-dot-ring), var(--focus-ring);
+}
+.r-dotstrip__day:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.r-dotstrip__label {
+  margin-left: var(--space-4);
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.r-dotstrip__calendar {
+  flex: none;
+  height: var(--icon-button);
+  padding: 0 var(--space-16);
+  font-size: 15px;
+}
+
+/* ------------------------------------------------------------ day total --- */
+
+/* Edge to edge: it pads its own text by the gutter. The sun's halo reaches
+   past both ends, so the sides clip while the top and bottom stay open. */
+.r-daytotal {
+  overflow-x: clip;
+  font-variant-numeric: tabular-nums;
+}
+.r-daytotal__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-8);
+  padding: 0 var(--gutter);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--eyebrow-ink);
+}
+.r-daytotal__figure {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  margin-top: var(--space-2);
+  padding: 0 var(--gutter);
+}
+.r-daytotal__kcal {
+  font-family: var(--font-numeric);
+  font-size: var(--type-hero);
+  font-weight: var(--numeric-weight);
+  line-height: 1;
+  letter-spacing: var(--numeric-tracking);
+}
+.r-daytotal__target {
+  font-size: 20px;
+  color: var(--ink-muted);
+}
+.r-daytotal__horizon {
+  --r-x: calc(var(--gutter) + (100% - 2 * var(--gutter)) * var(--r-fill));
+  position: relative;
+  height: 56px;
+  margin-top: 6px;
+}
+.r-daytotal__line,
+.r-chart__horizon {
+  position: absolute;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--horizon) 12%,
+    var(--horizon) 88%,
+    transparent
+  );
+}
+.r-daytotal__line {
+  left: 0;
+  right: 0;
+  top: 34px;
+}
+.r-daytotal__bar {
+  position: absolute;
+  left: var(--gutter);
+  top: 33px;
+  width: calc((100% - 2 * var(--gutter)) * var(--r-fill));
+  height: 4px;
+  border-radius: 2px;
+  background: var(--r-status-color);
+  transition: width var(--dur-base) var(--ease-out);
+}
+.r-daytotal__halo {
+  position: absolute;
+  left: calc(var(--r-x) - 60px);
+  top: -25px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--sun-halo), transparent 65%);
+  pointer-events: none;
+}
+.r-daytotal__sun {
+  position: absolute;
+  left: calc(var(--r-x) - 12px);
+  top: 23px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--sun);
+  transition: left var(--dur-slow) var(--ease-out);
+}
+.r-daytotal__end {
+  position: absolute;
+  right: var(--gutter);
+  top: 40px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.r-daytotal__foot {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-8);
+  margin-top: var(--space-4);
+  padding: 0 var(--gutter);
+  font-size: 17px;
+}
+.r-daytotal__protein {
+  color: var(--ink-muted);
+}
+
+/* ------------------------------------------------- block list and rows --- */
+
+.r-blocklist {
+  position: relative;
+  isolation: isolate;
+  padding-right: var(--gutter);
+}
+/* the time rail, behind the markers */
+.r-blocklist::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 87px;
+  top: var(--space-8);
+  bottom: var(--space-8);
+  width: 2px;
+  background: var(--line);
+}
+
+.r-blockrow {
+  /* marker size, fill and ring; time, name and kcal colours; name size, kcal weight */
+  --r-ms: 28px;
+  --r-bg: var(--bg-canvas);
+  --r-mark-ring: inset 0 0 0 1.5px var(--ink-soft);
+  --r-tc: var(--ink-muted);
+  --r-nc: var(--ink);
+  --r-kc: var(--ink);
+  --r-ns: 18px;
+  --r-kw: 700;
+  display: grid;
+  grid-template-columns: 58px 32px minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--space-12);
+  min-height: 58px;
+  padding-left: var(--space-4);
+  font-variant-numeric: tabular-nums;
+}
+.r-blockrow--done {
+  --r-bg: var(--ink);
+  --r-mark-ring: 0 0 0 0 transparent;
+}
+.r-blockrow--receded,
+.r-blockrow--closed,
+.r-blockrow--closed-done {
+  --r-mark-ring: inset 0 0 0 1.5px var(--line-strong);
+  --r-tc: var(--ink-soft);
+  --r-nc: var(--ink-muted);
+  --r-kc: var(--ink-muted);
+  --r-ns: var(--type-body);
+  --r-kw: 400;
+}
+.r-blockrow--closed,
+.r-blockrow--closed-done {
+  --r-ms: 24px;
+  --r-bg: transparent;
+}
+.r-blockrow--closed-done {
+  --r-bg: var(--ink-soft);
+  --r-mark-ring: 0 0 0 0 transparent;
+}
+.r-blockrow--off {
+  --r-bg: transparent;
+  --r-mark-ring: 0 0 0 0 transparent;
+}
+.r-blockrow__time {
+  text-align: right;
+  font-size: var(--type-small);
+  line-height: 1.15;
+  color: var(--r-tc);
+}
+.r-blockrow__off {
+  display: block;
+  font-size: 11px;
+}
+/* 44px hit area over the 32px marker column */
+.r-blockrow__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-button);
+  height: var(--icon-button);
+  margin: 0 -6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.r-blockrow__mark:disabled {
+  cursor: default;
+}
+.r-blockrow__dot {
+  --r-wash: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--r-ms);
+  height: var(--r-ms);
+  border-radius: 50%;
+  background-color: var(--r-bg);
+  background-image: linear-gradient(var(--r-wash), var(--r-wash));
+  box-shadow: var(--r-mark-ring);
+  color: var(--bg-canvas);
+  transition:
+    transform var(--dur-instant) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.r-blockrow__mark:focus-visible {
+  outline: none;
+}
+.r-blockrow__mark:focus-visible .r-blockrow__dot {
+  box-shadow: var(--r-mark-ring), var(--focus-ring);
+}
+.r-blockrow__diamond {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  transform: rotate(45deg);
+  background: var(--ink);
+}
+.r-blockrow__name {
+  min-width: 0;
+  font-size: var(--r-ns);
+  color: var(--r-nc);
+}
+.r-blockrow__link {
+  margin-left: 6px;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: var(--accent-text);
+  font-family: inherit;
+  font-size: var(--type-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+.r-blockrow__tag {
+  margin-left: 6px;
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+}
+.r-blockrow--idle .r-blockrow__tag.is-emphasis {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+.r-blockrow__kcal {
+  font-size: var(--type-body);
+  font-weight: var(--r-kw);
+  color: var(--r-kc);
+}
+
+/* ----------------------------------------------------------- now marker --- */
+
+.r-now {
+  position: relative;
+  height: 30px;
+  margin: var(--space-4) 0;
+}
+.r-now__line {
+  position: absolute;
+  left: 0;
+  right: calc(-1 * var(--gutter));
+  top: 15px;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--now-line) 18%,
+    var(--now-line) 80%,
+    transparent
+  );
+}
+.r-now__sun {
+  position: absolute;
+  left: 80px;
+  top: var(--space-8);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--sun);
+  box-shadow: 0 0 12px 4px var(--sun-halo);
+}
+.r-now__time {
+  position: absolute;
+  left: var(--space-8);
+  top: 6px;
+  padding: 0 var(--space-4);
+  background: var(--bg-canvas);
+  color: var(--accent-text);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------- due card --- */
+
+.r-due {
+  margin: 6px 0 10px 64px;
+  padding: var(--space-16) var(--space-16) 14px 18px;
+  border-radius: var(--radius-card);
+  background: var(--due-bg);
+  color: var(--due-ink);
+  box-shadow: var(--due-edge), var(--due-glow);
+}
+.r-due__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.r-due__text {
+  min-width: 0;
+}
+.r-due__label,
+.r-suggestion__label {
+  font-size: var(--due-label-size);
+  font-weight: 700;
+  letter-spacing: var(--due-label-tracking);
+  text-transform: var(--caption-transform);
+}
+.r-due__label {
+  color: var(--due-accent-text);
+}
+.r-due__name {
+  margin-top: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--type-display-lg);
+  font-style: var(--due-title-style);
+  font-weight: var(--display-weight);
+  line-height: 1.05;
+}
+.r-due__desc {
+  margin-top: var(--space-4);
+  font-size: var(--type-small);
+  color: var(--due-ink-muted);
+}
+.r-due__figures {
+  flex: none;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.r-due__kcal {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+.r-due__meta {
+  font-size: var(--type-small);
+  color: var(--due-ink-muted);
+}
+.r-due__actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+.r-due__actions--swap {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+/* ------------------------------------------------------- suggestion card --- */
+
+.r-suggestion {
+  padding: 18px;
+  border-radius: var(--radius-card);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+.r-suggestion__label {
+  color: var(--accent-text);
+}
+.r-suggestion__title {
+  margin-top: 6px;
+  font-family: var(--font-display);
+  font-size: var(--type-display-md);
+  font-weight: var(--display-weight);
+  line-height: 1.2;
+}
+.r-suggestion__body {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+.r-suggestion__actions {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* ------------------------------------------------------------- stat row --- */
+
+.r-statrow {
+  display: grid;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+}
+.r-statrow__cell {
+  padding: var(--space-12) 0;
+}
+.r-statrow__cell + .r-statrow__cell {
+  padding-left: var(--space-12);
+  border-left: 1px solid var(--line);
+}
+.r-statrow__value {
+  font-size: 24px;
+  font-weight: 700;
+}
+.r-statrow__label {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+/* --------------------------------------------------------- phase ladder --- */
+
+.r-ladder {
+  padding: 6px;
+  border-radius: var(--radius-card);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+.r-ladder__rung {
+  --r-rung-ink: var(--ink-muted);
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 14px;
+  padding: var(--space-12);
+  /* nested inside the card's 6px padding */
+  border-radius: calc(var(--radius-card) - 6px);
+}
+.r-ladder__rung--now {
+  --r-rung-ink: var(--ink);
+  background: var(--bg-sunken);
+}
+.r-ladder__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--ink-soft);
+}
+.r-ladder__rung--now .r-ladder__dot {
+  background: var(--accent);
+  box-shadow: none;
+}
+.r-ladder__rung--past .r-ladder__dot {
+  background: var(--ink-soft);
+  box-shadow: none;
+}
+.r-ladder__text {
+  min-width: 0;
+}
+.r-ladder__title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+.r-ladder__name,
+.r-ladder__kcal {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--r-rung-ink);
+}
+.r-ladder__status {
+  font-family: var(--font-caption);
+  font-size: var(--due-label-size);
+  font-weight: 700;
+  letter-spacing: var(--due-label-tracking);
+  text-transform: var(--caption-transform);
+  color: var(--ink-muted);
+}
+.r-ladder__rung--now .r-ladder__status {
+  color: var(--accent-text);
+}
+.r-ladder__when,
+.r-ladder__protein {
+  display: block;
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+}
+.r-ladder__when {
+  margin-top: var(--space-2);
+}
+.r-ladder__figures {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.r-ladder__kcal {
+  display: block;
+}
+
+/* --------------------------------------------------------- grocery list --- */
+
+.r-grocery {
+  padding: 6px var(--space-16) var(--space-16);
+  border-radius: var(--radius-card);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+.r-grocery__aisle {
+  padding-top: 14px;
+}
+.r-grocery__aisle-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-family: var(--font-caption);
+  font-size: var(--caption-size);
+  font-weight: var(--caption-weight);
+  letter-spacing: var(--caption-tracking);
+  text-transform: var(--caption-transform);
+}
+.r-grocery__aisle-icon {
+  color: var(--ink-soft);
+}
+.r-grocery__items {
+  margin-top: var(--space-4);
+}
+.r-grocery__item {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 14px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background-color: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.r-grocery__box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  box-shadow: inset 0 0 0 1.5px var(--ink-soft);
+  color: var(--bg-canvas);
+}
+.r-grocery__item.is-done .r-grocery__box {
+  background: var(--ink);
+  box-shadow: none;
+}
+.r-grocery__name {
+  font-size: 17px;
+  color: var(--ink);
+}
+.r-grocery__item.is-done .r-grocery__name {
+  color: var(--ink-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--ink-soft);
+}
+.r-grocery__qty {
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.r-grocery__item.is-changed .r-grocery__qty {
+  color: var(--accent-text);
+}
+.r-grocery__item.is-done .r-grocery__qty {
+  color: var(--ink-muted);
+}
+.r-grocery__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-12);
+  margin-top: var(--space-12);
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.r-grocery__note {
+  font-size: var(--type-small);
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+.r-grocery__foot .r-button {
+  flex: none;
+}
+
+/* --------------------------------------------------------- weight chart --- */
+
+.r-chart {
+  position: relative;
+}
+/* full-bleed: out past the column by the gutter on both sides */
+.r-chart__horizon {
+  left: calc(-1 * var(--gutter));
+  right: calc(-1 * var(--gutter));
+  top: 85%;
+}
+.r-chart__plot {
+  position: relative;
+}
+.r-chart__svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.r-chart__sky-top {
+  stop-color: var(--chart-sky-top);
+}
+.r-chart__sky-bottom {
+  stop-color: var(--chart-sky-bottom);
+}
+.r-chart__band {
+  fill: var(--chart-band);
+  opacity: var(--band-flat);
+}
+.r-chart__band-sky {
+  opacity: var(--band-sky);
+}
+.r-chart__avg {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.r-chart__dots {
+  fill: var(--ink);
+}
+/* The sun on the latest average is HTML over the svg, so it reads the --sun
+   gradient and halo tokens like every other sun in the app. */
+.r-chart__glow,
+.r-chart__sun {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.r-chart__glow {
+  width: 52px;
+  height: 52px;
+  background: radial-gradient(circle, var(--sun-halo), transparent 70%);
+}
+.r-chart__sun {
+  width: 16px;
+  height: 16px;
+  background: var(--sun);
+}
+.r-chart__empty {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--space-24);
+  text-align: center;
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+}
+.r-chart__axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -12px;
+  font-size: var(--type-micro);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
 /* --------------------------------------------------- shared states (65) --- */
 
 @media (hover: hover) and (pointer: fine) {
