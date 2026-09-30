@@ -114,6 +114,24 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   grocery, ladder and Plan group styles are gone. `scaleGroceryQty` is
   unchanged. No new tokens.
 
+- **pass 70 — Settings and the Look picker:** Settings is rebuilt on the
+  surface components. It opens with the record counts, the title and the
+  profile card (an initial, the name, phase · height · rate). Appearance
+  holds the Look picker: two tiles, Paper and Reel, each a live preview drawn
+  with its own nested `data-look` and the current theme, then Theme as a
+  segmented control. Picking either saves on the profile and re-applies
+  `data-look` and `data-theme` at once, so the whole app changes with the
+  tap and keeps it across a reload. Overview is two Toggles (on is ink,
+  never green), and Notifications are Toggles too, on web and in the Android
+  and Windows shells. Data is a list of Export, Import, Check for updates
+  and Reset rows; import (file or pasted JSON, then a preview), the undo
+  copy, an available update and the reset confirm open in place under it,
+  with the same copy and the same safeguards as before. Reset is one confirm
+  that names what goes. On desktop the screen is two columns: Appearance on
+  the left, the rest on the right. The v2 Settings styles and their entrance
+  animation are gone. `e2e/visual.spec.js` now runs both Looks; Reel's
+  pictures wait for the sweep. No new tokens.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on

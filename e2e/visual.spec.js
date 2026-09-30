@@ -4,9 +4,9 @@ import { dismissWhatsNew, hasSeed, seedApp } from "./seed.js";
 // Each case opens a screen on the seeded history and compares it with its
 // approved picture in e2e/snapshots. A deliberate change: npm run test:visual:update.
 //
-// LOOKS grows to ["paper", "reel"] when the Look picker lands (pass 70); until
-// then the attribute is stored but nothing reads it.
-const LOOKS = ["paper"];
+// Both Looks since the picker landed (pass 70). Reel has no approved pictures
+// yet: the sweep (pass 74) takes them with test:visual:update.
+const LOOKS = ["paper", "reel"];
 const THEMES = ["light", "dark"];
 const SCREENS = ["today", "plan", "weight", "recipes", "settings"];
 const PHONE = { width: 390, height: 844 };

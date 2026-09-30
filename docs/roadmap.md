@@ -84,12 +84,12 @@ predecessor is unticked is flagged before it starts. Start each build pass in
 a fresh thread. The design refs are paths inside the design export
 (`design-system/…`, `screens/…`).
 
-| Build pass | Name                       | Targets (pass numbers)          | Model                   |
-| ---------- | -------------------------- | ------------------------------- | ----------------------- |
-| 4          | Plan, settings and recipes | `settings` (70), `recipes` (71) | Sonnet 5.5, high effort |
-| 5          | First run and identity     | `firstrun` (72), `icons` (73)   | Sonnet 5.5, high effort |
-| 6          | Audit and README           | `sweep` (74), `readme` (75)     | Opus, high effort       |
-| 7          | Motion                     | `motion` (76), `rail` (77)      | Sonnet 5.5, high effort |
+| Build pass | Name                       | Targets (pass numbers)        | Model                   |
+| ---------- | -------------------------- | ----------------------------- | ----------------------- |
+| 4          | Plan, settings and recipes | `recipes` (71)                | Sonnet 5.5, high effort |
+| 5          | First run and identity     | `firstrun` (72), `icons` (73) | Sonnet 5.5, high effort |
+| 6          | Audit and README           | `sweep` (74), `readme` (75)   | Opus, high effort       |
+| 7          | Motion                     | `motion` (76), `rail` (77)    | Sonnet 5.5, high effort |
 
 Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
@@ -98,16 +98,7 @@ and desktop test pass, and the release.
 
 #### Build pass 4 — Plan, settings and recipes
 
-Model: Sonnet 5.5, high effort. Targets: settings, recipes (plan, pass 69, is done). This is the remaining main screens, including the Look picker.
-
-- [ ] **Pass 70 · `settings`** — Settings and the Look picker.
-  - Reads: `screens/Rise Secondary Phone.dc.html` (Settings frames),
-    `ui_kits/rise/SettingsScreen.jsx`, `ListRow.jsx`, `Toggle.jsx`.
-  - Does: the ListGroup and ListRow layout, the Toggle (on is ink, never
-    green), Segmented controls, the Look picker tiles using a nested
-    `data-look` and `data-theme` for live previews, and the reset-all confirm;
-    adds `reel` to `LOOKS` in `e2e/visual.spec.js`.
-  - Done when: picking a Look changes the whole app at once and persists.
+Model: Sonnet 5.5, high effort. Targets: recipes (plan, pass 69, and settings, pass 70, are done). This is the remaining main screens, including the Look picker.
 
 - [ ] **Pass 71 · `recipes`** — Recipes, phone and desktop.
   - Reads: `screens/Rise Secondary Phone.dc.html` (Recipes frames), the

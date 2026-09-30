@@ -142,7 +142,7 @@ never write a shadow literal. `--texture` is Reel's grain, `none` in Paper.
 to 0 under `prefers-reduced-motion`. `--transition-control` and
 `--transition-entry` are app-layer shorthands over these.
 
-Eight duration literals remain in `app.css` (the intro, accordion, ack and tab
+Four duration literals remain in `app.css` (the intro, ack and tab
 cross-fade animations, and a few press transitions). They are tokenised by the
 `motion` target (pass 76); motion work does not start before then.
 
@@ -204,7 +204,7 @@ DueCard, SuggestionCard, StatRow, PhaseLadder, GroceryList, WeightChart) and
 `surfaces.jsx` (Sheet, Toast, Banner, ConfirmPanel, EmptyState, ListGroup,
 ListRow, OptionRow, CalendarGrid). Props follow the handoff's `.d.ts` files.
 Their styles are the `r-` classes at the end of `app.css`; the prefix keeps
-them clear of the v2 classes until the screens are rebuilt (passes 67-71; Today, Weight and Plan are done).
+them clear of the v2 classes until the screens are rebuilt (passes 67-71; Today, Weight, Plan and Settings are done).
 Build a screen from these; don't add a parallel control. `dev/components.html`
 on the dev server shows every one in all four Look and theme pairs.
 

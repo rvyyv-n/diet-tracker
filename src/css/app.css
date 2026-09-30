@@ -1185,79 +1185,6 @@
   color: var(--accent);
 }
 
-/* -------------------------------------------------------------- panel ---
-   The import preview. Recessed inside the card.                             */
-
-.set-panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-  padding: var(--space-16);
-  background: var(--bg-raised);
-  border-top: var(--border-width-hairline) solid var(--line);
-}
-
-.set-panel__title {
-  font: var(--text-title-sm);
-  color: var(--ink);
-}
-
-.set-panel__stats {
-  font: var(--text-code);
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
-
-.set-panel__meta {
-  font: var(--text-caption);
-  color: var(--ink-soft);
-}
-
-.set-panel__body {
-  font: var(--text-body-sm);
-  color: var(--text-body);
-}
-
-.set-panel__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  margin-top: var(--space-4);
-}
-.set-panel__actions .btn--text {
-  padding-inline: var(--space-12);
-}
-
-/* ------------------------------------------------------------- danger ---
-   The confirm panel. The button sits in ink; red appears only once it opens. */
-
-.set-confirm {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-  padding: var(--space-16);
-  background: var(--bg-canvas);
-  border: var(--border-width-hairline) solid var(--danger);
-  border-radius: var(--radius-card);
-}
-
-.set-confirm__title {
-  font: var(--text-title-sm);
-  color: var(--ink);
-}
-
-.set-confirm__body {
-  font: var(--text-body-sm);
-  color: var(--text-body);
-}
-
-.set-confirm__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  margin-top: var(--space-4);
-}
-
 /* APP LAYER — a destructive button variant. The system has no such thing, and
    --danger already means "well under target" on Today, so red is kept off
    every resting control and used only here, on the button that erases. */
@@ -1277,310 +1204,11 @@
   font: var(--text-screen-title);
 }
 
-/* ============================================================================
-   settings-v2.css — the Settings screen as built.
-   ----------------------------------------------------------------------------
-   Reuses .group / .ack / .set-panel / .set-confirm / .btn--danger above.
-   New: icon-led list rows (Lucide 0.469, inlined SVG), a collapsed Export row
-   with a small secondary action beneath, an icon-above-label tab bar, an
-   Appearance group with a full-width theme toggle (pass 19), and a quiet About
-   block at the foot.
-   ========================================================================== */
-
-.settings2 {
-  gap: var(--space-24);
-}
-
-/* --------------------------------------------------------------- card ---
-   .card with the padding removed so rows run edge to edge. One divider rule
-   covers rows, stacked items and expanding panels alike.                    */
-
-.set2-card {
-  padding: 0;
-  overflow: hidden;
-}
-.set2-card > * + * {
-  border-top: var(--border-width-hairline) solid var(--line);
-}
-
-/* --------------------------------------------------------- appearance ---
-   The theme toggle (pass 19): a name + one muted hint stacked over a
-   full-width System / Light / Dark segmented control. Its own padded block
-   rather than a .set2-row, since the control wants the whole card width. */
-
-.set2-appearance {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-12);
-  padding: var(--space-16);
-}
-
-.set2-appearance__head {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.set2-appearance__name {
-  font: var(--text-title-sm);
-  color: var(--ink);
-}
-
-.set2-appearance__hint {
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-}
-
-/* Overview (pass 32): the same padded name + hint + segment block as
-   Appearance, but several stacked in one card — a hairline between them. */
-.set2-overview__row + .set2-overview__row {
-  border-top: var(--border-width-hairline) solid var(--line);
-}
-
-/* ---------------------------------------------------------------- row ---
-   Action name left behind a 20px glyph. Right side is either a chevron (it
-   navigates) or a small secondary button (it acts) — never both.            */
-
-.set2-row {
-  /* The hover and press fills are drawn on this element, so without a radius
-     they land as a hard-edged rectangle inside a 12px-radius card — the one
-     sharp corner on the screen. */
-  border-radius: var(--radius-card);
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
-  width: 100%;
-  min-height: var(--row-min);
-  padding: var(--space-12) var(--space-16);
-  text-align: left;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.set2-row:active {
-  background: var(--bg-sunken);
-}
-.set2-row:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-/* the Import row is a container, not the actuator — its button is */
-.set2-row--static {
-  cursor: default;
-}
-.set2-row--static:active {
-  background: transparent;
-}
-
-.set2-row__icon {
-  flex: none;
-  display: flex;
-  width: 20px;
-  height: 20px;
-  color: var(--ink-muted);
-}
-.set2-row__icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.set2-row__body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.set2-row__name {
-  font: var(--text-title-sm);
-  color: var(--ink);
-}
-
-/* one muted line, only where a word is genuinely needed */
-.set2-row__desc {
-  font: var(--text-body-sm);
-  line-height: 1.35;
-  color: var(--ink-muted);
-}
-
-.set2-row__chev {
-  flex: none;
-  display: flex;
-  width: 16px;
-  height: 16px;
-  color: var(--ink-soft);
-}
-.set2-row__chev svg {
-  width: 100%;
-  height: 100%;
-}
-
 /* small secondary button, for a row that acts */
 .btn--sm {
   min-height: 44px;
   padding: 0 var(--space-12);
   font: var(--text-caption);
-}
-
-/* two small actions kept together at a row's right edge (Import: file / paste) */
-.set2-row__buttons {
-  flex: none;
-  display: flex;
-  gap: var(--space-8);
-}
-
-/* the paste-in import textarea */
-.set-paste__input {
-  width: 100%;
-  min-height: 96px;
-  padding: var(--space-12);
-  font: var(--text-code);
-  color: var(--ink);
-  background: var(--bg-canvas);
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-field);
-  resize: vertical;
-  transition:
-    var(--transition-control),
-    box-shadow var(--dur-fast) var(--ease-out);
-}
-.set-paste__input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: var(--focus-ring);
-}
-
-/* the undo slot's panel — a coral hairline, the one time it flags a pending
-   safety net rather than a committed action */
-.set-panel--undo {
-  border-top-color: var(--accent);
-}
-
-/* Narrow phones (iPhone SE and down): the row's button competes with the body
-   for width and the name wraps mid-word. Drop the button onto its own line
-   under the text, indented to the name's left edge (20px icon + gap). */
-@media (max-width: 360px) {
-  .set2-row--static {
-    flex-wrap: wrap;
-    row-gap: var(--space-8);
-  }
-  .set2-row--static > .btn--sm,
-  .set2-row--static > .set2-row__buttons {
-    /* Auto width, not 0 0 100% — a full-width button here reads as a CTA and
-       swamps the card; this is a small secondary action, same as it is on
-       every wider screen, just moved onto its own line. */
-    flex: 0 0 auto;
-    align-self: flex-start;
-    justify-content: flex-start;
-    margin-left: calc(20px + var(--space-12));
-  }
-}
-
-/* ------------------------------------------------------- utility rows ---
-   Plain ink rows under a divider: "Check for updates" and "Reset all data".
-   No red at rest — the reset confirm panel carries the only red on the screen.
-   The update panel below its row reuses .set-panel.                          */
-
-.set2-actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-12);
-  padding-top: var(--space-16);
-  border-top: var(--border-width-hairline) solid var(--line);
-}
-
-/* Zero on the start side so the icon lines up with the card's other rows, but
-   NOT on the end side: the trail word ("Up to date") was landing hard against
-   the card's content edge with nothing to breathe against. The row background
-   still fills the full width, so the inset shows on the text alone. */
-.set2-actions .set2-row {
-  padding-inline: 0 var(--space-8);
-  min-height: 48px;
-}
-
-/* the last-checked / "Up to date" / "vX available" word trailing the row */
-.set2-row__trail {
-  flex: none;
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-/* -------------------------------------------------------------- about ---
-   A quiet recessed block at the very bottom. It was a dark-navy panel that
-   leaned on --surface-dark as a one-off contrast device; pass 19's real dark
-   theme made that read as an unconverted patch, so it is now an ordinary soft
-   card that inverts with everything else. Sentence per line, no wrapped
-   paragraphs. Mono for the version and the signature.                        */
-
-.about2 {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-16);
-  /* pull up against the section gap so it sits closer to the reset row */
-  margin-top: calc(-1 * var(--space-8));
-  padding: var(--space-24) var(--space-16);
-  background: var(--bg-raised);
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-card);
-}
-
-.about2__group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.about2__name {
-  font: var(--text-code);
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
-
-.about2__schema {
-  font: var(--text-code);
-  font-size: 12px;
-  color: var(--ink-soft);
-}
-
-.about2__line {
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-}
-
-.about2__links {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  font: var(--text-body-sm);
-}
-
-.about2__link {
-  color: var(--accent-text);
-  text-decoration: none;
-  transition: var(--transition-control);
-}
-.about2__link:active {
-  color: var(--accent-pressed);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.about2__link:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-  border-radius: var(--radius-sm);
-}
-
-.about2__sep {
-  color: var(--ink-soft);
-}
-
-.about2__sig {
-  font: var(--text-body-sm);
-  color: var(--ink-soft);
 }
 
 /* ============================================================================
@@ -1596,66 +1224,6 @@
 .block-row__tick svg {
   width: 14px;
   height: 14px;
-}
-
-/* ------------------------------------------------------------- profile ---
-   The Settings screen's Profile card — the plan at a glance, the whole card a
-   tap target back into the setup form. Replaces the old "Edit setup" row.    */
-
-.set2-profile {
-  display: flex;
-  align-items: center;
-  gap: var(--space-16);
-  width: 100%;
-  min-height: 72px;
-  padding: var(--space-16);
-  text-align: left;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.set2-profile:active {
-  background: var(--bg-sunken);
-}
-.set2-profile:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-.set2-profile__avatar {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-pill);
-  background: var(--bg-raised);
-  border: var(--border-width-hairline) solid var(--line);
-  color: var(--ink-muted);
-}
-.set2-profile__avatar svg {
-  width: 22px;
-  height: 22px;
-}
-
-.set2-profile__body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.set2-profile__name {
-  font: var(--text-title-sm);
-  color: var(--ink);
-}
-
-.set2-profile__meta {
-  font: var(--text-caption);
-  color: var(--ink-muted);
 }
 
 /* ------------------------------------------------------------- intro ---
@@ -1721,27 +1289,6 @@
    micro-interactions — quiet, short, and disabled under prefers-reduced-motion
    (the blanket rule lives in tokens.css). Press + focus states only, as ever.
    ========================================================================== */
-
-/* anything that expands in place — the import preview, the reset confirm — slides down a few pixels as it fades in. Gated behind
-   `.is-entering` rather than the bare class: the same full-rebuild render
-   model above recreates an already-open panel on every unrelated re-render
-   (ticking one block replays every other open panel's drop), so the caller
-   only adds this class the render its `justOpened()` (ui/dom.js) call says
-   the panel is truly newly open, not just still open. */
-@keyframes accordion-drop {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.set-panel.is-entering,
-.set-confirm.is-entering {
-  animation: accordion-drop 0.16s cubic-bezier(0.16, 1, 0.3, 1);
-}
 
 /* the transient Copied / Saved acknowledgement */
 @keyframes ack-fade {
@@ -2279,13 +1826,8 @@
   }
 
   /* tap rows — press is --bg-sunken, so hover takes --bg-raised */
-  .set2-row:hover,
-  .set2-profile:hover,
   .planref__meal-head--btn:hover {
     background: var(--bg-raised);
-  }
-  .set2-row--static:hover {
-    background: transparent;
   }
 
   /* small icon triggers — press is --bg-raised, so hover takes soft */
@@ -2301,11 +1843,6 @@
   .lb__opt:not(.is-picked):hover,
   .cal__cell:not(.is-blank, .is-selected, :disabled):hover {
     background-image: linear-gradient(var(--hover-wash), var(--hover-wash));
-  }
-
-  .about2__link:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
   }
 }
 /* ========================================================= components (65) ==
@@ -4783,6 +4320,487 @@ button.r-listrow {
   }
 }
 
+/* ---------------------------------------------------- settings (pass 70) ---
+   Settings on the surface components. A phone column pads itself by --gutter
+   (20px, as the handoff draws it). From 1024px it is two columns: Appearance
+   on the left, the rest on the right. The Look tiles preview their Look with
+   a nested data-look and data-theme, so everything inside .r-look__preview
+   resolves its own tokens. */
+
+.r-settings {
+  display: flex;
+  flex-direction: column;
+  margin: 0 calc(-1 * (var(--space-16) + env(safe-area-inset-right))) 0
+    calc(-1 * (var(--space-16) + env(safe-area-inset-left)));
+}
+@media (min-width: 600px) {
+  .r-settings {
+    margin: 0 calc(-1 * (var(--space-24) + env(safe-area-inset-right))) 0
+      calc(-1 * (var(--space-24) + env(safe-area-inset-left)));
+  }
+}
+.r-settings__head {
+  padding: 0 var(--gutter);
+  margin-top: 10px;
+}
+.r-settings__title {
+  margin: 4px 0 0;
+  font: var(--text-screen-title);
+  line-height: 1.1;
+}
+.r-settings__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-top: 22px;
+  padding: 0 var(--gutter);
+}
+.r-settings__sec {
+  min-width: 0;
+}
+.r-settings__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  margin-top: 10px;
+}
+/* the profile card sits right under the title on a phone; its heading is for desktop */
+.r-settings__sec--profile > .r-section-heading {
+  display: none;
+}
+.r-settings__sec--profile .r-settings__body {
+  margin-top: 0;
+}
+
+.r-setrow__trail {
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+}
+a.r-button {
+  text-decoration: none;
+}
+
+/* the profile card */
+.r-setprofile {
+  --r-wash: transparent;
+  --r-ring: 0 0 0 0 transparent;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 14px 14px var(--space-16);
+  border: 0;
+  border-radius: var(--radius-card);
+  background-color: var(--bg-raised);
+  background-image: linear-gradient(var(--r-wash), var(--r-wash));
+  box-shadow: var(--r-ring), var(--shadow-card);
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.r-setprofile__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-sunken);
+  font-size: 17px;
+  font-weight: 700;
+}
+.r-setprofile__text {
+  min-width: 0;
+}
+.r-setprofile__name,
+.r-setprofile__meta {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.r-setprofile__name {
+  font-size: 17px;
+  font-weight: 700;
+}
+.r-setprofile__meta {
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+}
+.r-setprofile__chevron {
+  color: var(--ink-muted);
+}
+
+/* Appearance: the Look tiles, then Theme */
+.r-appearance {
+  padding: var(--space-16);
+}
+.r-appearance__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-12);
+}
+.r-appearance__name {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+}
+.r-appearance__hint {
+  display: block;
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+}
+.r-looks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-12);
+  margin-top: var(--space-12);
+}
+.r-look {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.r-look__frame {
+  --r-look-ring: inset 0 0 0 1px var(--line);
+  display: block;
+  padding: 3px;
+  border-radius: 18px;
+  box-shadow: var(--r-look-ring);
+}
+.r-look.is-selected .r-look__frame {
+  --r-look-ring: inset 0 0 0 2px var(--ink);
+}
+.r-look:focus-visible {
+  outline: none;
+}
+.r-look:focus-visible .r-look__frame {
+  box-shadow: var(--r-look-ring), var(--focus-ring);
+}
+.r-look__preview {
+  display: block;
+  padding: 12px 10px 10px;
+  overflow: hidden;
+  border-radius: 15px;
+  background-color: var(--bg-canvas);
+  background-image: var(--texture);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+.r-look__preview > * {
+  display: block;
+}
+.r-look__eyebrow {
+  font-size: 9px;
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--eyebrow-ink);
+  white-space: nowrap;
+}
+.r-look__figure {
+  margin-top: 2px;
+  font-family: var(--font-numeric);
+  font-size: 30px;
+  font-weight: var(--numeric-weight);
+  letter-spacing: var(--numeric-tracking);
+  line-height: 1;
+}
+.r-look__horizon {
+  position: relative;
+  height: 18px;
+}
+.r-look__horizon::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  right: -10px;
+  top: 10px;
+  height: 1px;
+  background: var(--horizon);
+}
+.r-look__bar {
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 70%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--intake-partial);
+}
+.r-look__sun {
+  position: absolute;
+  left: calc(70% - 6px);
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--sun);
+  box-shadow: 0 0 8px 2px var(--sun-halo);
+}
+.r-look__due {
+  margin-top: 6px;
+  padding: 8px 9px;
+  border-radius: 10px;
+  background: var(--due-bg);
+  box-shadow: var(--due-edge);
+  color: var(--due-ink);
+}
+.r-look__due > * {
+  display: block;
+}
+.r-look__due-label {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: var(--due-label-tracking);
+  text-transform: var(--caption-transform);
+  color: var(--due-accent-text);
+}
+.r-look__due-title {
+  font-family: var(--font-display);
+  font-style: var(--due-title-style);
+  font-size: 17px;
+  line-height: 1.1;
+}
+.r-look__due-cta {
+  height: 16px;
+  margin-top: 6px;
+  border-radius: 8px;
+  background: var(--due-cta-bg);
+}
+.r-look__caption {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding-left: var(--space-4);
+}
+.r-look__name {
+  font-size: var(--type-body);
+  font-weight: 700;
+}
+.r-look__note {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.r-appearance__theme {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.r-appearance__text {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-12);
+}
+
+/* the panels that open under a Data row */
+.r-setpanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--space-16);
+  border-radius: var(--radius-card);
+  background: var(--bg-raised);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.r-setpanel__title {
+  margin: 0;
+  font-size: var(--type-body);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.r-setpanel__body,
+.r-setpanel__line {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.r-setpanel__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.r-setpanel__line--muted {
+  color: var(--ink-muted);
+}
+.r-setpanel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.r-setpanel__input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--space-12);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--bg-canvas);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--type-small);
+  line-height: 1.4;
+  resize: vertical;
+}
+.r-setpanel__input:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1.5px var(--ink),
+    var(--focus-ring);
+}
+
+/* About: quiet, at the foot */
+.r-about {
+  margin-top: var(--space-32);
+  padding: 0 var(--gutter);
+  font-size: var(--type-small);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+.r-about p {
+  margin: 0;
+}
+.r-about__name {
+  color: var(--ink);
+  font-weight: 700;
+}
+.r-about__schema {
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+.r-about__link {
+  color: var(--accent-text);
+  text-underline-offset: 2px;
+}
+
+@media (min-width: 1024px) {
+  .r-settings {
+    margin: 0;
+  }
+  .r-settings__head {
+    padding: 0;
+    margin-top: 0;
+  }
+  .r-settings__title {
+    margin-top: 6px;
+    font-size: calc(var(--type-display-lg) * 1.25);
+    line-height: 1.05;
+  }
+  .r-settings__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    column-gap: var(--space-32);
+    row-gap: 16px;
+    align-items: start;
+    margin-top: 26px;
+    padding: 0;
+  }
+  .r-settings__sec {
+    grid-column: 2;
+  }
+  .r-settings__sec--appearance {
+    grid-column: 1;
+    grid-row: 1 / span 6;
+  }
+  .r-settings__sec--profile > .r-section-heading {
+    display: flex;
+  }
+  .r-settings__sec--profile .r-settings__body {
+    margin-top: 10px;
+  }
+  .r-setprofile {
+    padding-right: var(--space-16);
+  }
+  .r-appearance {
+    padding: 20px;
+  }
+  .r-looks {
+    gap: var(--space-16);
+    margin-top: 14px;
+  }
+  .r-look {
+    gap: 10px;
+  }
+  .r-look__frame {
+    border-radius: 20px;
+  }
+  .r-look__preview {
+    padding: 16px 14px 14px;
+    border-radius: 17px;
+  }
+  .r-look__eyebrow {
+    font-size: 11px;
+  }
+  .r-look__figure {
+    font-size: 44px;
+  }
+  .r-look__horizon {
+    height: 22px;
+  }
+  .r-look__horizon::before {
+    left: -14px;
+    right: -14px;
+    top: 12px;
+  }
+  .r-look__bar {
+    top: 11px;
+  }
+  .r-look__sun {
+    left: calc(70% - 8px);
+    top: 5px;
+    width: 16px;
+    height: 16px;
+    box-shadow: 0 0 10px 3px var(--sun-halo);
+  }
+  .r-look__due {
+    margin-top: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+  .r-look__due-label {
+    font-size: 10px;
+  }
+  .r-look__due-title {
+    font-size: 22px;
+  }
+  .r-look__due-cta {
+    height: 20px;
+    margin-top: 8px;
+    border-radius: 10px;
+  }
+  .r-appearance__theme {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: center;
+    gap: var(--space-16);
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+  .r-appearance__text {
+    display: block;
+  }
+  .r-about {
+    padding: 0;
+  }
+}
+
 /* ------------------------------------------------ today's sheets (pass 67) --- */
 
 .r-sheet__note {
@@ -4896,6 +4914,7 @@ button.r-listrow {
   .r-option:hover,
   .r-grocery__item:hover,
   .r-plan__link:hover,
+  .r-setprofile:hover,
   .r-calendar__day:not(:disabled):hover,
   .r-banner__action:hover,
   .r-blockrow__link:hover {
@@ -4925,6 +4944,7 @@ button.r-listrow:active,
 .r-option:active,
 .r-grocery__item:active,
 .r-plan__link:active,
+.r-setprofile:active,
 .r-calendar__day:not(:disabled):active,
 .r-banner__action:active,
 .r-blockrow__link:active {
@@ -4955,6 +4975,7 @@ button.r-listrow:active,
 .r-option:focus-visible,
 .r-grocery__item:focus-visible,
 .r-plan__link:focus-visible,
+.r-setprofile:focus-visible,
 .r-calendar__day:focus-visible,
 .r-banner__action:focus-visible,
 .r-blockrow__link:focus-visible {
