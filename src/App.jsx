@@ -49,19 +49,18 @@ const NUM = new Intl.NumberFormat("en-US");
  * Every screen the router can mount, in nav order. A still-vanilla screen
  * carries `open`/`repaint` (rendered through the `VanillaPane` adapter); a
  * converted one carries `Component` (rendered directly). Adding a screen or
- * finishing its conversion means editing this one row — the tab bar and the
+ * finishing its conversion means editing this one row — the nav and the
  * `?tab=` whitelist both read from it either way.
  */
 const SCREENS = [
   { id: "today", label: "Today", icon: "today", Component: Today },
   { id: "plan", label: "Plan", icon: "plan", Component: Plan },
   { id: "weight", label: "Weight", icon: "weight", Component: Weight },
-  // The side rail has room for a fifth item (pass 51); the phone tab bar stays
-  // four icons edge to edge, so Recipes' button carries `tabbar__btn--wide-only`
-  // and CSS hides it below --bp-desktop. The screen itself opens at any width
-  // (pass 48): a phone reaches it from the row at the foot of Plan, and
-  // `tabParent` lights Plan's button there while it's open. Sits above
-  // Settings so Settings stays the last item in the rail.
+  // The side nav has room for a fifth item (pass 51); the phone pill stays
+  // four tabs, so `wideOnlyTab` keeps Recipes out of it. The screen itself
+  // opens at any width (pass 48): a phone reaches it from the row at the foot
+  // of Plan, and `tabParent` lights Plan's tab while it's open. Sits above
+  // Settings so Settings stays the last item in the side nav.
   {
     id: "recipes",
     label: "Recipes",

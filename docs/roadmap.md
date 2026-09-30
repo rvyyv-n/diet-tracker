@@ -86,7 +86,6 @@ a fresh thread. The design refs are paths inside the private design export
 
 | Build pass | Name                       | Targets (pass numbers)                       | Model                   |
 | ---------- | -------------------------- | -------------------------------------------- | ----------------------- |
-| 2          | Components and shell       | `components` (65), `shell` (66)              | Opus, high effort       |
 | 3          | Daily screens              | `today` (67), `weight` (68)                  | Sonnet 5.5, high effort |
 | 4          | Plan, settings and recipes | `plan` (69), `settings` (70), `recipes` (71) | Sonnet 5.5, high effort |
 | 5          | First run and identity     | `firstrun` (72), `icons` (73)                | Sonnet 5.5, high effort |
@@ -97,19 +96,6 @@ Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
 
 ### Build passes
-
-#### Build pass 2 — Components and shell
-
-Model: Opus, high effort. Targets: components, shell. This is the shared component set and the navigation frame. Every later screen copies the patterns set here, so this one gets the stronger model.
-
-- [ ] **Pass 66 · `shell`** — navigation and layout frame.
-  - Reads: `components/surfaces/PhoneNav.jsx`, `SideNav.jsx`,
-    `screens/Rise Desktop.dc.html`, `ui_kits/rise/DesktopApp.jsx`.
-  - Does: the floating 64px phone pill, 12px from the edges, with the sun on
-    the active tab; the 256px desktop nav with Recipes as the fifth item and
-    the Today glance card in its foot; the 1080px content column and the 340px
-    support column; `tabParent` keeps Plan lit on Recipes.
-  - Done when: navigation works at 390, 320 and 1440 in both Looks.
 
 #### Build pass 3 — Daily screens
 

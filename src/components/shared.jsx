@@ -30,7 +30,7 @@ export const NUM = new Intl.NumberFormat("en-US");
  * way, just built through React's own path.
  *
  * `className` decides what box (if any) this renders. Pass one when the icon
- * itself is the sized element (`tabbar__icon`, `group__label-icon` — a real
+ * itself is the sized element (`group__label-icon` — a real
  * span carrying that class, containing the svg). Omit it when the caller
  * already renders its own sizing wrapper around the icon (`set2-row__icon`
  * and friends expect the `<svg>` as their own direct flex item, sized via

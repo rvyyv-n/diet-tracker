@@ -112,11 +112,19 @@ Display type carries no tracking; the export specifies none.
 ## Spacing, sizing, radii, elevation
 
 Spacing is a 4px grid: `--space-2 · 4 · 8 · 12 · 16 · 20 · 24 · 32 · 48`, plus
-the app-layer `--space-96` (page-bottom clearance for the floating tab bar).
+the app-layer `--space-96` (page-bottom clearance for the floating tab pill).
 `--gutter` is 20px.
 
 Sizing: `--row-min` 56 (tick rows, one-handed), `--control-h` 48 (fields,
 segmented), `--button-h` 52 / `--button-h-sm` 40, `--icon-button` 44, `--nav-h` 64.
+
+Shell (pass 66, app layer): `--panel-nav-width` 256 (the desktop side nav),
+`--panel-nav-width-collapsed` 72 (the on-hover rail at rest),
+`--container-app` 1080 (the content column), `--gutter-desktop` 48 (its side
+padding), `--panel-support-width` 340 (the support column beside the main one,
+`.r-columns`, from 1280px), and `--nav-inset` 12 / `--nav-lift` 14 (the phone
+pill's distance from the sides and the bottom). `--app-max-width` 580 still
+caps the phone column, and the pill keeps to it from 600px.
 
 Radii: `--radius-sm` 8 · `--radius-md` 14 · `--radius-card` 22 (24 Reel) ·
 `--radius-field` 14 (pill in Reel) · `--radius-pill`, plus the app-layer
@@ -183,11 +191,10 @@ translated.
 
 Each was weighed and kept on purpose; do not "correct" them.
 
-| Topic                | Export says                         | Rise does                                   | Why                                                                       |
-| -------------------- | ----------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------- |
-| Nav width, column    | 256px nav, 1080 column, 340 support | 240px nav, 960 column, 360 detail (for now) | The shell target (pass 66) rebuilds the frame against the desktop handoff |
-| Accent tint          | not defined                         | `--accent-tint`, `color-mix` of `--accent`  | One definition serves both Looks; dark raises the mix from 12% to 20%     |
-| Copernicus, StyreneB | n/a                                 | dropped                                     | The v2 faces were licensed stand-ins; the Looks bring their own           |
+| Topic                | Export says | Rise does                                  | Why                                                                   |
+| -------------------- | ----------- | ------------------------------------------ | --------------------------------------------------------------------- |
+| Accent tint          | not defined | `--accent-tint`, `color-mix` of `--accent` | One definition serves both Looks; dark raises the mix from 12% to 20% |
+| Copernicus, StyreneB | n/a         | dropped                                    | The v2 faces were licensed stand-ins; the Looks bring their own       |
 
 ## Components
 

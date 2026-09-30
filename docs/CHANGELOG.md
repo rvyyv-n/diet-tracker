@@ -43,6 +43,19 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   `--hover-wash`, `--press-wash`, `--chart-sky-top`, `--chart-sky-bottom`,
   `--radius-sheet`.
 
+- **pass 66 — the navigation and layout frame:** the tab bar is replaced by
+  the handoff's two navs (`src/components/nav.jsx`). On a phone, a floating
+  64px pill sits 12px in from the edges over a fade into the canvas, with the
+  sun on the active tab, and keeps to the centred column from 600px. From
+  1024px, a 256px side nav shows the wordmark (now a shared `Wordmark`), all
+  five destinations and a Today glance card in its foot: intake against
+  target with its status word, and the latest weigh-in. The content column
+  is 1080px padded 48px, and `.r-columns` sets up the 340px support column
+  that the screen passes use. On a phone, Plan stays lit while Recipes is
+  open (`tabParent`). The on-hover rail (pass 47) carries over to the new
+  nav unchanged. New tokens: `--panel-support-width`, `--nav-inset`,
+  `--nav-lift`; `--panel-detail-width` is gone.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on
