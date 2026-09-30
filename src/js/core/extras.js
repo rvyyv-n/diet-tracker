@@ -31,8 +31,11 @@ export function dayExtras(day) {
  * `at` ("HH:MM", pass 67) is when it was logged, so Today can place it among
  * the blocks. Optional: an extra logged before pass 67, or onto yesterday,
  * has none and sits after the timed rows.
+ *
+ * `from` (pass 67 fix) is the Log food tab it came from — "recipes", "foods"
+ * or "custom" — so the row can say so. Optional too; anything else is dropped.
  */
-export function addExtra(day, { name, kcal, proteinG, at } = {}) {
+export function addExtra(day, { name, kcal, proteinG, at, from } = {}) {
   const cleanName = String(name ?? "").trim();
   if (!cleanName) return day;
   const entry = {
@@ -42,8 +45,12 @@ export function addExtra(day, { name, kcal, proteinG, at } = {}) {
     proteinG: sanitiseNumber(proteinG),
   };
   if (/^\d\d:\d\d$/.test(at ?? "")) entry.at = at;
+  if (EXTRA_SOURCES.includes(from)) entry.from = from;
   return { ...day, extras: [...dayExtras(day), entry] };
 }
+
+/** Where a logged extra can come from: the three Log food tabs. */
+export const EXTRA_SOURCES = ["recipes", "foods", "custom"];
 
 /** Remove a logged extra by id. No-op if the id isn't present. */
 export function removeExtra(day, id) {

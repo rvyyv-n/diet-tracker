@@ -124,7 +124,9 @@ Model: Sonnet 5.5, high effort. Targets: plan, settings, recipes. This is the re
     Recipes frames in `Rise Desktop.dc.html`, `EmptyState.jsx`.
   - Does: the recipe book, the recipe editor sheet, the two-step delete
     confirm (no Undo), the recipe-book empty state, and the reference content
-    that moved here from Plan.
+    that moved here from Plan. Also rehome "most logged", which went with
+    Weight's weekly review in pass 68: order the book by `useCount`, most
+    logged first, as a fact with no praise.
   - Done when: the grid matches, reached from Plan on phone with Plan lit.
 
 #### Build pass 5 — First run and identity

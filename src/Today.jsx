@@ -38,6 +38,7 @@ import {
   APPETITE_VALUES,
   intakeStatus,
   isDayEditable,
+  removeBlock,
 } from "./js/core/day.js";
 import { dayExtras, removeExtra } from "./js/core/extras.js";
 import { getDay, putDay, allDays } from "./js/core/days.js";
@@ -449,7 +450,15 @@ function TotalCard({ day, profile }) {
  * The block list: the day's plan blocks, bonus blocks and logged food in time
  * order, with the now marker and the due card on today.
  */
+/** The line under a logged food's name on desktop: which Log food tab it came from. */
+const EXTRA_DESC = {
+  recipes: "Logged from Recipes",
+  foods: "Logged from Foods",
+  custom: "Typed in",
+};
+
 function Blocks({ day, editable, onTick, setSheet, commit }) {
+  const wide = useWide();
   const live = day.date === todayISO() && editable;
   const now = live ? nowHHMM() : null;
 
@@ -492,10 +501,11 @@ function Blocks({ day, editable, onTick, setSheet, commit }) {
           key={extra.id}
           time={extra.at ?? ""}
           name={extra.name}
-          desc="Logged food"
+          desc={EXTRA_DESC[extra.from] ?? "Logged food"}
           kcal={Math.round(extra.kcal)}
           protein={Math.round(extra.proteinG)}
           state="off"
+          tag={wide ? "off plan" : undefined}
           link={editable ? "Remove" : undefined}
           linkLabel={`Remove ${extra.name}`}
           onLink={() => commit(removeExtra(day, extra.id))}
@@ -541,6 +551,9 @@ function Blocks({ day, editable, onTick, setSheet, commit }) {
           ? "receded"
           : "idle";
     const upcoming = state === "idle";
+    // An add-on with no Swap sheet to drop it from (Pre-bed) gets Remove,
+    // the same link logged food carries, while it is still to come.
+    const droppable = bonus || addOn;
     rows.push(
       <BlockRow
         key={block.id}
@@ -560,9 +573,16 @@ function Blocks({ day, editable, onTick, setSheet, commit }) {
                 : undefined
         }
         tagEmphasis={!bonus && !addOn && block.id === skipped}
-        link={block.rotation && upcoming ? "Swap" : undefined}
-        linkLabel={`Swap ${block.name}`}
-        onLink={() => setSheet({ swap: block.id })}
+        link={!upcoming ? undefined : block.rotation ? "Swap" : droppable ? "Remove" : undefined}
+        linkLabel={`${block.rotation ? "Swap" : "Remove"} ${block.name}`}
+        onLink={() =>
+          block.rotation
+            ? setSheet({ swap: block.id })
+            : commit(
+                removeBlock(day, block.id),
+                `${block.name} removed for ${day.date === todayISO() ? "today" : "that day"}`,
+              )
+        }
         onToggle={editable ? () => onTick(block.id) : undefined}
       />,
     );

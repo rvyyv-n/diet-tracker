@@ -73,6 +73,14 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   book, replacing the Save button on a logged row. The storage banner is a
   `Banner` whose Backup downloads the file (`ui/download.js`, shared with
   Settings). No new tokens.
+- **pass 67 fix — add-ons and logged food:** an add-on with no Swap sheet
+  (Pre-bed) now carries a Remove link while it is upcoming, so it can be
+  dropped for the day like Snack; the toast offers Undo. Logged food
+  records which Log food tab it came from (`from`); on desktop the row
+  reads "off plan" beside the name and "Logged from Recipes" (or Foods, or
+  "Typed in") under it, as in the design, and the time column drops its
+  own "off plan" there. Food logged before this has no source and keeps
+  "Logged food".
 
 - **pass 68 — Weight, phone and desktop:** Weight is rebuilt on the
   tracking components. The latest weigh-in leads in the numeric face with

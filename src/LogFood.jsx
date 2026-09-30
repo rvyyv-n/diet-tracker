@@ -398,6 +398,7 @@ function RecipeList({ day, extrasState, setExtrasOpen, commit }) {
                       name: recipe.name,
                       kcal: recipe.kcal,
                       proteinG: recipe.proteinG,
+                      from: "recipes",
                     }),
                     `${recipe.name} logged · ${NUM.format(recipe.kcal)} kcal`,
                   );
@@ -698,7 +699,12 @@ function ExtrasPickForm({ day, extrasState, onDone, commit }) {
       onAdd={(food) => {
         onDone();
         commit(
-          logExtra(day, { name: food.name, kcal: food.kcal, proteinG: food.proteinG }),
+          logExtra(day, {
+            name: food.name,
+            kcal: food.kcal,
+            proteinG: food.proteinG,
+            from: "foods",
+          }),
           `${food.name} logged · ${NUM.format(food.kcal)} kcal`,
         );
       }}
@@ -794,7 +800,7 @@ function ExtrasTypeForm({ day, onDone, commit }) {
       }
       onAdd={(item) => {
         onDone();
-        const next = logExtra(day, item);
+        const next = logExtra(day, { ...item, from: "custom" });
         const logged = next.extras.at(-1);
         if (keep && logged) {
           saveRecipe({ name: logged.name, kcal: logged.kcal, proteinG: logged.proteinG });

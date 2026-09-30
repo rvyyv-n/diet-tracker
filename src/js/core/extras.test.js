@@ -21,3 +21,10 @@ describe("addExtra", () => {
     expect(extrasTotals(one)).toEqual({ kcal: 50, proteinG: 0 });
   });
 });
+
+describe("addExtra source", () => {
+  it("keeps a known Log food tab and drops anything else", () => {
+    expect(addExtra(day, { name: "Wrap", from: "recipes" }).extras[0].from).toBe("recipes");
+    expect(addExtra(day, { name: "Wrap", from: "somewhere" }).extras[0]).not.toHaveProperty("from");
+  });
+});

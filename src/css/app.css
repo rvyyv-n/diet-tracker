@@ -4189,6 +4189,10 @@ button.r-listrow {
   .r-today .r-blockrow__tag {
     margin-left: 0;
   }
+  /* desktop says "off plan" as the tag beside the name, not under the time */
+  .r-today .r-blockrow__off {
+    display: none;
+  }
   .r-today .r-blockrow__desc {
     display: block;
     flex-basis: 100%;
