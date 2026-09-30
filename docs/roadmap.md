@@ -84,12 +84,12 @@ predecessor is unticked is flagged before it starts. Start each build pass in
 a fresh thread. The design refs are paths inside the design export
 (`design-system/…`, `screens/…`).
 
-| Build pass | Name                       | Targets (pass numbers)                       | Model                   |
-| ---------- | -------------------------- | -------------------------------------------- | ----------------------- |
-| 4          | Plan, settings and recipes | `plan` (69), `settings` (70), `recipes` (71) | Sonnet 5.5, high effort |
-| 5          | First run and identity     | `firstrun` (72), `icons` (73)                | Sonnet 5.5, high effort |
-| 6          | Audit and README           | `sweep` (74), `readme` (75)                  | Opus, high effort       |
-| 7          | Motion                     | `motion` (76), `rail` (77)                   | Sonnet 5.5, high effort |
+| Build pass | Name                       | Targets (pass numbers)          | Model                   |
+| ---------- | -------------------------- | ------------------------------- | ----------------------- |
+| 4          | Plan, settings and recipes | `settings` (70), `recipes` (71) | Sonnet 5.5, high effort |
+| 5          | First run and identity     | `firstrun` (72), `icons` (73)   | Sonnet 5.5, high effort |
+| 6          | Audit and README           | `sweep` (74), `readme` (75)     | Opus, high effort       |
+| 7          | Motion                     | `motion` (76), `rail` (77)      | Sonnet 5.5, high effort |
 
 Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
@@ -98,17 +98,7 @@ and desktop test pass, and the release.
 
 #### Build pass 4 — Plan, settings and recipes
 
-Model: Sonnet 5.5, high effort. Targets: plan, settings, recipes. This is the remaining main screens, including the Look picker.
-
-- [ ] **Pass 69 · `plan`** — Plan, phone and desktop.
-  - Reads: `screens/Rise Plan Phone.dc.html`, `GroceryList.jsx`,
-    `PhaseLadder.jsx`, `ui_kits/rise/PlanScreen.jsx`.
-  - Does: GroceryList with the aisle marks, quantities that changed on a phase
-    change shown in `--accent-text` until the Monday reset, carried-over ticks,
-    and the Clear toast with Undo; PhaseLadder with status words (Now, Done, If
-    stalled); the link to Recipes at the foot of Plan. On desktop, the
-    support column of `.r-columns`, as the desktop frame lays it out.
-  - Done when: the grid matches, and `scaleGroceryQty` behaviour is unchanged.
+Model: Sonnet 5.5, high effort. Targets: settings, recipes (plan, pass 69, is done). This is the remaining main screens, including the Look picker.
 
 - [ ] **Pass 70 · `settings`** — Settings and the Look picker.
   - Reads: `screens/Rise Secondary Phone.dc.html` (Settings frames),

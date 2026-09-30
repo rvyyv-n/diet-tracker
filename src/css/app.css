@@ -927,111 +927,12 @@
   color: var(--ink-soft);
   cursor: default;
 }
-/* ---------------------------------------------------------------- plan ---
-   The Plan tab (pass 30–31): a weekly grocery checklist that self-clears each
-   Monday, over a read-only reference sheet built from plan.js. Same rules as
-   the rest — press + focus states only, hairline borders, coral only where it
-   marks the current thing.                                                   */
+/* ----------------------------------------------------- reference sheet ---
+   The meals and food table blocks Recipes still shows (built from plan.js).
+   Plan itself is `.r-plan`, near the end of this file (pass 69).           */
 
 .planscreen {
   gap: var(--space-16);
-}
-
-/* groceries ------------------------------------------------------------- */
-
-.grocery {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-12);
-}
-
-/* a plain fact: when the list rolls over, and how far through it you are */
-.grocery__status {
-  font: var(--text-caption);
-  color: var(--ink-soft);
-}
-
-.grocery__section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-/* Section mark — the aisle headings and the reference sheet's three sections.
-   It was 12px in --ink-soft, which put it below the rows it introduced
-   and left the sheet reading as one undifferentiated run. Now caption size in
-   full ink, with room above it, so a section announces itself; the glyph
-   beside it (reference sheet only) does the rest. */
-.planscreen__subhead {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  margin-bottom: var(--space-4);
-  font: var(--text-eyebrow);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: var(--eyebrow-transform);
-  color: var(--ink);
-}
-/* The glyph stays muted: the label carries the section, the icon only marks
-   it. Coral is reserved for action and acknowledgement, never decoration. */
-.planscreen__subhead-icon {
-  flex: none;
-  display: inline-flex;
-  color: var(--ink-muted);
-}
-
-/* Another <ul> — same reset as .planref__targets, or the browser's default
-   padding-inline-start indents every aisle's rows by 40px. */
-.grocery__list {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* one tickable item — the whole row is the target, so the tap area is wide
-   even though the row is shorter than a checklist block. */
-.grocery__row {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
-  min-height: 44px;
-  padding: var(--space-8) 0;
-  text-align: left;
-  background: transparent;
-  border: none;
-  border-top: var(--border-width-hairline) solid var(--line);
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.grocery__row:first-child {
-  border-top: none;
-}
-.grocery__row:active {
-  background: var(--bg-sunken);
-}
-.grocery__row:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-/* the tick box is .block-row__tick, reused from the checklist */
-
-.grocery__label {
-  flex: 1;
-  min-width: 0;
-  font: var(--text-body-md);
-  color: var(--ink);
-}
-.grocery__row.is-checked .grocery__label {
-  color: var(--ink-muted);
-  text-decoration: line-through;
-}
-
-.grocery__reset {
-  display: flex;
-  justify-content: flex-end;
 }
 
 /* the reference sheet -------------------------------------------------- */
@@ -1049,86 +950,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
-}
-
-/* phase targets — three rungs, the current one picked out like .phase-ladder.
-   It's a <ul>, so without this reset the browser's default 40px
-   padding-inline-start shows up as an unexplained gap before "Ramp-up". */
-.planref__targets {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-/* The name takes the slack (see .planref__target-name below) rather than
-   space-between distributing it. With the pass-39 rung dot there are three
-   children, and space-between pushed the middle one — the phase name — into
-   the centre of a 960px card, which is not where a label goes. */
-.planref__target {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-8);
-  padding: var(--space-4) 0;
-  border-top: var(--border-width-hairline) solid var(--line);
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-}
-.planref__target:first-child {
-  border-top: none;
-}
-.planref__target.is-now {
-  color: var(--ink);
-  font-weight: var(--weight-medium);
-}
-
-/* The rung marker (pass 39). Every phase gets a dot; only the live one is
-   filled with coral, which makes "where am I on the ladder" a glance rather
-   than a weight-and-colour comparison across two lines of type. Coral as a
-   state marker, not as decoration — the same job it does on the focus ring. */
-.planref__target-dot {
-  flex: none;
-  align-self: center;
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-pill);
-  box-shadow: inset 0 0 0 1px var(--ink-soft);
-}
-.planref__target.is-now .planref__target-dot {
-  background: var(--accent);
-  box-shadow: none;
-}
-
-/* Takes every pixel the dot and the figures don't, which is what pins the
-   phase name to the left edge at any card width. */
-.planref__target-name {
-  flex: 1;
-}
-
-/* The figures. kcal is the headline number so it takes full ink; protein is
-   the secondary one and takes the teal accent, which is what gives the ladder
-   its colour. Same "·" -drawn-in-CSS trick as the food table. */
-.planref__target-fig {
-  flex: none;
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-4);
-  font-variant-numeric: tabular-nums;
-}
-.planref__target-kcal {
-  color: var(--text-body);
-  font-weight: var(--weight-medium);
-}
-.planref__target.is-now .planref__target-kcal {
-  color: var(--ink);
-}
-.planref__target-protein {
-  color: var(--accent-text);
-}
-.planref__target-protein::before {
-  content: "·";
-  margin-right: var(--space-4);
-  color: var(--ink-soft);
 }
 
 /* one meal block, with its rotation options nested beneath */
@@ -2458,7 +2279,6 @@
   }
 
   /* tap rows — press is --bg-sunken, so hover takes --bg-raised */
-  .grocery__row:hover,
   .set2-row:hover,
   .set2-profile:hover,
   .planref__meal-head--btn:hover {
@@ -2521,6 +2341,7 @@
 .r-listrow,
 .r-option,
 .r-grocery__item,
+.r-plan__link,
 .r-calendar__day,
 .r-banner__action,
 .r-blockrow__link {
@@ -4786,6 +4607,182 @@ button.r-listrow {
   }
 }
 
+/* ------------------------------------------------------- plan (pass 69) ---
+   Plan on the tracking components. A phone column pads itself by --gutter
+   (20px, as the handoff draws it) and runs to the screen edge like Today and
+   Weight. On desktop it sits in .r-columns: the groceries in the main column
+   with the aisles in two columns, the ladder and the Recipes link in the
+   support column. */
+
+.r-plan {
+  display: flex;
+  flex-direction: column;
+  margin: 0 calc(-1 * (var(--space-16) + env(safe-area-inset-right))) 0
+    calc(-1 * (var(--space-16) + env(safe-area-inset-left)));
+}
+@media (min-width: 600px) {
+  .r-plan {
+    margin: 0 calc(-1 * (var(--space-24) + env(safe-area-inset-right))) 0
+      calc(-1 * (var(--space-24) + env(safe-area-inset-left)));
+  }
+}
+.r-plan__head {
+  padding: 0 var(--gutter);
+  margin-top: 10px;
+}
+.r-plan__title {
+  margin: 6px 0 0;
+  font: var(--text-screen-title);
+  line-height: 1.1;
+}
+.r-plan__target {
+  margin: 6px 0 0;
+  font-size: var(--type-body);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.r-plan .r-columns {
+  gap: 28px;
+  margin-top: var(--space-24);
+}
+.r-plan__main,
+.r-plan__support {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0 var(--gutter);
+}
+.r-plan__support {
+  gap: 18px;
+}
+.r-plan__count {
+  color: var(--ink);
+}
+.r-plan__card {
+  margin-top: 10px;
+}
+
+.r-ladder__note {
+  margin: 0;
+  padding: 10px var(--space-12) var(--space-8);
+  font-size: var(--type-small);
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+
+/* the way into Recipes, at the foot of Plan */
+.r-plan__link {
+  --r-ring: inset 0 0 0 1px var(--line);
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 20px;
+  align-items: center;
+  column-gap: 14px;
+  width: 100%;
+  padding: 14px 14px 14px var(--space-16);
+  border: 0;
+  border-radius: var(--radius-card);
+  background-color: var(--bg-raised);
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.r-plan__link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--bg-sunken);
+}
+.r-plan__link-text {
+  min-width: 0;
+}
+.r-plan__link-title {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+}
+.r-plan__link-hint {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: var(--type-small);
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+.r-plan__link-chevron {
+  color: var(--ink-muted);
+}
+
+@media (min-width: 1024px) {
+  .r-plan {
+    margin: 0;
+  }
+  .r-plan__head {
+    padding: 0;
+    margin-top: 0;
+  }
+  .r-plan__title {
+    font-size: calc(var(--type-display-lg) * 1.25);
+  }
+  .r-plan .r-columns {
+    margin-top: 26px;
+  }
+  .r-plan__main,
+  .r-plan__support {
+    padding: 0;
+  }
+  .r-plan .r-grocery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-32);
+    padding: 6px 20px 18px;
+  }
+  .r-plan .r-grocery__foot {
+    grid-column: 1 / -1;
+  }
+  .r-plan .r-grocery__item {
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    column-gap: var(--space-12);
+    min-height: 46px;
+  }
+  .r-plan .r-grocery__box {
+    width: 22px;
+    height: 22px;
+  }
+  .r-plan .r-grocery__name {
+    font-size: var(--type-body);
+  }
+  .r-plan .r-ladder__rung {
+    column-gap: var(--space-12);
+  }
+  .r-plan .r-ladder__name,
+  .r-plan .r-ladder__kcal {
+    font-size: var(--type-body);
+  }
+  .r-plan .r-ladder__when,
+  .r-plan .r-ladder__protein {
+    font-size: 13px;
+  }
+  .r-plan__link {
+    grid-template-columns: minmax(0, 1fr) 18px;
+    column-gap: var(--space-12);
+    padding: var(--space-16);
+  }
+  .r-plan__link-icon {
+    display: none;
+  }
+  .r-plan__link-title {
+    font-size: var(--type-body);
+  }
+}
+@media (min-width: 1280px) {
+  .r-plan .r-columns {
+    gap: 40px;
+  }
+}
+
 /* ------------------------------------------------ today's sheets (pass 67) --- */
 
 .r-sheet__note {
@@ -4898,6 +4895,7 @@ button.r-listrow {
   button.r-listrow:hover,
   .r-option:hover,
   .r-grocery__item:hover,
+  .r-plan__link:hover,
   .r-calendar__day:not(:disabled):hover,
   .r-banner__action:hover,
   .r-blockrow__link:hover {
@@ -4926,6 +4924,7 @@ button.r-listrow {
 button.r-listrow:active,
 .r-option:active,
 .r-grocery__item:active,
+.r-plan__link:active,
 .r-calendar__day:not(:disabled):active,
 .r-banner__action:active,
 .r-blockrow__link:active {
@@ -4955,6 +4954,7 @@ button.r-listrow:active,
 .r-listrow:focus-visible,
 .r-option:focus-visible,
 .r-grocery__item:focus-visible,
+.r-plan__link:focus-visible,
 .r-calendar__day:focus-visible,
 .r-banner__action:focus-visible,
 .r-blockrow__link:focus-visible {

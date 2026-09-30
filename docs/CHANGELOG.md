@@ -99,6 +99,21 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   desktop the screen fills `.r-columns`. `useWide` is shared by Today and
   Weight. No new tokens.
 
+- **pass 69 — Plan, phone and desktop:** Plan is rebuilt on the tracking
+  components. It opens with the week and date, "Phase 2, Target" and the
+  day's kcal and protein. Groceries are a `GroceryList`: aisle marks, the
+  quantity on the right, and a quantity that differs from the Phase 2
+  baseline in accent text (so a phase change is visible at a glance). Ticks
+  key on aisle and name, so they carry over a phase change and still clear
+  each Monday; the heading says how many are ticked and when the new list
+  starts. Clear shows a toast with Undo (`restoreGroceryChecks`). Targets
+  are a `PhaseLadder` with a status word on every rung (Now, Done, If
+  stalled, or Week 3) and a one-line note; a row at the foot opens Recipes.
+  On desktop the screen fills `.r-columns`: groceries with the aisles in two
+  columns, the ladder and the Recipes link in the support column. The old
+  grocery, ladder and Plan group styles are gone. `scaleGroceryQty` is
+  unchanged. No new tokens.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on

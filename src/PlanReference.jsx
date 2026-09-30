@@ -1,40 +1,14 @@
 /**
- * PlanReference.jsx — the plan as something to read (pass 48). The target
- * ladder stays on Plan, beside the groceries: both change with the phase. The
- * meals and the food table moved to Recipes, beside the book: they're what you
- * read when deciding what to eat or log, about once a month, and on Plan they
- * sat as a wall under the list opened every week. Each block renders bare —
- * the host screen puts it in a card under its own group label.
+ * PlanReference.jsx — the plan as something to read (pass 48). The meals and
+ * the food table live on Recipes, beside the book: they're what you read when
+ * deciding what to eat or log, about once a month, and on Plan they sat as a
+ * wall under the list opened every week. The target ladder is Plan's own
+ * PhaseLadder since pass 69. Each block renders bare — the host screen puts
+ * it in a card under its own group label.
  */
 
 import { NUM, Icon, fmtTime } from "./components/shared.jsx";
-import { PHASES, phaseTarget, activeBlocks, rotationOptions, FOOD_DB } from "./js/core/plan.js";
-
-/** The three-rung target ladder, the active phase picked out. */
-export function TargetsBlock({ phaseId }) {
-  return (
-    <div className="planref__block">
-      <ul className="planref__targets">
-        {PHASES.map((p) => (
-          <li key={p.id} className={`planref__target${p.id === phaseId ? " is-now" : ""}`}>
-            {/* The rung dot: the only thing on the ladder that says which
-                phase is live, now that the figures beside it carry colour
-                of their own. */}
-            <span className="planref__target-dot" aria-hidden="true" />
-            <span className="planref__target-name">{p.name}</span>
-            {/* Three cells rather than one joined string, so kcal and
-                protein can take different weights and colours. The "·"
-                between them is drawn in CSS, as it is in the food table. */}
-            <span className="planref__target-fig">
-              <span className="planref__target-kcal">{NUM.format(p.kcal)} kcal</span>
-              <span className="planref__target-protein">{p.proteinG} g</span>
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+import { phaseTarget, activeBlocks, rotationOptions, FOOD_DB } from "./js/core/plan.js";
 
 /**
  * The day's blocks in time order. A block with a rotation lists four options,

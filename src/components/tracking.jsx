@@ -266,8 +266,11 @@ export function StatRow({ stats }) {
   );
 }
 
-/** The phase ladder. The active rung sits on a sunken tile; every rung has a status word. */
-export function PhaseLadder({ rungs }) {
+/**
+ * The phase ladder. The active rung sits on a sunken tile; every rung has a
+ * status word. `note` is a quiet line under the rungs, inside the card.
+ */
+export function PhaseLadder({ rungs, note }) {
   return (
     <div className="r-ladder">
       {rungs.map((r, i) => (
@@ -286,6 +289,7 @@ export function PhaseLadder({ rungs }) {
           </span>
         </div>
       ))}
+      {note ? <p className="r-ladder__note">{note}</p> : null}
     </div>
   );
 }

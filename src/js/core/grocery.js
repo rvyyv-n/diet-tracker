@@ -72,3 +72,12 @@ export function toggleGrocery(key, onISO = todayISO()) {
 export function clearGroceryChecks(onISO = todayISO()) {
   return save(RECORD, { weekStart: startOfWeekISO(onISO), checked: {} });
 }
+
+/**
+ * Put a previously read checked-map back, for the Clear toast's Undo. Stamps
+ * this week's Monday, so an Undo after the week rolled over restores onto the
+ * new week rather than resurrecting last week's anchor.
+ */
+export function restoreGroceryChecks(checked, onISO = todayISO()) {
+  return save(RECORD, { weekStart: startOfWeekISO(onISO), checked: { ...checked } });
+}
