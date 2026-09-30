@@ -29,16 +29,36 @@ export function dateDropdowns({ value, yearFrom, yearTo }) {
   }
 
   const dayBox = listbox({
-    options: dayOpts(), value: d, placeholder: "Day", ariaLabel: "Day",
-    onChange: (v) => { d = v; emit(); },
+    options: dayOpts(),
+    value: d,
+    placeholder: "Day",
+    ariaLabel: "Day",
+    onChange: (v) => {
+      d = v;
+      emit();
+    },
   });
   const monthBox = listbox({
-    options: monthOpts, value: m, placeholder: "Month", ariaLabel: "Month",
-    onChange: (v) => { m = v; reclampDay(); emit(); },
+    options: monthOpts,
+    value: m,
+    placeholder: "Month",
+    ariaLabel: "Month",
+    onChange: (v) => {
+      m = v;
+      reclampDay();
+      emit();
+    },
   });
   const yearBox = listbox({
-    options: yearOpts, value: y, placeholder: "Year", ariaLabel: "Year",
-    onChange: (v) => { y = v; reclampDay(); emit(); },
+    options: yearOpts,
+    value: y,
+    placeholder: "Year",
+    ariaLabel: "Year",
+    onChange: (v) => {
+      y = v;
+      reclampDay();
+      emit();
+    },
   });
 
   function reclampDay() {
@@ -66,6 +86,8 @@ export function dateDropdowns({ value, yearFrom, yearTo }) {
       monthBox.set(m);
       dayBox.setOptions(dayOpts(), d);
     },
-    onChange: (fn) => { onChange = fn; },
+    onChange: (fn) => {
+      onChange = fn;
+    },
   };
 }

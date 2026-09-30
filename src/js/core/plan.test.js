@@ -3,7 +3,8 @@ import { phaseTarget, activeBlocks, normaliseAddOns, scaleGroceryQty, PHASES } f
 
 describe("phaseTarget", () => {
   it("reads each phase's kcal and protein", () => {
-    for (const p of PHASES) expect(phaseTarget(p.id)).toEqual({ kcal: p.kcal, proteinG: p.proteinG });
+    for (const p of PHASES)
+      expect(phaseTarget(p.id)).toEqual({ kcal: p.kcal, proteinG: p.proteinG });
   });
 
   it("is zero for an unknown phase", () => {
@@ -27,7 +28,15 @@ describe("activeBlocks", () => {
   });
 
   it("slots add-ons in by time of day", () => {
-    expect(activeBlocks(["A2", "A1", "A3"]).map((b) => b.id)).toEqual(["B1", "B2", "B3", "A1", "A3", "B4", "A2"]);
+    expect(activeBlocks(["A2", "A1", "A3"]).map((b) => b.id)).toEqual([
+      "B1",
+      "B2",
+      "B3",
+      "A1",
+      "A3",
+      "B4",
+      "A2",
+    ]);
   });
 
   it("ignores core ids passed as add-ons", () => {

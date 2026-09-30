@@ -37,8 +37,14 @@ const CM_PER_INCH = 2.54;
 
 const NAME_FIELD = { name: "name", label: "Name (optional)", type: "text", validated: false };
 const TARGET_FIELD = {
-  name: "targetRateKgPerWeek", label: "Target gain (kg / week)", type: "number",
-  inputmode: "decimal", step: "0.05", min: "0.05", max: "1", validated: true,
+  name: "targetRateKgPerWeek",
+  label: "Target gain (kg / week)",
+  type: "number",
+  inputmode: "decimal",
+  step: "0.05",
+  min: "0.05",
+  max: "1",
+  validated: true,
   hint: `Aim for ${TARGET_RATE_KG_PER_WEEK.min}–${TARGET_RATE_KG_PER_WEEK.max} kg/week.`,
 };
 
@@ -88,7 +94,12 @@ export default function Welcome({ onComplete, edit = false, undoReset = null }) 
 
 function collectSimple(field, inputRef, hintRef, next) {
   const raw = inputRef.current.value.trim();
-  const value = field.type === "number" ? (raw === "" ? null : Number(raw)) : (raw || (field.name === "name" ? "" : null));
+  const value =
+    field.type === "number"
+      ? raw === ""
+        ? null
+        : Number(raw)
+      : raw || (field.name === "name" ? "" : null);
   next[field.name] = value;
   const err = field.validated ? validate(field.name, value) : null;
   hintRef.current.textContent = err || field.hint || "";
@@ -140,7 +151,9 @@ function FormScreen({ profile, editing, undoReset, onSaved }) {
     <section className="screen">
       <div className="screen-head screen-head--setup">
         <h1 className="screen__title">{editing ? "Edit profile" : "Set up your plan"}</h1>
-        <p className="screen__intro">The numbers the plan adjusts from. They stay on this device.</p>
+        <p className="screen__intro">
+          The numbers the plan adjusts from. They stay on this device.
+        </p>
       </div>
       {!editing && typeof undoReset === "function" ? (
         <button className="backfill" type="button" onClick={undoReset}>
@@ -151,7 +164,12 @@ function FormScreen({ profile, editing, undoReset, onSaved }) {
         <label className="field">
           <span className="field__label">{NAME_FIELD.label}</span>
           <span className="field__control">
-            <input ref={nameInputRef} className="field__input" type="text" defaultValue={profile.name ?? ""} />
+            <input
+              ref={nameInputRef}
+              className="field__input"
+              type="text"
+              defaultValue={profile.name ?? ""}
+            />
           </span>
           <span ref={nameHintRef} className="field__hint" />
         </label>
@@ -172,7 +190,9 @@ function FormScreen({ profile, editing, undoReset, onSaved }) {
               defaultValue={profile.targetRateKgPerWeek ?? ""}
             />
           </span>
-          <span ref={targetHintRef} className="field__hint">{TARGET_FIELD.hint}</span>
+          <span ref={targetHintRef} className="field__hint">
+            {TARGET_FIELD.hint}
+          </span>
         </label>
         <MountOnce node={startRow.node} />
         {errorNote ? <p className="screen__intro field__hint--error">{errorNote}</p> : null}
@@ -217,17 +237,26 @@ function DoneScreen({ profile, onComplete, onEdit }) {
   return (
     <section className="screen">
       <h1 className="screen__title">You’re set up</h1>
-      <p className="screen__intro">Saved to this browser only. These are the figures the plan adjusts from.</p>
+      <p className="screen__intro">
+        Saved to this browser only. These are the figures the plan adjusts from.
+      </p>
       <div className="card summary">
         <SummaryRow label="Height" value={heightSummary(profile)} />
-        <SummaryRow label="Start weight" value={formatWeight(profile.startWeightKg, profile.weightUnit)} />
+        <SummaryRow
+          label="Start weight"
+          value={formatWeight(profile.startWeightKg, profile.weightUnit)}
+        />
         {age != null ? <SummaryRow label="Age" value={`${age}`} /> : null}
         <SummaryRow label="Target" value={`${profile.targetRateKgPerWeek} kg / wk`} />
         <SummaryRow label="Start date" value={profile.startDate || todayISO()} />
       </div>
       <div className="form">
-        <button className="btn btn--primary btn--full" onClick={onComplete}>Start tracking</button>
-        <button className="btn btn--text" onClick={onEdit}>Edit details</button>
+        <button className="btn btn--primary btn--full" onClick={onComplete}>
+          Start tracking
+        </button>
+        <button className="btn btn--text" onClick={onEdit}>
+          Edit details
+        </button>
       </div>
     </section>
   );
@@ -247,9 +276,30 @@ function DoneScreen({ profile, onComplete, onEdit }) {
 function buildHeightRow(profile) {
   let unit = profile.heightUnit === "ftin" ? "ftin" : "cm";
 
-  const cmInput = el("input", { class: "field__input", type: "number", inputmode: "numeric", min: "100", max: "250", step: "1" });
-  const ftInput = el("input", { class: "field__input", type: "number", inputmode: "numeric", min: "3", max: "8", step: "1" });
-  const inInput = el("input", { class: "field__input", type: "number", inputmode: "numeric", min: "0", max: "11", step: "1" });
+  const cmInput = el("input", {
+    class: "field__input",
+    type: "number",
+    inputmode: "numeric",
+    min: "100",
+    max: "250",
+    step: "1",
+  });
+  const ftInput = el("input", {
+    class: "field__input",
+    type: "number",
+    inputmode: "numeric",
+    min: "3",
+    max: "8",
+    step: "1",
+  });
+  const inInput = el("input", {
+    class: "field__input",
+    type: "number",
+    inputmode: "numeric",
+    min: "0",
+    max: "11",
+    step: "1",
+  });
 
   if (profile.heightCm != null) {
     if (unit === "ftin") setFtInFromCm(profile.heightCm);

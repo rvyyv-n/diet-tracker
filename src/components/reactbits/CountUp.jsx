@@ -1,39 +1,39 @@
 // CountUp — from reactbits.dev (JavaScript + CSS variant), copied in
 // unmodified per pass 45's "copy-paste, not an npm package" convention.
 // `motion` is its one real dependency.
-import { useInView, useMotionValue, useSpring } from 'motion/react';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useInView, useMotionValue, useSpring } from "motion/react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 
 export default function CountUp({
   to,
   from = 0,
-  direction = 'up',
+  direction = "up",
   delay = 0,
   duration = 2,
-  className = '',
+  className = "",
   startWhen = true,
-  separator = '',
+  separator = "",
   onStart,
-  onEnd
+  onEnd,
 }) {
   const ref = useRef(null);
-  const motionValue = useMotionValue(direction === 'down' ? to : from);
+  const motionValue = useMotionValue(direction === "down" ? to : from);
 
   const damping = 20 + 40 * (1 / duration);
   const stiffness = 100 * (1 / duration);
 
   const springValue = useSpring(motionValue, {
     damping,
-    stiffness
+    stiffness,
   });
 
-  const isInView = useInView(ref, { once: true, margin: '0px' });
+  const isInView = useInView(ref, { once: true, margin: "0px" });
 
-  const getDecimalPlaces = num => {
+  const getDecimalPlaces = (num) => {
     const str = num.toString();
 
-    if (str.includes('.')) {
-      const decimals = str.split('.')[1];
+    if (str.includes(".")) {
+      const decimals = str.split(".")[1];
 
       if (parseInt(decimals) !== 0) {
         return decimals.length;
@@ -55,40 +55,40 @@ export default function CountUp({
   // feedback loop entirely.
   const formatter = useMemo(() => {
     const hasDecimals = maxDecimals > 0;
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat("en-US", {
       useGrouping: !!separator,
       minimumFractionDigits: hasDecimals ? maxDecimals : 0,
-      maximumFractionDigits: hasDecimals ? maxDecimals : 0
+      maximumFractionDigits: hasDecimals ? maxDecimals : 0,
     });
   }, [maxDecimals, separator]);
 
   const formatValue = useCallback(
-    latest => {
+    (latest) => {
       const formattedNumber = formatter.format(latest);
       return separator ? formattedNumber.replace(/,/g, separator) : formattedNumber;
     },
-    [formatter, separator]
+    [formatter, separator],
   );
 
   useEffect(() => {
     if (ref.current) {
-      ref.current.textContent = formatValue(direction === 'down' ? to : from);
+      ref.current.textContent = formatValue(direction === "down" ? to : from);
     }
   }, [from, to, direction, formatValue]);
 
   useEffect(() => {
     if (isInView && startWhen) {
-      if (typeof onStart === 'function') onStart();
+      if (typeof onStart === "function") onStart();
 
       const timeoutId = setTimeout(() => {
-        motionValue.set(direction === 'down' ? from : to);
+        motionValue.set(direction === "down" ? from : to);
       }, delay * 1000);
 
       const durationTimeoutId = setTimeout(
         () => {
-          if (typeof onEnd === 'function') onEnd();
+          if (typeof onEnd === "function") onEnd();
         },
-        delay * 1000 + duration * 1000
+        delay * 1000 + duration * 1000,
       );
 
       return () => {
@@ -99,7 +99,7 @@ export default function CountUp({
   }, [isInView, startWhen, motionValue, direction, from, to, delay, onStart, onEnd, duration]);
 
   useEffect(() => {
-    const unsubscribe = springValue.on('change', latest => {
+    const unsubscribe = springValue.on("change", (latest) => {
       if (!ref.current) return;
       const next = formatValue(latest);
       // The spring ticks continuously, but the displayed string only

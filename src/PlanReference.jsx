@@ -52,9 +52,21 @@ export function MealsBlock({ addOns, phaseId, openMeal, setOpenMeal }) {
     <div className="planref__block">
       {activeBlocks(addOns).map((b) =>
         b.rotation ? (
-          <RotationMeal key={b.id} b={b} dayKcal={dayKcal} openMeal={openMeal} setOpenMeal={setOpenMeal} />
+          <RotationMeal
+            key={b.id}
+            b={b}
+            dayKcal={dayKcal}
+            openMeal={openMeal}
+            setOpenMeal={setOpenMeal}
+          />
         ) : (
-          <FixedMeal key={b.id} b={b} dayKcal={dayKcal} openMeal={openMeal} setOpenMeal={setOpenMeal} />
+          <FixedMeal
+            key={b.id}
+            b={b}
+            dayKcal={dayKcal}
+            openMeal={openMeal}
+            setOpenMeal={setOpenMeal}
+          />
         ),
       )}
     </div>
@@ -112,7 +124,15 @@ function RotationMeal({ b, dayKcal, openMeal, setOpenMeal }) {
   const hi = Math.max(...kcals);
   const range = lo === hi ? `${NUM.format(lo)} kcal` : `${NUM.format(lo)}–${NUM.format(hi)} kcal`;
   return (
-    <MealDisclosure b={b} fig={range} opts={opts} kcal={hi} dayKcal={dayKcal} openMeal={openMeal} setOpenMeal={setOpenMeal} />
+    <MealDisclosure
+      b={b}
+      fig={range}
+      opts={opts}
+      kcal={hi}
+      dayKcal={dayKcal}
+      openMeal={openMeal}
+      setOpenMeal={setOpenMeal}
+    />
   );
 }
 
@@ -215,4 +235,3 @@ export function FoodsBlock() {
 }
 
 // --- helpers -------------------------------------------------------------
-

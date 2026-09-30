@@ -58,11 +58,11 @@ editorial software and dislike anything that feels like a fitness app
 
 ## 3. Platforms and sizes
 
-| Frame | Size | Notes |
-|---|---|---|
-| Phone | **390 × 844** | Primary. PWA and an Android app (a thin native shell around the same web UI). |
-| Small phone | 320 × 640 | Stress test only. Nothing may clip or overflow. |
-| Desktop | **1440 × 900** | Windows app (Tauri shell around the same web UI). |
+| Frame       | Size           | Notes                                                                         |
+| ----------- | -------------- | ----------------------------------------------------------------------------- |
+| Phone       | **390 × 844**  | Primary. PWA and an Android app (a thin native shell around the same web UI). |
+| Small phone | 320 × 640      | Stress test only. Nothing may clip or overflow.                               |
+| Desktop     | **1440 × 900** | Windows app (Tauri shell around the same web UI).                             |
 
 Today the phone has a bottom tab bar (Today · Plan · Weight · Settings) and
 desktop has a collapsible left side nav with Recipes as a fifth destination.
@@ -80,7 +80,7 @@ explain why, but don't quietly break it.
   badges, no praise ("Great job!"), no "you're behind" copy, no red "overdue"
   states. Insight copy **states facts, never verdicts**.
 - **Colour meaning is inverted from a diet app.** This is a gain plan, so
-  *under*-eating is the failure: **green = at or above target, amber/gold =
+  _under_-eating is the failure: **green = at or above target, amber/gold =
   partial, red = well under**. Keep that mapping, and don't use green for
   anything else that sits next to intake (a green toggle would collide with
   it). The colours can change. The meaning can't.
@@ -141,7 +141,9 @@ Use the sample content in section 8. Design **phone and desktop** unless noted,
 in light mode, plus the listed states.
 
 ### ★1. Today (hero)
+
 The screen opened five times a day. Top to bottom today:
+
 - **Header:** screen title and the **7-day dot strip** with a calendar button
   (opens a month calendar popover). Viewing a past day shows its date and, if
   it's older than yesterday, "This day is closed."
@@ -169,7 +171,9 @@ The screen opened five times a day. Top to bottom today:
   panel open, a rotation picker open, and a storage-full banner.
 
 ### ★2. Weight (hero)
+
 Opened weekly. Today it has:
+
 - **The weigh-in entry:** a date (calendar picker) and a weight in kg or lb,
   with Save and a transient "Saved".
 - **Weekly review:** week number, latest weight, the 4-week average change
@@ -182,7 +186,9 @@ Opened weekly. Today it has:
   "move to phase 3" suggestion appears), dark mode.
 
 ### ★3. Plan
+
 What changes week to week:
+
 - **Groceries:** a checklist built from the plan, grouped sensibly, with
   quantities ("7.5 L full-fat milk", "24 eggs"), a count ("9 of 23 ticked"),
   and Clear. It resets weekly.
@@ -191,7 +197,9 @@ What changes week to week:
 - A link to **Recipes** (on the phone, this is how Recipes is reached).
 
 ### 4. Recipes
+
 Reading matter and the recipe book:
+
 - **The recipe book:** the user's own recipes (name, per-serving kcal/protein,
   ingredients). There's a filter, and create, edit, rename and delete. Tapping a
   recipe logs it for today.
@@ -199,6 +207,7 @@ Reading matter and the recipe book:
 - **The food table:** the ~20 built-in foods with kcal/protein per unit.
 
 ### 5. Settings
+
 Groups today: **Profile** (a card with the plan at a glance and "Edit
 setup"), **Appearance** (Theme: System / Light / Dark), **Overview** (show or
 hide the protein and remaining lines), **Notifications** (meal reminders, and
@@ -209,11 +218,13 @@ Import from file or paste, with Undo; "Exported 3 days ago", and storage used),
 update, an import error.
 
 ### 6. First run
+
 - **Intro:** a short branded splash that can always be skipped.
 - **Welcome:** a setup form for name, height, current weight, date of birth,
   target rate (kg/week), start date and units, then a "done" state.
 
 ### 7. Smaller surfaces
+
 A **What's new** sheet after an update, the **calendar popover**, the
 **listbox/select** used for units and pickers, **toasts with Undo**, the
 **storage-full / write-failed banner**, and **empty states** (no recipes yet,
@@ -237,15 +248,15 @@ sheet/panel · toast with Undo · banner · empty state · focus ring.
 
 **Blocks (Phase 2 = the first six; Shake 2 is the Phase 3 add-on):**
 
-| Time | Block | kcal | Protein | Today's option |
-|---|---|---|---|---|
-| 08:00 | Breakfast | 705 | 34 g | Eggs (3) + flatbreads (2) + milk (250 ml) + butter |
-| 11:00 | Shake | 580 | 22 g | Milk (300 ml) + peanut butter (2 tbsp) + banana + oats |
-| 13:30 | Lunch | 580 | 33 g | Chicken curry (150 g) + rice (1 cup) |
-| 16:00 | Snack · add-on | 290 | 11 g | Yogurt (200 g) + dates (3) + almonds (15 g) |
-| 17:00 | Shake 2 · add-on | 580 | 22 g | Heavy shake, optional or post-training |
-| 19:30 | Dinner | 700 | 37 g | Egg curry + lentil stew + flatbreads (2) |
-| 22:00 | Pre-bed · add-on | 255 | 12 g | Milk (250 ml) + peanut butter (1 tbsp) |
+| Time  | Block            | kcal | Protein | Today's option                                         |
+| ----- | ---------------- | ---- | ------- | ------------------------------------------------------ |
+| 08:00 | Breakfast        | 705  | 34 g    | Eggs (3) + flatbreads (2) + milk (250 ml) + butter     |
+| 11:00 | Shake            | 580  | 22 g    | Milk (300 ml) + peanut butter (2 tbsp) + banana + oats |
+| 13:30 | Lunch            | 580  | 33 g    | Chicken curry (150 g) + rice (1 cup)                   |
+| 16:00 | Snack · add-on   | 290  | 11 g    | Yogurt (200 g) + dates (3) + almonds (15 g)            |
+| 17:00 | Shake 2 · add-on | 580  | 22 g    | Heavy shake, optional or post-training                 |
+| 19:30 | Dinner           | 700  | 37 g    | Egg curry + lentil stew + flatbreads (2)               |
+| 22:00 | Pre-bed · add-on | 255  | 12 g    | Milk (250 ml) + peanut butter (1 tbsp)                 |
 
 **Rotation example (Lunch):** Chicken curry + rice · 580 kcal · 33 g /
 Minced beef + flatbreads + salad · 630 kcal · 33 g / Chickpeas + flatbread +

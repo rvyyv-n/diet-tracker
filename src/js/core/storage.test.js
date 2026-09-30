@@ -16,7 +16,10 @@ describe("migrations", () => {
   it("backfills extras onto v1 days", () => {
     localStorage.setItem(
       "wgt:days",
-      JSON.stringify({ schemaVersion: 1, days: { "2026-01-01": { date: "2026-01-01", done: ["B1"] } } })
+      JSON.stringify({
+        schemaVersion: 1,
+        days: { "2026-01-01": { date: "2026-01-01", done: ["B1"] } },
+      }),
     );
     const out = storage.load("days", null);
     expect(out.schemaVersion).toBe(storage.SCHEMA_VERSION);
@@ -26,7 +29,7 @@ describe("migrations", () => {
   it("keeps extras a v1 day already had", () => {
     localStorage.setItem(
       "wgt:days",
-      JSON.stringify({ schemaVersion: 1, days: { "2026-01-01": { extras: [{ kcal: 100 }] } } })
+      JSON.stringify({ schemaVersion: 1, days: { "2026-01-01": { extras: [{ kcal: 100 }] } } }),
     );
     expect(storage.load("days", null).days["2026-01-01"].extras).toEqual([{ kcal: 100 }]);
   });
@@ -34,7 +37,7 @@ describe("migrations", () => {
   it("gives a flat v2 recipe one item mirroring its totals", () => {
     localStorage.setItem(
       "wgt:recipes",
-      JSON.stringify({ schemaVersion: 2, recipes: [{ name: "Oats", kcal: 400, proteinG: 15 }] })
+      JSON.stringify({ schemaVersion: 2, recipes: [{ name: "Oats", kcal: 400, proteinG: 15 }] }),
     );
     expect(storage.load("recipes", null).recipes[0].items).toEqual([
       { name: "Oats", kcal: 400, proteinG: 15 },
@@ -45,18 +48,27 @@ describe("migrations", () => {
     const items = [{ name: "Milk", kcal: 150, proteinG: 8 }];
     localStorage.setItem(
       "wgt:recipes",
-      JSON.stringify({ schemaVersion: 2, recipes: [{ name: "Shake", kcal: 150, proteinG: 8, items }] })
+      JSON.stringify({
+        schemaVersion: 2,
+        recipes: [{ name: "Shake", kcal: 150, proteinG: 8, items }],
+      }),
     );
     expect(storage.load("recipes", null).recipes[0].items).toEqual(items);
   });
 
   it("passes records a step doesn't own through unchanged", () => {
     localStorage.setItem("wgt:profile", JSON.stringify({ schemaVersion: 1, heightCm: 178 }));
-    expect(storage.load("profile", null)).toEqual({ heightCm: 178, schemaVersion: storage.SCHEMA_VERSION });
+    expect(storage.load("profile", null)).toEqual({
+      heightCm: 178,
+      schemaVersion: storage.SCHEMA_VERSION,
+    });
   });
 
   it("rejects a record from a newer version", () => {
-    localStorage.setItem("wgt:profile", JSON.stringify({ schemaVersion: storage.SCHEMA_VERSION + 1 }));
+    localStorage.setItem(
+      "wgt:profile",
+      JSON.stringify({ schemaVersion: storage.SCHEMA_VERSION + 1 }),
+    );
     expect(storage.load("profile", "fallback")).toBe("fallback");
   });
 
@@ -175,7 +187,9 @@ describe("clear", () => {
 it("createStorage enforces its capacity", () => {
   const s = createStorage(10);
   expect(() => s.setItem("ab", "abc")).not.toThrow();
-  expect(() => s.setItem("cd", "e")).toThrow(expect.objectContaining({ name: "QuotaExceededError" }));
+  expect(() => s.setItem("cd", "e")).toThrow(
+    expect.objectContaining({ name: "QuotaExceededError" }),
+  );
 });
 
 describe("usedChars", () => {

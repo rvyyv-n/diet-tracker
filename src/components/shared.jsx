@@ -29,7 +29,8 @@ export const NUM = new Intl.NumberFormat("en-US");
  */
 export function Icon({ name, size, stroke, className }) {
   const html = { __html: iconSvg(name, { size, stroke }) };
-  if (className) return <span className={className} aria-hidden="true" dangerouslySetInnerHTML={html} />;
+  if (className)
+    return <span className={className} aria-hidden="true" dangerouslySetInnerHTML={html} />;
   return <span style={{ display: "contents" }} dangerouslySetInnerHTML={html} />;
 }
 
@@ -77,7 +78,8 @@ export function EmptyState({ glyph, line }) {
 export function Imperative({ node }) {
   const ref = useRef(null);
   useEffect(() => {
-    if (ref.current.firstChild !== node || ref.current.childNodes.length !== 1) ref.current.replaceChildren(node);
+    if (ref.current.firstChild !== node || ref.current.childNodes.length !== 1)
+      ref.current.replaceChildren(node);
   });
   return <span style={{ display: "contents" }} ref={ref} />;
 }

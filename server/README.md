@@ -26,12 +26,12 @@ instead of a dependency, since there is no body to aes128gcm-encrypt.
 
 ## Layout
 
-| file | what it does |
-| --- | --- |
-| `src/index.js` | the four HTTP routes and the cron handler |
-| `src/subs.js` | the KV subscription store |
-| `src/vapid.js` | ES256 request signing on Web Crypto |
-| `tools/gen-vapid.mjs` | one-off key-pair generation |
+| file                  | what it does                              |
+| --------------------- | ----------------------------------------- |
+| `src/index.js`        | the four HTTP routes and the cron handler |
+| `src/subs.js`         | the KV subscription store                 |
+| `src/vapid.js`        | ES256 request signing on Web Crypto       |
+| `tools/gen-vapid.mjs` | one-off key-pair generation               |
 
 `src/index.js` imports `BLOCKS` from `../../src/js/core/plan.js` rather than
 copying the times. `plan.js` is pure data with no imports and no DOM, so it
@@ -40,19 +40,19 @@ here on the next deploy.
 
 ## Routes
 
-| route | purpose |
-| --- | --- |
-| `GET /health` | liveness |
-| `GET /vapid-public-key` | the key the client passes to `pushManager.subscribe()` |
-| `POST /subscribe` | `{ endpoint, tz, times }` — upsert, keyed by a hash of the endpoint; every time must be a `BLOCKS` time |
-| `POST /unsubscribe` | `{ endpoint }` |
+| route                   | purpose                                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------------------- |
+| `GET /health`           | liveness                                                                                                |
+| `GET /vapid-public-key` | the key the client passes to `pushManager.subscribe()`                                                  |
+| `POST /subscribe`       | `{ endpoint, tz, times }` — upsert, keyed by a hash of the endpoint; every time must be a `BLOCKS` time |
+| `POST /unsubscribe`     | `{ endpoint }`                                                                                          |
 
 ## Scheduling
 
 The Cron Trigger fires on the quarter hour. Half-hour granularity is not
 enough: a few IANA zones sit at `:45` (Asia/Kathmandu, Pacific/Chatham), and
 every UTC offset in the database is a multiple of 15 minutes, so the quarter
-hour is the coarsest schedule that can line up with a block time in *every*
+hour is the coarsest schedule that can line up with a block time in _every_
 timezone.
 
 Each tick resolves the local wall clock once per distinct timezone and pushes
@@ -65,8 +65,7 @@ Cron Triggers are at-least-once, so a `fired:` marker keyed by device, local
 date and time makes a retried tick idempotent. It expires after an hour:
 past the minute it guards, well short of the same block tomorrow.
 
-A push answered with 404 or 410 means the subscription is gone for good (RFC
-8030) and the record is deleted. Anything else — a 429, a 5xx — is treated as
+A push answered with 404 or 410 means the subscription is gone for good (RFC 8030) and the record is deleted. Anything else — a 429, a 5xx — is treated as
 transient and the record stays.
 
 ## Deploying

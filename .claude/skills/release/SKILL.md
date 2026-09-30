@@ -7,7 +7,7 @@ description: Cut a Rise release — bump the version across all seven surfaces, 
 
 Rise's version lives in **seven files plus a service-worker cache key**, and the
 APK/installer are built by GitHub Actions that only fire when a Release is
-*published*. Missing one surface produces a build that reports the wrong
+_published_. Missing one surface produces a build that reports the wrong
 version in Settings → About, or an installed PWA that never refetches the
 shell. This skill is the fixed order.
 
@@ -31,15 +31,15 @@ broken build.
 All of these must move together. `appinfo.js` is the source of truth for the
 JS; the native shells and the README keep their own copies by design.
 
-| File | What changes |
-|---|---|
-| `src/js/core/appinfo.js` | `APP_VERSION = "X.Y.Z"` |
-| `package.json` | `"version": "X.Y.Z"` |
-| `android/app/build.gradle.kts` | `versionName = "X.Y.Z"` **and** `versionCode` +1 (monotonic — Play/Android reject a reused code) |
-| `desktop/src-tauri/tauri.conf.json` | `"version": "X.Y.Z"` |
-| `desktop/src-tauri/Cargo.toml` | `version = "X.Y.Z"` |
-| `README.md` | the `status:` line in the fenced block near the top — version **and** a short phrase naming what shipped; update `next:` if it changed |
-| `public/sw.js` | `CACHE_NAME` → `rise-v<N+1>` |
+| File                                | What changes                                                                                                                           |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/js/core/appinfo.js`            | `APP_VERSION = "X.Y.Z"`                                                                                                                |
+| `package.json`                      | `"version": "X.Y.Z"`                                                                                                                   |
+| `android/app/build.gradle.kts`      | `versionName = "X.Y.Z"` **and** `versionCode` +1 (monotonic — Play/Android reject a reused code)                                       |
+| `desktop/src-tauri/tauri.conf.json` | `"version": "X.Y.Z"`                                                                                                                   |
+| `desktop/src-tauri/Cargo.toml`      | `version = "X.Y.Z"`                                                                                                                    |
+| `README.md`                         | the `status:` line in the fenced block near the top — version **and** a short phrase naming what shipped; update `next:` if it changed |
+| `public/sw.js`                      | `CACHE_NAME` → `rise-v<N+1>`                                                                                                           |
 
 Verify nothing was missed:
 
@@ -54,7 +54,7 @@ old numbers.
 ### The `CACHE_NAME` rule
 
 Bump it on **every** release, and additionally any time a file in
-`PRECACHE_URLS` is added or changed. It does *not* need bumping for JS/CSS
+`PRECACHE_URLS` is added or changed. It does _not_ need bumping for JS/CSS
 changes alone — pass 45's Vite build emits hashed bundle filenames, so those
 invalidate themselves. If this release added a new static asset under
 `public/assets/`, add it to `PRECACHE_URLS` in the same edit.
@@ -67,7 +67,7 @@ matching the existing house style exactly:
 - Heading `## vX.Y.Z — shipped`, then an italic `*Status — released as \`vX.Y.Z\`.*`
   line summarising how it was built and shipped.
 - One `- **pass N — short title:**` bullet per pass, written as prose that
-  explains *why* the change was made and what was rejected along the way, not
+  explains _why_ the change was made and what was rejected along the way, not
   just what changed. Read the previous entry first; the register is discursive
   and matter-of-fact, and short bullet fragments do not match it.
 

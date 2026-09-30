@@ -16,7 +16,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { justOpened } from "./js/ui/dom.js";
-import { SCHEMA_VERSION, clear as clearStorage, usedChars, APPROX_QUOTA, onWrite } from "./js/core/storage.js";
+import {
+  SCHEMA_VERSION,
+  clear as clearStorage,
+  usedChars,
+  APPROX_QUOTA,
+  onWrite,
+} from "./js/core/storage.js";
 import {
   exportAll,
   importAll,
@@ -30,7 +36,12 @@ import {
   restoreSnapshot,
   discardSnapshot,
 } from "./js/core/backup.js";
-import { loadProfile, saveProfile, OVERVIEW_METRICS, overviewMetricShown } from "./js/core/profile.js";
+import {
+  loadProfile,
+  saveProfile,
+  OVERVIEW_METRICS,
+  overviewMetricShown,
+} from "./js/core/profile.js";
 import { setThemePref, THEME_PREFS } from "./js/core/theme.js";
 import { phaseById } from "./js/core/plan.js";
 import { humanDate, todayISO } from "./js/core/dates.js";
@@ -90,9 +101,13 @@ export default function Settings({ onEditSetup, onReset }) {
   // force a re-render to pick it up. Skipped when this screen was the one
   // that just published, since it's already current.
   const [, bump] = useState(0);
-  useEffect(() => subscribe((fresh) => {
-    if (!fresh.has("settings")) bump((n) => n + 1);
-  }), []);
+  useEffect(
+    () =>
+      subscribe((fresh) => {
+        if (!fresh.has("settings")) bump((n) => n + 1);
+      }),
+    [],
+  );
 
   const profile = loadProfile();
   const snap = snapshotInfo();
@@ -308,10 +323,18 @@ export default function Settings({ onEditSetup, onReset }) {
           <div className="card set2-card">
             {snap ? <UndoRow snap={snap} justOpenedNow={undoJustOpened} /> : null}
             <ExportItem justDownloaded={justDownloaded} />
-            <ImportRow pending={pending} importError={importError} pasteOpen={pasteOpen} fileInputRef={fileInputRef} onFileChosen={onFileChosen} />
+            <ImportRow
+              pending={pending}
+              importError={importError}
+              pasteOpen={pasteOpen}
+              fileInputRef={fileInputRef}
+              onFileChosen={onFileChosen}
+            />
             {pasteOpen ? <PastePanel justOpenedNow={pasteJustOpened} pasteRef={pasteRef} /> : null}
             {pending ? <ImportPanel pending={pending} justOpenedNow={importJustOpened} /> : null}
-            {importError ? <ErrorPanel message={importError} justOpenedNow={errorJustOpened} /> : null}
+            {importError ? (
+              <ErrorPanel message={importError} justOpenedNow={errorJustOpened} />
+            ) : null}
           </div>
         </div>
 
@@ -482,7 +505,9 @@ function NotificationsGroup() {
   useEffect(() => {
     if (support !== "ok") return;
     let live = true;
-    reminderState().then((s) => live && setState(s)).catch(() => live && setState("off"));
+    reminderState()
+      .then((s) => live && setState(s))
+      .catch(() => live && setState("off"));
     return () => {
       live = false;
     };
@@ -505,8 +530,11 @@ function NotificationsGroup() {
   }
 
   let hint = "A reminder at each meal time, even with Rise closed.";
-  if (state === "unsupported") hint = "This browser can't show reminders. On iPhone or iPad, add Rise to your Home Screen first.";
-  if (state === "blocked") hint = "Notifications are blocked for Rise. Allow them in your browser's site settings.";
+  if (state === "unsupported")
+    hint =
+      "This browser can't show reminders. On iPhone or iPad, add Rise to your Home Screen first.";
+  if (state === "blocked")
+    hint = "Notifications are blocked for Rise. Allow them in your browser's site settings.";
   if (error) hint = "Couldn't turn reminders on. Check your connection and try again.";
 
   const showToggle = state === "on" || state === "off" || state === "loading";
@@ -517,10 +545,17 @@ function NotificationsGroup() {
       <div className="card set2-card set2-appearance">
         <div className="set2-appearance__head">
           <span className="set2-appearance__name">Meal reminders</span>
-          <span className="set2-appearance__hint" role={error ? "alert" : undefined}>{hint}</span>
+          <span className="set2-appearance__hint" role={error ? "alert" : undefined}>
+            {hint}
+          </span>
         </div>
         {showToggle ? (
-          <div className="seg seg--full" role="group" aria-label="Meal reminders" aria-busy={busy || state === "loading" ? "true" : "false"}>
+          <div
+            className="seg seg--full"
+            role="group"
+            aria-label="Meal reminders"
+            aria-busy={busy || state === "loading" ? "true" : "false"}
+          >
             {[true, false].map((want) => {
               const on = state === "loading" ? false : (state === "on") === want;
               return (
@@ -583,18 +618,26 @@ function NativeNotificationsGroup() {
     ? "A reminder at each meal time. Blocks you've already logged stay quiet."
     : "A reminder at each meal time, even with Rise closed. Blocks you've already logged stay quiet.";
   if (windows && s.reminders && !s.tray) {
-    remindersHint = "Only while Rise is open. Turn on Keep in tray to get them after closing the window.";
+    remindersHint =
+      "Only while Rise is open. Turn on Keep in tray to get them after closing the window.";
   }
-  if (s.blocked) remindersHint = "Notifications are blocked for Rise. Allow them in Android's app settings.";
+  if (s.blocked)
+    remindersHint = "Notifications are blocked for Rise. Allow them in Android's app settings.";
 
   const rows = [{ key: "reminders", name: "Meal reminders", hint: remindersHint }];
   if (windows) {
     rows.push(
-      { key: "tray", name: "Keep in tray", hint: "Closing the window hides Rise to the tray instead of quitting." },
+      {
+        key: "tray",
+        name: "Keep in tray",
+        hint: "Closing the window hides Rise to the tray instead of quitting.",
+      },
       {
         key: "autostart",
         name: "Start with Windows",
-        hint: s.tray ? "Starts quietly in the tray when you sign in." : "Opens Rise when you sign in.",
+        hint: s.tray
+          ? "Starts quietly in the tray when you sign in."
+          : "Opens Rise when you sign in.",
       },
     );
   }
@@ -652,8 +695,12 @@ function UndoRow({ snap, justOpenedNow }) {
         The data from before {what} on {humanDate(snap.takenAt.slice(0, 10))} is still saved here.
       </p>
       <div className="set-panel__actions">
-        <button className="btn btn--primary btn--sm" type="button" data-act="snapshot-undo">Undo</button>
-        <button className="btn btn--text btn--sm" type="button" data-act="snapshot-dismiss">Dismiss</button>
+        <button className="btn btn--primary btn--sm" type="button" data-act="snapshot-undo">
+          Undo
+        </button>
+        <button className="btn btn--text btn--sm" type="button" data-act="snapshot-dismiss">
+          Dismiss
+        </button>
       </div>
     </div>
   );
@@ -663,7 +710,9 @@ function UndoRow({ snap, justOpenedNow }) {
 function PastePanel({ justOpenedNow, pasteRef }) {
   return (
     <div className={`set-panel${justOpenedNow ? " is-entering" : ""}`}>
-      <p className="set-panel__body">Paste a backup's JSON. It goes through the same preview and replace as a file.</p>
+      <p className="set-panel__body">
+        Paste a backup's JSON. It goes through the same preview and replace as a file.
+      </p>
       <textarea
         ref={pasteRef}
         className="set-paste__input"
@@ -674,8 +723,12 @@ function PastePanel({ justOpenedNow, pasteRef }) {
         aria-label="Backup JSON"
       />
       <div className="set-panel__actions">
-        <button className="btn btn--primary btn--sm" type="button" data-act="import-paste-parse">Preview</button>
-        <button className="btn btn--text btn--sm" type="button" data-act="import-paste-close">Cancel</button>
+        <button className="btn btn--primary btn--sm" type="button" data-act="import-paste-parse">
+          Preview
+        </button>
+        <button className="btn btn--text btn--sm" type="button" data-act="import-paste-close">
+          Cancel
+        </button>
       </div>
     </div>
   );
@@ -686,7 +739,9 @@ function ErrorPanel({ message, justOpenedNow }) {
     <div className={`set-panel${justOpenedNow ? " is-entering" : ""}`}>
       <p className="set-panel__body">{message}</p>
       <div className="set-panel__actions">
-        <button className="btn btn--text" type="button" data-act="import-cancel">Close</button>
+        <button className="btn btn--text" type="button" data-act="import-cancel">
+          Close
+        </button>
       </div>
     </div>
   );
@@ -764,7 +819,13 @@ function ImportRow({ pending, importError, pasteOpen, fileInputRef, onFileChosen
           {pasteOpen ? "Close" : "Paste"}
         </button>
       </span>
-      <input ref={fileInputRef} type="file" accept="application/json,.json" hidden onChange={onFileChosen} />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/json,.json"
+        hidden
+        onChange={onFileChosen}
+      />
     </div>
   );
 }
@@ -787,11 +848,16 @@ function ImportPanel({ pending, justOpenedNow }) {
       <p className="set-panel__stats">{parts.join(" · ")}</p>
       <p className="set-panel__meta">{meta}</p>
       <p className="set-panel__body">
-        Replacing overwrites everything in this browser. Export first if you want to keep what is here.
+        Replacing overwrites everything in this browser. Export first if you want to keep what is
+        here.
       </p>
       <div className="set-panel__actions">
-        <button className="btn btn--primary" type="button" data-act="import-commit">Replace all data</button>
-        <button className="btn btn--text" type="button" data-act="import-cancel">Cancel</button>
+        <button className="btn btn--primary" type="button" data-act="import-commit">
+          Replace all data
+        </button>
+        <button className="btn btn--text" type="button" data-act="import-cancel">
+          Cancel
+        </button>
       </div>
     </div>
   );
@@ -806,7 +872,14 @@ function ImportPanel({ pending, justOpenedNow }) {
  * browser, a reload — the service worker already has it). The honest note
  * about the one network request lives in the About block below.
  */
-function ActionsGroup({ status, updatePhase, updateJustOpened, confirming, resetNoUndo, confirmJustOpened }) {
+function ActionsGroup({
+  status,
+  updatePhase,
+  updateJustOpened,
+  confirming,
+  resetNoUndo,
+  confirmJustOpened,
+}) {
   let trail;
   if (updatePhase === "checking") trail = "Checking…";
   else if (updatePhase === "error") trail = "Try later";
@@ -825,7 +898,9 @@ function ActionsGroup({ status, updatePhase, updateJustOpened, confirming, reset
         </span>
         {trail ? <span className="set2-row__trail">{trail}</span> : null}
       </button>
-      {status.kind === "available" ? <UpdatePanel status={status} justOpenedNow={updateJustOpened} /> : null}
+      {status.kind === "available" ? (
+        <UpdatePanel status={status} justOpenedNow={updateJustOpened} />
+      ) : null}
       <button className="set2-row" type="button" data-act="reset-open">
         <span className="set2-row__icon" aria-hidden="true">
           <Icon name="rotate-ccw" />
@@ -842,7 +917,11 @@ function ActionsGroup({ status, updatePhase, updateJustOpened, confirming, reset
 function UpdatePanel({ status, justOpenedNow }) {
   let action = null;
   if (detectBuild() === "web") {
-    action = <button className="btn btn--primary" type="button" data-act="update-reload">Reload to update</button>;
+    action = (
+      <button className="btn btn--primary" type="button" data-act="update-reload">
+        Reload to update
+      </button>
+    );
   } else if (status.downloadUrl) {
     action = (
       <a className="btn btn--primary" href={status.downloadUrl} target="_blank" rel="noopener">
@@ -882,8 +961,12 @@ function ResetConfirm({ noUndo, justOpenedNow }) {
           : "A copy is kept, and setup offers to restore it."}
       </p>
       <div className="set-confirm__actions">
-        <button className="btn btn--danger" type="button" data-act="reset-commit">Erase everything</button>
-        <button className="btn btn--text" type="button" data-act="reset-cancel">Cancel</button>
+        <button className="btn btn--danger" type="button" data-act="reset-commit">
+          Erase everything
+        </button>
+        <button className="btn btn--text" type="button" data-act="reset-cancel">
+          Cancel
+        </button>
       </div>
     </div>
   );
@@ -893,16 +976,24 @@ function AboutBlock() {
   return (
     <div className="about2">
       <div className="about2__group">
-        <p className="about2__name">{APP_NAME} · v{APP_VERSION}</p>
+        <p className="about2__name">
+          {APP_NAME} · v{APP_VERSION}
+        </p>
         <p className="about2__schema">schema wgt v{SCHEMA_VERSION}</p>
       </div>
       <div className="about2__group">
         <p className="about2__line">Everything stays on this device.</p>
-        <p className="about2__line">No accounts. The only network request is the update check, and it sends nothing about you.</p>
+        <p className="about2__line">
+          No accounts. The only network request is the update check, and it sends nothing about you.
+        </p>
       </div>
       <p className="about2__links">
-        <a className="about2__link" href={REPO_URL} target="_blank" rel="noopener">Source on GitHub</a>
-        <span className="about2__sep" aria-hidden="true">·</span>
+        <a className="about2__link" href={REPO_URL} target="_blank" rel="noopener">
+          Source on GitHub
+        </a>
+        <span className="about2__sep" aria-hidden="true">
+          ·
+        </span>
         <span className="about2__sig">@rvyyv-n</span>
       </p>
     </div>

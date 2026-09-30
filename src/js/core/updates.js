@@ -39,7 +39,12 @@ export function detectBuild() {
 }
 
 function readState() {
-  return load(RECORD, { lastCheckedAt: null, latestSeen: null, downloadUrl: null, releaseUrl: null });
+  return load(RECORD, {
+    lastCheckedAt: null,
+    latestSeen: null,
+    downloadUrl: null,
+    releaseUrl: null,
+  });
 }
 
 /**

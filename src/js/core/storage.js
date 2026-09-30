@@ -97,7 +97,9 @@ const quarantined = new Set();
 function quarantine(name, raw) {
   if (quarantined.has(name)) return;
   quarantined.add(name);
-  console.warn(`Corrupt record "${name}"; set aside as "${key(`corrupt:${name}`)}", falling back to defaults.`);
+  console.warn(
+    `Corrupt record "${name}"; set aside as "${key(`corrupt:${name}`)}", falling back to defaults.`,
+  );
   try {
     // Kept under the namespace, so a reset sweeps it like everything else.
     localStorage.setItem(key(`corrupt:${name}`), raw);
@@ -126,7 +128,7 @@ const MIGRATIONS = {
   2: (data, name) => {
     if (name !== "days") return data;
     const days = Object.fromEntries(
-      Object.entries(data.days ?? {}).map(([iso, day]) => [iso, { extras: [], ...day }])
+      Object.entries(data.days ?? {}).map(([iso, day]) => [iso, { extras: [], ...day }]),
     );
     return { ...data, days };
   },
@@ -141,7 +143,7 @@ const MIGRATIONS = {
     const recipes = (Array.isArray(data.recipes) ? data.recipes : []).map((r) =>
       Array.isArray(r.items)
         ? r
-        : { ...r, items: [{ name: r.name, kcal: r.kcal ?? 0, proteinG: r.proteinG ?? 0 }] }
+        : { ...r, items: [{ name: r.name, kcal: r.kcal ?? 0, proteinG: r.proteinG ?? 0 }] },
     );
     return { ...data, recipes };
   },
@@ -208,10 +210,7 @@ export function load(name, fallback) {
 /** Write a record, stamping it with the current schema version. */
 export function save(name, data) {
   try {
-    localStorage.setItem(
-      key(name),
-      JSON.stringify({ ...data, schemaVersion: SCHEMA_VERSION })
-    );
+    localStorage.setItem(key(name), JSON.stringify({ ...data, schemaVersion: SCHEMA_VERSION }));
     notifyWrite(name);
     return true;
   } catch (err) {
@@ -272,7 +271,8 @@ export function usedChars() {
     let total = 0;
     for (let i = 0; i < localStorage.length; i += 1) {
       const k = localStorage.key(i);
-      if (k && k.startsWith(`${NAMESPACE}:`)) total += k.length + (localStorage.getItem(k)?.length ?? 0);
+      if (k && k.startsWith(`${NAMESPACE}:`))
+        total += k.length + (localStorage.getItem(k)?.length ?? 0);
     }
     return total;
   } catch {

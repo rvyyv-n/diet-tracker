@@ -48,8 +48,15 @@ const PATHS = {
   ],
   "trending-up": ["M16 7h6v6", "m22 7-8.5 8.5-5-5L2 17"],
   "sliders-horizontal": [
-    "M21 4h-7", "M10 4H3", "M21 12h-9", "M8 12H3", "M21 20h-5",
-    "M12 20H3", "M14 2v4", "M8 10v4", "M16 18v4",
+    "M21 4h-7",
+    "M10 4H3",
+    "M21 12h-9",
+    "M8 12H3",
+    "M21 20h-5",
+    "M12 20H3",
+    "M14 2v4",
+    "M8 10v4",
+    "M16 18v4",
   ],
   check: ["M20 6 9 17l-5-5"],
   user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>',
@@ -169,9 +176,7 @@ const PATHS = {
 /** The raw `<svg …>` markup for a glyph — for places that build HTML strings. */
 export function iconSvg(name, { size = 20, stroke = 1.75 } = {}) {
   const shape = PATHS[name] ?? [];
-  const inner = Array.isArray(shape)
-    ? shape.map((d) => `<path d="${d}"></path>`).join("")
-    : shape;
+  const inner = Array.isArray(shape) ? shape.map((d) => `<path d="${d}"></path>`).join("") : shape;
   return (
     `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" ` +
     `stroke="currentColor" stroke-width="${stroke}" stroke-linecap="round" ` +

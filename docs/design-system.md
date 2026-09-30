@@ -14,11 +14,11 @@ should contradict it; if it does, the file is right and this document is stale.
 
 ## Fonts
 
-| Role | Stack | Vendored |
-|---|---|---|
-| Headings, hero figures | `Copernicus, "Tiempos Headline", Newsreader, Georgia, serif` | `newsreader-400.woff2` |
-| Body / UI | `StyreneB, Inter, -apple-system, "Segoe UI", Roboto, sans-serif` | `inter-400/500.woff2` |
-| Code (debug only) | `ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace` | — not vendored |
+| Role                   | Stack                                                              | Vendored               |
+| ---------------------- | ------------------------------------------------------------------ | ---------------------- |
+| Headings, hero figures | `Copernicus, "Tiempos Headline", Newsreader, Georgia, serif`       | `newsreader-400.woff2` |
+| Body / UI              | `StyreneB, Inter, -apple-system, "Segoe UI", Roboto, sans-serif`   | `inter-400/500.woff2`  |
+| Code (debug only)      | `ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace` | — not vendored         |
 
 Copernicus and StyreneB are licensed Anthropic faces; they are listed first so
 anyone with them installed gets them, and Newsreader / Inter carry everyone
@@ -64,20 +64,20 @@ has to restate it.
 
 ## Type scale
 
-| Role | Family | Size / line / track | Weight |
-|---|---|---|---|
-| display-xl | serif | 64 / 1.05 / −1.5 | 400 |
-| display-lg | serif | 48 / 1.1 / −1 | 400 |
-| display-md | serif | 36 / 1.15 / −.5 | 400 |
-| display-sm | serif | 28 / 1.2 / −.3 | 400 |
-| screen-title | serif | 48 / 1.05 / −1 | 400 |
-| title-lg / md / sm | sans | 22 / 18 / 16 | 500 |
-| body-md / sm | sans | 16 / 14, line 1.55 | 400 |
-| caption | sans | 13 / 1.4 | 500 |
-| caption-upper | sans | 12 / 1.4 / +1.5, UPPER | 500 |
-| button / nav | sans | 14 | 500 |
-| **metric** | **serif** | **36 / 1.1, tabular** | 400 |
-| **metric-sm** | **sans** | **16 / 1.2, tabular** | 500 |
+| Role               | Family    | Size / line / track    | Weight |
+| ------------------ | --------- | ---------------------- | ------ |
+| display-xl         | serif     | 64 / 1.05 / −1.5       | 400    |
+| display-lg         | serif     | 48 / 1.1 / −1          | 400    |
+| display-md         | serif     | 36 / 1.15 / −.5        | 400    |
+| display-sm         | serif     | 28 / 1.2 / −.3         | 400    |
+| screen-title       | serif     | 48 / 1.05 / −1         | 400    |
+| title-lg / md / sm | sans      | 22 / 18 / 16           | 500    |
+| body-md / sm       | sans      | 16 / 14, line 1.55     | 400    |
+| caption            | sans      | 13 / 1.4               | 500    |
+| caption-upper      | sans      | 12 / 1.4 / +1.5, UPPER | 500    |
+| button / nav       | sans      | 14                     | 500    |
+| **metric**         | **serif** | **36 / 1.1, tabular**  | 400    |
+| **metric-sm**      | **sans**  | **16 / 1.2, tabular**  | 500    |
 
 `screen-title` is an app-layer addition: the source reserves 48px for marketing
 heroes, but a screen title is the loudest text on the page and needs to anchor
@@ -126,7 +126,7 @@ accent. Generous spacing; hairline borders, never heavy rules.
   acceptable only in a mouse-driven desktop toolbar.
 - **`--text-link` is coral-700, not coral-500.** Coral-500 as text measures
   ~3.0:1 against canvas and fails AA for normal-sized text; coral-700 is ~4.7:1
-  and passes. Coral-500 remains correct as a *fill* behind `--text-on-primary`.
+  and passes. Coral-500 remains correct as a _fill_ behind `--text-on-primary`.
 - **`--text-muted-soft` (ink-400) is ~3.2:1 — decoration only.** Any real
   caption or fine-print copy uses `--text-muted` (ink-500, ~5.1:1).
 
@@ -135,29 +135,29 @@ accent. Generous spacing; hairline borders, never heavy rules.
 Recorded so they are not "corrected" later. Each was weighed against the export
 and kept on purpose.
 
-| Topic | Export says | Rise does | Why |
-|---|---|---|---|
-| Bottom tab bar | 64px tall | **44px** | Pass 18 trimmed 54→44 on a real device to remove a dead band on tall phones. The export's 64px is derived from a marketing top nav and has never been on a phone. The export's nav tokens are used only for the desktop side nav. |
-| Night ramp | Rename to `night-950…600`, new hex | **Keep pass-19 values and names** | Rise's ramp is richer (five ink steps, two hairlines) and device-tested; only `#2C2A26` differed meaningfully. Adopted just the new *sunken* step. |
-| Toggle "on" | coral | **coral** | Confirmed deliberate: green already means "at/above target" here, so a green switch would collide with a live semantic. |
-| Hover | Not documented (marketing policy) | **Scoped to `(hover:hover) and (pointer:fine)`** | Touch keeps the shipped two-state model; the Tauri desktop build gets hover, where withholding it reads as broken. |
-| Container max | 960px app column | **`--app-max-width: 580px`** | Rise had already made this call, tighter. 960px returned as the desktop main-column width in pass 35 (`--container-app`), where 580px would have wasted a monitor. |
-| `--surface-overlay` | a modal scrim | **the surface a floating panel sits on** | Name collision with the export. Rise's meaning is load-bearing in `listbox`/`calendar`; a scrim token gets a distinct name when modals land. |
+| Topic               | Export says                        | Rise does                                        | Why                                                                                                                                                                                                                               |
+| ------------------- | ---------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bottom tab bar      | 64px tall                          | **44px**                                         | Pass 18 trimmed 54→44 on a real device to remove a dead band on tall phones. The export's 64px is derived from a marketing top nav and has never been on a phone. The export's nav tokens are used only for the desktop side nav. |
+| Night ramp          | Rename to `night-950…600`, new hex | **Keep pass-19 values and names**                | Rise's ramp is richer (five ink steps, two hairlines) and device-tested; only `#2C2A26` differed meaningfully. Adopted just the new _sunken_ step.                                                                                |
+| Toggle "on"         | coral                              | **coral**                                        | Confirmed deliberate: green already means "at/above target" here, so a green switch would collide with a live semantic.                                                                                                           |
+| Hover               | Not documented (marketing policy)  | **Scoped to `(hover:hover) and (pointer:fine)`** | Touch keeps the shipped two-state model; the Tauri desktop build gets hover, where withholding it reads as broken.                                                                                                                |
+| Container max       | 960px app column                   | **`--app-max-width: 580px`**                     | Rise had already made this call, tighter. 960px returned as the desktop main-column width in pass 35 (`--container-app`), where 580px would have wasted a monitor.                                                                |
+| `--surface-overlay` | a modal scrim                      | **the surface a floating panel sits on**         | Name collision with the export. Rise's meaning is load-bearing in `listbox`/`calendar`; a scrim token gets a distinct name when modals land.                                                                                      |
 
 ## Form controls
 
 Rise already has a coherent form system; it was undocumented, not missing.
 **Use it — do not introduce a parallel set of control classes.**
 
-| Class | Role |
-|---|---|
-| `.field` | Wrapper for one labelled control |
-| `.field__label` / `.field__labelrow` | Label, and a label row with a trailing element |
-| `.field__control` | The bordered box. Takes `:focus-within` for the focus ring |
-| `.field__input` | The input itself, incl. `::placeholder` and `input[type=date]` handling |
-| `.field__hint` | Helper text; `:empty` collapses it so layout doesn't jump |
-| `.field__hint--error` | Error text. Pair with `.is-invalid`, which `.field__control:has()` reads to colour the border |
-| `.seg` / `.seg__btn` / `.seg--full` | Segmented control; `.is-on` marks the active segment |
+| Class                                | Role                                                                                          |
+| ------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `.field`                             | Wrapper for one labelled control                                                              |
+| `.field__label` / `.field__labelrow` | Label, and a label row with a trailing element                                                |
+| `.field__control`                    | The bordered box. Takes `:focus-within` for the focus ring                                    |
+| `.field__input`                      | The input itself, incl. `::placeholder` and `input[type=date]` handling                       |
+| `.field__hint`                       | Helper text; `:empty` collapses it so layout doesn't jump                                     |
+| `.field__hint--error`                | Error text. Pair with `.is-invalid`, which `.field__control:has()` reads to colour the border |
+| `.seg` / `.seg__btn` / `.seg--full`  | Segmented control; `.is-on` marks the active segment                                          |
 
 Controls the app does **not** yet have — checkbox, radio, toggle/switch, slider.
 The export specifies all four (20×20 box at `--radius-xs`; 20×20 pill; 44×24
@@ -192,13 +192,13 @@ Apply it as `outline: none; box-shadow: var(--focus-ring);` on `:focus-visible`
 
 ## Breakpoints
 
-| Token | Width | Layout |
-|---|---|---|
-| `--bp-compact` | 360px | 1 column, bottom tab bar, 16px gutter |
-| `--bp-medium` | 600px | 1 column, wider gutter |
-| `--bp-expanded` | 840px | Tablet / foldable; 2-column settings |
-| `--bp-desktop` | 1024px | Side nav (240px) + main panel, 960px column |
-| `--bp-wide` | 1440px | Side nav + main + 360px detail panel |
+| Token           | Width  | Layout                                      |
+| --------------- | ------ | ------------------------------------------- |
+| `--bp-compact`  | 360px  | 1 column, bottom tab bar, 16px gutter       |
+| `--bp-medium`   | 600px  | 1 column, wider gutter                      |
+| `--bp-expanded` | 840px  | Tablet / foldable; 2-column settings        |
+| `--bp-desktop`  | 1024px | Side nav (240px) + main panel, 960px column |
+| `--bp-wide`     | 1440px | Side nav + main + 360px detail panel        |
 
 > ⚠️ **These tokens are reference only.** A custom property cannot be used in a
 > media condition — `@media (min-width: var(--bp-desktop))` does not work in any

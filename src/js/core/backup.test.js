@@ -11,7 +11,9 @@ beforeEach(async () => {
 
 function seed() {
   storage.save("profile", { heightCm: 178, startWeightKg: 60, addOns: ["A1"] });
-  storage.save("days", { days: { "2026-09-01": { date: "2026-09-01", done: ["B1"], extras: [] } } });
+  storage.save("days", {
+    days: { "2026-09-01": { date: "2026-09-01", done: ["B1"], extras: [] } },
+  });
   storage.save("weights", { weights: { "2026-09-01": 60, "2026-09-08": 60.4 } });
   storage.save("recipes", { recipes: [{ name: "Oats", kcal: 400, proteinG: 15, items: [] }] });
   storage.save("grocery", { weekStart: "2026-08-31", checked: { milk: true } });
@@ -53,7 +55,12 @@ describe("export and import", () => {
 
   it("counts records for the preview, leaving grocery ticks out", () => {
     seed();
-    expect(backup.countRecords(backup.exportAll())).toEqual({ profiles: 1, days: 1, weights: 2, recipes: 1 });
+    expect(backup.countRecords(backup.exportAll())).toEqual({
+      profiles: 1,
+      days: 1,
+      weights: 2,
+      recipes: 1,
+    });
   });
 });
 
@@ -64,7 +71,7 @@ describe("assertImportable", () => {
 
   it("rejects a backup from a newer version", () => {
     expect(() => backup.assertImportable({ schemaVersion: storage.SCHEMA_VERSION + 1 })).toThrow(
-      "This backup is from a newer version."
+      "This backup is from a newer version.",
     );
   });
 

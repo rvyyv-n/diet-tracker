@@ -26,10 +26,25 @@
 import { el } from "./dom.js";
 import { icon } from "./icons.js";
 import { attachPopover } from "./popover.js";
-import { todayISO, humanDate, daysInMonth, addDays, startOfWeekISO, MONTH_NAMES } from "../core/dates.js";
+import {
+  todayISO,
+  humanDate,
+  daysInMonth,
+  addDays,
+  startOfWeekISO,
+  MONTH_NAMES,
+} from "../core/dates.js";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const WEEKDAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const WEEKDAY_NAMES = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
 
 /** An ISO date moved by whole months, the day clamped to the new month's length. */
 function addMonths(iso, delta) {
@@ -129,15 +144,32 @@ export function dateCalendar({ value, max = null }) {
   function onGridKey(event) {
     let next;
     switch (event.key) {
-      case "ArrowLeft": next = addDays(focusISO, -1); break;
-      case "ArrowRight": next = addDays(focusISO, 1); break;
-      case "ArrowUp": next = addDays(focusISO, -7); break;
-      case "ArrowDown": next = addDays(focusISO, 7); break;
-      case "Home": next = startOfWeekISO(focusISO); break;
-      case "End": next = addDays(startOfWeekISO(focusISO), 6); break;
-      case "PageUp": next = addMonths(focusISO, event.shiftKey ? -12 : -1); break;
-      case "PageDown": next = addMonths(focusISO, event.shiftKey ? 12 : 1); break;
-      default: return; // Enter / Space fall through to the button's own click
+      case "ArrowLeft":
+        next = addDays(focusISO, -1);
+        break;
+      case "ArrowRight":
+        next = addDays(focusISO, 1);
+        break;
+      case "ArrowUp":
+        next = addDays(focusISO, -7);
+        break;
+      case "ArrowDown":
+        next = addDays(focusISO, 7);
+        break;
+      case "Home":
+        next = startOfWeekISO(focusISO);
+        break;
+      case "End":
+        next = addDays(startOfWeekISO(focusISO), 6);
+        break;
+      case "PageUp":
+        next = addMonths(focusISO, event.shiftKey ? -12 : -1);
+        break;
+      case "PageDown":
+        next = addMonths(focusISO, event.shiftKey ? 12 : 1);
+        break;
+      default:
+        return; // Enter / Space fall through to the button's own click
     }
     event.preventDefault();
     focusISO = clamp(next);
@@ -228,6 +260,8 @@ export function dateCalendar({ value, max = null }) {
       showMonthOf(iso);
       paintTrigger();
     },
-    onChange: (fn) => { onChange = fn; },
+    onChange: (fn) => {
+      onChange = fn;
+    },
   };
 }

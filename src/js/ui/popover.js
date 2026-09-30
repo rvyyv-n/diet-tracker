@@ -55,7 +55,9 @@ export function attachPopover(root, trigger, panel, { onOpen, trapFocus = false 
       const first = stops[0];
       const last = stops[stops.length - 1];
       const at = document.activeElement;
-      if (event.shiftKey ? at === first || !panel.contains(at) : at === last || !panel.contains(at)) {
+      if (
+        event.shiftKey ? at === first || !panel.contains(at) : at === last || !panel.contains(at)
+      ) {
         event.preventDefault();
         (event.shiftKey ? last : first).focus();
       }

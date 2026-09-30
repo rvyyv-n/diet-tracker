@@ -121,14 +121,17 @@ export function listbox({ options, value = null, placeholder = "—", ariaLabel,
   function moveBy(delta) {
     if (!opts.length) return;
     const at = opts.findIndex((o) => o.value === current);
-    const next = at < 0 ? (delta > 0 ? 0 : opts.length - 1) : (at + delta + opts.length) % opts.length;
+    const next =
+      at < 0 ? (delta > 0 ? 0 : opts.length - 1) : (at + delta + opts.length) % opts.length;
     choose(opts[next].value);
   }
 
   function typeAhead(ch) {
     clearTimeout(typedTimer);
     typed += ch.toLowerCase();
-    typedTimer = setTimeout(() => { typed = ""; }, TYPEAHEAD_RESET_MS);
+    typedTimer = setTimeout(() => {
+      typed = "";
+    }, TYPEAHEAD_RESET_MS);
     const hit = opts.find((o) => String(o.label).toLowerCase().startsWith(typed));
     if (hit) choose(hit.value);
   }

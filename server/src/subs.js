@@ -53,9 +53,13 @@ export function isValidEndpoint(endpoint) {
 
 export async function putSubscription(env, endpoint, tz, times) {
   const key = await keyFor(endpoint);
-  await env.SUBS.put(key, JSON.stringify({ endpoint, tz, times, updatedAt: new Date().toISOString() }), {
-    metadata: { tz, times },
-  });
+  await env.SUBS.put(
+    key,
+    JSON.stringify({ endpoint, tz, times, updatedAt: new Date().toISOString() }),
+    {
+      metadata: { tz, times },
+    },
+  );
   return key;
 }
 

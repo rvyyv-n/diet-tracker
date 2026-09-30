@@ -131,9 +131,13 @@ export default function Today() {
   });
 
   const [, bump] = useState(0);
-  useEffect(() => subscribe((fresh) => {
-    if (!fresh.has("today")) bump((n) => n + 1);
-  }), []);
+  useEffect(
+    () =>
+      subscribe((fresh) => {
+        if (!fresh.has("today")) bump((n) => n + 1);
+      }),
+    [],
+  );
 
   /** Jump straight back to today from any earlier day. */
   function goToDate(iso) {
@@ -194,15 +198,35 @@ export default function Today() {
       <section className="screen today">
         <DateHeader profile={profile} day={day} editable={editable} goToDate={goToDate} />
         {whatsNewSeen() ? null : (
-          <WhatsNewCard onDismiss={() => { markWhatsNewSeen(); bump((n) => n + 1); }} />
+          <WhatsNewCard
+            onDismiss={() => {
+              markWhatsNewSeen();
+              bump((n) => n + 1);
+            }}
+          />
         )}
         <AdherenceStrip profile={profile} viewedDay={day} goToDate={goToDate} />
         {suggestion ? (
-          <SuggestionCard suggestion={suggestion} onApply={applySuggestionAndSave} onDismiss={dismissSuggestion} />
+          <SuggestionCard
+            suggestion={suggestion}
+            onApply={applySuggestionAndSave}
+            onDismiss={dismissSuggestion}
+          />
         ) : null}
         <TotalCard day={day} profile={profile} />
-        <BackfillPrompt viewDate={viewDate} setViewDate={setViewDate} setOpenPicker={setOpenPicker} />
-        <Checklist day={day} editable={editable} openPicker={openPicker} setOpenPicker={setOpenPicker} setAddOpen={setAddOpen} commit={commit} />
+        <BackfillPrompt
+          viewDate={viewDate}
+          setViewDate={setViewDate}
+          setOpenPicker={setOpenPicker}
+        />
+        <Checklist
+          day={day}
+          editable={editable}
+          openPicker={openPicker}
+          setOpenPicker={setOpenPicker}
+          setAddOpen={setAddOpen}
+          commit={commit}
+        />
         <ExtrasSection day={day} editable={editable} commit={commit} />
         {editable ? (
           <div className="today-actions">
@@ -318,7 +342,11 @@ function PhaseBanner({ profile, day }) {
   // dot strip can put an earlier day on screen.
   const week = planWeek(profile.startDate || day.date, day.date);
   const weekText = day.phaseId === 1 ? `Week ${week} of 2` : `Week ${week}`;
-  return <p className="phase-banner">{phase.name} · {weekText}</p>;
+  return (
+    <p className="phase-banner">
+      {phase.name} · {weekText}
+    </p>
+  );
 }
 
 /**
@@ -482,14 +510,20 @@ function TotalCard({ day, profile }) {
             className={`daytotal__kcal ${STATUS_CLASS[status]}`}
           />
         ) : (
-          <span className={`daytotal__kcal ${STATUS_CLASS[status]}`}>{NUM.format(totals.kcal)}</span>
+          <span className={`daytotal__kcal ${STATUS_CLASS[status]}`}>
+            {NUM.format(totals.kcal)}
+          </span>
         )}
         <span className="daytotal__target">/ {NUM.format(target.kcal)} kcal</span>
       </div>
       <DayBar kcal={totals.kcal} targetKcal={target.kcal} status={status} />
-      {overviewMetricShown(profile, "remaining") ? <p className="daytotal__remaining">{remaining}</p> : null}
+      {overviewMetricShown(profile, "remaining") ? (
+        <p className="daytotal__remaining">{remaining}</p>
+      ) : null}
       {overviewMetricShown(profile, "protein") ? (
-        <p className="daytotal__protein">Protein {Math.round(totals.proteinG)} / {target.proteinG} g</p>
+        <p className="daytotal__protein">
+          Protein {Math.round(totals.proteinG)} / {target.proteinG} g
+        </p>
       ) : null}
     </div>
   );
@@ -566,7 +600,17 @@ function Checklist({ day, editable, openPicker, setOpenPicker, setAddOpen, commi
   );
 }
 
-function BlockRow({ day, block, editable, bonus, timeState, openPicker, setOpenPicker, setAddOpen, commit }) {
+function BlockRow({
+  day,
+  block,
+  editable,
+  bonus,
+  timeState,
+  openPicker,
+  setOpenPicker,
+  setAddOpen,
+  commit,
+}) {
   const done = Boolean(day.completed[block.id]);
   const kcal = blockValue(day, block.id).kcal;
   const pickerOpen = openPicker === block.id;
@@ -640,7 +684,13 @@ function BlockRow({ day, block, editable, bonus, timeState, openPicker, setOpenP
         ) : null}
       </div>
       {block.rotation && pickerOpen && editable ? (
-        <RotationPicker day={day} block={block} justOpenedNow={pickerJustOpened} setOpenPicker={setOpenPicker} commit={commit} />
+        <RotationPicker
+          day={day}
+          block={block}
+          justOpenedNow={pickerJustOpened}
+          setOpenPicker={setOpenPicker}
+          commit={commit}
+        />
       ) : null}
     </li>
   );
@@ -660,7 +710,9 @@ function RotationPicker({ day, block, justOpenedNow, setOpenPicker, commit }) {
             commit(chooseRotation(day, block.rotation, opt.id));
           }}
         >
-          <span className="rotation__radio" aria-hidden="true">{opt.id === current ? "●" : "○"}</span>
+          <span className="rotation__radio" aria-hidden="true">
+            {opt.id === current ? "●" : "○"}
+          </span>
           <span className="rotation__opt-desc">{opt.desc}</span>
           <span className="rotation__opt-kcal">{NUM.format(opt.kcal)}</span>
         </button>
@@ -702,9 +754,13 @@ function AddBlockSection({ day, addOpen, setAddOpen, commit }) {
                 commit(addBlock(day, block.id));
               }}
             >
-              <span className="rotation__radio" aria-hidden="true">+</span>
+              <span className="rotation__radio" aria-hidden="true">
+                +
+              </span>
               <span className="rotation__opt-desc">{block.name}</span>
-              <span className="rotation__opt-kcal">{NUM.format(blockValue(day, block.id).kcal)}</span>
+              <span className="rotation__opt-kcal">
+                {NUM.format(blockValue(day, block.id).kcal)}
+              </span>
             </button>
           ))}
         </div>
@@ -731,7 +787,14 @@ function ExtrasSection({ day, editable, commit }) {
     <div className="extras">
       <ul className="extras__list">
         {extras.map((extra) => (
-          <ExtraRow key={extra.id} day={day} extra={extra} editable={editable} savedKeys={savedKeys} commit={commit} />
+          <ExtraRow
+            key={extra.id}
+            day={day}
+            extra={extra}
+            editable={editable}
+            savedKeys={savedKeys}
+            commit={commit}
+          />
         ))}
       </ul>
     </div>
@@ -793,7 +856,9 @@ function AppetiteSection({ day, commit }) {
   const current = day.appetite;
   return (
     <div className="appetite">
-      <GroupLabel icon="gauge" tag="p">Appetite</GroupLabel>
+      <GroupLabel icon="gauge" tag="p">
+        Appetite
+      </GroupLabel>
       <div
         // Not role="radiogroup"/"radio": tapping the picked chip again clears
         // it (see day.setAppetite), so this can legitimately have none picked —

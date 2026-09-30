@@ -50,9 +50,13 @@ export default function Recipes() {
   });
 
   const [, bump] = useState(0);
-  useEffect(() => subscribe((fresh) => {
-    if (!fresh.has("recipes")) bump((n) => n + 1);
-  }), []);
+  useEffect(
+    () =>
+      subscribe((fresh) => {
+        if (!fresh.has("recipes")) bump((n) => n + 1);
+      }),
+    [],
+  );
 
   const profile = loadProfile();
   const iso = todayISO();
@@ -88,14 +92,24 @@ export default function Recipes() {
         </div>
         <Group label="Recipe book" icon="book-open">
           <p className="screen__intro">
-            Tap a recipe to log it on today, or Edit to change what it&rsquo;s built from. New recipes also
-            appear under Today &rarr; Log food.
+            Tap a recipe to log it on today, or Edit to change what it&rsquo;s built from. New
+            recipes also appear under Today &rarr; Log food.
           </p>
-          <ExtrasRecipeForm day={day} extrasState={extrasState} setExtrasOpen={() => {}} commit={commit} />
+          <ExtrasRecipeForm
+            day={day}
+            extrasState={extrasState}
+            setExtrasOpen={() => {}}
+            commit={commit}
+          />
         </Group>
         <Group label="Meals" icon="utensils">
           <div className="card planref">
-            <MealsBlock addOns={addOns} phaseId={phaseId} openMeal={openMeal} setOpenMeal={setOpenMeal} />
+            <MealsBlock
+              addOns={addOns}
+              phaseId={phaseId}
+              openMeal={openMeal}
+              setOpenMeal={setOpenMeal}
+            />
           </div>
         </Group>
         <Group label="Food table" icon="table">

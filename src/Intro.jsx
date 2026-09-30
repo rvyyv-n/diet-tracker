@@ -44,11 +44,15 @@ export default function Intro({ onDone }) {
 
   return (
     <div
-      className={"intro" + (reducedRef.current ? "" : " intro--in") + (exiting ? " intro--out" : "")}
+      className={
+        "intro" + (reducedRef.current ? "" : " intro--in") + (exiting ? " intro--out" : "")
+      }
       onClick={finish}
     >
       <div className="intro__card">
-        <div className="intro__mark" aria-hidden="true">Rise</div>
+        <div className="intro__mark" aria-hidden="true">
+          Rise
+        </div>
         <p className="intro__line">Your daily plan for steady, sustainable weight gain.</p>
         <button className="btn btn--text intro__skip" type="button" onClick={finish}>
           Get started

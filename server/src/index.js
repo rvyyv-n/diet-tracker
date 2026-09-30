@@ -65,7 +65,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(env) });
+    if (request.method === "OPTIONS")
+      return new Response(null, { status: 204, headers: cors(env) });
 
     if (request.method === "GET" && url.pathname === "/health") {
       return json({ ok: true, blocks: BLOCKS.length }, 200, env);
@@ -80,7 +81,8 @@ export default {
 
     if (request.method === "POST" && url.pathname === "/subscribe") {
       const body = await readBody(request);
-      if (!body || !isValidEndpoint(body.endpoint)) return json({ error: "bad endpoint" }, 400, env);
+      if (!body || !isValidEndpoint(body.endpoint))
+        return json({ error: "bad endpoint" }, 400, env);
       if (!isValidTimeZone(body.tz)) return json({ error: "bad timezone" }, 400, env);
       const times = cleanTimes(body.times);
       if (!times) return json({ error: "bad times" }, 400, env);
@@ -90,7 +92,8 @@ export default {
 
     if (request.method === "POST" && url.pathname === "/unsubscribe") {
       const body = await readBody(request);
-      if (!body || !isValidEndpoint(body.endpoint)) return json({ error: "bad endpoint" }, 400, env);
+      if (!body || !isValidEndpoint(body.endpoint))
+        return json({ error: "bad endpoint" }, 400, env);
       await deleteSubscription(env, body.endpoint);
       return json({ ok: true }, 200, env);
     }
@@ -122,7 +125,10 @@ function localParts(instant, tz) {
   }).formatToParts(instant);
 
   const at = (type) => parts.find((p) => p.type === type)?.value;
-  return { date: `${at("year")}-${at("month")}-${at("day")}`, time: `${at("hour")}:${at("minute")}` };
+  return {
+    date: `${at("year")}-${at("month")}-${at("day")}`,
+    time: `${at("hour")}:${at("minute")}`,
+  };
 }
 
 async function fire(instant, env) {

@@ -19,34 +19,34 @@ const RECORD = "profile";
  */
 export const DEFAULT_PROFILE = {
   name: "",
-  birthDate: null,        // ISO "YYYY-MM-DD"
-  heightCm: null,         // always stored in cm, whatever unit was typed
-  heightUnit: "cm",       // "cm" | "ftin" — how to show the field on re-edit
-  startWeightKg: null,    // always stored in kg, whatever unit was typed
-  weightUnit: "kg",       // "kg" | "lb" | "st" — display + entry unit for weight
-  targetRateKgPerWeek: 0.3,  // plan default; the user can override
-  startDate: null,        // ISO date the plan began
-  currentPhaseId: 1,      // plan phase the user is on now; app.js advances it
-  addOns: [],             //   1 -> 2 with the weeks, never to 3 (user-only)
+  birthDate: null, // ISO "YYYY-MM-DD"
+  heightCm: null, // always stored in cm, whatever unit was typed
+  heightUnit: "cm", // "cm" | "ftin" — how to show the field on re-edit
+  startWeightKg: null, // always stored in kg, whatever unit was typed
+  weightUnit: "kg", // "kg" | "lb" | "st" — display + entry unit for weight
+  targetRateKgPerWeek: 0.3, // plan default; the user can override
+  startDate: null, // ISO date the plan began
+  currentPhaseId: 1, // plan phase the user is on now; app.js advances it
+  addOns: [], //   1 -> 2 with the weeks, never to 3 (user-only)
   //                         add-on blocks currently enabled ("A1".."A3"); seeded
   //                         from the phase default, then the engine adjusts it
   dismissedSuggestion: null, // { ruleId, date } — hushes that rule for ~a week,
   //                            set on Dismiss and after Apply (see today.js)
-  introSeen: false,       // the first-run splash has been shown once (pass 11).
-  themePref: "system",    // "system" | "light" | "dark" — the appearance choice
+  introSeen: false, // the first-run splash has been shown once (pass 11).
+  themePref: "system", // "system" | "light" | "dark" — the appearance choice
   //                         (pass 19); applied by core/theme.js, "system"
   //                         follows prefers-color-scheme.
-  overviewMetrics: {},    // { [metricId]: false } for a readout the user hid on
+  overviewMetrics: {}, // { [metricId]: false } for a readout the user hid on
   //                         Today's day-total card (pass 32). An absent id reads
   //                         as shown, so a metric added later defaults visible.
-  navPref: "visible",     // "visible" | "hover" — the desktop side nav column
+  navPref: "visible", // "visible" | "hover" — the desktop side nav column
   //                         (pass 47). "hover" collapses it to an icon-only
   //                         rail that expands on pointer or keyboard focus;
   //                         only takes effect on a fine-pointer, hover-capable
   //                         device at the desktop breakpoint — a phone or a
   //                         touch tablet always shows the always-visible
   //                         column regardless of this value.
-};                        // merged over defaults on load, so no schema bump.
+}; // merged over defaults on load, so no schema bump.
 
 export function loadProfile() {
   // Merge over the defaults rather than using them only as an absent-record
@@ -74,11 +74,7 @@ export function overviewMetricShown(profile, id) {
 
 /** A profile is complete once it has everything the engine needs to compute. */
 export function isComplete(profile) {
-  return (
-    profile.heightCm != null &&
-    profile.startWeightKg != null &&
-    profile.birthDate != null
-  );
+  return profile.heightCm != null && profile.startWeightKg != null && profile.birthDate != null;
 }
 
 /** Whole years since birthDate, or null if unknown. */
@@ -89,8 +85,7 @@ export function ageYears(profile, today = new Date()) {
 
   let age = today.getFullYear() - born.getFullYear();
   const monthDelta = today.getMonth() - born.getMonth();
-  const beforeBirthday =
-    monthDelta < 0 || (monthDelta === 0 && today.getDate() < born.getDate());
+  const beforeBirthday = monthDelta < 0 || (monthDelta === 0 && today.getDate() < born.getDate());
   if (beforeBirthday) age -= 1;
   return age;
 }

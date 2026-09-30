@@ -23,32 +23,80 @@
  */
 export const BLOCKS = [
   {
-    id: "B1", order: 10, time: "08:00", name: "Breakfast", kcal: 705, proteinG: 35, core: true, rotation: "breakfast",
+    id: "B1",
+    order: 10,
+    time: "08:00",
+    name: "Breakfast",
+    kcal: 705,
+    proteinG: 35,
+    core: true,
+    rotation: "breakfast",
     desc: "Eggs (3) + flatbreads (2) + milk (250 ml) + butter (1 tsp)",
   },
   {
-    id: "B2", order: 20, time: "11:00", name: "Shake", kcal: 580, proteinG: 22, core: true, rotation: "shake",
+    id: "B2",
+    order: 20,
+    time: "11:00",
+    name: "Shake",
+    kcal: 580,
+    proteinG: 22,
+    core: true,
+    rotation: "shake",
     desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + oats (25 g)",
     note: "Highest skip risk — keep it prominent in the UI.",
   },
   {
-    id: "B3", order: 30, time: "13:30", name: "Lunch", kcal: 580, proteinG: 33, core: true, rotation: "lunch",
+    id: "B3",
+    order: 30,
+    time: "13:30",
+    name: "Lunch",
+    kcal: 580,
+    proteinG: 33,
+    core: true,
+    rotation: "lunch",
     desc: "Choose from the lunch rotation.",
   },
   {
-    id: "A1", order: 40, time: "16:00", name: "Snack", kcal: 290, proteinG: 11, core: false, rotation: "snack",
+    id: "A1",
+    order: 40,
+    time: "16:00",
+    name: "Snack",
+    kcal: 290,
+    proteinG: 11,
+    core: false,
+    rotation: "snack",
     desc: "Choose from the snack rotation.",
   },
   {
-    id: "A3", order: 50, time: "17:00", name: "Shake 2", kcal: 580, proteinG: 22, core: false, rotation: "shake2",
+    id: "A3",
+    order: 50,
+    time: "17:00",
+    name: "Shake 2",
+    kcal: 580,
+    proteinG: 22,
+    core: false,
+    rotation: "shake2",
     desc: "Heavy shake — optional, or post-training.",
   },
   {
-    id: "B4", order: 60, time: "19:30", name: "Dinner", kcal: 700, proteinG: 37, core: true, rotation: "dinner",
+    id: "B4",
+    order: 60,
+    time: "19:30",
+    name: "Dinner",
+    kcal: 700,
+    proteinG: 37,
+    core: true,
+    rotation: "dinner",
     desc: "Choose from the dinner rotation.",
   },
   {
-    id: "A2", order: 70, time: "22:00", name: "Pre-bed", kcal: 255, proteinG: 12, core: false,
+    id: "A2",
+    order: 70,
+    time: "22:00",
+    name: "Pre-bed",
+    kcal: 255,
+    proteinG: 12,
+    core: false,
     desc: "Milk (250 ml) + peanut butter (1 tbsp)",
   },
 ];
@@ -61,16 +109,31 @@ export const BLOCKS = [
  */
 export const PHASES = [
   {
-    id: 1, name: "Ramp-up", label: "Phase 1 — ramp-up", when: "Weeks 1–2",
-    blocks: ["B1", "B2", "B3", "B4"], kcal: 2565, proteinG: 127,
+    id: 1,
+    name: "Ramp-up",
+    label: "Phase 1 — ramp-up",
+    when: "Weeks 1–2",
+    blocks: ["B1", "B2", "B3", "B4"],
+    kcal: 2565,
+    proteinG: 127,
   },
   {
-    id: 2, name: "Target", label: "Phase 2 — working target", when: "Week 3 onward",
-    blocks: ["B1", "B2", "B3", "B4", "A1", "A2"], kcal: 3110, proteinG: 150,
+    id: 2,
+    name: "Target",
+    label: "Phase 2 — working target",
+    when: "Week 3 onward",
+    blocks: ["B1", "B2", "B3", "B4", "A1", "A2"],
+    kcal: 3110,
+    proteinG: 150,
   },
   {
-    id: 3, name: "Pushed", label: "Phase 3 — pushed", when: "Stalled 2 weeks, or training begins",
-    blocks: ["B1", "B2", "B3", "B4", "A1", "A2", "A3"], kcal: 3690, proteinG: 172,
+    id: 3,
+    name: "Pushed",
+    label: "Phase 3 — pushed",
+    when: "Stalled 2 weeks, or training begins",
+    blocks: ["B1", "B2", "B3", "B4", "A1", "A2", "A3"],
+    kcal: 3690,
+    proteinG: 172,
   },
 ];
 
@@ -82,9 +145,24 @@ export const PHASES = [
  */
 export const ROTATIONS = {
   breakfast: [
-    { id: "BR1", desc: "Eggs (3) + flatbreads (2) + milk (250 ml) + butter (1 tsp)", kcal: 705, proteinG: 34 },
-    { id: "BR2", desc: "Eggs (3) + flaky flatbread + milk (250 ml) + butter (1 tsp)", kcal: 705, proteinG: 32 },
-    { id: "BR3", desc: "Eggs (2) + bread (2 slices) + peanut butter (2 tbsp) + milk (250 ml) + butter (1 tsp)", kcal: 700, proteinG: 33 },
+    {
+      id: "BR1",
+      desc: "Eggs (3) + flatbreads (2) + milk (250 ml) + butter (1 tsp)",
+      kcal: 705,
+      proteinG: 34,
+    },
+    {
+      id: "BR2",
+      desc: "Eggs (3) + flaky flatbread + milk (250 ml) + butter (1 tsp)",
+      kcal: 705,
+      proteinG: 32,
+    },
+    {
+      id: "BR3",
+      desc: "Eggs (2) + bread (2 slices) + peanut butter (2 tbsp) + milk (250 ml) + butter (1 tsp)",
+      kcal: 700,
+      proteinG: 33,
+    },
   ],
   lunch: [
     { id: "L1", desc: "Chicken curry (150 g) + rice (1 cup)", kcal: 580, proteinG: 33 },
@@ -92,11 +170,31 @@ export const ROTATIONS = {
     { id: "L3", desc: "Chickpeas (1 cup) + flatbread + yogurt (100 g)", kcal: 565, proteinG: 24 },
   ],
   dinner: [
-    { id: "D1", desc: "Egg curry (2 eggs) + lentil stew + flatbreads (2)", kcal: 700, proteinG: 37 },
-    { id: "D2", desc: "Chicken or beef (100 g) + lentil stew + flatbreads (2)", kcal: 700, proteinG: 37 },
+    {
+      id: "D1",
+      desc: "Egg curry (2 eggs) + lentil stew + flatbreads (2)",
+      kcal: 700,
+      proteinG: 37,
+    },
+    {
+      id: "D2",
+      desc: "Chicken or beef (100 g) + lentil stew + flatbreads (2)",
+      kcal: 700,
+      proteinG: 37,
+    },
     { id: "D3", desc: "Chicken pilaf (1.5 cups) + yogurt (150 g)", kcal: 720, proteinG: 35 },
-    { id: "D4", desc: "Beef mince pasta (100 g) + tomato sauce + parmesan", kcal: 720, proteinG: 35 },
-    { id: "D5", desc: "Creamy chicken pasta (120 g chicken) + vegetables", kcal: 730, proteinG: 38 },
+    {
+      id: "D4",
+      desc: "Beef mince pasta (100 g) + tomato sauce + parmesan",
+      kcal: 720,
+      proteinG: 35,
+    },
+    {
+      id: "D5",
+      desc: "Creamy chicken pasta (120 g chicken) + vegetables",
+      kcal: 730,
+      proteinG: 38,
+    },
     { id: "D6", desc: "Tuna pasta (1 can) + sweetcorn + olive oil", kcal: 720, proteinG: 40 },
   ],
   snack: [
@@ -107,12 +205,32 @@ export const ROTATIONS = {
     { id: "SN5", desc: "Milk (250 ml) + oats (40 g) + honey (1 tbsp)", kcal: 315, proteinG: 12 },
   ],
   shake: [
-    { id: "standard", desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + oats (25 g)", kcal: 580, proteinG: 22 },
-    { id: "no_blender", desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + honey (1 tbsp)", kcal: 545, proteinG: 20 },
-    { id: "heavy", desc: "Milk (400 ml) + peanut butter (2 tbsp) + banana + oats (40 g) + dates (3)", kcal: 790, proteinG: 27 },
+    {
+      id: "standard",
+      desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + oats (25 g)",
+      kcal: 580,
+      proteinG: 22,
+    },
+    {
+      id: "no_blender",
+      desc: "Milk (300 ml) + peanut butter (2 tbsp) + banana + honey (1 tbsp)",
+      kcal: 545,
+      proteinG: 20,
+    },
+    {
+      id: "heavy",
+      desc: "Milk (400 ml) + peanut butter (2 tbsp) + banana + oats (40 g) + dates (3)",
+      kcal: 790,
+      proteinG: 27,
+    },
     // High-calorie mass shake — 2 bananas, 300 ml milk, 2 tbsp peanut butter,
     // 45 g oats, 40 g almonds, 1 tbsp sugar, ice. Totals to ~1,050 kcal / ~32 g.
-    { id: "mass", desc: "Milk (300 ml) + 2 bananas + peanut butter (2 tbsp) + oats (45 g) + almonds (40 g) + sugar", kcal: 1050, proteinG: 32 },
+    {
+      id: "mass",
+      desc: "Milk (300 ml) + 2 bananas + peanut butter (2 tbsp) + oats (45 g) + almonds (40 g) + sugar",
+      kcal: 1050,
+      proteinG: 32,
+    },
   ],
 };
 
@@ -143,7 +261,13 @@ export const FOOD_DB = [
   { id: "almonds", name: "Almonds", portion: "15 g", kcal: 90, proteinG: 3 },
   { id: "oats_dry", name: "Dry Oats", portion: "25 g", kcal: 95, proteinG: 3 },
   { id: "honey", name: "Honey", portion: "1 tbsp", kcal: 64, proteinG: 0 },
-  { id: "clarified_butter_or_oil", name: "Clarified Butter or Oil", portion: "1 tsp", kcal: 40, proteinG: 0 },
+  {
+    id: "clarified_butter_or_oil",
+    name: "Clarified Butter or Oil",
+    portion: "1 tsp",
+    kcal: 40,
+    proteinG: 0,
+  },
   { id: "bread", name: "Bread", portion: "2 slices", kcal: 160, proteinG: 5 },
   { id: "potato_boiled", name: "Boiled Potato", portion: "150 g", kcal: 130, proteinG: 3 },
 ];
@@ -275,9 +399,7 @@ export function activeBlocks(addOnIds = []) {
 /** The kcal / protein a phase is aiming for. */
 export function phaseTarget(phaseId) {
   const phase = phaseById(phaseId);
-  return phase
-    ? { kcal: phase.kcal, proteinG: phase.proteinG }
-    : { kcal: 0, proteinG: 0 };
+  return phase ? { kcal: phase.kcal, proteinG: phase.proteinG } : { kcal: 0, proteinG: 0 };
 }
 
 /**
@@ -315,5 +437,12 @@ export function defaultPhaseForWeek(weekNumber) {
 
 /** The first rotation option for each slot — the starting picks for a new day. */
 export function defaultRotations() {
-  return { breakfast: "BR1", lunch: "L1", dinner: "D1", snack: "SN1", shake: "standard", shake2: "standard" };
+  return {
+    breakfast: "BR1",
+    lunch: "L1",
+    dinner: "D1",
+    snack: "SN1",
+    shake: "standard",
+    shake2: "standard",
+  };
 }

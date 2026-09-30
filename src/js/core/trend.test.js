@@ -11,7 +11,7 @@ describe("weeklyWeights", () => {
         { date: "2026-09-01", kg: 60 },
         { date: "2026-09-08", kg: 60.5 },
       ],
-      START
+      START,
     );
     expect(out.map((w) => w.week)).toEqual([1, 2, 3]);
     expect(out.map((w) => w.kg)).toEqual([60, 60.5, 61]);
@@ -23,7 +23,7 @@ describe("weeklyWeights", () => {
         { date: "2026-09-12", kg: 60.9 },
         { date: "2026-09-08", kg: 60.2 },
       ],
-      START
+      START,
     );
     expect(out).toEqual([{ week: 2, date: "2026-09-12", kg: 60.9 }]);
   });
@@ -34,7 +34,7 @@ describe("weeklyWeights", () => {
         { date: "2026-09-01", kg: 60 },
         { date: "2026-09-22", kg: 61 },
       ],
-      START
+      START,
     );
     expect(out.map((w) => w.week)).toEqual([1, 4]);
   });
@@ -58,7 +58,12 @@ describe("weeklyGains", () => {
   });
 
   it("spans a gap as one step, dated to the later week", () => {
-    expect(weeklyGains([{ week: 1, kg: 60 }, { week: 4, kg: 61 }])).toEqual([{ week: 4, gainKg: 1 }]);
+    expect(
+      weeklyGains([
+        { week: 1, kg: 60 },
+        { week: 4, kg: 61 },
+      ]),
+    ).toEqual([{ week: 4, gainKg: 1 }]);
   });
 
   it("is empty with fewer than two weights", () => {

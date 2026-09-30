@@ -43,9 +43,7 @@ export function startOfWeekISO(iso) {
 export function daysBetween(startISO, endISO) {
   const [ay, am, ad] = startISO.split("-").map(Number);
   const [by, bm, bd] = endISO.split("-").map(Number);
-  return Math.round(
-    (Date.UTC(by, bm - 1, bd) - Date.UTC(ay, am - 1, ad)) / 86_400_000,
-  );
+  return Math.round((Date.UTC(by, bm - 1, bd) - Date.UTC(ay, am - 1, ad)) / 86_400_000);
 }
 
 /**
@@ -60,8 +58,18 @@ export function planWeek(startISO, onISO) {
 
 /** Month names, index 0 = January. Used by the date controls and headers. */
 export const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 /** "14 March 2009" from a local ISO date. */

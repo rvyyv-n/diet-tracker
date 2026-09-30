@@ -23,7 +23,7 @@ within a fortnight. this one inverts that: the plan is fixed in advance as a set
 of meal **blocks**, and the only daily action is ticking the ones you ate.
 calories and protein come from the blocks — no ingredient is ever logged.
 
-a weekly weigh-in feeds a four-week rolling average, and an engine *suggests*
+a weekly weigh-in feeds a four-week rolling average, and an engine _suggests_
 plan adjustments rather than applying them. the plan that ships aims at a slow,
 steady weight gain; the block structure generalises to any fixed plan.
 

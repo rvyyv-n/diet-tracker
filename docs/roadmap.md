@@ -77,27 +77,27 @@ The Claude Design handoff has landed (2026-10-01). It ships two Looks, Paper
 kept private and is not committed.
 
 - [ ] **Pass 63 — tokens and fonts.** The handoff's tokens replace
-  `tokens.css` (old aliases mapped to the new names, accent `#E0673F`),
-  `design-system.md` is rewritten against them, Fraunces, Atkinson Next,
-  Newsreader and Barlow Semi Condensed are self-hosted as woff2 (Inter goes),
-  and the service worker precache and `CACHE_NAME` are updated.
+      `tokens.css` (old aliases mapped to the new names, accent `#E0673F`),
+      `design-system.md` is rewritten against them, Fraunces, Atkinson Next,
+      Newsreader and Barlow Semi Condensed are self-hosted as woff2 (Inter goes),
+      and the service worker precache and `CACHE_NAME` are updated.
 - [ ] **Pass 64 — Look and theme plumbing.** `lookPref` next to `themePref`,
-  and "System" resolved in JS.
+      and "System" resolved in JS.
 - [ ] **Pass 65 — shared components.** `src/components/` and `src/js/ui/`
-  restyled, including the inferred states (Toggle off, Button disabled and
-  pressed, hover).
+      restyled, including the inferred states (Toggle off, Button disabled and
+      pressed, hover).
 - [ ] **Pass 66 — nav and shell.** Floating phone nav, and the 256px desktop
-  nav with the Today glance card.
+      nav with the Today glance card.
 - [ ] **Pass 67 — Today.**
 - [ ] **Pass 68 — Weight.**
 - [ ] **Pass 69 — Plan.**
 - [ ] **Pass 70 — Settings,** with the Look picker.
 - [ ] **Pass 71 — Recipes.**
 - [ ] **Pass 72 — first run,** with the optional Look step, plus intro,
-  confirms and empty states.
+      confirms and empty states.
 - [ ] **Pass 73 — sweep.** Sheets, 320px and 1440px checks, contrast.
 - [ ] **Pass 74 — app icon and logo redraw** (the 2.3 icons predate the new
-  palette).
+      palette).
 - [ ] **Pass 75 — motion,** last, per `animations_last`.
 
 Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
@@ -105,22 +105,23 @@ Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
 undesigned and waits until the redesign is done.
 
 ## later
+
 - [ ] **v2.3.0 phone and desktop pass** — Plan → Recipes and back on a real
-  phone, the storage-full banner, and reminder sync on the deployed build
-  (reminders are unavailable locally). Scheduled for after the release.
+      phone, the storage-full banner, and reminder sync on the deployed build
+      (reminders are unavailable locally). Scheduled for after the release.
 - [ ] **Verify the in-app update check** picks up `v1.6.0` — on a v1.5.x
-  install, that Settings → Check for updates now offers 1.6.0 and links the
-  right asset. One-off, do it when a device is in hand.
+      install, that Settings → Check for updates now offers 1.6.0 and links the
+      right asset. One-off, do it when a device is in hand.
 - [ ] **Android PWA verification** — the browser-installed path (install /
-  standalone / persistence) on a real Android device, from the Pages URL.
-  Non-blocking, carried since v1.0.0; do it when a device is in hand.
+      standalone / persistence) on a real Android device, from the Pages URL.
+      Non-blocking, carried since v1.0.0; do it when a device is in hand.
 - [ ] **Web push against the deployed Worker** — a live-site subscription
-  reached the Worker's KV on 2026-09-15; a push from a real cron tick is still
-  to see. The local rehearsal passed end to end, so this confirms the deploy.
+      reached the Worker's KV on 2026-09-15; a push from a real cron tick is still
+      to see. The local rehearsal passed end to end, so this confirms the deploy.
 - [ ] **Start with Windows** — needs a sign-in to see Rise come up in the tray.
 - [ ] **Android reminders on a phone** — the permission prompt, a reminder
-  arriving with the app closed, and one surviving a reboot. Slipped from the
-  v2.2.0 checklist by the owner; do it when a device is in hand.
+      arriving with the app closed, and one surviving a reboot. Slipped from the
+      v2.2.0 checklist by the owner; do it when a device is in hand.
 
 ## v2 — shipped
 
@@ -142,6 +143,7 @@ detail is in `CHANGELOG.md`.
 - **phase 13 — v2.3** ✅ passes 57–62 and 48; **v2.3.0 shipped 2026-09-24** — failed and corrupt writes surface, a test floor in CI, accessible pickers, and Plan's reference moved to Recipes
 
 ## resuming on another machine
+
 `git clone`, then `npm install` and `npm run dev` (pass 45 added Vite — it
 understands the `public/` convention that `manifest.json`, `sw.js` and
 `assets/` now live under, which a plain `python -m http.server` does not:

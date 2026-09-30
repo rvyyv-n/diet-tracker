@@ -37,9 +37,13 @@ export default function Plan({ onNavigate }) {
   });
 
   const [, bump] = useState(0);
-  useEffect(() => subscribe((fresh) => {
-    if (!fresh.has("plan")) bump((n) => n + 1);
-  }), []);
+  useEffect(
+    () =>
+      subscribe((fresh) => {
+        if (!fresh.has("plan")) bump((n) => n + 1);
+      }),
+    [],
+  );
 
   const profile = loadProfile();
   const phaseId = profile.currentPhaseId || 2;
@@ -51,7 +55,9 @@ export default function Plan({ onNavigate }) {
       <section className="screen planscreen">
         <div className="screen-head">
           <h1 className="screen__title screen__title--lg">Plan</h1>
-          <p className="phase-banner">{phase.name} · Week {week}</p>
+          <p className="phase-banner">
+            {phase.name} · Week {week}
+          </p>
         </div>
         <Group label="Groceries" icon="shopping-cart">
           <GroceryCard phaseId={phaseId} bump={bump} />
@@ -68,7 +74,9 @@ export default function Plan({ onNavigate }) {
             </span>
             <span className="set2-row__body">
               <span className="set2-row__name">Meals, food table and recipes</span>
-              <span className="set2-row__desc">Every meal option, the foods to log from, and your recipe book.</span>
+              <span className="set2-row__desc">
+                Every meal option, the foods to log from, and your recipe book.
+              </span>
             </span>
             <span className="set2-row__chev" aria-hidden="true">
               <Icon name="chevron-right" size={16} stroke={2} />
@@ -126,9 +134,17 @@ function GroceryCard({ phaseId, bump }) {
 
   return (
     <div className="card grocery">
-      <p className="grocery__status">New list each Monday · {done} of {total} ticked</p>
+      <p className="grocery__status">
+        New list each Monday · {done} of {total} ticked
+      </p>
       {GROCERY_LIST.map((sec) => (
-        <GrocerySection key={sec.section} sec={sec} phaseId={phaseId} checks={checks} onTick={tick} />
+        <GrocerySection
+          key={sec.section}
+          sec={sec}
+          phaseId={phaseId}
+          checks={checks}
+          onTick={tick}
+        />
       ))}
       {done > 0 ? (
         <div className="grocery__reset">
@@ -160,7 +176,14 @@ function GrocerySection({ sec, phaseId, checks, onTick }) {
       <Subhead label={sec.section} glyph={AISLE_GLYPH[sec.section]} />
       <ul className="grocery__list">
         {sec.items.map((item) => (
-          <GroceryRow key={item.name} section={sec.section} item={item} phaseId={phaseId} checks={checks} onTick={onTick} />
+          <GroceryRow
+            key={item.name}
+            section={sec.section}
+            item={item}
+            phaseId={phaseId}
+            checks={checks}
+            onTick={onTick}
+          />
         ))}
       </ul>
     </div>

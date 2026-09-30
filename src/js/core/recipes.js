@@ -47,13 +47,18 @@ function writeList(recipes) {
  * rule.
  */
 export function recipeKey(name) {
-  return String(name ?? "").trim().toLowerCase();
+  return String(name ?? "")
+    .trim()
+    .toLowerCase();
 }
 
 /** Sum a list of `{ kcal, proteinG }` — a recipe's totals from its items. */
 export function recipeTotals(items) {
   return (Array.isArray(items) ? items : []).reduce(
-    (acc, it) => ({ kcal: acc.kcal + sanitiseNumber(it.kcal), proteinG: acc.proteinG + sanitiseNumber(it.proteinG) }),
+    (acc, it) => ({
+      kcal: acc.kcal + sanitiseNumber(it.kcal),
+      proteinG: acc.proteinG + sanitiseNumber(it.proteinG),
+    }),
     { kcal: 0, proteinG: 0 },
   );
 }
@@ -85,7 +90,10 @@ export function getRecipe(id) {
 export function topLoggedRecipes(minCount = 2) {
   return readList()
     .filter((r) => (r.useCount ?? 0) >= minCount)
-    .sort((a, b) => (b.useCount ?? 0) - (a.useCount ?? 0) || String(a.name).localeCompare(String(b.name)));
+    .sort(
+      (a, b) =>
+        (b.useCount ?? 0) - (a.useCount ?? 0) || String(a.name).localeCompare(String(b.name)),
+    );
 }
 
 /**
@@ -106,7 +114,13 @@ export function createRecipe({ name, items } = {}) {
   const existing = list.find((r) => recipeKey(r.name) === key);
 
   if (existing) {
-    const updated = { ...existing, name: cleanName, items: cleanItems, kcal: totals.kcal, proteinG: totals.proteinG };
+    const updated = {
+      ...existing,
+      name: cleanName,
+      items: cleanItems,
+      kcal: totals.kcal,
+      proteinG: totals.proteinG,
+    };
     writeList(list.map((r) => (r.id === existing.id ? updated : r)));
     return updated;
   }
@@ -153,7 +167,13 @@ export function updateRecipe(id, { name, items } = {}) {
   if (list.some((r) => r.id !== id && recipeKey(r.name) === key)) return null;
 
   const totals = recipeTotals(cleanItems);
-  const updated = { ...target, name: cleanName, items: cleanItems, kcal: totals.kcal, proteinG: totals.proteinG };
+  const updated = {
+    ...target,
+    name: cleanName,
+    items: cleanItems,
+    kcal: totals.kcal,
+    proteinG: totals.proteinG,
+  };
   writeList(list.map((r) => (r.id === id ? updated : r)));
   return updated;
 }

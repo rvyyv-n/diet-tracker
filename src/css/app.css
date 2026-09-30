@@ -12,7 +12,6 @@
    a :hover rule outside it.
    ========================================================================== */
 
-
 /* Visually hidden but present to assistive tech — the shared aria-live region
    ui/dom.js's announce() writes to. Clipped rather than display:none, which
    would drop it from the accessibility tree entirely. */
@@ -52,19 +51,15 @@
      Top alone steps up to --space-lg (24px, not the 16px the sides keep): iOS
      HIG's 16–20pt top-margin range read as cramped at our floor once a
      display-lg serif title sat this close to the status bar / notch. */
-  padding:
-    calc(var(--space-lg) + env(safe-area-inset-top))
-    calc(var(--space-md) + env(safe-area-inset-right))
-    var(--space-section)
+  padding: calc(var(--space-lg) + env(safe-area-inset-top))
+    calc(var(--space-md) + env(safe-area-inset-right)) var(--space-section)
     calc(var(--space-md) + env(safe-area-inset-left));
 }
 
 @media (min-width: 600px) {
   .app-shell {
-    padding:
-      calc(var(--space-xl) + env(safe-area-inset-top))
-      calc(var(--space-lg) + env(safe-area-inset-right))
-      var(--space-section)
+    padding: calc(var(--space-xl) + env(safe-area-inset-top))
+      calc(var(--space-lg) + env(safe-area-inset-right)) var(--space-section)
       calc(var(--space-lg) + env(safe-area-inset-left));
   }
 }
@@ -124,7 +119,6 @@
   min-width: 0;
 }
 
-
 /* -------------------------------------------------------------- screen --- */
 
 .screen {
@@ -162,7 +156,6 @@
   color: var(--text-muted);
 }
 
-
 /* ---------------------------------------------------------------- card --- */
 
 .card {
@@ -171,7 +164,6 @@
   border: var(--border-width-hairline) solid var(--border-hairline);
   border-radius: var(--radius-card);
 }
-
 
 /* -------------------------------------------------------------- fields ---
    .field__control is the bordered box; the bare <input> inside it carries no
@@ -285,7 +277,9 @@
   background: var(--surface-canvas);
   border: var(--border-width-hairline) solid var(--border-hairline);
   border-radius: var(--radius-control);
-  transition: var(--transition-control), box-shadow var(--duration-fast) var(--ease-standard);
+  transition:
+    var(--transition-control),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 .field__control:focus-within {
@@ -365,7 +359,6 @@
   color: var(--status-error);
 }
 
-
 /* ------------------------------------------------------------- buttons ---
    primary / secondary / text, from Button.jsx. Press states only.           */
 
@@ -434,7 +427,6 @@
   box-shadow: var(--focus-ring);
 }
 
-
 /* ------------------------------------------------------------- summary ---
    Key / value list used on the "you're set up" card. Numbers are mono.      */
 
@@ -493,21 +485,27 @@
   color: var(--text-muted-soft);
 }
 
-
 /* ------------------------------------------------------- intake status ---
    The deliberate weight-gain inversion (tokens.css / docs/design-system.md):
    "low" is the failure state, so it is the one that turns red.               */
 
-.is-on-track { color: var(--intake-on-track); }
-.is-partial  { color: var(--intake-partial); }
-.is-low      { color: var(--intake-low); }
-
+.is-on-track {
+  color: var(--intake-on-track);
+}
+.is-partial {
+  color: var(--intake-partial);
+}
+.is-low {
+  color: var(--intake-low);
+}
 
 /* --------------------------------------------------------------- today ---
    The daily checklist. Big tap rows (--touch-target), a mono running total in
    the intake-status colour, an inline rotation swap. Press states only.      */
 
-.today { gap: var(--space-md); }
+.today {
+  gap: var(--space-md);
+}
 
 /* A screen title with a small line tucked beneath it (Today, Weight). The
    eyebrow sits under the title at --space-xxs — reverted from pass 10's
@@ -561,7 +559,6 @@
   font-weight: var(--weight-medium);
 }
 
-
 /* adjustment suggestion --------------------------------------------------
    Sits under the phase line. Informational, not an alert — a coral left edge
    for "the plan wants to change", never the red status colour.               */
@@ -588,7 +585,9 @@
   gap: var(--space-sm);
   margin-top: var(--space-xxs);
 }
-.suggestion__actions .btn--text { padding-inline: var(--space-xs); }
+.suggestion__actions .btn--text {
+  padding-inline: var(--space-xs);
+}
 
 /* the one-time v2 "what's new" card reuses .suggestion's card shell; its own
    list needs the usual <ul> reset (see pass 37/38's note on this) */
@@ -660,11 +659,19 @@
   /* Same node every render (Today.jsx only ever changes its width/class), so
      the fill actually grows into place as a block gets ticked or food gets
      logged, rather than jumping to the new total. */
-  transition: width var(--duration-base) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard);
+  transition:
+    width var(--duration-base) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
 }
-.daytotal__bar-fill.is-on-track { background: var(--intake-on-track); }
-.daytotal__bar-fill.is-partial { background: var(--intake-partial); }
-.daytotal__bar-fill.is-low { background: var(--intake-low); }
+.daytotal__bar-fill.is-on-track {
+  background: var(--intake-on-track);
+}
+.daytotal__bar-fill.is-partial {
+  background: var(--intake-partial);
+}
+.daytotal__bar-fill.is-low {
+  background: var(--intake-low);
+}
 
 .daytotal__remaining {
   font: var(--text-body-md);
@@ -676,7 +683,6 @@
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
-
 
 /* empty states (pass 41) --------------------------------------------------
    One large muted glyph over one line of copy, centred in the space the real
@@ -709,7 +715,6 @@
   color: var(--text-muted);
 }
 
-
 /* backfill nudge ------------------------------------------------------ */
 
 .backfill {
@@ -724,9 +729,13 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.backfill:active { background: var(--surface-card); }
-.backfill:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-
+.backfill:active {
+  background: var(--surface-card);
+}
+.backfill:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 /* checklist --------------------------------------------------------- */
 
@@ -774,9 +783,16 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.block-row__main:active { background: var(--surface-cream-strong); }
-.block-row__main:disabled { cursor: default; }
-.block-row__main:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.block-row__main:active {
+  background: var(--surface-cream-strong);
+}
+.block-row__main:disabled {
+  cursor: default;
+}
+.block-row__main:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 .block-row__tick {
   flex: none;
@@ -835,8 +851,12 @@
   white-space: nowrap;
 }
 
-.block-row.is-done .block-row__name { color: var(--text-muted); }
-.block-row.is-done .block-row__desc { text-decoration: line-through; }
+.block-row.is-done .block-row__name {
+  color: var(--text-muted);
+}
+.block-row.is-done .block-row__desc {
+  text-decoration: line-through;
+}
 
 /* time-of-day cue (pass 18) — a small nominal time after the block name. The
    current block is picked out by a coral edge (block-row--now), not a word
@@ -849,7 +869,9 @@
   color: var(--text-muted-soft);
   font-variant-numeric: tabular-nums;
 }
-.block-row--past:not(.is-done) { opacity: 0.62; }
+.block-row--past:not(.is-done) {
+  opacity: 0.62;
+}
 
 .block-row__kcal {
   flex: none;
@@ -877,7 +899,9 @@
   font-weight: var(--weight-regular);
   color: var(--text-muted-soft);
 }
-.block-row.is-done .block-row__kcal { color: var(--text-muted); }
+.block-row.is-done .block-row__kcal {
+  color: var(--text-muted);
+}
 
 /* Its own recessed strip, so it reads as a distinct control rather than a word
    floating at the row's edge. */
@@ -898,8 +922,10 @@
   color: var(--color-primary);
   background: var(--surface-card);
 }
-.block-row__swap:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-
+.block-row__swap:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 /* rotation picker ------------------------------------------------------
    Reads as a nested panel, not more checklist rows: recessed surface, a left
@@ -924,9 +950,16 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.rotation__opt:active { background: var(--surface-cream-strong); }
-.rotation__opt:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-.rotation__opt.is-picked { background: var(--surface-primary-tint); }
+.rotation__opt:active {
+  background: var(--surface-cream-strong);
+}
+.rotation__opt:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.rotation__opt.is-picked {
+  background: var(--surface-primary-tint);
+}
 
 .rotation__radio {
   flex: none;
@@ -934,7 +967,9 @@
   line-height: 1;
   color: var(--text-muted-soft);
 }
-.rotation__opt.is-picked .rotation__radio { color: var(--color-primary); }
+.rotation__opt.is-picked .rotation__radio {
+  color: var(--color-primary);
+}
 
 .rotation__opt-desc {
   flex: 1;
@@ -972,7 +1007,9 @@
   border-radius: var(--radius-sm);
   vertical-align: middle;
 }
-.block-row--bonus { border-style: dashed; }
+.block-row--bonus {
+  border-style: dashed;
+}
 
 .block-row__drop {
   flex: none;
@@ -992,8 +1029,14 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.block-row__drop:active { color: var(--color-primary); background: var(--surface-card); }
-.block-row__drop:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.block-row__drop:active {
+  color: var(--color-primary);
+  background: var(--surface-card);
+}
+.block-row__drop:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 .addblock {
   display: flex;
@@ -1017,7 +1060,9 @@
    and radius as the panel each one opens, so the closed and open states read
    as the same object. .addblock keeps its column flow so the panel still drops
    directly beneath its own trigger. */
-.today-actions > .addblock { flex: 1 1 12rem; }
+.today-actions > .addblock {
+  flex: 1 1 12rem;
+}
 .today-actions .addblock__trigger {
   align-self: stretch;
   justify-content: center;
@@ -1040,8 +1085,13 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.addblock__trigger:active { color: var(--color-primary); }
-.addblock__trigger:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.addblock__trigger:active {
+  color: var(--color-primary);
+}
+.addblock__trigger:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 .addblock__icon {
   display: inline-flex;
@@ -1074,7 +1124,9 @@
 
    The inner radius is the outer radius less the border it sits inside —
    derived from the tokens, not a new value. */
-.rotation.addblock__panel { padding: 0; }
+.rotation.addblock__panel {
+  padding: 0;
+}
 .rotation.addblock__panel .rotation__opt:first-child {
   border-start-start-radius: calc(var(--radius-card) - var(--border-width-hairline));
   border-start-end-radius: calc(var(--radius-card) - var(--border-width-hairline));
@@ -1205,9 +1257,13 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.extras__pick:active { background: var(--surface-cream-strong); }
-.extras__pick:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-
+.extras__pick:active {
+  background: var(--surface-cream-strong);
+}
+.extras__pick:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 /* recipe editor (pass 28) ------------------------------------------------
    Name a recipe and manage its ingredient list, expand-in-place over the
@@ -1290,8 +1346,13 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.appetite__chip:active { background: var(--surface-cream-strong); }
-.appetite__chip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.appetite__chip:active {
+  background: var(--surface-cream-strong);
+}
+.appetite__chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 .appetite__chip.is-picked {
   color: var(--text-ink);
   font-weight: var(--weight-medium);
@@ -1353,16 +1414,34 @@
   background: var(--surface-cream-strong);
   border: var(--border-width-hairline) solid var(--border-hairline);
   cursor: pointer;
-  transition: var(--transition-control), transform 0.12s var(--ease-standard);
+  transition:
+    var(--transition-control),
+    transform 0.12s var(--ease-standard);
 }
-.daystrip__dot:active { transform: scale(0.82); }
-.daystrip__dot:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-.daystrip__dot.is-on-track { background: var(--intake-on-track); border-color: transparent; }
-.daystrip__dot.is-partial { background: var(--intake-partial); border-color: transparent; }
-.daystrip__dot.is-low { background: var(--intake-low); border-color: transparent; }
+.daystrip__dot:active {
+  transform: scale(0.82);
+}
+.daystrip__dot:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.daystrip__dot.is-on-track {
+  background: var(--intake-on-track);
+  border-color: transparent;
+}
+.daystrip__dot.is-partial {
+  background: var(--intake-partial);
+  border-color: transparent;
+}
+.daystrip__dot.is-low {
+  background: var(--intake-low);
+  border-color: transparent;
+}
 /* the day currently on screen — a ring in the canvas colour then a muted halo */
 .daystrip__dot.is-viewing {
-  box-shadow: 0 0 0 2px var(--surface-canvas), 0 0 0 3px var(--text-muted);
+  box-shadow:
+    0 0 0 2px var(--surface-canvas),
+    0 0 0 3px var(--text-muted);
 }
 
 /* --------------------------------------------------- date controls ---
@@ -1390,10 +1469,14 @@
   font: var(--text-body-md);
   text-align: left;
   cursor: pointer;
-  transition: var(--transition-control), box-shadow var(--duration-fast) var(--ease-standard);
+  transition:
+    var(--transition-control),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 .lb__trigger:active,
-.cal__trigger:active { background: var(--surface-card); }
+.cal__trigger:active {
+  background: var(--surface-card);
+}
 .lb__trigger:focus-visible,
 .cal__trigger:focus-visible,
 .lb__trigger[aria-expanded="true"],
@@ -1411,7 +1494,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.lb__value.is-placeholder { color: var(--text-muted-soft); }
+.lb__value.is-placeholder {
+  color: var(--text-muted-soft);
+}
 
 /* Both carets draw the Lucide chevron now, not a "▾" text character — the
    typed one inherited the body font's metrics and sat low against the value
@@ -1429,9 +1514,15 @@
   display: flex;
   gap: var(--space-xs);
 }
-.date-dmy .lb { flex: 1 1 0; }
-.date-dmy .lb:nth-child(2) { flex-grow: 1.5; }
-.date-dmy.is-invalid .lb__trigger { border-color: var(--status-error); }
+.date-dmy .lb {
+  flex: 1 1 0;
+}
+.date-dmy .lb:nth-child(2) {
+  flex-grow: 1.5;
+}
+.date-dmy.is-invalid .lb__trigger {
+  border-color: var(--status-error);
+}
 
 /* floating panels ---------------------------------------------------- */
 
@@ -1467,8 +1558,13 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.lb__opt:active { background: var(--surface-cream-strong); }
-.lb__opt:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.lb__opt:active {
+  background: var(--surface-cream-strong);
+}
+.lb__opt:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 .lb__opt.is-picked {
   color: var(--text-ink);
   font-weight: var(--weight-medium);
@@ -1510,8 +1606,13 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.cal__nav:active { background: var(--surface-cream-strong); }
-.cal__nav:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.cal__nav:active {
+  background: var(--surface-cream-strong);
+}
+.cal__nav:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 .cal__weekdays,
 .cal__grid {
@@ -1548,8 +1649,13 @@
 .cal__cell.is-blank {
   cursor: default;
 }
-.cal__cell:not(.is-blank):active { background: var(--surface-cream-strong); }
-.cal__cell:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.cal__cell:not(.is-blank):active {
+  background: var(--surface-cream-strong);
+}
+.cal__cell:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 .cal__cell.is-today {
   font-weight: var(--weight-medium);
   color: var(--color-primary);
@@ -1558,7 +1664,6 @@
   background: var(--color-primary);
   color: var(--text-on-primary);
 }
-
 
 /* ------------------------------------------------------------- tab bar ---
    Fixed to the bottom. On a phone it spans the whole viewport, edge to edge.
@@ -1611,8 +1716,13 @@
   color: var(--text-ink);
   border-top-color: var(--color-primary);
 }
-.tabbar__btn:active { background: var(--surface-soft); }
-.tabbar__btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.tabbar__btn:active {
+  background: var(--surface-soft);
+}
+.tabbar__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 /* Desktop-only nav items (pass 51 — Recipes). The phone bar is four icons
    edge to edge with no room for a fifth; the side rail below --bp-desktop
@@ -1620,20 +1730,25 @@
    opens on a phone (pass 48), and while it's open the bar lights its parent
    (.is-parent-active, above); the rail shows the item itself, so there the
    parent is left alone (see the desktop block). */
-.tabbar__btn--wide-only { display: none; }
-
+.tabbar__btn--wide-only {
+  display: none;
+}
 
 /* -------------------------------------------------------------- weight ---
    Weekly weigh-in, the 4-week trend it feeds, and a history list.           */
 
-.weight { gap: var(--space-md); }
+.weight {
+  gap: var(--space-md);
+}
 
 .weight__entry {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
-.weight__entry .btn { align-self: flex-start; }
+.weight__entry .btn {
+  align-self: flex-start;
+}
 
 /* the weigh-in date sits on one line — label left, a compact calendar trigger
    right — rather than stacking full-width above the weight field */
@@ -1643,15 +1758,22 @@
   justify-content: space-between;
   gap: var(--space-sm);
 }
-.weight__daterow .field__label { flex: none; }
-.weight__daterow .cal { flex: none; }
+.weight__daterow .field__label {
+  flex: none;
+}
+.weight__daterow .cal {
+  flex: none;
+}
 .weight__daterow .cal__trigger {
   width: auto;
   height: auto;
   padding: 6px var(--space-sm);
   font: var(--text-body-sm);
 }
-.weight__daterow .cal__value { flex: none; overflow: visible; }
+.weight__daterow .cal__value {
+  flex: none;
+  overflow: visible;
+}
 /* the trigger sits at the card's right edge, so the panel opens leftward from
    there instead of overflowing the viewport */
 .weight__daterow .cal__panel {
@@ -1665,7 +1787,9 @@
   flex-direction: column;
   gap: var(--space-xs);
 }
-.weight__chart-svg { margin-top: var(--space-xxs); }
+.weight__chart-svg {
+  margin-top: var(--space-xxs);
+}
 .weight__chart-key {
   font: var(--text-caption);
   color: var(--text-muted-soft);
@@ -1676,7 +1800,9 @@
   width: 100%;
   height: auto;
 }
-.wc-cone { fill: var(--chart-cone-fill); }
+.wc-cone {
+  fill: var(--chart-cone-fill);
+}
 .wc-line {
   fill: none;
   stroke: var(--text-body);
@@ -1684,8 +1810,13 @@
   stroke-linejoin: round;
   stroke-linecap: round;
 }
-.wc-dot { fill: var(--color-primary); }
-.wc-axis { stroke: var(--border-hairline); stroke-width: 1; }
+.wc-dot {
+  fill: var(--color-primary);
+}
+.wc-axis {
+  stroke: var(--border-hairline);
+  stroke-width: 1;
+}
 .wc-label {
   fill: var(--text-muted-soft);
   font-family: var(--font-sans);
@@ -1710,7 +1841,9 @@
   gap: var(--space-sm);
   border-top: var(--border-width-hairline) solid var(--border-hairline);
 }
-.weight__row:first-of-type { border-top: none; }
+.weight__row:first-of-type {
+  border-top: none;
+}
 
 /* per-row pencil — edits that week's reading in place. Coral, so the one
    interactive thing on an otherwise static row reads as tappable. */
@@ -1725,8 +1858,14 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.weight__row-edit:active { color: var(--color-primary); background: var(--surface-cream-strong); }
-.weight__row-edit:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.weight__row-edit:active {
+  color: var(--color-primary);
+  background: var(--surface-cream-strong);
+}
+.weight__row-edit:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 /* the row while it's being edited: label, input, Save, Cancel */
 .weight__row--edit {
@@ -1734,10 +1873,15 @@
   align-items: center;
   gap: var(--space-sm);
 }
-.weight__row-input { flex: 1; min-width: 0; }
+.weight__row-input {
+  flex: 1;
+  min-width: 0;
+}
 /* stone entry needs two fields plus Save/Cancel on one row — drop the week
    label here to buy the width back (read rows already hide it) */
-.weight__row--edit:has(.weight-stlb) .weight__row-wk { display: none; }
+.weight__row--edit:has(.weight-stlb) .weight__row-wk {
+  display: none;
+}
 
 .weight__row-wk {
   font: var(--text-caption);
@@ -1767,9 +1911,12 @@
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
-.weight__row-delta.is-gain { color: var(--status-success); }
-.weight__row-delta.is-loss { color: var(--status-error); }
-
+.weight__row-delta.is-gain {
+  color: var(--status-success);
+}
+.weight__row-delta.is-loss {
+  color: var(--status-error);
+}
 
 /* ---------------------------------------------------------------- plan ---
    The Plan tab (pass 30–31): a weekly grocery checklist that self-clears each
@@ -1777,7 +1924,9 @@
    the rest — press + focus states only, hairline borders, coral only where it
    marks the current thing.                                                   */
 
-.planscreen { gap: var(--space-md); }
+.planscreen {
+  gap: var(--space-md);
+}
 
 /* groceries ------------------------------------------------------------- */
 
@@ -1848,9 +1997,16 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.grocery__row:first-child { border-top: none; }
-.grocery__row:active { background: var(--surface-cream-strong); }
-.grocery__row:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.grocery__row:first-child {
+  border-top: none;
+}
+.grocery__row:active {
+  background: var(--surface-cream-strong);
+}
+.grocery__row:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 /* the tick box is .block-row__tick, reused from the checklist */
 
 .grocery__label {
@@ -1909,7 +2065,9 @@
   font: var(--text-body-sm);
   color: var(--text-muted);
 }
-.planref__target:first-child { border-top: none; }
+.planref__target:first-child {
+  border-top: none;
+}
 .planref__target.is-now {
   color: var(--text-ink);
   font-weight: var(--weight-medium);
@@ -1934,7 +2092,9 @@
 
 /* Takes every pixel the dot and the figures don't, which is what pins the
    phase name to the left edge at any card width. */
-.planref__target-name { flex: 1; }
+.planref__target-name {
+  flex: 1;
+}
 
 /* The figures. kcal is the headline number so it takes full ink; protein is
    the secondary one and takes the teal accent, which is what gives the ladder
@@ -1950,8 +2110,12 @@
   color: var(--text-body);
   font-weight: var(--weight-medium);
 }
-.planref__target.is-now .planref__target-kcal { color: var(--text-ink); }
-.planref__target-protein { color: var(--accent-teal); }
+.planref__target.is-now .planref__target-kcal {
+  color: var(--text-ink);
+}
+.planref__target-protein {
+  color: var(--accent-teal);
+}
 .planref__target-protein::before {
   content: "·";
   margin-right: var(--space-xxs);
@@ -1966,7 +2130,9 @@
   padding: var(--space-xs) 0;
   border-top: var(--border-width-hairline) solid var(--border-hairline);
 }
-.planref__meal:first-of-type { border-top: none; }
+.planref__meal:first-of-type {
+  border-top: none;
+}
 
 .planref__meal-head {
   display: flex;
@@ -1987,8 +2153,13 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.planref__meal-head--btn:active .planref__meal-name { color: var(--color-primary); }
-.planref__meal-head--btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.planref__meal-head--btn:active .planref__meal-name {
+  color: var(--color-primary);
+}
+.planref__meal-head--btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 .planref__meal-chev {
   flex: none;
@@ -1997,7 +2168,9 @@
   color: var(--text-muted-soft);
   transition: transform var(--duration-base) var(--ease-standard);
 }
-.planref__meal.is-open .planref__meal-chev { transform: rotate(180deg); }
+.planref__meal.is-open .planref__meal-chev {
+  transform: rotate(180deg);
+}
 /* The name takes the slack, which is what puts the figure and the chevron
    together at the trailing edge. With space-between doing the work instead, the
    figure drifted to the middle of the row as the row got wider — fine at 390px,
@@ -2056,7 +2229,9 @@
   color: var(--text-body);
   border-top: var(--border-width-hairline) solid var(--border-hairline);
 }
-.planref__opt:first-child { border-top: none; }
+.planref__opt:first-child {
+  border-top: none;
+}
 .planref__opt-desc {
   /* Keeps "(1 tsp)" off a line of its own where the browser supports it. */
   text-wrap: pretty;
@@ -2090,7 +2265,9 @@
 /* The food table's column key. Hidden on the phone, where the row is a name
    over a run-on meta line and there are no columns to label; the desktop
    grid below repeats this selector to inherit the row's exact tracks. */
-.planref__foods-head { display: none; }
+.planref__foods-head {
+  display: none;
+}
 
 /* the food table — a <ul>, so it needs the same reset as the other two */
 .planref__foods {
@@ -2107,7 +2284,9 @@
   padding: var(--space-xs) 0;
   border-top: var(--border-width-hairline) solid var(--border-hairline);
 }
-.planref__food:first-child { border-top: none; }
+.planref__food:first-child {
+  border-top: none;
+}
 .planref__food-name {
   font: var(--text-body-sm);
   color: var(--text-ink);
@@ -2129,7 +2308,6 @@
   color: var(--text-muted-soft);
 }
 
-
 /* ============================================================================
    settings.css — the Settings / About screen (pass 4).
    ----------------------------------------------------------------------------
@@ -2138,7 +2316,6 @@
    from docs/handoff/additions.css; the v1-only list rows (.set-row, .set-card,
    .set-about, .set-danger) were dropped — the v2 block below is what ships.
    ========================================================================== */
-
 
 /* ------------------------------------------------------------- groups ---
    An uppercase tracked label above a card, matching .field__label. Named for
@@ -2180,7 +2357,6 @@
   color: var(--color-primary);
 }
 
-
 /* -------------------------------------------------------------- panel ---
    The import preview. Recessed inside the card, like .rotation.             */
 
@@ -2220,8 +2396,9 @@
   gap: var(--space-xs);
   margin-top: var(--space-xxs);
 }
-.set-panel__actions .btn--text { padding-inline: var(--space-sm); }
-
+.set-panel__actions .btn--text {
+  padding-inline: var(--space-sm);
+}
 
 /* ------------------------------------------------------------- danger ---
    The confirm panel. The button sits in ink; red appears only once it opens. */
@@ -2260,8 +2437,9 @@
   background: var(--status-error);
   color: var(--text-on-primary);
 }
-.btn--danger:active { background: #a83a3a; }
-
+.btn--danger:active {
+  background: #a83a3a;
+}
 
 /* ------------------------------------------------- header consistency ---
    Every top-level screen uses .screen-head: the --text-screen-title serif over
@@ -2271,7 +2449,6 @@
   font: var(--text-screen-title);
   letter-spacing: var(--type-screen-title-track);
 }
-
 
 /* ============================================================================
    settings-v2.css — the Settings screen as built.
@@ -2283,8 +2460,9 @@
    block at the foot.
    ========================================================================== */
 
-.settings2 { gap: var(--space-lg); }
-
+.settings2 {
+  gap: var(--space-lg);
+}
 
 /* --------------------------------------------------------------- card ---
    .card with the padding removed so rows run edge to edge. One divider rule
@@ -2297,7 +2475,6 @@
 .set2-card > * + * {
   border-top: var(--border-width-hairline) solid var(--border-hairline);
 }
-
 
 /* --------------------------------------------------------- appearance ---
    The theme toggle (pass 19): a name + one muted hint stacked over a
@@ -2333,7 +2510,6 @@
   border-top: var(--border-width-hairline) solid var(--border-hairline);
 }
 
-
 /* ---------------------------------------------------------------- row ---
    Action name left behind a 20px glyph. Right side is either a chevron (it
    navigates) or a small secondary button (it acts) — never both.            */
@@ -2355,12 +2531,21 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.set2-row:active { background: var(--surface-cream-strong); }
-.set2-row:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.set2-row:active {
+  background: var(--surface-cream-strong);
+}
+.set2-row:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 /* the Import row is a container, not the actuator — its button is */
-.set2-row--static { cursor: default; }
-.set2-row--static:active { background: transparent; }
+.set2-row--static {
+  cursor: default;
+}
+.set2-row--static:active {
+  background: transparent;
+}
 
 .set2-row__icon {
   flex: none;
@@ -2369,7 +2554,10 @@
   height: 20px;
   color: var(--text-muted);
 }
-.set2-row__icon svg { width: 100%; height: 100%; }
+.set2-row__icon svg {
+  width: 100%;
+  height: 100%;
+}
 
 .set2-row__body {
   flex: 1;
@@ -2398,7 +2586,10 @@
   height: 16px;
   color: var(--text-muted-soft);
 }
-.set2-row__chev svg { width: 100%; height: 100%; }
+.set2-row__chev svg {
+  width: 100%;
+  height: 100%;
+}
 
 /* small secondary button, for a row that acts */
 .btn--sm {
@@ -2425,7 +2616,9 @@
   border: var(--border-width-hairline) solid var(--border-hairline);
   border-radius: var(--radius-control);
   resize: vertical;
-  transition: var(--transition-control), box-shadow var(--duration-fast) var(--ease-standard);
+  transition:
+    var(--transition-control),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 .set-paste__input:focus {
   outline: none;
@@ -2459,7 +2652,6 @@
   }
 }
 
-
 /* ------------------------------------------------------- utility rows ---
    Plain ink rows under a divider: "Check for updates" and "Reset all data".
    No red at rest — the reset confirm panel carries the only red on the screen.
@@ -2489,7 +2681,6 @@
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
-
 
 /* -------------------------------------------------------------- about ---
    A quiet recessed block at the very bottom. It was a dark-navy panel that
@@ -2545,16 +2736,25 @@
   text-decoration: none;
   transition: var(--transition-control);
 }
-.about2__link:active { color: var(--color-primary-active); text-decoration: underline; text-underline-offset: 3px; }
-.about2__link:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
+.about2__link:active {
+  color: var(--color-primary-active);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.about2__link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
 
-.about2__sep { color: var(--text-muted-soft); }
+.about2__sep {
+  color: var(--text-muted-soft);
+}
 
 .about2__sig {
   font: var(--text-body-sm);
   color: var(--text-muted-soft);
 }
-
 
 /* ------------------------------------------------------------- tabbar ---
    Icon above label. Three tabs side by side crowd the labels at 390px;
@@ -2575,17 +2775,21 @@
   width: 20px;
   height: 20px;
 }
-.tabbar__icon svg { width: 100%; height: 100%; }
+.tabbar__icon svg {
+  width: 100%;
+  height: 100%;
+}
 
-.tabbar--icons .tabbar__label { font-size: 11px; line-height: 1.2; }
-
+.tabbar--icons .tabbar__label {
+  font-size: 11px;
+  line-height: 1.2;
+}
 
 /* ============================================================================
    today-weight consolidation — what Today and Weight take from the Settings
    pass so the three screens share one vocabulary. Merged from
    docs/handoff/additions.css.
    ========================================================================== */
-
 
 /* ---------------------------------------------------------- suggestion ---
    Was a 3px coral left edge — but so is .block-row--now, and the two could
@@ -2601,7 +2805,6 @@
   border-radius: var(--radius-card);
 }
 
-
 /* ---------------------------------------------------------------- tick ---
    The checklist tick was a text glyph, whose weight tracked the body font.
    Now the Lucide check, from the same set as the Settings rows.              */
@@ -2610,7 +2813,6 @@
   width: 14px;
   height: 14px;
 }
-
 
 /* -------------------------------------------------------------- weight ---
    "Trend" and "History" moved out of their cards onto .group__label, so the
@@ -2631,8 +2833,12 @@
   padding: var(--space-sm) var(--space-md);
   border-top-color: var(--border-hairline);
 }
-.weight--v2 .weight__row:first-of-type { border-top: none; }
-.weight--v2 .weight__row:not(.weight__row--edit) .weight__row-wk { display: none; }
+.weight--v2 .weight__row:first-of-type {
+  border-top: none;
+}
+.weight--v2 .weight__row:not(.weight__row--edit) .weight__row-wk {
+  display: none;
+}
 
 .weight--v2 .weight__row--edit .btn {
   min-height: 44px;
@@ -2645,8 +2851,9 @@
   align-items: center;
   gap: var(--space-sm);
 }
-.weight__entry .weight__save .btn { align-self: auto; }
-
+.weight__entry .weight__save .btn {
+  align-self: auto;
+}
 
 /* ------------------------------------------------------------- profile ---
    The Settings screen's Profile card — the plan at a glance, the whole card a
@@ -2665,8 +2872,13 @@
   cursor: pointer;
   transition: var(--transition-control);
 }
-.set2-profile:active { background: var(--surface-cream-strong); }
-.set2-profile:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.set2-profile:active {
+  background: var(--surface-cream-strong);
+}
+.set2-profile:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 .set2-profile__avatar {
   flex: none;
@@ -2680,7 +2892,10 @@
   border: var(--border-width-hairline) solid var(--border-hairline);
   color: var(--text-muted);
 }
-.set2-profile__avatar svg { width: 22px; height: 22px; }
+.set2-profile__avatar svg {
+  width: 22px;
+  height: 22px;
+}
 
 .set2-profile__body {
   flex: 1;
@@ -2699,7 +2914,6 @@
   font: var(--text-caption);
   color: var(--text-muted);
 }
-
 
 /* ------------------------------------------------------------- intro ---
    The first-run splash (pass 11). Full-screen, shown once ahead of the
@@ -2744,8 +2958,14 @@
 }
 
 @keyframes intro-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .intro--in {
   animation: intro-in 0.32s cubic-bezier(0.16, 1, 0.3, 1);
@@ -2754,7 +2974,6 @@
   opacity: 0;
   transition: opacity 0.24s var(--ease-standard);
 }
-
 
 /* ============================================================================
    micro-interactions — quiet, short, and disabled under prefers-reduced-motion
@@ -2773,7 +2992,9 @@
 .daytotal__kcal,
 .daytotal__remaining,
 .daytotal__protein {
-  transition: color 0.15s ease, opacity 0.15s ease;
+  transition:
+    color 0.15s ease,
+    opacity 0.15s ease;
 }
 
 /* anything that expands in place — the rotation picker, the import preview,
@@ -2784,8 +3005,14 @@
    only adds this class the render its `justOpened()` (ui/dom.js) call says
    the panel is truly newly open, not just still open. */
 @keyframes accordion-drop {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .rotation.is-entering,
 .set-panel.is-entering,
@@ -2795,8 +3022,14 @@
 
 /* the transient Copied / Saved acknowledgement */
 @keyframes ack-fade {
-  from { opacity: 0; transform: translateX(-3px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 .ack {
   animation: ack-fade 0.18s cubic-bezier(0.16, 1, 0.3, 1);
@@ -2814,8 +3047,14 @@
    to re-trigger it (pass 33 moved this from the shared content element onto the
    individual pane, so one arriving pane does not re-animate its siblings) */
 @keyframes tab-crossfade {
-  from { opacity: 0.65; transform: translateY(3px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0.65;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .tab-switching {
   animation: tab-crossfade 0.22s cubic-bezier(0.25, 1, 0.5, 1);
@@ -2848,20 +3087,24 @@
   }
 }
 
-
 /* The nav wordmark exists in the markup at every width but only shows on the
    desktop side nav — on a phone the bar is four icons wide and a title there
    would cost a tab. */
-.tabbar__brand { display: none; }
+.tabbar__brand {
+  display: none;
+}
 /* Same deal as the wordmark: the phone's bar is four icons edge to edge and
    has nowhere to put this. It only exists on the desktop nav column. */
-.tabbar__glance { display: none; }
+.tabbar__glance {
+  display: none;
+}
 /* The pinned/hover switch (pass 47) — desktop-and-hover-capable only, same
    reasoning as the two rules above, plus there is nothing for it to control
    on a device that can't hover in the first place. See the combined media
    query further down for where it turns back on. */
-.tabbar__pin { display: none; }
-
+.tabbar__pin {
+  display: none;
+}
 
 /* ==================================================== desktop shell (35) ===
    Above --bp-desktop (1024px — repeated as a literal, since a custom property
@@ -2883,10 +3126,8 @@
 @media (min-width: 1024px) {
   .app-shell--tabbed {
     max-width: none;
-    padding:
-      calc(var(--space-xl) + env(safe-area-inset-top))
-      calc(var(--gutter-desktop) + env(safe-area-inset-right))
-      var(--space-xl)
+    padding: calc(var(--space-xl) + env(safe-area-inset-top))
+      calc(var(--gutter-desktop) + env(safe-area-inset-right)) var(--space-xl)
       calc(var(--panel-nav-width) + var(--gutter-desktop) + env(safe-area-inset-left));
   }
 
@@ -2913,10 +3154,7 @@
     background: var(--surface-soft);
     border-top: none;
     border-right: var(--border-width-hairline) solid var(--border-hairline);
-    padding:
-      calc(var(--space-lg) + env(safe-area-inset-top))
-      var(--space-sm)
-      var(--space-lg)
+    padding: calc(var(--space-lg) + env(safe-area-inset-top)) var(--space-sm) var(--space-lg)
       calc(var(--space-sm) + env(safe-area-inset-left));
   }
 
@@ -2935,7 +3173,9 @@
     border: none;
     cursor: pointer;
   }
-  .tabbar__brand:active { color: var(--color-primary); }
+  .tabbar__brand:active {
+    color: var(--color-primary);
+  }
   .tabbar__brand:focus-visible {
     outline: none;
     border-radius: var(--radius-control);
@@ -2958,7 +3198,9 @@
   }
 
   /* the rail has room for the fifth item the phone bar can't fit */
-  .tabbar__btn--wide-only { display: inline-flex; }
+  .tabbar__btn--wide-only {
+    display: inline-flex;
+  }
   .tabbar--icons .tabbar__label {
     font: var(--text-nav);
   }
@@ -2968,7 +3210,9 @@
     background: var(--surface-card);
   }
   /* the rail lights Recipes itself, so its phone-only parent stays plain */
-  .tabbar__btn.is-parent-active:not(.is-active) { color: var(--text-muted); }
+  .tabbar__btn.is-parent-active:not(.is-active) {
+    color: var(--text-muted);
+  }
 
   /* ---- the nav's foot: today at a glance ----
      `margin-top: auto` pushes it to the bottom of the column, which is the
@@ -2995,7 +3239,9 @@
   }
   /* The label is a .group__label now (see navGlance) and inherits the eyebrow
      treatment from there; this only adds the gap to the rows beneath it. */
-  .tabbar__glance .group__label { padding-bottom: var(--space-xxs); }
+  .tabbar__glance .group__label {
+    padding-bottom: var(--space-xxs);
+  }
   .tabbar__glance-row {
     display: flex;
     align-items: baseline;
@@ -3014,9 +3260,15 @@
   /* Stated at two classes on purpose. The bare .is-* status rules are declared
      far earlier in the file, so at equal specificity this later rule would win
      and the intake colour would silently never appear. */
-  .tabbar__glance-val.is-on-track { color: var(--intake-on-track); }
-  .tabbar__glance-val.is-partial { color: var(--intake-partial); }
-  .tabbar__glance-val.is-low { color: var(--intake-low); }
+  .tabbar__glance-val.is-on-track {
+    color: var(--intake-on-track);
+  }
+  .tabbar__glance-val.is-partial {
+    color: var(--intake-partial);
+  }
+  .tabbar__glance-val.is-low {
+    color: var(--intake-low);
+  }
 
   /* ---- the food table becomes a table ----
      The one list that wants the width rather than a cap. On a phone it is a
@@ -3036,7 +3288,9 @@
     color: var(--text-muted-soft);
   }
   .planref__foods-head-kcal,
-  .planref__foods-head-protein { text-align: right; }
+  .planref__foods-head-protein {
+    text-align: right;
+  }
   /* The key belongs to the first row, so that row drops its own top rule. */
   .planref__foods > .planref__food:first-child {
     border-top: var(--border-width-hairline) solid var(--border-hairline);
@@ -3060,7 +3314,6 @@
     text-align: right;
   }
 }
-
 
 /* ============================================ desktop side nav rail (47) ===
    The desktop nav column above is always 240px and always there — this adds
@@ -3088,7 +3341,9 @@
      that moves on every pointer event — so it is fine for it to affect
      layout directly, unlike the width change below. */
   .app-shell--nav-hover.app-shell--tabbed {
-    padding-left: calc(var(--panel-nav-width-collapsed) + var(--gutter-desktop) + env(safe-area-inset-left));
+    padding-left: calc(
+      var(--panel-nav-width-collapsed) + var(--gutter-desktop) + env(safe-area-inset-left)
+    );
   }
 
   /* The rail widens and narrows on an ease (pass 50). It was a bare snap
@@ -3249,7 +3504,6 @@
   }
 }
 
-
 /* ======================================================= hover states (35) ==
    The one place the "no hover anywhere" note at the top of this file is
    relaxed, and only where a pointer actually exists: (hover: hover) and
@@ -3265,22 +3519,37 @@
 @media (hover: hover) and (pointer: fine) {
   /* nav */
   .tabbar__btn:hover,
-  .tabbar__btn.is-parent-active:not(.is-active):hover { color: var(--text-ink); background: var(--surface-soft); }
+  .tabbar__btn.is-parent-active:not(.is-active):hover {
+    color: var(--text-ink);
+    background: var(--surface-soft);
+  }
   /* The wordmark routes to Today, so it takes a hover like any other nav
      target. Colour only — the nav buttons step their background, and a filled
      display-sized wordmark would read as a fifth tab. */
-  .tabbar__brand:hover { color: var(--color-primary); }
-  .tabbar__btn.is-active:hover { background: var(--surface-card); }
+  .tabbar__brand:hover {
+    color: var(--color-primary);
+  }
+  .tabbar__btn.is-active:hover {
+    background: var(--surface-card);
+  }
 
   /* buttons — a filled control has no lighter token between its rest coral
      and its coral-700 press, and inventing a coral-600 is exactly what
      design-system.md forbids, so the fill is dimmed rather than re-coloured.
      The press still reads as a press: it is a different hue, not 4% darker. */
   .btn--primary:hover,
-  .btn--danger:hover { filter: brightness(0.96); }
-  .btn--secondary:hover { background: var(--surface-soft); }
-  .btn--text:hover { color: var(--text-body-strong); }
-  .seg__btn:hover { background: var(--surface-soft); }
+  .btn--danger:hover {
+    filter: brightness(0.96);
+  }
+  .btn--secondary:hover {
+    background: var(--surface-soft);
+  }
+  .btn--text:hover {
+    color: var(--text-body-strong);
+  }
+  .seg__btn:hover {
+    background: var(--surface-soft);
+  }
 
   /* tap rows — press is --surface-cream-strong, so hover takes --surface-card */
   .backfill:hover,
@@ -3294,24 +3563,35 @@
   .set2-row:hover,
   .set2-profile:hover,
   .planref__meal-head--btn:hover,
-  .weight__row-edit:hover { background: var(--surface-card); }
-  .set2-row--static:hover { background: transparent; }
+  .weight__row-edit:hover {
+    background: var(--surface-card);
+  }
+  .set2-row--static:hover {
+    background: transparent;
+  }
 
   /* small icon triggers — press is --surface-card, so hover takes soft */
   .block-row__swap:hover,
   .block-row__drop:hover,
   .lb__trigger:hover,
   .cal__trigger:hover,
-  .cal__nav:hover { background: var(--surface-soft); }
+  .cal__nav:hover {
+    background: var(--surface-soft);
+  }
 
   /* text-only triggers have no fill to step, so they step one shade toward
      their own press colour instead */
-  .addblock__trigger:hover { color: var(--text-ink); }
+  .addblock__trigger:hover {
+    color: var(--text-ink);
+  }
   /* Bounded in the actions strip it has a fill to step, so it takes the tap-row
      treatment rather than the text-only one. */
   .today-actions .addblock__trigger:hover {
     color: var(--text-ink);
     background: var(--surface-card);
   }
-  .about2__link:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .about2__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }

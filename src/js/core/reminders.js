@@ -71,7 +71,9 @@ const nativeBridge = (() => {
           if (key !== "reminders") return reject(new Error(`unknown setting ${key}`));
           const now = JSON.parse(android.setReminders(on));
           if (!now.pending) return resolve(now);
-          window.addEventListener("rise-android-settings", (e) => resolve(e.detail), { once: true });
+          window.addEventListener("rise-android-settings", (e) => resolve(e.detail), {
+            once: true,
+          });
         }),
       sync: async (snapshot) => android.sync(JSON.stringify(snapshot)),
     };
@@ -123,7 +125,13 @@ function resolveBlocks(day) {
     const block = blockById(id);
     if (!block) continue;
     const { kcal, proteinG } = blockValue(day, id);
-    out[id] = { name: block.name, time: block.time, kcal, proteinG, done: Boolean(day.completed?.[id]) };
+    out[id] = {
+      name: block.name,
+      time: block.time,
+      kcal,
+      proteinG,
+      done: Boolean(day.completed?.[id]),
+    };
   }
   return out;
 }
@@ -173,7 +181,10 @@ async function idbPut(entries) {
 /* ----------------------------------------------------------- subscription */
 
 function keyBytes(b64url) {
-  const b64 = b64url.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(b64url.length / 4) * 4, "=");
+  const b64 = b64url
+    .replace(/-/g, "+")
+    .replace(/_/g, "/")
+    .padEnd(Math.ceil(b64url.length / 4) * 4, "=");
   return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
 }
 
@@ -245,7 +256,10 @@ export async function enableReminders() {
     const res = await fetch(`${PUSH_URL}/vapid-public-key`);
     if (!res.ok) throw new Error(`reminder service ${res.status}`);
     const { key } = await res.json();
-    sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(key) });
+    sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: keyBytes(key),
+    });
   }
 
   await idbPut({ snapshot: buildSnapshot() });

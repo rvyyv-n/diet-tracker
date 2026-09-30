@@ -55,9 +55,13 @@ export default function Weight() {
   });
 
   const [, bump] = useState(0);
-  useEffect(() => subscribe((fresh) => {
-    if (!fresh.has("weight")) bump((n) => n + 1);
-  }), []);
+  useEffect(
+    () =>
+      subscribe((fresh) => {
+        if (!fresh.has("weight")) bump((n) => n + 1);
+      }),
+    [],
+  );
 
   const profile = loadProfile();
   const unit = profile.weightUnit || "kg";
@@ -87,7 +91,12 @@ export default function Weight() {
           <p className="phase-banner">{subtitle}</p>
         </div>
         <Imperative node={entryNode} />
-        <StatsCard latest={latest} latestGain={latestGain} adherencePct={thisWeekAdherence} unit={unit} />
+        <StatsCard
+          latest={latest}
+          latestGain={latestGain}
+          adherencePct={thisWeekAdherence}
+          unit={unit}
+        />
         <Group label="Weekly review" icon="square-check-big">
           <ReviewCard series={series} rolling={rolling} start={start} unit={unit} />
         </Group>
@@ -134,11 +143,23 @@ function StatsCard({ latest, latestGain, adherencePct, unit }) {
       <StatRow k="Latest" v={latest ? formatWeight(latest.kg, unit) : "—"} />
       <StatRow
         k="4-week gain"
-        v={latestGain == null ? "—" : <span className={gainClass}>{latestGain.toFixed(2)} kg/wk</span>}
+        v={
+          latestGain == null ? (
+            "—"
+          ) : (
+            <span className={gainClass}>{latestGain.toFixed(2)} kg/wk</span>
+          )
+        }
       />
       <StatRow
         k="This week's adherence"
-        v={adherencePct == null ? "—" : <span className={adherenceClass(adherencePct)}>{adherencePct}%</span>}
+        v={
+          adherencePct == null ? (
+            "—"
+          ) : (
+            <span className={adherenceClass(adherencePct)}>{adherencePct}%</span>
+          )
+        }
       />
     </div>
   );
@@ -190,7 +211,10 @@ function ReviewCard({ series, rolling, start, unit }) {
     <div className="card summary">
       <StatRow k="Week" v={`${wk}`} />
       <StatRow k="Average intake" v={avgKcal == null ? "—" : `${NUM.format(avgKcal)} kcal/day`} />
-      <StatRow k="Adherence" v={pct == null ? "—" : <span className={adherenceClass(pct)}>{pct}%</span>} />
+      <StatRow
+        k="Adherence"
+        v={pct == null ? "—" : <span className={adherenceClass(pct)}>{pct}%</span>}
+      />
       <StatRow
         k="Weigh-in"
         v={
@@ -307,7 +331,10 @@ function ChartCard({ series }) {
   const cone = [...lower, ...upper].join(" ");
   const line = series.map((s, i) => at(i, y(s.kg))).join(" ");
   const dots = series
-    .map((s, i) => `<circle cx="${xs[i].toFixed(1)}" cy="${y(s.kg).toFixed(1)}" r="3" class="wc-dot"/>`)
+    .map(
+      (s, i) =>
+        `<circle cx="${xs[i].toFixed(1)}" cy="${y(s.kg).toFixed(1)}" r="3" class="wc-dot"/>`,
+    )
     .join("");
   const labels = series
     .map((s, i) => `<text x="${xs[i].toFixed(1)}" y="${H - 6}" class="wc-label">${s.week}</text>`)
@@ -382,7 +409,10 @@ function entryCard({ entryDate, setEntryDate, justSaved, setJustSaved, unit }) {
 
 function historyCard({ series, editing, setEditing, unit }) {
   if (!series.length) {
-    return emptyState("scale", "No weigh-ins yet. Log your first above and the trend starts there.");
+    return emptyState(
+      "scale",
+      "No weigh-ins yet. Log your first above and the trend starts there.",
+    );
   }
   const reversed = [...series].reverse();
   return el(

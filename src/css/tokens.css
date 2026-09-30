@@ -13,85 +13,147 @@
    app must work with no network, so faces are vendored in assets/fonts/.
    ========================================================================== */
 
-
 /* ---------------------------------------------------------------- fonts ---
    Copernicus and StyreneB are licensed Anthropic faces and are not vendored;
    local() keeps them first for anyone who has them installed, and the public
    substitutions below (per the source system's readme) carry everyone else.  */
 
-@font-face{font-family:"Copernicus";src:local("Copernicus"),local("Copernicus Book");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"StyreneB";src:local("Styrene B"),local("StyreneB"),local("Styrene B Regular");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"StyreneB";src:local("Styrene B Medium"),local("StyreneB-Medium");font-weight:500;font-style:normal;font-display:swap}
+@font-face {
+  font-family: "Copernicus";
+  src: local("Copernicus"), local("Copernicus Book");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "StyreneB";
+  src: local("Styrene B"), local("StyreneB"), local("Styrene B Regular");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "StyreneB";
+  src: local("Styrene B Medium"), local("StyreneB-Medium");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
 
-@font-face{font-family:"Newsreader";src:local("Newsreader"),url("/assets/fonts/newsreader-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"Inter";src:local("Inter"),url("/assets/fonts/inter-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"Inter";src:local("Inter Medium"),url("/assets/fonts/inter-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face {
+  font-family: "Newsreader";
+  src:
+    local("Newsreader"),
+    url("/assets/fonts/newsreader-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src:
+    local("Inter"),
+    url("/assets/fonts/inter-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src:
+    local("Inter Medium"),
+    url("/assets/fonts/inter-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
 
+:root {
+  color-scheme: light;
 
-:root{
-
-color-scheme:light;
-
-/* ------------------------------------------------------- base palette ---
+  /* ------------------------------------------------------- base palette ---
    Edit THIS block to rebrand. Nothing else should hold a literal colour.   */
 
-/* coral — the brand voltage */
---coral-500:#cc785c;--coral-700:#a9583e;--coral-200:#e6dfd8;
-/* warm ink */
---ink-900:#141413;--ink-800:#252523;--ink-700:#3d3d3a;--ink-500:#6c6a64;--ink-400:#8e8b82;
-/* cream surfaces */
---cream-50:#faf9f5;--cream-100:#f5f0e8;--cream-150:#ebe6df;--cream-200:#efe9de;--cream-250:#e6dfd8;--cream-300:#e8e0d2;
-/* night surfaces + ink — the dark theme's palette (pass 19). Mirrors the cream
+  /* coral — the brand voltage */
+  --coral-500: #cc785c;
+  --coral-700: #a9583e;
+  --coral-200: #e6dfd8;
+  /* warm ink */
+  --ink-900: #141413;
+  --ink-800: #252523;
+  --ink-700: #3d3d3a;
+  --ink-500: #6c6a64;
+  --ink-400: #8e8b82;
+  /* cream surfaces */
+  --cream-50: #faf9f5;
+  --cream-100: #f5f0e8;
+  --cream-150: #ebe6df;
+  --cream-200: #efe9de;
+  --cream-250: #e6dfd8;
+  --cream-300: #e8e0d2;
+  /* night surfaces + ink — the dark theme's palette (pass 19). Mirrors the cream
    ramp and the ink ramp step for step: canvas < soft < card < strong, plus a
    floating-panel surface and two hairlines. Only the dark-theme alias block
    near the end of this file reads these. */
---night-canvas:#171614;--night-soft:#1e1c19;--night-card:#232120;--night-strong:#2c2a26;--night-overlay:#262320;
---night-sunken:#0f0e0d;
---night-line:#34312c;--night-line-soft:#2a2723;
---night-ink:#f7f5f0;--night-ink-strong:#e8e4dc;--night-ink-body:#d3cec4;--night-ink-muted:#9a968c;--night-ink-faint:#6f6b62;
-/* accents + status */
---teal-500:#5db8a6;--amber-500:#e8a55a;--green-500:#5db872;--gold-500:#d4a017;--red-500:#c64545;
---white:#ffffff;
+  --night-canvas: #171614;
+  --night-soft: #1e1c19;
+  --night-card: #232120;
+  --night-strong: #2c2a26;
+  --night-overlay: #262320;
+  --night-sunken: #0f0e0d;
+  --night-line: #34312c;
+  --night-line-soft: #2a2723;
+  --night-ink: #f7f5f0;
+  --night-ink-strong: #e8e4dc;
+  --night-ink-body: #d3cec4;
+  --night-ink-muted: #9a968c;
+  --night-ink-faint: #6f6b62;
+  /* accents + status */
+  --teal-500: #5db8a6;
+  --amber-500: #e8a55a;
+  --green-500: #5db872;
+  --gold-500: #d4a017;
+  --red-500: #c64545;
+  --white: #ffffff;
 
+  /* --------------------------------------------------- semantic aliases --- */
 
-/* --------------------------------------------------- semantic aliases --- */
+  --color-primary: var(--coral-500);
+  --color-primary-active: var(--coral-700);
+  --color-primary-disabled: var(--coral-200);
 
---color-primary:var(--coral-500);
---color-primary-active:var(--coral-700);
---color-primary-disabled:var(--coral-200);
-
---text-ink:var(--ink-900);
---text-body-strong:var(--ink-800);
---text-body:var(--ink-700);
---text-muted:var(--ink-500);
---text-muted-soft:var(--ink-400);
---text-on-primary:var(--white);
-/* coral-500 as text measures ~3.0:1 on canvas and fails AA for normal-sized
+  --text-ink: var(--ink-900);
+  --text-body-strong: var(--ink-800);
+  --text-body: var(--ink-700);
+  --text-muted: var(--ink-500);
+  --text-muted-soft: var(--ink-400);
+  --text-on-primary: var(--white);
+  /* coral-500 as text measures ~3.0:1 on canvas and fails AA for normal-sized
    text; coral-700 is ~4.7:1 and passes. Links are body-sized, so they take the
    deep coral. Coral-500 stays correct as a FILL behind --text-on-primary. */
---text-link:var(--coral-700);
+  --text-link: var(--coral-700);
 
---surface-canvas:var(--cream-50);
---surface-soft:var(--cream-100);
---surface-card:var(--cream-200);
---surface-cream-strong:var(--cream-300);
-/* the surface a floating panel (listbox, calendar) sits on. Same as the canvas
+  --surface-canvas: var(--cream-50);
+  --surface-soft: var(--cream-100);
+  --surface-card: var(--cream-200);
+  --surface-cream-strong: var(--cream-300);
+  /* the surface a floating panel (listbox, calendar) sits on. Same as the canvas
    in light; the dark theme lifts it so a panel reads above the page. */
---surface-overlay:var(--surface-canvas);
-/* a recessed well — search fields, code panels. The inverse of --surface-overlay:
+  --surface-overlay: var(--surface-canvas);
+  /* a recessed well — search fields, code panels. The inverse of --surface-overlay:
    that one lifts a panel off the page, this one presses a field into it. */
---surface-sunken:var(--cream-250);
+  --surface-sunken: var(--cream-250);
 
---border-hairline:var(--cream-250);
---border-hairline-soft:var(--cream-150);
+  --border-hairline: var(--cream-250);
+  --border-hairline-soft: var(--cream-150);
 
---accent-teal:var(--teal-500);
---accent-amber:var(--amber-500);
---status-success:var(--green-500);
---status-warning:var(--gold-500);
---status-error:var(--red-500);
+  --accent-teal: var(--teal-500);
+  --accent-amber: var(--amber-500);
+  --status-success: var(--green-500);
+  --status-warning: var(--gold-500);
+  --status-error: var(--red-500);
 
-/* focus ring — the canonical treatment, and the one every focusable surface
+  /* focus ring — the canonical treatment, and the one every focusable surface
    reads. A 2px gap in the theme's own canvas colour, then a 2px coral ring.
    The canvas-coloured gap is what makes it work anywhere: the ring's immediate
    neighbour is always the canvas, so it never has to fight the surface it
@@ -99,178 +161,232 @@ color-scheme:light;
    wash was very nearly invisible. There is deliberately no dark-theme override
    below: --surface-canvas already flips, and custom properties resolve at use
    time, so the same declaration produces the right ring in both themes. */
---border-focus:var(--coral-500);
---focus-ring:0 0 0 2px var(--surface-canvas),0 0 0 4px var(--border-focus);
+  --border-focus: var(--coral-500);
+  --focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--border-focus);
 
-/* coral washes that were inline literals before pass 19. Tokenised so the dark
+  /* coral washes that were inline literals before pass 19. Tokenised so the dark
    theme can raise their alpha — at 6–10% they vanish on a night surface. */
---surface-primary-tint:rgba(204,120,92,.08);   /* .is-picked row backgrounds */
---chart-cone-fill:rgba(204,120,92,.1);         /* the weight trend target cone */
---divider-strong:rgba(20,20,19,.12);           /* a rule that must show on cream-strong */
+  --surface-primary-tint: rgba(204, 120, 92, 0.08); /* .is-picked row backgrounds */
+  --chart-cone-fill: rgba(204, 120, 92, 0.1); /* the weight trend target cone */
+  --divider-strong: rgba(20, 20, 19, 0.12); /* a rule that must show on cream-strong */
 
-
-/* ============================ APP LAYER ==================================
+  /* ============================ APP LAYER ==================================
    Additions specific to this app. Not from the source system.
    ======================================================================== */
 
-/* --- intake status -------------------------------------------------------
+  /* --- intake status -------------------------------------------------------
    DELIBERATE INVERSION. In a weight-GAIN context, under-eating is the failure,
    so red means "well under target", not "over limit". These aliases exist so
    that inversion is stated once, here, instead of being implied by every use of
    --status-error. Do not "fix" this back. See docs/design-system.md.          */
---intake-on-track:var(--status-success);   /* at or above the day's target */
---intake-partial: var(--status-warning);   /* partway there */
---intake-low:     var(--status-error);     /* well under — the failure state */
+  --intake-on-track: var(--status-success); /* at or above the day's target */
+  --intake-partial: var(--status-warning); /* partway there */
+  --intake-low: var(--status-error); /* well under — the failure state */
 
-
-/* ------------------------------------------------------------ spacing ---
+  /* ------------------------------------------------------------ spacing ---
    base unit 4px                                                            */
---space-xxs:4px;--space-xs:8px;--space-sm:12px;--space-md:16px;--space-lg:24px;
---space-xl:32px;--space-xxl:48px;--space-section:96px;
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --space-section: 96px;
 
-/* Below the 4pt scale. Exists for one hairline gap — the title-to-eyebrow
+  /* Below the 4pt scale. Exists for one hairline gap — the title-to-eyebrow
    space in .screen-head, where 4px reads as a touch too loose. Don't reach
    for this elsewhere; if a second use appears, question it. */
---space-xxxs:2px;
+  --space-xxxs: 2px;
 
---pad-card:var(--space-xl);
---pad-card-tight:var(--space-lg);
---pad-callout:var(--space-xxl);
---container-max:1200px;
---control-height:40px;
-/* 36px in the source system, which its own readme admits is 'slightly under
+  --pad-card: var(--space-xl);
+  --pad-card-tight: var(--space-lg);
+  --pad-callout: var(--space-xxl);
+  --container-max: 1200px;
+  --control-height: 40px;
+  /* 36px in the source system, which its own readme admits is 'slightly under
    WCAG 44'. Fine for a marketing page's decorative arrow; not for a one-handed
    kitchen app. 36px is acceptable only in a mouse-driven desktop toolbar. */
---icon-button-size:44px;
+  --icon-button-size: 44px;
 
-/* APP LAYER — the source system is desktop/marketing and fixes controls at
+  /* APP LAYER — the source system is desktop/marketing and fixes controls at
    40px, below the 44px iOS / 48px Android minimum. This app is used one-handed
    in a kitchen, so tap rows get a real thumb target. Genuine form controls stay
    at --control-height.                                                       */
---touch-target:56px;
---app-max-width:580px;   /* fills the viewport on a phone, caps for tablet / desktop */
+  --touch-target: 56px;
+  --app-max-width: 580px; /* fills the viewport on a phone, caps for tablet / desktop */
 
-
-/* -------------------------------------------------------- breakpoints ---
+  /* -------------------------------------------------------- breakpoints ---
    REFERENCE ONLY. A custom property cannot be used in an @media condition —
    `@media (min-width: var(--bp-desktop))` does not work in any browser — so
    media queries must repeat these as literals. They live here so the scale has
    one authoritative home and the literals can be checked against it.
    360 and 600 are what the app already ships; the rest land with phase 4.     */
---bp-compact:360px;   /* small phone — floor of support */
---bp-medium:600px;    /* large phone / small tablet */
---bp-expanded:840px;  /* tablet / foldable */
---bp-desktop:1024px;  /* side nav + main panel */
---bp-wide:1440px;     /* side nav + main + detail, three panels */
+  --bp-compact: 360px; /* small phone — floor of support */
+  --bp-medium: 600px; /* large phone / small tablet */
+  --bp-expanded: 840px; /* tablet / foldable */
+  --bp-desktop: 1024px; /* side nav + main panel */
+  --bp-wide: 1440px; /* side nav + main + detail, three panels */
 
---gutter-compact:16px;--gutter-medium:20px;--gutter-desktop:32px;
---panel-nav-width:240px;      /* desktop side nav */
---panel-nav-width-collapsed:72px; /* the hover-to-expand rail (pass 47) */
---panel-detail-width:360px;   /* the third panel at --bp-wide */
---container-app:960px;        /* reading column inside the desktop main panel */
+  --gutter-compact: 16px;
+  --gutter-medium: 20px;
+  --gutter-desktop: 32px;
+  --panel-nav-width: 240px; /* desktop side nav */
+  --panel-nav-width-collapsed: 72px; /* the hover-to-expand rail (pass 47) */
+  --panel-detail-width: 360px; /* the third panel at --bp-wide */
+  --container-app: 960px; /* reading column inside the desktop main panel */
 
+  /* -------------------------------------------------------------- radii --- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 9999px;
+  --radius-full: 9999px;
 
-/* -------------------------------------------------------------- radii --- */
---radius-xs:4px;--radius-sm:6px;--radius-md:8px;--radius-lg:12px;--radius-xl:16px;
---radius-pill:9999px;--radius-full:9999px;
+  --radius-control: var(--radius-md); /* buttons, inputs, tabs */
+  --radius-card: var(--radius-lg); /* content cards, block rows */
 
---radius-control:var(--radius-md);   /* buttons, inputs, tabs */
---radius-card:var(--radius-lg);      /* content cards, block rows */
-
-
-/* ---------------------------------------------------------- elevation ---
+  /* ---------------------------------------------------------- elevation ---
    Colour-block first, shadow rare.                                          */
---shadow-none:none;
---shadow-hover:0 1px 3px rgba(20,20,19,.08);
---shadow-float:0 8px 24px rgba(20,20,19,.12);
---border-width-hairline:1px;
+  --shadow-none: none;
+  --shadow-hover: 0 1px 3px rgba(20, 20, 19, 0.08);
+  --shadow-float: 0 8px 24px rgba(20, 20, 19, 0.12);
+  --border-width-hairline: 1px;
 
+  /* --------------------------------------------------------- typography --- */
 
-/* --------------------------------------------------------- typography --- */
-
---font-serif-display:Copernicus,"Tiempos Headline",Newsreader,Georgia,"Times New Roman",serif;
---font-sans:StyreneB,Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-/* No longer vendored. Numbers moved to the serif/sans metric roles, so the only
+  --font-serif-display:
+    Copernicus, "Tiempos Headline", Newsreader, Georgia, "Times New Roman", serif;
+  --font-sans: StyreneB, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* No longer vendored. Numbers moved to the serif/sans metric roles, so the only
    caller left is --text-code, for debug output this app does not currently
    render. It falls back to the platform mono face; if a real code surface
    ever appears, re-vendor the woff2 and re-add it to sw.js PRECACHE_URLS. */
---font-mono:ui-monospace,SFMono-Regular,"JetBrains Mono",Menlo,monospace;
+  --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
 
---weight-regular:400;--weight-medium:500;
+  --weight-regular: 400;
+  --weight-medium: 500;
 
-/* display — serif, weight 400, negative tracking (non-negotiable) */
---type-display-xl-size:64px;--type-display-xl-line:1.05;--type-display-xl-track:-1.5px;
---type-display-lg-size:48px;--type-display-lg-line:1.1;--type-display-lg-track:-1px;
---type-display-md-size:36px;--type-display-md-line:1.15;--type-display-md-track:-.5px;
---type-display-sm-size:28px;--type-display-sm-line:1.2;--type-display-sm-track:-.3px;
+  /* display — serif, weight 400, negative tracking (non-negotiable) */
+  --type-display-xl-size: 64px;
+  --type-display-xl-line: 1.05;
+  --type-display-xl-track: -1.5px;
+  --type-display-lg-size: 48px;
+  --type-display-lg-line: 1.1;
+  --type-display-lg-track: -1px;
+  --type-display-md-size: 36px;
+  --type-display-md-line: 1.15;
+  --type-display-md-track: -0.5px;
+  --type-display-sm-size: 28px;
+  --type-display-sm-line: 1.2;
+  --type-display-sm-track: -0.3px;
 
-/* titles + body — sans */
---type-title-lg-size:22px;--type-title-lg-line:1.3;
---type-title-md-size:18px;--type-title-md-line:1.4;
---type-title-sm-size:16px;--type-title-sm-line:1.4;
---type-body-md-size:16px;--type-body-md-line:1.55;
---type-body-sm-size:14px;--type-body-sm-line:1.55;
---type-caption-size:13px;--type-caption-line:1.4;
---type-caption-upper-size:12px;--type-caption-upper-line:1.4;--type-caption-upper-track:1.5px;
---type-code-size:14px;--type-code-line:1.6;
---type-button-size:14px;--type-button-line:1;
---type-nav-size:14px;--type-nav-line:1.4;
+  /* titles + body — sans */
+  --type-title-lg-size: 22px;
+  --type-title-lg-line: 1.3;
+  --type-title-md-size: 18px;
+  --type-title-md-line: 1.4;
+  --type-title-sm-size: 16px;
+  --type-title-sm-line: 1.4;
+  --type-body-md-size: 16px;
+  --type-body-md-line: 1.55;
+  --type-body-sm-size: 14px;
+  --type-body-sm-line: 1.55;
+  --type-caption-size: 13px;
+  --type-caption-line: 1.4;
+  --type-caption-upper-size: 12px;
+  --type-caption-upper-line: 1.4;
+  --type-caption-upper-track: 1.5px;
+  --type-code-size: 14px;
+  --type-code-line: 1.6;
+  --type-button-size: 14px;
+  --type-button-line: 1;
+  --type-nav-size: 14px;
+  --type-nav-line: 1.4;
 
-/* composite shorthands: font: <weight> <size>/<line> <family> */
---text-display-xl:var(--weight-regular) var(--type-display-xl-size)/var(--type-display-xl-line) var(--font-serif-display);
---text-display-lg:var(--weight-regular) var(--type-display-lg-size)/var(--type-display-lg-line) var(--font-serif-display);
---text-display-md:var(--weight-regular) var(--type-display-md-size)/var(--type-display-md-line) var(--font-serif-display);
---text-display-sm:var(--weight-regular) var(--type-display-sm-size)/var(--type-display-sm-line) var(--font-serif-display);
---text-title-lg:var(--weight-medium) var(--type-title-lg-size)/var(--type-title-lg-line) var(--font-sans);
---text-title-md:var(--weight-medium) var(--type-title-md-size)/var(--type-title-md-line) var(--font-sans);
---text-title-sm:var(--weight-medium) var(--type-title-sm-size)/var(--type-title-sm-line) var(--font-sans);
---text-body-md:var(--weight-regular) var(--type-body-md-size)/var(--type-body-md-line) var(--font-sans);
---text-body-sm:var(--weight-regular) var(--type-body-sm-size)/var(--type-body-sm-line) var(--font-sans);
---text-caption:var(--weight-medium) var(--type-caption-size)/var(--type-caption-line) var(--font-sans);
---text-caption-upper:var(--weight-medium) var(--type-caption-upper-size)/var(--type-caption-upper-line) var(--font-sans);
---text-code:var(--weight-regular) var(--type-code-size)/var(--type-code-line) var(--font-mono);
---text-button:var(--weight-medium) var(--type-button-size)/var(--type-button-line) var(--font-sans);
---text-nav:var(--weight-medium) var(--type-nav-size)/var(--type-nav-line) var(--font-sans);
+  /* composite shorthands: font: <weight> <size>/<line> <family> */
+  --text-display-xl: var(--weight-regular) var(--type-display-xl-size)/var(--type-display-xl-line)
+    var(--font-serif-display);
+  --text-display-lg: var(--weight-regular) var(--type-display-lg-size)/var(--type-display-lg-line)
+    var(--font-serif-display);
+  --text-display-md: var(--weight-regular) var(--type-display-md-size)/var(--type-display-md-line)
+    var(--font-serif-display);
+  --text-display-sm: var(--weight-regular) var(--type-display-sm-size)/var(--type-display-sm-line)
+    var(--font-serif-display);
+  --text-title-lg: var(--weight-medium) var(--type-title-lg-size)/var(--type-title-lg-line)
+    var(--font-sans);
+  --text-title-md: var(--weight-medium) var(--type-title-md-size)/var(--type-title-md-line)
+    var(--font-sans);
+  --text-title-sm: var(--weight-medium) var(--type-title-sm-size)/var(--type-title-sm-line)
+    var(--font-sans);
+  --text-body-md: var(--weight-regular) var(--type-body-md-size)/var(--type-body-md-line)
+    var(--font-sans);
+  --text-body-sm: var(--weight-regular) var(--type-body-sm-size)/var(--type-body-sm-line)
+    var(--font-sans);
+  --text-caption: var(--weight-medium) var(--type-caption-size)/var(--type-caption-line)
+    var(--font-sans);
+  --text-caption-upper: var(--weight-medium)
+    var(--type-caption-upper-size)/var(--type-caption-upper-line) var(--font-sans);
+  --text-code: var(--weight-regular) var(--type-code-size)/var(--type-code-line) var(--font-mono);
+  --text-button: var(--weight-medium) var(--type-button-size)/var(--type-button-line)
+    var(--font-sans);
+  --text-nav: var(--weight-medium) var(--type-nav-size)/var(--type-nav-line) var(--font-sans);
 
-/* APP LAYER — numbers are the point of this app, so they are typed rather than
+  /* APP LAYER — numbers are the point of this app, so they are typed rather than
    set in mono. A standalone hero figure (the day's kcal total) takes the serif
    display face: it is the loudest thing on the screen and should read as the
    screen's headline, not as terminal output. Figures embedded in rows, tables
    and chart axes take the sans face. Both are tabular — every call site also
    declares font-variant-numeric, which is where column alignment actually comes
    from, so mono was paying a width penalty for a benefit already in hand. */
---text-metric:var(--weight-regular) 36px/1.1 var(--font-serif-display);
---text-metric-sm:var(--weight-medium) 16px/1.2 var(--font-sans);
+  --text-metric: var(--weight-regular) 36px/1.1 var(--font-serif-display);
+  --text-metric-sm: var(--weight-medium) 16px/1.2 var(--font-sans);
 
-/* APP LAYER — the top-level screen title (Today / Weight / Settings / setup).
+  /* APP LAYER — the top-level screen title (Today / Weight / Settings / setup).
    The source system reserves display-lg (48px) for marketing heroes, but the
    app's page titles are its loudest on-screen text and need to anchor the
    screen, so they take that size. Serif, weight 400, display-lg tracking. The
    backfill date header steps back down — see .screen__title--date. */
---type-screen-title-size:48px;--type-screen-title-line:1.05;--type-screen-title-track:-1px;
---text-screen-title:var(--weight-regular) var(--type-screen-title-size)/var(--type-screen-title-line) var(--font-serif-display);
+  --type-screen-title-size: 48px;
+  --type-screen-title-line: 1.05;
+  --type-screen-title-track: -1px;
+  --text-screen-title: var(--weight-regular)
+    var(--type-screen-title-size)/var(--type-screen-title-line) var(--font-serif-display);
 
-
-/* ------------------------------------------------------------- motion ---
+  /* ------------------------------------------------------------- motion ---
    The source spec documents default + active states only; motion is
    intentionally minimal.                                                    */
---ease-standard:cubic-bezier(.4,0,.2,1);
---duration-fast:120ms;
---duration-base:180ms;
---duration-entry:220ms;   /* sheet / modal / popover open */
---transition-control:background-color var(--duration-fast) var(--ease-standard),border-color var(--duration-fast) var(--ease-standard),color var(--duration-fast) var(--ease-standard);
---transition-entry:transform var(--duration-entry) var(--ease-standard),opacity var(--duration-entry) var(--ease-standard);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-entry: 220ms; /* sheet / modal / popover open */
+  --transition-control:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+  --transition-entry:
+    transform var(--duration-entry) var(--ease-standard),
+    opacity var(--duration-entry) var(--ease-standard);
 }
-
 
 /* ---------------------------------------------------------------- base ---
    Minimal document floor, from the source system's tokens/base.css.
    Heading sizes are overridden by the app stylesheet — display-xl at 64px is a
    marketing hero size, not a phone screen size.                              */
 
-html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-body{margin:0;background:var(--surface-canvas);color:var(--text-body);font:var(--text-body-md);text-wrap:pretty}
-
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  margin: 0;
+  background: var(--surface-canvas);
+  color: var(--text-body);
+  font: var(--text-body-md);
+  text-wrap: pretty;
+}
 
 /* ============================================================================
    DARK THEME (pass 19)
@@ -288,88 +404,117 @@ body{margin:0;background:var(--surface-canvas);color:var(--text-body);font:var(-
    and <meta name="theme-color"> in step, and runs the cross-fade on a switch.
    ========================================================================== */
 
-:root[data-theme="dark"]{
-  color-scheme:dark;
+:root[data-theme="dark"] {
+  color-scheme: dark;
 
-  --color-primary-active:#d98b6f;
-  --color-primary-disabled:#5a4038;
+  --color-primary-active: #d98b6f;
+  --color-primary-disabled: #5a4038;
 
-  --text-ink:var(--night-ink);
-  --text-body-strong:var(--night-ink-strong);
-  --text-body:var(--night-ink-body);
-  --text-muted:var(--night-ink-muted);
-  --text-muted-soft:var(--night-ink-faint);
-  --text-link:#e0906f;
+  --text-ink: var(--night-ink);
+  --text-body-strong: var(--night-ink-strong);
+  --text-body: var(--night-ink-body);
+  --text-muted: var(--night-ink-muted);
+  --text-muted-soft: var(--night-ink-faint);
+  --text-link: #e0906f;
 
-  --surface-canvas:var(--night-canvas);
-  --surface-soft:var(--night-soft);
-  --surface-card:var(--night-card);
-  --surface-cream-strong:var(--night-strong);
-  --surface-overlay:var(--night-overlay);
-  --surface-sunken:var(--night-sunken);
+  --surface-canvas: var(--night-canvas);
+  --surface-soft: var(--night-soft);
+  --surface-card: var(--night-card);
+  --surface-cream-strong: var(--night-strong);
+  --surface-overlay: var(--night-overlay);
+  --surface-sunken: var(--night-sunken);
 
-  --border-hairline:var(--night-line);
-  --border-hairline-soft:var(--night-line-soft);
+  --border-hairline: var(--night-line);
+  --border-hairline-soft: var(--night-line-soft);
 
-  --status-success:#63c17d;
-  --status-warning:#e0af3a;
-  --status-error:#d76a6a;
+  --status-success: #63c17d;
+  --status-warning: #e0af3a;
+  --status-error: #d76a6a;
 
-  --surface-primary-tint:rgba(204,120,92,.18);
-  --chart-cone-fill:rgba(204,120,92,.16);
-  --divider-strong:rgba(247,245,240,.16);
+  --surface-primary-tint: rgba(204, 120, 92, 0.18);
+  --chart-cone-fill: rgba(204, 120, 92, 0.16);
+  --divider-strong: rgba(247, 245, 240, 0.16);
 
   /* a black shadow on a near-black surface is invisible, so dark elevation is
      carried by a hairline outline and an inner top highlight instead. */
-  --shadow-hover:0 0 0 1px var(--night-line);
-  --shadow-float:inset 0 1px 0 rgba(255,255,255,.04),0 8px 24px rgba(0,0,0,.5);
+  --shadow-hover: 0 0 0 1px var(--night-line);
+  --shadow-float: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]):not([data-theme="dark"]){
-    color-scheme:dark;
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    color-scheme: dark;
 
-    --color-primary-active:#d98b6f;
-    --color-primary-disabled:#5a4038;
+    --color-primary-active: #d98b6f;
+    --color-primary-disabled: #5a4038;
 
-    --text-ink:var(--night-ink);
-    --text-body-strong:var(--night-ink-strong);
-    --text-body:var(--night-ink-body);
-    --text-muted:var(--night-ink-muted);
-    --text-muted-soft:var(--night-ink-faint);
-    --text-link:#e0906f;
+    --text-ink: var(--night-ink);
+    --text-body-strong: var(--night-ink-strong);
+    --text-body: var(--night-ink-body);
+    --text-muted: var(--night-ink-muted);
+    --text-muted-soft: var(--night-ink-faint);
+    --text-link: #e0906f;
 
-    --surface-canvas:var(--night-canvas);
-    --surface-soft:var(--night-soft);
-    --surface-card:var(--night-card);
-    --surface-cream-strong:var(--night-strong);
-    --surface-overlay:var(--night-overlay);
-    --surface-sunken:var(--night-sunken);
+    --surface-canvas: var(--night-canvas);
+    --surface-soft: var(--night-soft);
+    --surface-card: var(--night-card);
+    --surface-cream-strong: var(--night-strong);
+    --surface-overlay: var(--night-overlay);
+    --surface-sunken: var(--night-sunken);
 
-    --border-hairline:var(--night-line);
-    --border-hairline-soft:var(--night-line-soft);
+    --border-hairline: var(--night-line);
+    --border-hairline-soft: var(--night-line-soft);
 
-    --status-success:#63c17d;
-    --status-warning:#e0af3a;
-    --status-error:#d76a6a;
+    --status-success: #63c17d;
+    --status-warning: #e0af3a;
+    --status-error: #d76a6a;
 
-    --surface-primary-tint:rgba(204,120,92,.18);
-    --chart-cone-fill:rgba(204,120,92,.16);
-    --divider-strong:rgba(247,245,240,.16);
+    --surface-primary-tint: rgba(204, 120, 92, 0.18);
+    --chart-cone-fill: rgba(204, 120, 92, 0.16);
+    --divider-strong: rgba(247, 245, 240, 0.16);
 
     /* a black shadow on a near-black surface is invisible, so dark elevation is
        carried by a hairline outline and an inner top highlight instead. */
-    --shadow-hover:0 0 0 1px var(--night-line);
-    --shadow-float:inset 0 1px 0 rgba(255,255,255,.04),0 8px 24px rgba(0,0,0,.5);
+    --shadow-hover: 0 0 0 1px var(--night-line);
+    --shadow-float: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 24px rgba(0, 0, 0, 0.5);
   }
 }
-h1,h2,h3{margin:0;color:var(--text-ink);font-family:var(--font-serif-display);font-weight:var(--weight-regular)}
-p{margin:0}
-a{color:var(--text-link);text-decoration:none}
-a:hover{color:var(--color-primary-active);text-decoration:underline}
-code,pre{font:var(--text-code);font-variant-numeric:tabular-nums}
-*,*::before,*::after{box-sizing:border-box}
+h1,
+h2,
+h3 {
+  margin: 0;
+  color: var(--text-ink);
+  font-family: var(--font-serif-display);
+  font-weight: var(--weight-regular);
+}
+p {
+  margin: 0;
+}
+a {
+  color: var(--text-link);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--color-primary-active);
+  text-decoration: underline;
+}
+code,
+pre {
+  font: var(--text-code);
+  font-variant-numeric: tabular-nums;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

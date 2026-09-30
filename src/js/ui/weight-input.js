@@ -24,10 +24,20 @@ export function weightInput({ unit = "kg", kg = null } = {}) {
     placeholder: unit === "lb" ? "lb" : "kg",
   });
   const stIn = el("input", {
-    class: "field__input", type: "number", inputmode: "numeric", step: "1", min: "0", placeholder: "st",
+    class: "field__input",
+    type: "number",
+    inputmode: "numeric",
+    step: "1",
+    min: "0",
+    placeholder: "st",
   });
   const lbIn = el("input", {
-    class: "field__input", type: "number", inputmode: "decimal", step: "0.1", min: "0", placeholder: "lb",
+    class: "field__input",
+    type: "number",
+    inputmode: "decimal",
+    step: "0.1",
+    min: "0",
+    placeholder: "lb",
   });
 
   if (kg != null && !Number.isNaN(kg)) {

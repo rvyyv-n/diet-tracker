@@ -61,7 +61,14 @@ const SCREENS = [
   // (pass 48): a phone reaches it from the row at the foot of Plan, and
   // `tabParent` lights Plan's button there while it's open. Sits above
   // Settings so Settings stays the last item in the rail.
-  { id: "recipes", label: "Recipes", icon: "book-open", Component: Recipes, wideOnlyTab: true, tabParent: "plan" },
+  {
+    id: "recipes",
+    label: "Recipes",
+    icon: "book-open",
+    Component: Recipes,
+    wideOnlyTab: true,
+    tabParent: "plan",
+  },
   { id: "settings", label: "Settings", icon: "sliders-horizontal", Component: Settings },
 ];
 
@@ -184,12 +191,7 @@ export default function App() {
   }
 
   return (
-    <Shell
-      panes={view.panes}
-      onNavigate={navigate}
-      onEditSetup={openEditSetup}
-      onReset={goRoute}
-    />
+    <Shell panes={view.panes} onNavigate={navigate} onEditSetup={openEditSetup} onReset={goRoute} />
   );
 }
 
@@ -198,8 +200,8 @@ function StorageOff() {
     <section className="screen">
       <h1 className="screen__title">Storage is off</h1>
       <p className="screen__intro">
-        This app keeps everything in your browser’s local storage, and it looks disabled — a private window, or
-        blocked for this site. Enable it and reload.
+        This app keeps everything in your browser’s local storage, and it looks disabled — a private
+        window, or blocked for this site. Enable it and reload.
       </p>
     </section>
   );
@@ -265,7 +267,12 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
         {panes.map((id) => {
           const screen = screenById(id);
           return screen.Component ? (
-            <screen.Component key={id} onEditSetup={onEditSetup} onReset={onReset} onNavigate={onNavigate} />
+            <screen.Component
+              key={id}
+              onEditSetup={onEditSetup}
+              onReset={onReset}
+              onNavigate={onNavigate}
+            />
           ) : (
             <VanillaPane key={id} screen={screen} />
           );
@@ -286,9 +293,11 @@ function Shell({ panes, onNavigate, onEditSetup, onReset }) {
 
 /** What a failed write means, stated plainly — see storage.js onWriteFailure(). */
 const WRITE_FAILURE_COPY = {
-  quota: "Not saved — storage for Rise is full on this device. Export your data from Settings to keep a copy.",
+  quota:
+    "Not saved — storage for Rise is full on this device. Export your data from Settings to keep a copy.",
   blocked: "Not saved — storage is blocked for this site.",
-  corrupt: "Some saved data couldn't be read and was set aside. What's on screen may be incomplete.",
+  corrupt:
+    "Some saved data couldn't be read and was set aside. What's on screen may be incomplete.",
 };
 
 /**
@@ -305,7 +314,9 @@ function WriteFailureNotice() {
   if (!kind) return null;
   return (
     <div className="write-failure" role="alert">
-      <p className="write-failure__body">{WRITE_FAILURE_COPY[kind] ?? WRITE_FAILURE_COPY.blocked}</p>
+      <p className="write-failure__body">
+        {WRITE_FAILURE_COPY[kind] ?? WRITE_FAILURE_COPY.blocked}
+      </p>
       <button className="btn btn--text" type="button" onClick={() => setKind(null)}>
         Dismiss
       </button>
@@ -379,7 +390,9 @@ function NavGlance() {
       {latest ? (
         <div className="tabbar__glance-row">
           <span className="tabbar__glance-key">Weight</span>
-          <span className="tabbar__glance-val">{formatWeight(latest.kg, profile.weightUnit || "kg")}</span>
+          <span className="tabbar__glance-val">
+            {formatWeight(latest.kg, profile.weightUnit || "kg")}
+          </span>
         </div>
       ) : null}
     </div>
@@ -417,7 +430,9 @@ function Tabbar({ panes, onNavigate, navPref, onSetNavPref }) {
         const current = panes.includes(screen.id);
         // A screen with no phone button of its own (Recipes) lights its
         // parent's instead, at phone widths only (see .is-parent-active).
-        const parentOfCurrent = SCREENS.some((s) => s.tabParent === screen.id && panes.includes(s.id));
+        const parentOfCurrent = SCREENS.some(
+          (s) => s.tabParent === screen.id && panes.includes(s.id),
+        );
         return (
           <button
             key={screen.id}
