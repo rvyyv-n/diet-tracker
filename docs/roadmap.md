@@ -73,36 +73,35 @@ ships two Looks, Paper (default) and Reel, each with light and dark, switched
 by `data-look` and `data-theme` on `<html>`. Components read semantic tokens
 only. The export is kept private and is not committed.
 
-### How to run a pass
+### How to run a build pass
 
-Say the pass by name or number ("tokens", "pass 63", "run components") and it
-runs to the protocol in the `build-pass` skill: read the pass's design refs,
-build it, verify it, update the docs, make one commit, stop. Passes run in the
-order below because each builds on the one before; a pass whose predecessor
-is unticked is flagged before it starts. The design refs are paths inside the
-private design export (`design-system/…`, `screens/…`).
+Say the build pass by number or name ("build pass 1", "foundation", or one
+of its targets like "tokens" or "pass 63"). It runs to the protocol in the
+`build-pass` skill: for each target in order, read its design refs, build it,
+verify it and make one commit; then stop and report. Build passes run in
+order because each builds on the one before, and a build pass whose
+predecessor is unticked is flagged before it starts. Start each build pass in
+a fresh thread. The design refs are paths inside the private design export
+(`design-system/…`, `screens/…`).
 
-| Order | Number | Name         | What it lands                          |
-| ----- | ------ | ------------ | -------------------------------------- |
-| 1     | 63     | `tokens`     | new tokens, four fonts, service worker |
-| 2     | 64     | `looks`      | `data-look` and `data-theme` plumbing  |
-| 3     | 65     | `components` | shared components restyled             |
-| 4     | 66     | `shell`      | phone nav and desktop layout           |
-| 5     | 67     | `today`      | Today, phone and desktop               |
-| 6     | 68     | `weight`     | Weight, phone and desktop              |
-| 7     | 69     | `plan`       | Plan, phone and desktop                |
-| 8     | 70     | `settings`   | Settings and the Look picker           |
-| 9     | 71     | `recipes`    | Recipes, phone and desktop             |
-| 10    | 72     | `firstrun`   | first run, intro, What's new           |
-| 11    | 73     | `sweep`      | sheets, 320px, contrast, baselines     |
-| 12    | 74     | `icons`      | app icon and logo                      |
-| 13    | 75     | `readme`     | README redesign                        |
-| 14    | 76     | `motion`     | animation, last                        |
+| Build pass | Name                       | Targets (pass numbers)                       | Model                   |
+| ---------- | -------------------------- | -------------------------------------------- | ----------------------- |
+| 1          | Foundation                 | `tokens` (63), `looks` (64)                  | Sonnet 5.5, high effort |
+| 2          | Components and shell       | `components` (65), `shell` (66)              | Opus, high effort       |
+| 3          | Daily screens              | `today` (67), `weight` (68)                  | Sonnet 5.5, high effort |
+| 4          | Plan, settings and recipes | `plan` (69), `settings` (70), `recipes` (71) | Sonnet 5.5, high effort |
+| 5          | First run and identity     | `firstrun` (72), `icons` (73)                | Sonnet 5.5, high effort |
+| 6          | Audit and README           | `sweep` (74), `readme` (75)                  | Opus, high effort       |
+| 7          | Motion                     | `motion` (76)                                | Sonnet 5.5, high effort |
 
-Then a full `/code-review` over everything since `v2.3.0`, a phone and desktop
-test pass, and the release.
+Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
+and desktop test pass, and the release.
 
 ### Build passes
+
+#### Build pass 1 — Foundation
+
+Model: Sonnet 5.5, high effort. Targets: tokens, looks. This is the design foundation: tokens, fonts and Look plumbing. Nothing looks finished yet.
 
 - [ ] **Pass 63 · `tokens`** — the new token layer, fonts and service worker.
   - Reads: `tokens/*.css`, `styles.css`, `guidelines/porting-to-code.md`
@@ -118,6 +117,7 @@ test pass, and the release.
   - Done when: the app builds and renders in Paper light with no broken
     styles; `test:offline` passes with the fonts local; the literals ratchet in
     `literals.test.js` is lowered to match.
+
 - [ ] **Pass 64 · `looks`** — Look and theme plumbing.
   - Reads: `guidelines/looks.html`, the Looks and themes notes in the design
     system readme.
@@ -129,7 +129,12 @@ test pass, and the release.
     logic.
   - Done when: both attributes are set on load with no flash, and switching
     either persists across a reload and an export/import.
-- [ ] **Pass 65 · `components`** — the shared component set (Opus suggested).
+
+#### Build pass 2 — Components and shell
+
+Model: Opus, high effort. Targets: components, shell. This is the shared component set and the navigation frame. Every later screen copies the patterns set here, so this one gets the stronger model.
+
+- [ ] **Pass 65 · `components`** — the shared component set.
   - Reads: `components/**` (`.jsx`, `.d.ts`, `.prompt.md`),
     `guidelines/porting-to-code.md` step 4.
   - Does: ports Button, IconButton, Chip, Segmented, Toggle, Radio, TextField,
@@ -144,6 +149,7 @@ test pass, and the release.
     `shared.jsx`.
   - Done when: every component renders in both Looks and themes on a scratch
     page, and the screens still work unchanged.
+
 - [ ] **Pass 66 · `shell`** — navigation and layout frame.
   - Reads: `components/surfaces/PhoneNav.jsx`, `SideNav.jsx`,
     `screens/Rise Desktop.dc.html`, `ui_kits/rise/DesktopApp.jsx`.
@@ -152,6 +158,11 @@ test pass, and the release.
     the Today glance card in its foot; the 1080px content column and the 340px
     support column; `tabParent` keeps Plan lit on Recipes.
   - Done when: navigation works at 390, 320 and 1440 in both Looks.
+
+#### Build pass 3 — Daily screens
+
+Model: Sonnet 5.5, high effort. Targets: today, weight. This is the two screens used every day.
+
 - [ ] **Pass 67 · `today`** — Today, phone and desktop.
   - Reads: `screens/Rise Today Phone.dc.html`, the Today frames in
     `Rise Desktop.dc.html`, `ui_kits/rise/TodayScreen.jsx`.
@@ -163,6 +174,7 @@ test pass, and the release.
     toast with Undo; the storage-full banner.
   - Done when: a Today grid matches the design in both Looks, light and dark,
     at 390 and 1440, with nothing clipping at 320.
+
 - [ ] **Pass 68 · `weight`** — Weight, phone and desktop.
   - Reads: `screens/Rise Weight Phone.dc.html`, `WeightChart.jsx`,
     `SuggestionCard.jsx`, `ui_kits/rise/WeightScreen.jsx`.
@@ -172,6 +184,11 @@ test pass, and the release.
     toast and Undo, and the weight-history empty state.
   - Done when: the grid matches in all combinations, and the engine's
     suggestion still only applies on the button.
+
+#### Build pass 4 — Plan, settings and recipes
+
+Model: Sonnet 5.5, high effort. Targets: plan, settings, recipes. This is the remaining main screens, including the Look picker.
+
 - [ ] **Pass 69 · `plan`** — Plan, phone and desktop.
   - Reads: `screens/Rise Plan Phone.dc.html`, `GroceryList.jsx`,
     `PhaseLadder.jsx`, `ui_kits/rise/PlanScreen.jsx`.
@@ -180,6 +197,7 @@ test pass, and the release.
     and the Clear toast with Undo; PhaseLadder with status words (Now, Done, If
     stalled); the link to Recipes at the foot of Plan.
   - Done when: the grid matches, and `scaleGroceryQty` behaviour is unchanged.
+
 - [ ] **Pass 70 · `settings`** — Settings and the Look picker.
   - Reads: `screens/Rise Secondary Phone.dc.html` (Settings frames),
     `ui_kits/rise/SettingsScreen.jsx`, `ListRow.jsx`, `Toggle.jsx`.
@@ -188,6 +206,7 @@ test pass, and the release.
     `data-look` and `data-theme` for live previews, and the reset-all confirm;
     adds `reel` to `LOOKS` in `e2e/visual.spec.js`.
   - Done when: picking a Look changes the whole app at once and persists.
+
 - [ ] **Pass 71 · `recipes`** — Recipes, phone and desktop.
   - Reads: `screens/Rise Secondary Phone.dc.html` (Recipes frames), the
     Recipes frames in `Rise Desktop.dc.html`, `EmptyState.jsx`.
@@ -195,6 +214,11 @@ test pass, and the release.
     confirm (no Undo), the recipe-book empty state, and the reference content
     that moved here from Plan.
   - Done when: the grid matches, reached from Plan on phone with Plan lit.
+
+#### Build pass 5 — First run and identity
+
+Model: Sonnet 5.5, high effort. Targets: firstrun, icons. This is the welcome flow and the redrawn app icon and logo.
+
 - [ ] **Pass 72 · `firstrun`** — first run, intro and What's new.
   - Reads: `screens/Rise Secondary Phone.dc.html` (first-run frames),
     `Welcome.jsx`, `Intro.jsx`.
@@ -203,7 +227,20 @@ test pass, and the release.
     the intro; the What's new card. These are the only places the slower
     theatrical motion is allowed, described here and built in `motion`.
   - Done when: a fresh profile walks through first run in both Looks.
-- [ ] **Pass 73 · `sweep`** — the cross-cutting pass.
+
+- [ ] **Pass 73 · `icons`** — app icon and logo.
+  - Reads: `Wordmark.jsx`, the brand notes in the design system readme.
+  - Does: redraws the app icon and wordmark (the "Rıse" with the sun as its
+    dot) on the new palette; regenerates the PNG, maskable and mono icons, the
+    theme-aware favicon, `manifest.json` colours, and the Android and Windows
+    icon sources through `tools/make-icons.py`.
+  - Done when: the icon reads well at 16px and 512px, light and dark.
+
+#### Build pass 6 — Audit and README
+
+Model: Opus, high effort. Targets: sweep, readme. This is the cross-cutting audit that approves the visual baselines, then the README redesign from final screenshots.
+
+- [ ] **Pass 74 · `sweep`** — the cross-cutting pass.
   - Reads: the Verify list in the design README, `guidelines/sizing.html`.
   - Does: every remaining sheet and confirm at phone and as 520px dialogs;
     320px nothing clips on every screen; body contrast at least 4.5:1; 44px
@@ -212,19 +249,18 @@ test pass, and the release.
     and approves the visual baselines with `test:visual:update`.
   - Done when: `check`, `test:offline` and `test:visual` are green across Paper
     and Reel, light and dark.
-- [ ] **Pass 74 · `icons`** — app icon and logo.
-  - Reads: `Wordmark.jsx`, the brand notes in the design system readme.
-  - Does: redraws the app icon and wordmark (the "Rıse" with the sun as its
-    dot) on the new palette; regenerates the PNG, maskable and mono icons, the
-    theme-aware favicon, `manifest.json` colours, and the Android and Windows
-    icon sources through `tools/make-icons.py`.
-  - Done when: the icon reads well at 16px and 512px, light and dark.
+
 - [ ] **Pass 75 · `readme`** — README redesign in the style of the owner's
       other project.
   - Does: centred header, badges, a screenshot row from `scripts/shot.mjs`,
     contents, install, features, privacy and development sections; keeps the
     status line honest.
   - Done when: it renders cleanly on GitHub and every link resolves.
+
+#### Build pass 7 — Motion
+
+Model: Sonnet 5.5, high effort. Targets: motion. This is animation, last. Switch to Opus only if the choreography needs planning.
+
 - [ ] **Pass 76 · `motion`** — animation, last.
   - Reads: `guidelines/motion.html`, the motion notes in `product-rules.md`.
   - Does: daily interactions at 90 to 260ms on `cubic-bezier(.22,1,.36,1)`,

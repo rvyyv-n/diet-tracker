@@ -8,7 +8,7 @@ import path from "node:path";
  * Colours and durations belong in tokens.css; styles and components use the
  * variables. This is a ratchet: each file's count of literals may not go up,
  * and must be lowered here when it goes down, so the list only ever shrinks.
- * The redesign (passes 63-73) takes every entry to zero except theme.js,
+ * The redesign (passes 63-74) takes every entry to zero except theme.js,
  * whose <meta name="theme-color"> values have to be literal hex.
  */
 const LEFTOVER = {
