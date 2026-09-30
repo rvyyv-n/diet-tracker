@@ -20,7 +20,7 @@
  * that treatment since a new build gets new hashes automatically.
  */
 
-const CACHE_NAME = "rise-v39";
+const CACHE_NAME = "rise-v40";
 
 const PRECACHE_URLS = [
   "./",
@@ -34,9 +34,14 @@ const PRECACHE_URLS = [
   "assets/icon-maskable-512.png",
   "assets/apple-touch-icon.png",
 
-  "assets/fonts/inter-400.woff2",
-  "assets/fonts/inter-500.woff2",
-  "assets/fonts/newsreader-400.woff2",
+  "assets/fonts/fraunces-normal.woff2",
+  "assets/fonts/fraunces-italic.woff2",
+  "assets/fonts/atkinson-next.woff2",
+  "assets/fonts/newsreader-normal.woff2",
+  "assets/fonts/newsreader-italic.woff2",
+  "assets/fonts/barlow-semi-condensed-500.woff2",
+  "assets/fonts/barlow-semi-condensed-600.woff2",
+  "assets/fonts/barlow-semi-condensed-700.woff2",
 ];
 
 self.addEventListener("install", (event) => {

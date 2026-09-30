@@ -2,6 +2,21 @@
 
 where the build is, and what each completed pass did. numbers for the plan itself live in `plan-spec.md`; design tokens in `design-system.md`.
 
+## v3.0 - in progress
+
+Built on `release-3.0` in build passes; the design handoff is the spec.
+
+- **pass 63 — the v3.0 token layer, fonts and service worker:** `tokens.css`
+  is now the handoff's foundation, Paper, Reel and screen layers, with a small
+  app layer for composite type and layout. Every v2 token name in `app.css`
+  maps to its semantic replacement (old-to-new table in `design-system.md`),
+  the accent is `#E0673F` with `--accent-text` for coral text, and the
+  protein teal is gone. Fraunces, Atkinson Next, Newsreader and Barlow Semi
+  Condensed are vendored and precached; Inter and the old Newsreader are
+  dropped, `CACHE_NAME` is `rise-v40`. Paper light renders; Reel and "System"
+  dark wait for the Look plumbing (pass 64). New tokens: `--accent-tint`,
+  `--space-96`, `--text-eyebrow` and the composite `--text-*` shorthands.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on

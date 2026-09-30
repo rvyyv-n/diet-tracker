@@ -103,21 +103,6 @@ and desktop test pass, and the release.
 
 Model: Sonnet 5.5, high effort. Targets: tokens, looks. This is the design foundation: tokens, fonts and Look plumbing. Nothing looks finished yet.
 
-- [ ] **Pass 63 · `tokens`** — the new token layer, fonts and service worker.
-  - Reads: `tokens/*.css`, `styles.css`, `guidelines/porting-to-code.md`
-    steps 1 and 3, `design-system.md`'s old-to-new alias map.
-  - Does: replaces `tokens.css` with the foundation, Paper, Reel and
-    screen-level layers; maps every old token name to the new semantic name
-    across `app.css`; accent becomes `#E0673F` with `--accent-text` for coral
-    text; vendors Fraunces and Atkinson Next (from the export) and downloads
-    Newsreader 400, 500, 400 italic and Barlow Semi Condensed 500, 600, 700
-    as woff2; drops Inter and the old Newsreader file; adds the fonts to the
-    service worker precache and bumps `CACHE_NAME`; rewrites `design-system.md`
-    against the new tokens.
-  - Done when: the app builds and renders in Paper light with no broken
-    styles; `test:offline` passes with the fonts local; the literals ratchet in
-    `literals.test.js` is lowered to match.
-
 - [ ] **Pass 64 · `looks`** — Look and theme plumbing.
   - Reads: `guidelines/looks.html`, the Looks and themes notes in the design
     system readme.

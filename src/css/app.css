@@ -48,19 +48,19 @@
   /* side + top padding fold in the notch / status-bar insets so nothing sits
      under a cutout in landscape or in an iOS standalone launch; the insets are
      0 on every non-notched device, so calc() just resolves to the base value.
-     Top alone steps up to --space-lg (24px, not the 16px the sides keep): iOS
+     Top alone steps up to --space-24 (24px, not the 16px the sides keep): iOS
      HIG's 16–20pt top-margin range read as cramped at our floor once a
      display-lg serif title sat this close to the status bar / notch. */
-  padding: calc(var(--space-lg) + env(safe-area-inset-top))
-    calc(var(--space-md) + env(safe-area-inset-right)) var(--space-section)
-    calc(var(--space-md) + env(safe-area-inset-left));
+  padding: calc(var(--space-24) + env(safe-area-inset-top))
+    calc(var(--space-16) + env(safe-area-inset-right)) var(--space-96)
+    calc(var(--space-16) + env(safe-area-inset-left));
 }
 
 @media (min-width: 600px) {
   .app-shell {
-    padding: calc(var(--space-xl) + env(safe-area-inset-top))
-      calc(var(--space-lg) + env(safe-area-inset-right)) var(--space-section)
-      calc(var(--space-lg) + env(safe-area-inset-left));
+    padding: calc(var(--space-32) + env(safe-area-inset-top))
+      calc(var(--space-24) + env(safe-area-inset-right)) var(--space-96)
+      calc(var(--space-24) + env(safe-area-inset-left));
   }
 }
 
@@ -81,18 +81,18 @@
 .write-failure {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-  padding: var(--space-xs) var(--space-md);
-  background: var(--surface-soft);
-  border: var(--border-width-hairline) solid var(--status-error);
+  gap: var(--space-12);
+  margin-bottom: var(--space-16);
+  padding: var(--space-8) var(--space-16);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) solid var(--danger);
   border-radius: var(--radius-card);
 }
 
 .write-failure__body {
   flex: 1;
   font: var(--text-body-sm);
-  color: var(--status-error);
+  color: var(--danger);
 }
 
 @media (min-width: 1024px) {
@@ -125,13 +125,12 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-24);
 }
 
 .screen__title {
   font: var(--text-display-sm);
-  letter-spacing: var(--type-display-sm-track);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 
 /* The top-level title on a tab screen (Today, Weight, Settings). Takes
@@ -139,7 +138,6 @@
    tokens.css. Drop the modifier to fall back to display-sm. */
 .screen__title--lg {
   font: var(--text-screen-title);
-  letter-spacing: var(--type-screen-title-track);
 }
 
 /* The backfill header on Today shows a full date, not a one-word screen name.
@@ -147,21 +145,20 @@
    so the date variant steps back to display-sm. */
 .screen__title--date {
   font: var(--text-display-sm);
-  letter-spacing: var(--type-display-sm-track);
 }
 
 .screen__intro {
   max-width: 46ch;
   font: var(--text-body-md);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 /* ---------------------------------------------------------------- card --- */
 
 .card {
-  padding: var(--pad-card-tight);
-  background: var(--surface-card);
-  border: var(--border-width-hairline) solid var(--border-hairline);
+  padding: var(--space-24);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) solid var(--line);
   border-radius: var(--radius-card);
 }
 
@@ -172,13 +169,13 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-16);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 /* An explicit display on .field__control below beats the UA [hidden] rule, so
@@ -188,10 +185,10 @@
 }
 
 .field__label {
-  font: var(--text-caption-upper);
-  letter-spacing: var(--type-caption-upper-track);
-  text-transform: uppercase;
-  color: var(--text-muted);
+  font: var(--text-eyebrow);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--ink-muted);
 }
 
 /* Label with a control to its right — the height unit toggle. */
@@ -199,35 +196,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 
 /* Segmented toggle (cm / ft-in). Press + selected states only, no hover. */
 .seg {
   display: inline-flex;
   overflow: hidden;
-  border: var(--border-width-hairline) solid var(--border-hairline);
-  border-radius: var(--radius-control);
+  border: var(--border-width-hairline) solid var(--line);
+  border-radius: var(--radius-field);
 }
 
 .seg__btn {
   padding: 4px 10px;
   font: var(--text-caption);
-  color: var(--text-muted);
-  background: var(--surface-canvas);
+  color: var(--ink-muted);
+  background: var(--bg-canvas);
   border: none;
   cursor: pointer;
   transition: var(--transition-control);
 }
 .seg__btn + .seg__btn {
-  border-left: var(--border-width-hairline) solid var(--border-hairline);
+  border-left: var(--border-width-hairline) solid var(--line);
 }
 .seg__btn.is-on {
-  color: var(--text-ink);
-  background: var(--surface-cream-strong);
+  color: var(--ink);
+  background: var(--bg-sunken);
 }
 .seg__btn:active {
-  background: var(--surface-card);
+  background: var(--bg-raised);
 }
 
 /* the segmented control stretched to its container's width — the theme toggle
@@ -239,7 +236,7 @@
 .seg--full .seg__btn {
   flex: 1;
   text-align: center;
-  padding-block: var(--space-xs);
+  padding-block: var(--space-8);
 }
 
 /* Feet + inches: two controls plus their unit labels, on one row. Stone +
@@ -248,7 +245,7 @@
 .weight-stlb {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 .height-ftin .field__control,
 .weight-stlb .field__control {
@@ -258,7 +255,7 @@
 .height-ftin__unit,
 .weight-stlb__unit {
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 /* the stone pair is also used in the narrow inline history-row editor, where it
    has to share the row with Save / Cancel — let it take the free space and
@@ -271,24 +268,24 @@
 .field__control {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  height: var(--control-height);
+  gap: var(--space-8);
+  height: var(--control-h);
   padding: 10px 14px;
-  background: var(--surface-canvas);
-  border: var(--border-width-hairline) solid var(--border-hairline);
-  border-radius: var(--radius-control);
+  background: var(--bg-canvas);
+  border: var(--border-width-hairline) solid var(--line);
+  border-radius: var(--radius-field);
   transition:
     var(--transition-control),
-    box-shadow var(--duration-fast) var(--ease-standard);
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .field__control:focus-within {
-  border-color: var(--color-primary);
+  border-color: var(--accent);
   box-shadow: var(--focus-ring);
 }
 
 .field__control:has(.is-invalid) {
-  border-color: var(--status-error);
+  border-color: var(--danger);
 }
 
 .field__input {
@@ -297,12 +294,12 @@
   border: none;
   outline: none;
   background: transparent;
-  color: var(--text-ink);
+  color: var(--ink);
   font: var(--text-body-md);
 }
 
 .field__input::placeholder {
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 /* Drop the native number spinner. The browser draws its own up/down stepper
@@ -325,11 +322,11 @@
    segment separators, tone the calendar icon down, and mute the dd/mm/yyyy
    placeholder so an empty field reads as empty rather than broken. */
 .field__control input[type="date"] {
-  color: var(--text-ink);
+  color: var(--ink);
   font: var(--text-body-md);
 }
 .field__control input[type="date"]:invalid::-webkit-datetime-edit {
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 .field__control input[type="date"]::-webkit-datetime-edit,
 .field__control input[type="date"]::-webkit-datetime-edit-fields-wrapper {
@@ -337,18 +334,18 @@
 }
 .field__control input[type="date"]::-webkit-datetime-edit-text {
   padding: 0 2px;
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 .field__control input[type="date"]::-webkit-calendar-picker-indicator {
   margin-left: auto;
-  padding-left: var(--space-xs);
+  padding-left: var(--space-8);
   opacity: 0.45;
   cursor: pointer;
 }
 
 .field__hint {
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 .field__hint:empty {
@@ -356,7 +353,7 @@
 }
 
 .field__hint--error {
-  color: var(--status-error);
+  color: var(--danger);
 }
 
 /* ------------------------------------------------------------- buttons ---
@@ -366,13 +363,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-xs);
-  height: var(--control-height);
+  gap: var(--space-8);
+  height: var(--control-h);
   padding: 12px 20px;
   font: var(--text-button);
   white-space: nowrap;
   border: var(--border-width-hairline) solid transparent;
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-field);
   cursor: pointer;
   transition: var(--transition-control);
 }
@@ -383,42 +380,42 @@
 }
 
 .btn--primary {
-  background: var(--color-primary);
-  color: var(--text-on-primary);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 .btn--primary:active {
-  background: var(--color-primary-active);
+  background: var(--accent-pressed);
 }
 .btn--primary:disabled {
-  background: var(--color-primary-disabled);
-  color: var(--text-muted);
+  background: var(--accent-disabled);
+  color: var(--ink-muted);
   cursor: default;
 }
 
 .btn--secondary {
-  background: var(--surface-canvas);
-  color: var(--text-ink);
-  border-color: var(--border-hairline);
+  background: var(--bg-canvas);
+  color: var(--ink);
+  border-color: var(--line);
 }
 .btn--secondary:active {
-  background: var(--surface-card);
+  background: var(--bg-raised);
 }
 .btn--secondary:disabled {
-  color: var(--text-muted-soft);
-  border-color: var(--border-hairline-soft);
+  color: var(--ink-soft);
+  border-color: var(--line);
   cursor: default;
 }
 
 .btn--text {
   padding: 12px 4px;
   background: transparent;
-  color: var(--text-ink);
+  color: var(--ink);
 }
 .btn--text:active {
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 .btn--text:disabled {
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
   cursor: default;
 }
 
@@ -433,24 +430,24 @@
 .summary {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 
 .summary__row {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: var(--space-md);
+  gap: var(--space-16);
 }
 
 .summary__key {
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 .summary__val {
   font: var(--text-metric-sm);
-  color: var(--text-ink);
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -459,21 +456,21 @@
    Pass 38 colours the figures: the week's adherence, its weigh-in change and
    the 4-week pace each carry an intake-status class, so the card can be read
    at a glance instead of parsed. The status classes are declared after this
-   block and win the colour; --text-muted here is only the fallback for a
+   block and win the colour; --ink-muted here is only the fallback for a
    delta rendered without one. The copy stays descriptive — the colour reports
    where the week landed, it does not exhort. */
 .review__delta {
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
 .review__note {
   display: flex;
   align-items: baseline;
-  gap: var(--space-xs);
-  padding-top: var(--space-sm);
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  gap: var(--space-8);
+  padding-top: var(--space-12);
+  border-top: var(--border-width-hairline) solid var(--line);
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 /* The note glyphs sit with the first line of text, not centred on the block,
    so a note that wraps to two lines keeps its mark against line one. */
@@ -482,7 +479,7 @@
   align-self: flex-start;
   display: inline-flex;
   padding-top: 2px;
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 /* ------------------------------------------------------- intake status ---
@@ -500,31 +497,31 @@
 }
 
 /* --------------------------------------------------------------- today ---
-   The daily checklist. Big tap rows (--touch-target), a mono running total in
+   The daily checklist. Big tap rows (--row-min), a mono running total in
    the intake-status colour, an inline rotation swap. Press states only.      */
 
 .today {
-  gap: var(--space-md);
+  gap: var(--space-16);
 }
 
 /* A screen title with a small line tucked beneath it (Today, Weight). The
-   eyebrow sits under the title at --space-xxs — reverted from pass 10's
-   --space-xxxs (2px): that read as misaligned rather than tight, and sits
+   eyebrow sits under the title at --space-4 — reverted from pass 10's
+   --space-2 (2px): that read as misaligned rather than tight, and sits
    below what Material 3 typically uses for a title/subtitle pair (~4dp). The
    whole block keeps more air beneath it than the cards keep between
    themselves. */
 .screen-head {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xxs);
-  margin-bottom: var(--space-sm);
+  gap: var(--space-4);
+  margin-bottom: var(--space-12);
 }
 
 .today__daterow {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 .today__daterow .btn--text {
   margin-left: auto;
@@ -534,7 +531,7 @@
 .today__closed {
   width: 100%;
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 /* The one line under a screen title (phase + week on Today, week + count on
@@ -542,20 +539,20 @@
    register as .group__label — so it reads as an eyebrow and leaves the serif
    title as the single large thing in the header. */
 .phase-banner {
-  font: var(--text-caption-upper);
-  letter-spacing: var(--type-caption-upper-track);
-  text-transform: uppercase;
-  color: var(--text-muted);
+  font: var(--text-eyebrow);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--ink-muted);
 }
 
 /* The target ladder under the banner — all three rungs, current one picked out.
    Quiet by default so it reads as reference, not instruction. */
 .phase-ladder {
   font: var(--text-caption);
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 .phase-ladder__now {
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-weight: var(--weight-medium);
 }
 
@@ -566,12 +563,12 @@
 .suggestion {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 .suggestion__headline {
   font: var(--text-title-sm);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 
 .suggestion__detail {
@@ -582,11 +579,11 @@
 .suggestion__actions {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  margin-top: var(--space-xxs);
+  gap: var(--space-12);
+  margin-top: var(--space-4);
 }
 .suggestion__actions .btn--text {
-  padding-inline: var(--space-xs);
+  padding-inline: var(--space-8);
 }
 
 /* the one-time v2 "what's new" card reuses .suggestion's card shell; its own
@@ -597,7 +594,7 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: var(--space-xxs);
+  gap: var(--space-4);
   font: var(--text-body-sm);
   color: var(--text-body);
 }
@@ -607,13 +604,13 @@
 .daytotal {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xxs);
+  gap: var(--space-4);
 }
 
 .daytotal__figure {
   display: flex;
   align-items: baseline;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 .daytotal__kcal {
@@ -623,7 +620,7 @@
 
 .daytotal__target {
   font: var(--text-metric-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 /* The day-total bar (pass 42). Its own margin rather than relying on the card's
@@ -646,22 +643,22 @@
   width: 100%;
   max-width: 12rem;
   height: 3px;
-  margin: var(--space-xxs) 0 var(--space-xxs);
+  margin: var(--space-4) 0 var(--space-4);
   border-radius: var(--radius-pill);
-  background: var(--border-hairline);
+  background: var(--line);
   overflow: hidden;
 }
 .daytotal__bar-fill {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--text-muted-soft);
+  background: var(--ink-soft);
   /* Same node every render (Today.jsx only ever changes its width/class), so
      the fill actually grows into place as a block gets ticked or food gets
      logged, rather than jumping to the new total. */
   transition:
-    width var(--duration-base) var(--ease-standard),
-    background-color var(--duration-fast) var(--ease-standard);
+    width var(--dur-base) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
 }
 .daytotal__bar-fill.is-on-track {
   background: var(--intake-on-track);
@@ -675,12 +672,12 @@
 
 .daytotal__remaining {
   font: var(--text-body-md);
-  color: var(--text-body-strong);
+  color: var(--ink);
 }
 
 .daytotal__protein {
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -689,7 +686,7 @@
    content would have filled. Only two surfaces use it — the weight history and
    the recipe book — because only those two are ever genuinely empty.
 
-   The glyph is --text-muted-soft rather than a status colour: nothing here is
+   The glyph is --ink-soft rather than a status colour: nothing here is
    a warning, and colour in this app already means on-track/partway/under. The
    block is padded, not min-height'd, so it never reserves more space than the
    copy needs. */
@@ -698,39 +695,39 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-xl) var(--space-md);
+  gap: var(--space-12);
+  padding: var(--space-32) var(--space-16);
   text-align: center;
 }
 
 .empty__icon {
   display: inline-flex;
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 .empty__line {
   max-width: 34ch;
   margin: 0;
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 /* backfill nudge ------------------------------------------------------ */
 
 .backfill {
   width: 100%;
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-12) var(--space-16);
   text-align: left;
   font: var(--text-body-sm);
   color: var(--text-body);
-  background: var(--surface-soft);
-  border: var(--border-width-hairline) solid var(--border-hairline);
-  border-radius: var(--radius-control);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) solid var(--line);
+  border-radius: var(--radius-field);
   cursor: pointer;
   transition: var(--transition-control);
 }
 .backfill:active {
-  background: var(--surface-card);
+  background: var(--bg-raised);
 }
 .backfill:focus-visible {
   outline: none;
@@ -745,12 +742,12 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 .block-row {
-  background: var(--surface-card);
-  border: var(--border-width-hairline) solid var(--border-hairline);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) solid var(--line);
   border-radius: var(--radius-card);
   overflow: hidden;
 }
@@ -760,7 +757,7 @@
    the block name off a 390px row. (This edge used to flag B2, the shake, as the
    highest skip risk — that treatment was dropped for this one.) */
 .block-row--now {
-  border-color: var(--color-primary);
+  border-color: var(--accent);
   border-left-width: 3px;
 }
 
@@ -774,9 +771,9 @@
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  min-height: var(--touch-target);
-  padding: var(--space-sm) var(--space-md);
+  gap: var(--space-12);
+  min-height: var(--row-min);
+  padding: var(--space-12) var(--space-16);
   text-align: left;
   background: transparent;
   border: none;
@@ -784,7 +781,7 @@
   transition: var(--transition-control);
 }
 .block-row__main:active {
-  background: var(--surface-cream-strong);
+  background: var(--bg-sunken);
 }
 .block-row__main:disabled {
   cursor: default;
@@ -802,9 +799,9 @@
   width: 22px;
   height: 22px;
   font: var(--text-body-sm);
-  color: var(--text-on-primary);
-  background: var(--surface-canvas);
-  border: var(--border-width-hairline) solid var(--border-hairline);
+  color: var(--accent-ink);
+  background: var(--bg-canvas);
+  border: var(--border-width-hairline) solid var(--line);
   border-radius: var(--radius-sm);
   /* Pass 41c removed this under the vanilla renderer, where a ticked row was
      a freshly-inserted node with its final colour already set — nothing for
@@ -814,8 +811,8 @@
   transition: var(--transition-control);
 }
 .block-row__tick.is-done {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 .block-row__body {
@@ -829,10 +826,10 @@
 .block-row__name {
   display: flex;
   align-items: baseline;
-  gap: var(--space-xs);
+  gap: var(--space-8);
   min-width: 0;
   font: var(--text-title-sm);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 /* Only the name itself clips — the time chip after it keeps its width so it
    can't be the thing that gets cut. */
@@ -845,14 +842,14 @@
 
 .block-row__desc {
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .block-row.is-done .block-row__name {
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 .block-row.is-done .block-row__desc {
   text-decoration: line-through;
@@ -866,7 +863,7 @@
   flex: none;
   font: var(--text-caption);
   font-weight: var(--weight-regular);
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
   font-variant-numeric: tabular-nums;
 }
 .block-row--past:not(.is-done) {
@@ -890,17 +887,17 @@
   justify-content: flex-end;
   gap: 3px;
   font: var(--text-metric-sm);
-  color: var(--text-body-strong);
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 /* the unit, kept quiet so the number still leads */
 .block-row__unit {
   font: var(--text-caption);
   font-weight: var(--weight-regular);
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 .block-row.is-done .block-row__kcal {
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 /* Its own recessed strip, so it reads as a distinct control rather than a word
@@ -908,19 +905,19 @@
 .block-row__swap {
   flex: none;
   align-self: stretch;
-  padding: 0 var(--space-md);
+  padding: 0 var(--space-16);
   font: var(--text-caption);
   font-weight: var(--weight-medium);
-  color: var(--text-muted);
-  background: var(--surface-cream-strong);
+  color: var(--ink-muted);
+  background: var(--bg-sunken);
   border: none;
-  border-left: var(--border-width-hairline) solid var(--border-hairline);
+  border-left: var(--border-width-hairline) solid var(--line);
   cursor: pointer;
   transition: var(--transition-control);
 }
 .block-row__swap:active {
-  color: var(--color-primary);
-  background: var(--surface-card);
+  color: var(--accent);
+  background: var(--bg-raised);
 }
 .block-row__swap:focus-visible {
   outline: none;
@@ -934,16 +931,16 @@
 .rotation {
   display: flex;
   flex-direction: column;
-  padding: var(--space-xxs) 0;
-  background: var(--surface-soft);
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  padding: var(--space-4) 0;
+  background: var(--bg-raised);
+  border-top: var(--border-width-hairline) solid var(--line);
 }
 
 .rotation__opt {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-xs) var(--space-md) var(--space-xs) var(--space-lg);
+  gap: var(--space-12);
+  padding: var(--space-8) var(--space-16) var(--space-8) var(--space-24);
   text-align: left;
   background: transparent;
   border: none;
@@ -951,24 +948,24 @@
   transition: var(--transition-control);
 }
 .rotation__opt:active {
-  background: var(--surface-cream-strong);
+  background: var(--bg-sunken);
 }
 .rotation__opt:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }
 .rotation__opt.is-picked {
-  background: var(--surface-primary-tint);
+  background: var(--accent-tint);
 }
 
 .rotation__radio {
   flex: none;
   font-size: 11px;
   line-height: 1;
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 .rotation__opt.is-picked .rotation__radio {
-  color: var(--color-primary);
+  color: var(--accent);
 }
 
 .rotation__opt-desc {
@@ -978,14 +975,14 @@
   color: var(--text-body);
 }
 .rotation__opt.is-picked .rotation__opt-desc {
-  color: var(--text-ink);
+  color: var(--ink);
   font-weight: var(--weight-medium);
 }
 
 .rotation__opt-kcal {
   flex: none;
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1001,9 +998,9 @@
   padding: 1px 6px;
   font: var(--text-caption);
   font-weight: var(--weight-medium);
-  color: var(--text-muted);
-  background: var(--surface-soft);
-  border: var(--border-width-hairline) solid var(--border-hairline);
+  color: var(--ink-muted);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) solid var(--line);
   border-radius: var(--radius-sm);
   vertical-align: middle;
 }
@@ -1014,24 +1011,24 @@
 .block-row__drop {
   flex: none;
   align-self: stretch;
-  padding: 0 var(--space-md);
+  padding: 0 var(--space-16);
   font-size: 18px;
   line-height: 1;
-  color: var(--text-muted-soft);
-  background: var(--surface-cream-strong);
+  color: var(--ink-soft);
+  background: var(--bg-sunken);
   border: none;
-  /* --border-hairline (#e6dfd8) reads fine against --surface-card, but sits
-     right next to --surface-cream-strong (#e8e0d2) here — a 1-2 point RGB
+  /* --line (#e6dfd8) reads fine against --bg-raised, but sits
+     right next to --bg-sunken (#e8e0d2) here — a 1-2 point RGB
      gap, effectively invisible between Swap and this row's own background.
-     An ink tint (--text-ink at low opacity) stays visible regardless of the
+     An ink tint (--ink at low opacity) stays visible regardless of the
      exact cream shade beneath it. */
-  border-left: var(--border-width-hairline) solid var(--divider-strong);
+  border-left: var(--border-width-hairline) solid var(--line-strong);
   cursor: pointer;
   transition: var(--transition-control);
 }
 .block-row__drop:active {
-  color: var(--color-primary);
-  background: var(--surface-card);
+  color: var(--accent);
+  background: var(--bg-raised);
 }
 .block-row__drop:focus-visible {
   outline: none;
@@ -1052,9 +1049,9 @@
 .today-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs);
-  padding-top: var(--space-sm);
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  gap: var(--space-8);
+  padding-top: var(--space-12);
+  border-top: var(--border-width-hairline) solid var(--line);
 }
 /* Each trigger becomes a bounded control rather than bare text — same hairline
    and radius as the panel each one opens, so the closed and open states read
@@ -1066,27 +1063,27 @@
 .today-actions .addblock__trigger {
   align-self: stretch;
   justify-content: center;
-  padding: var(--space-sm);
-  border: var(--border-width-hairline) solid var(--border-hairline);
-  border-radius: var(--radius-control);
+  padding: var(--space-12);
+  border: var(--border-width-hairline) solid var(--line);
+  border-radius: var(--radius-field);
 }
 
 .addblock__trigger {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-8);
   align-self: flex-start;
-  padding: var(--space-xs) var(--space-sm);
+  padding: var(--space-8) var(--space-12);
   font: var(--text-caption);
   font-weight: var(--weight-medium);
-  color: var(--text-muted);
+  color: var(--ink-muted);
   background: transparent;
   border: none;
   cursor: pointer;
   transition: var(--transition-control);
 }
 .addblock__trigger:active {
-  color: var(--color-primary);
+  color: var(--accent);
 }
 .addblock__trigger:focus-visible {
   outline: none;
@@ -1101,17 +1098,17 @@
   height: 16px;
   font-size: 14px;
   line-height: 1;
-  border: var(--border-width-hairline) solid var(--border-hairline);
+  border: var(--border-width-hairline) solid var(--line);
   border-radius: var(--radius-sm);
 }
 
 .addblock__panel {
-  border: var(--border-width-hairline) solid var(--border-hairline);
+  border: var(--border-width-hairline) solid var(--line);
   border-radius: var(--radius-card);
 }
 
 /* .rotation is designed as a full-bleed recessed strip nested inside a block
-   row: no radius, a hairline only on top, and --space-xxs of vertical breathing
+   row: no radius, a hairline only on top, and --space-4 of vertical breathing
    room. Bounded in .addblock__panel it is a different object — it has a border
    and a 12px radius — and there that padding left the hover, press and picked
    fills floating 4px short of the top and bottom edges with square corners
@@ -1146,7 +1143,7 @@
 .extras {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 
 .extras__list {
@@ -1155,17 +1152,17 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 .extras__row {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  min-height: var(--touch-target);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--surface-card);
-  border: var(--border-width-hairline) dashed var(--border-hairline);
+  gap: var(--space-12);
+  min-height: var(--row-min);
+  padding: var(--space-12) var(--space-16);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) dashed var(--line);
   border-radius: var(--radius-card);
 }
 
@@ -1176,26 +1173,26 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   font: var(--text-title-sm);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 
 /* .block-row__swap / .block-row__drop are edge strips on a plan .block-row,
    which clips them (overflow: hidden), so their outer corners follow the card.
    A free-standing .extras__row is padded and does not clip, so the same strips
    floated as sharp-cornered rectangles (see the pass-28 recipe rows). Round
-   them to --radius-control and drop the now-orphaned divider — the row's own
+   them to --radius-field and drop the now-orphaned divider — the row's own
    gap separates them. .extras__pick-row keeps the clipped edge treatment. */
 .extras__row:not(.extras__pick-row) .block-row__swap,
 .extras__row:not(.extras__pick-row) .block-row__drop {
   border-left: none;
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-field);
 }
 
 .extras__panel {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  padding: var(--space-md);
+  gap: var(--space-16);
+  padding: var(--space-16);
 }
 
 .extras__modeseg {
@@ -1205,12 +1202,12 @@
 .extras__form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 
 .extras__row-fields {
   display: flex;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 .extras__row-fields .field {
   flex: 1;
@@ -1225,14 +1222,14 @@
    extra — and the shared × to drop it from the book. */
 
 .extras__save[disabled] {
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
   cursor: default;
 }
 
 .extras__recipes {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 /* Padding moves onto the button face so the whole row is the tap target and
@@ -1248,9 +1245,9 @@
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  min-height: var(--touch-target);
-  padding: var(--space-sm) var(--space-md);
+  gap: var(--space-12);
+  min-height: var(--row-min);
+  padding: var(--space-12) var(--space-16);
   text-align: left;
   background: transparent;
   border: none;
@@ -1258,7 +1255,7 @@
   transition: var(--transition-control);
 }
 .extras__pick:active {
-  background: var(--surface-cream-strong);
+  background: var(--bg-sunken);
 }
 .extras__pick:focus-visible {
   outline: none;
@@ -1273,13 +1270,13 @@
 .recipe-editor {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-16);
 }
 
 .recipe-editor__items {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 /* Ingredient rows are the same dashed .extras__row card as a logged extra. */
@@ -1287,17 +1284,17 @@
 .recipe-editor__total {
   margin: 0;
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
 
 .recipe-editor__add {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  padding: var(--space-sm);
-  background: var(--surface-soft);
-  border: var(--border-width-hairline) solid var(--border-hairline);
+  gap: var(--space-12);
+  padding: var(--space-12);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) solid var(--line);
   border-radius: var(--radius-card);
 }
 
@@ -1305,18 +1302,18 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-xs) var(--space-sm);
+  gap: var(--space-8) var(--space-12);
 }
 
 .recipe-editor__delete {
   margin-left: auto;
-  color: var(--status-error);
+  color: var(--danger);
 }
 
 .recipe-editor__error {
   margin: 0;
   font: var(--text-body-sm);
-  color: var(--status-error);
+  color: var(--danger);
 }
 
 /* appetite check (pass 9) ----------------------------------------------
@@ -1326,38 +1323,38 @@
 .appetite {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 .appetite__chips {
   display: flex;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 .appetite__chip {
   flex: 1;
-  min-height: var(--touch-target);
-  padding: var(--space-xs) var(--space-sm);
+  min-height: var(--row-min);
+  padding: var(--space-8) var(--space-12);
   font: var(--text-body-sm);
-  color: var(--text-muted);
-  background: var(--surface-card);
-  border: var(--border-width-hairline) solid var(--border-hairline);
-  border-radius: var(--radius-control);
+  color: var(--ink-muted);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) solid var(--line);
+  border-radius: var(--radius-field);
   cursor: pointer;
   transition: var(--transition-control);
 }
 .appetite__chip:active {
-  background: var(--surface-cream-strong);
+  background: var(--bg-sunken);
 }
 .appetite__chip:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }
 .appetite__chip.is-picked {
-  color: var(--text-ink);
+  color: var(--ink);
   font-weight: var(--weight-medium);
-  border-color: var(--color-primary);
-  background: var(--surface-primary-tint);
+  border-color: var(--accent);
+  background: var(--accent-tint);
 }
 
 /* adherence dot strip (pass 15) --------------------------------------------
@@ -1369,7 +1366,7 @@
 .daystrip {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 /* label left, the "older days" calendar trigger right — same shape as the
@@ -1378,7 +1375,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 .daystrip__head .cal {
   flex: none;
@@ -1386,7 +1383,7 @@
 .daystrip__head .cal__trigger {
   width: auto;
   height: auto;
-  padding: 4px var(--space-xs);
+  padding: 4px var(--space-8);
   font: var(--text-body-sm);
 }
 .daystrip__head .cal__value {
@@ -1411,12 +1408,12 @@
   height: 13px;
   padding: 0;
   border-radius: var(--radius-pill);
-  background: var(--surface-cream-strong);
-  border: var(--border-width-hairline) solid var(--border-hairline);
+  background: var(--bg-sunken);
+  border: var(--border-width-hairline) solid var(--line);
   cursor: pointer;
   transition:
     var(--transition-control),
-    transform 0.12s var(--ease-standard);
+    transform 0.12s var(--ease-out);
 }
 .daystrip__dot:active {
   transform: scale(0.82);
@@ -1440,8 +1437,8 @@
 /* the day currently on screen — a ring in the canvas colour then a muted halo */
 .daystrip__dot.is-viewing {
   box-shadow:
-    0 0 0 2px var(--surface-canvas),
-    0 0 0 3px var(--text-muted);
+    0 0 0 2px var(--bg-canvas),
+    0 0 0 3px var(--ink-muted);
 }
 
 /* --------------------------------------------------- date controls ---
@@ -1458,31 +1455,31 @@
 .cal__trigger {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-8);
   width: 100%;
-  height: var(--control-height);
+  height: var(--control-h);
   padding: 10px 12px 10px 14px;
-  background: var(--surface-canvas);
-  border: var(--border-width-hairline) solid var(--border-hairline);
-  border-radius: var(--radius-control);
-  color: var(--text-ink);
+  background: var(--bg-canvas);
+  border: var(--border-width-hairline) solid var(--line);
+  border-radius: var(--radius-field);
+  color: var(--ink);
   font: var(--text-body-md);
   text-align: left;
   cursor: pointer;
   transition:
     var(--transition-control),
-    box-shadow var(--duration-fast) var(--ease-standard);
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 .lb__trigger:active,
 .cal__trigger:active {
-  background: var(--surface-card);
+  background: var(--bg-raised);
 }
 .lb__trigger:focus-visible,
 .cal__trigger:focus-visible,
 .lb__trigger[aria-expanded="true"],
 .cal__trigger[aria-expanded="true"] {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--accent);
   box-shadow: var(--focus-ring);
 }
 
@@ -1495,7 +1492,7 @@
   white-space: nowrap;
 }
 .lb__value.is-placeholder {
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 /* Both carets draw the Lucide chevron now, not a "▾" text character — the
@@ -1506,13 +1503,13 @@
   flex: none;
   display: inline-flex;
   align-items: center;
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 /* the three DOB dropdowns on one row: day | month (wider) | year */
 .date-dmy {
   display: flex;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 .date-dmy .lb {
   flex: 1 1 0;
@@ -1521,7 +1518,7 @@
   flex-grow: 1.5;
 }
 .date-dmy.is-invalid .lb__trigger {
-  border-color: var(--status-error);
+  border-color: var(--danger);
 }
 
 /* floating panels ---------------------------------------------------- */
@@ -1532,9 +1529,9 @@
   top: calc(100% + 4px);
   left: 0;
   z-index: 20;
-  background: var(--surface-overlay);
-  border: var(--border-width-hairline) solid var(--border-hairline);
-  border-radius: var(--radius-control);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) solid var(--line);
+  border-radius: var(--radius-field);
   box-shadow: var(--shadow-float);
 }
 
@@ -1542,7 +1539,7 @@
   min-width: 100%;
   max-height: 240px;
   overflow-y: auto;
-  padding: var(--space-xxs);
+  padding: var(--space-4);
 }
 
 .lb__opt {
@@ -1559,37 +1556,37 @@
   transition: var(--transition-control);
 }
 .lb__opt:active {
-  background: var(--surface-cream-strong);
+  background: var(--bg-sunken);
 }
 .lb__opt:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }
 .lb__opt.is-picked {
-  color: var(--text-ink);
+  color: var(--ink);
   font-weight: var(--weight-medium);
-  background: var(--surface-primary-tint);
+  background: var(--accent-tint);
 }
 
 /* calendar --------------------------------------------------------- */
 
 .cal__panel {
-  width: min(320px, calc(100vw - 2 * var(--space-lg)));
-  padding: var(--space-sm);
+  width: min(320px, calc(100vw - 2 * var(--space-24)));
+  padding: var(--space-12);
 }
 
 .cal__bar {
   display: flex;
   align-items: center;
-  gap: var(--space-xxs);
-  margin-bottom: var(--space-xs);
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
 }
 
 .cal__heading {
   flex: 1;
   text-align: center;
   font: var(--text-title-sm);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 
 .cal__nav {
@@ -1600,14 +1597,14 @@
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: var(--border-width-hairline) solid var(--border-hairline);
+  border: var(--border-width-hairline) solid var(--line);
   border-radius: var(--radius-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
   cursor: pointer;
   transition: var(--transition-control);
 }
 .cal__nav:active {
-  background: var(--surface-cream-strong);
+  background: var(--bg-sunken);
 }
 .cal__nav:focus-visible {
   outline: none;
@@ -1626,10 +1623,10 @@
 .cal__weekdays span {
   padding: 4px 0;
   text-align: center;
-  font: var(--text-caption-upper);
-  letter-spacing: var(--type-caption-upper-track);
-  text-transform: uppercase;
-  color: var(--text-muted-soft);
+  font: var(--text-eyebrow);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--ink-soft);
 }
 
 .cal__cell {
@@ -1650,7 +1647,7 @@
   cursor: default;
 }
 .cal__cell:not(.is-blank):active {
-  background: var(--surface-cream-strong);
+  background: var(--bg-sunken);
 }
 .cal__cell:focus-visible {
   outline: none;
@@ -1658,11 +1655,11 @@
 }
 .cal__cell.is-today {
   font-weight: var(--weight-medium);
-  color: var(--color-primary);
+  color: var(--accent);
 }
 .cal__cell.is-selected {
-  background: var(--color-primary);
-  color: var(--text-on-primary);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 /* ------------------------------------------------------------- tab bar ---
@@ -1681,8 +1678,8 @@
   width: 100vw;
   z-index: 30;
   display: flex;
-  background: var(--surface-canvas);
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  background: var(--bg-canvas);
+  border-top: var(--border-width-hairline) solid var(--line);
   /* clear the home indicator below and any side cutout when rotated */
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
@@ -1704,7 +1701,7 @@
   align-items: center;
   justify-content: center;
   font: var(--text-nav);
-  color: var(--text-muted);
+  color: var(--ink-muted);
   background: transparent;
   border: none;
   border-top: 2px solid transparent;
@@ -1713,11 +1710,11 @@
 }
 .tabbar__btn.is-active,
 .tabbar__btn.is-parent-active {
-  color: var(--text-ink);
-  border-top-color: var(--color-primary);
+  color: var(--ink);
+  border-top-color: var(--accent);
 }
 .tabbar__btn:active {
-  background: var(--surface-soft);
+  background: var(--bg-raised);
 }
 .tabbar__btn:focus-visible {
   outline: none;
@@ -1738,13 +1735,13 @@
    Weekly weigh-in, the 4-week trend it feeds, and a history list.           */
 
 .weight {
-  gap: var(--space-md);
+  gap: var(--space-16);
 }
 
 .weight__entry {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-16);
 }
 .weight__entry .btn {
   align-self: flex-start;
@@ -1756,7 +1753,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 .weight__daterow .field__label {
   flex: none;
@@ -1767,7 +1764,7 @@
 .weight__daterow .cal__trigger {
   width: auto;
   height: auto;
-  padding: 6px var(--space-sm);
+  padding: 6px var(--space-12);
   font: var(--text-body-sm);
 }
 .weight__daterow .cal__value {
@@ -1785,14 +1782,14 @@
 .weight__chart {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 .weight__chart-svg {
-  margin-top: var(--space-xxs);
+  margin-top: var(--space-4);
 }
 .weight__chart-key {
   font: var(--text-caption);
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 .wc {
@@ -1801,7 +1798,7 @@
   height: auto;
 }
 .wc-cone {
-  fill: var(--chart-cone-fill);
+  fill: var(--chart-band);
 }
 .wc-line {
   fill: none;
@@ -1811,15 +1808,15 @@
   stroke-linecap: round;
 }
 .wc-dot {
-  fill: var(--color-primary);
+  fill: var(--accent);
 }
 .wc-axis {
-  stroke: var(--border-hairline);
+  stroke: var(--line);
   stroke-width: 1;
 }
 .wc-label {
-  fill: var(--text-muted-soft);
-  font-family: var(--font-sans);
+  fill: var(--ink-soft);
+  font-family: var(--font-body);
   font-variant-numeric: tabular-nums;
   font-size: 10px;
   text-anchor: middle;
@@ -1828,7 +1825,7 @@
 .weight__history {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 .weight__row {
@@ -1838,8 +1835,8 @@
      and the reading is one, so a shared baseline pinned the reading to the date
      and left it sitting high against the pair. */
   align-items: center;
-  gap: var(--space-sm);
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  gap: var(--space-12);
+  border-top: var(--border-width-hairline) solid var(--line);
 }
 .weight__row:first-of-type {
   border-top: none;
@@ -1851,7 +1848,7 @@
   align-self: center;
   display: inline-flex;
   padding: 4px;
-  color: var(--color-primary);
+  color: var(--accent);
   background: transparent;
   border: none;
   border-radius: var(--radius-sm);
@@ -1859,8 +1856,8 @@
   transition: var(--transition-control);
 }
 .weight__row-edit:active {
-  color: var(--color-primary);
-  background: var(--surface-cream-strong);
+  color: var(--accent);
+  background: var(--bg-sunken);
 }
 .weight__row-edit:focus-visible {
   outline: none;
@@ -1871,7 +1868,7 @@
 .weight__row--edit {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 .weight__row-input {
   flex: 1;
@@ -1885,7 +1882,7 @@
 
 .weight__row-wk {
   font: var(--text-caption);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 /* date over its week-over-week change, stacked — the change used to sit in its
    own column and made the read row a cramped four-across grid at 390px. */
@@ -1897,25 +1894,25 @@
 }
 .weight__row-date {
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 .weight__row-kg {
   font: var(--text-metric-sm);
-  color: var(--text-ink);
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 /* the change from the previous weigh-in, colour-coded by direction: gain is the
    plan's goal so it reads green, a drop reads red, a flat week stays neutral. */
 .weight__row-delta {
   font: var(--text-caption);
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
 .weight__row-delta.is-gain {
-  color: var(--status-success);
+  color: var(--intake-on-track);
 }
 .weight__row-delta.is-loss {
-  color: var(--status-error);
+  color: var(--danger);
 }
 
 /* ---------------------------------------------------------------- plan ---
@@ -1925,7 +1922,7 @@
    marks the current thing.                                                   */
 
 .planscreen {
-  gap: var(--space-md);
+  gap: var(--space-16);
 }
 
 /* groceries ------------------------------------------------------------- */
@@ -1933,42 +1930,42 @@
 .grocery {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 
 /* a plain fact: when the list rolls over, and how far through it you are */
 .grocery__status {
   font: var(--text-caption);
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 .grocery__section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xxs);
+  gap: var(--space-4);
 }
 
 /* Section mark — the aisle headings and the reference sheet's three sections.
-   It was 12px in --text-muted-soft, which put it below the rows it introduced
+   It was 12px in --ink-soft, which put it below the rows it introduced
    and left the sheet reading as one undifferentiated run. Now caption size in
    full ink, with room above it, so a section announces itself; the glyph
    beside it (reference sheet only) does the rest. */
 .planscreen__subhead {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  margin-bottom: var(--space-xxs);
-  font: var(--text-caption);
-  letter-spacing: var(--type-caption-upper-track);
-  text-transform: uppercase;
-  color: var(--text-ink);
+  gap: var(--space-8);
+  margin-bottom: var(--space-4);
+  font: var(--text-eyebrow);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--ink);
 }
 /* The glyph stays muted: the label carries the section, the icon only marks
    it. Coral is reserved for action and acknowledgement, never decoration. */
 .planscreen__subhead-icon {
   flex: none;
   display: inline-flex;
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 /* Another <ul> — same reset as .planref__targets, or the browser's default
@@ -1987,13 +1984,13 @@
   width: 100%;
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-12);
   min-height: 44px;
-  padding: var(--space-xs) 0;
+  padding: var(--space-8) 0;
   text-align: left;
   background: transparent;
   border: none;
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  border-top: var(--border-width-hairline) solid var(--line);
   cursor: pointer;
   transition: var(--transition-control);
 }
@@ -2001,7 +1998,7 @@
   border-top: none;
 }
 .grocery__row:active {
-  background: var(--surface-cream-strong);
+  background: var(--bg-sunken);
 }
 .grocery__row:focus-visible {
   outline: none;
@@ -2013,10 +2010,10 @@
   flex: 1;
   min-width: 0;
   font: var(--text-body-md);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 .grocery__row.is-checked .grocery__label {
-  color: var(--text-muted);
+  color: var(--ink-muted);
   text-decoration: line-through;
 }
 
@@ -2028,18 +2025,18 @@
 /* the reference sheet -------------------------------------------------- */
 
 /* The three sections sit in one card, so the gap between them is the only
-   thing separating Targets from Meals from the food table — --space-md read as
+   thing separating Targets from Meals from the food table — --space-16 read as
    another row gap once the subheads gained weight. */
 .planref {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-24);
 }
 
 .planref__block {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 /* phase targets — three rungs, the current one picked out like .phase-ladder.
@@ -2059,17 +2056,17 @@
 .planref__target {
   display: flex;
   align-items: baseline;
-  gap: var(--space-xs);
-  padding: var(--space-xxs) 0;
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  gap: var(--space-8);
+  padding: var(--space-4) 0;
+  border-top: var(--border-width-hairline) solid var(--line);
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 .planref__target:first-child {
   border-top: none;
 }
 .planref__target.is-now {
-  color: var(--text-ink);
+  color: var(--ink);
   font-weight: var(--weight-medium);
 }
 
@@ -2082,11 +2079,11 @@
   align-self: center;
   width: 6px;
   height: 6px;
-  border-radius: var(--radius-full);
-  box-shadow: inset 0 0 0 1px var(--text-muted-soft);
+  border-radius: var(--radius-pill);
+  box-shadow: inset 0 0 0 1px var(--ink-soft);
 }
 .planref__target.is-now .planref__target-dot {
-  background: var(--color-primary);
+  background: var(--accent);
   box-shadow: none;
 }
 
@@ -2103,7 +2100,7 @@
   flex: none;
   display: flex;
   align-items: baseline;
-  gap: var(--space-xxs);
+  gap: var(--space-4);
   font-variant-numeric: tabular-nums;
 }
 .planref__target-kcal {
@@ -2111,24 +2108,24 @@
   font-weight: var(--weight-medium);
 }
 .planref__target.is-now .planref__target-kcal {
-  color: var(--text-ink);
+  color: var(--ink);
 }
 .planref__target-protein {
-  color: var(--accent-teal);
+  color: var(--accent-text);
 }
 .planref__target-protein::before {
   content: "·";
-  margin-right: var(--space-xxs);
-  color: var(--text-muted-soft);
+  margin-right: var(--space-4);
+  color: var(--ink-soft);
 }
 
 /* one meal block, with its rotation options nested beneath */
 .planref__meal {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xxs);
-  padding: var(--space-xs) 0;
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  gap: var(--space-4);
+  padding: var(--space-8) 0;
+  border-top: var(--border-width-hairline) solid var(--line);
 }
 .planref__meal:first-of-type {
   border-top: none;
@@ -2138,14 +2135,14 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 
 /* The disclosure form of the header. A full-width tap row, so it takes the
    app's touch target rather than the text's own height. */
 .planref__meal-head--btn {
   width: 100%;
-  min-height: var(--touch-target);
+  min-height: var(--row-min);
   padding: 0;
   text-align: left;
   background: transparent;
@@ -2154,7 +2151,7 @@
   transition: var(--transition-control);
 }
 .planref__meal-head--btn:active .planref__meal-name {
-  color: var(--color-primary);
+  color: var(--accent);
 }
 .planref__meal-head--btn:focus-visible {
   outline: none;
@@ -2165,8 +2162,8 @@
   flex: none;
   display: inline-flex;
   align-items: center;
-  color: var(--text-muted-soft);
-  transition: transform var(--duration-base) var(--ease-standard);
+  color: var(--ink-soft);
+  transition: transform var(--dur-base) var(--ease-out);
 }
 .planref__meal.is-open .planref__meal-chev {
   transform: rotate(180deg);
@@ -2180,9 +2177,9 @@
   min-width: 0;
   display: flex;
   align-items: baseline;
-  gap: var(--space-xs);
+  gap: var(--space-8);
   font: var(--text-title-sm);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 /* The block glyph. `align-self: center` because the row is baseline-aligned for
    the text, and an svg box has no useful baseline — left to itself it hangs
@@ -2191,19 +2188,19 @@
   flex: none;
   align-self: center;
   display: inline-flex;
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 .planref__meal-time {
   font: var(--text-caption);
   font-weight: var(--weight-regular);
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
   font-variant-numeric: tabular-nums;
 }
 .planref__meal-fig {
   flex: none;
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -2214,20 +2211,20 @@
 .planref__opts {
   display: flex;
   flex-direction: column;
-  margin: var(--space-xxs) 0 var(--space-xs);
-  padding: 0 0 0 var(--space-sm);
+  margin: var(--space-4) 0 var(--space-8);
+  padding: 0 0 0 var(--space-12);
   list-style: none;
-  border-left: var(--border-width-hairline) solid var(--border-hairline);
+  border-left: var(--border-width-hairline) solid var(--line);
 }
 .planref__opt {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: var(--space-sm);
-  padding: var(--space-xs) 0;
+  gap: var(--space-12);
+  padding: var(--space-8) 0;
   font: var(--text-body-sm);
   color: var(--text-body);
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  border-top: var(--border-width-hairline) solid var(--line);
 }
 .planref__opt:first-child {
   border-top: none;
@@ -2238,7 +2235,7 @@
 }
 .planref__opt-kcal {
   flex: none;
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -2250,16 +2247,16 @@
 .planref__share {
   display: block;
   height: 3px;
-  margin-top: var(--space-xxs);
+  margin-top: var(--space-4);
   border-radius: var(--radius-pill);
-  background: var(--border-hairline);
+  background: var(--line);
   overflow: hidden;
 }
 .planref__share-fill {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--accent-teal);
+  background: var(--accent);
 }
 
 /* The food table's column key. Hidden on the phone, where the row is a name
@@ -2281,15 +2278,15 @@
   display: flex;
   flex-direction: column;
   gap: 1px;
-  padding: var(--space-xs) 0;
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  padding: var(--space-8) 0;
+  border-top: var(--border-width-hairline) solid var(--line);
 }
 .planref__food:first-child {
   border-top: none;
 }
 .planref__food-name {
   font: var(--text-body-sm);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 /* Portion / kcal / protein are three cells so the desktop layout can align them
    into columns. On a phone they read as one line, and the "·" between them is
@@ -2297,15 +2294,15 @@
 .planref__food-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xxs);
+  gap: var(--space-4);
   font: var(--text-caption);
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
 .planref__food-meta > span + span::before {
   content: "·";
-  margin-right: var(--space-xxs);
-  color: var(--text-muted-soft);
+  margin-right: var(--space-4);
+  color: var(--ink-soft);
 }
 
 /* ============================================================================
@@ -2324,7 +2321,7 @@
 .group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 /* The eyebrow above a card. Flex since pass 39, so it can carry a leading
@@ -2334,17 +2331,17 @@
 .group__label {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xxs);
-  font: var(--text-caption-upper);
-  letter-spacing: var(--type-caption-upper-track);
-  text-transform: uppercase;
-  color: var(--text-muted);
+  gap: var(--space-4);
+  font: var(--text-eyebrow);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--ink-muted);
 }
 /* One notch softer than the label, so the word stays the thing being read. */
 .group__label-icon {
   flex: none;
   display: inline-flex;
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 /* ---------------------------------------------------------------- ack ---
@@ -2354,7 +2351,7 @@
 .ack {
   flex: none;
   font: var(--text-caption);
-  color: var(--color-primary);
+  color: var(--accent);
 }
 
 /* -------------------------------------------------------------- panel ---
@@ -2363,26 +2360,26 @@
 .set-panel {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
-  padding: var(--space-md);
-  background: var(--surface-soft);
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  gap: var(--space-8);
+  padding: var(--space-16);
+  background: var(--bg-raised);
+  border-top: var(--border-width-hairline) solid var(--line);
 }
 
 .set-panel__title {
   font: var(--text-title-sm);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 
 .set-panel__stats {
   font: var(--text-code);
-  color: var(--text-ink);
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
 .set-panel__meta {
   font: var(--text-caption);
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 .set-panel__body {
@@ -2393,11 +2390,11 @@
 .set-panel__actions {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  margin-top: var(--space-xxs);
+  gap: var(--space-8);
+  margin-top: var(--space-4);
 }
 .set-panel__actions .btn--text {
-  padding-inline: var(--space-sm);
+  padding-inline: var(--space-12);
 }
 
 /* ------------------------------------------------------------- danger ---
@@ -2406,16 +2403,16 @@
 .set-confirm {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
-  padding: var(--space-md);
-  background: var(--surface-canvas);
-  border: var(--border-width-hairline) solid var(--status-error);
+  gap: var(--space-8);
+  padding: var(--space-16);
+  background: var(--bg-canvas);
+  border: var(--border-width-hairline) solid var(--danger);
   border-radius: var(--radius-card);
 }
 
 .set-confirm__title {
   font: var(--text-title-sm);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 
 .set-confirm__body {
@@ -2426,19 +2423,19 @@
 .set-confirm__actions {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  margin-top: var(--space-xxs);
+  gap: var(--space-8);
+  margin-top: var(--space-4);
 }
 
 /* APP LAYER — a destructive button variant. The system has no such thing, and
-   --status-error already means "well under target" on Today, so red is kept off
+   --danger already means "well under target" on Today, so red is kept off
    every resting control and used only here, on the button that erases. */
 .btn--danger {
-  background: var(--status-error);
-  color: var(--text-on-primary);
+  background: var(--danger);
+  color: var(--danger-ink);
 }
 .btn--danger:active {
-  background: #a83a3a;
+  background: color-mix(in srgb, var(--danger) 85%, black);
 }
 
 /* ------------------------------------------------- header consistency ---
@@ -2447,7 +2444,6 @@
 
 .screen-head--setup .screen__title {
   font: var(--text-screen-title);
-  letter-spacing: var(--type-screen-title-track);
 }
 
 /* ============================================================================
@@ -2461,7 +2457,7 @@
    ========================================================================== */
 
 .settings2 {
-  gap: var(--space-lg);
+  gap: var(--space-24);
 }
 
 /* --------------------------------------------------------------- card ---
@@ -2473,7 +2469,7 @@
   overflow: hidden;
 }
 .set2-card > * + * {
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  border-top: var(--border-width-hairline) solid var(--line);
 }
 
 /* --------------------------------------------------------- appearance ---
@@ -2484,8 +2480,8 @@
 .set2-appearance {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  padding: var(--space-md);
+  gap: var(--space-12);
+  padding: var(--space-16);
 }
 
 .set2-appearance__head {
@@ -2496,18 +2492,18 @@
 
 .set2-appearance__name {
   font: var(--text-title-sm);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 
 .set2-appearance__hint {
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 /* Overview (pass 32): the same padded name + hint + segment block as
    Appearance, but several stacked in one card — a hairline between them. */
 .set2-overview__row + .set2-overview__row {
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  border-top: var(--border-width-hairline) solid var(--line);
 }
 
 /* ---------------------------------------------------------------- row ---
@@ -2521,10 +2517,10 @@
   border-radius: var(--radius-card);
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-12);
   width: 100%;
-  min-height: var(--touch-target);
-  padding: var(--space-sm) var(--space-md);
+  min-height: var(--row-min);
+  padding: var(--space-12) var(--space-16);
   text-align: left;
   background: transparent;
   border: none;
@@ -2532,7 +2528,7 @@
   transition: var(--transition-control);
 }
 .set2-row:active {
-  background: var(--surface-cream-strong);
+  background: var(--bg-sunken);
 }
 .set2-row:focus-visible {
   outline: none;
@@ -2552,7 +2548,7 @@
   display: flex;
   width: 20px;
   height: 20px;
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 .set2-row__icon svg {
   width: 100%;
@@ -2569,14 +2565,14 @@
 
 .set2-row__name {
   font: var(--text-title-sm);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 
 /* one muted line, only where a word is genuinely needed */
 .set2-row__desc {
   font: var(--text-body-sm);
   line-height: 1.35;
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 .set2-row__chev {
@@ -2584,7 +2580,7 @@
   display: flex;
   width: 16px;
   height: 16px;
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 .set2-row__chev svg {
   width: 100%;
@@ -2594,7 +2590,7 @@
 /* small secondary button, for a row that acts */
 .btn--sm {
   min-height: 44px;
-  padding: 0 var(--space-sm);
+  padding: 0 var(--space-12);
   font: var(--text-caption);
 }
 
@@ -2602,34 +2598,34 @@
 .set2-row__buttons {
   flex: none;
   display: flex;
-  gap: var(--space-xs);
+  gap: var(--space-8);
 }
 
 /* the paste-in import textarea */
 .set-paste__input {
   width: 100%;
   min-height: 96px;
-  padding: var(--space-sm);
+  padding: var(--space-12);
   font: var(--text-code);
-  color: var(--text-ink);
-  background: var(--surface-canvas);
-  border: var(--border-width-hairline) solid var(--border-hairline);
-  border-radius: var(--radius-control);
+  color: var(--ink);
+  background: var(--bg-canvas);
+  border: var(--border-width-hairline) solid var(--line);
+  border-radius: var(--radius-field);
   resize: vertical;
   transition:
     var(--transition-control),
-    box-shadow var(--duration-fast) var(--ease-standard);
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 .set-paste__input:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--accent);
   box-shadow: var(--focus-ring);
 }
 
 /* the undo slot's panel — a coral hairline, the one time it flags a pending
    safety net rather than a committed action */
 .set-panel--undo {
-  border-top-color: var(--color-primary);
+  border-top-color: var(--accent);
 }
 
 /* Narrow phones (iPhone SE and down): the row's button competes with the body
@@ -2638,7 +2634,7 @@
 @media (max-width: 360px) {
   .set2-row--static {
     flex-wrap: wrap;
-    row-gap: var(--space-xs);
+    row-gap: var(--space-8);
   }
   .set2-row--static > .btn--sm,
   .set2-row--static > .set2-row__buttons {
@@ -2648,7 +2644,7 @@
     flex: 0 0 auto;
     align-self: flex-start;
     justify-content: flex-start;
-    margin-left: calc(20px + var(--space-sm));
+    margin-left: calc(20px + var(--space-12));
   }
 }
 
@@ -2660,9 +2656,9 @@
 .set2-actions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  padding-top: var(--space-md);
-  border-top: var(--border-width-hairline) solid var(--border-hairline);
+  gap: var(--space-12);
+  padding-top: var(--space-16);
+  border-top: var(--border-width-hairline) solid var(--line);
 }
 
 /* Zero on the start side so the icon lines up with the card's other rows, but
@@ -2670,7 +2666,7 @@
    the card's content edge with nothing to breathe against. The row background
    still fills the full width, so the inset shows on the text alone. */
 .set2-actions .set2-row {
-  padding-inline: 0 var(--space-xs);
+  padding-inline: 0 var(--space-8);
   min-height: 48px;
 }
 
@@ -2678,7 +2674,7 @@
 .set2-row__trail {
   flex: none;
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -2692,12 +2688,12 @@
 .about2 {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-16);
   /* pull up against the section gap so it sits closer to the reset row */
-  margin-top: calc(-1 * var(--space-xs));
-  padding: var(--space-lg) var(--space-md);
-  background: var(--surface-soft);
-  border: var(--border-width-hairline) solid var(--border-hairline);
+  margin-top: calc(-1 * var(--space-8));
+  padding: var(--space-24) var(--space-16);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) solid var(--line);
   border-radius: var(--radius-card);
 }
 
@@ -2709,35 +2705,35 @@
 
 .about2__name {
   font: var(--text-code);
-  color: var(--text-body-strong);
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
 .about2__schema {
   font: var(--text-code);
   font-size: 12px;
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 .about2__line {
   font: var(--text-body-sm);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 .about2__links {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-8);
   font: var(--text-body-sm);
 }
 
 .about2__link {
-  color: var(--text-link);
+  color: var(--accent-text);
   text-decoration: none;
   transition: var(--transition-control);
 }
 .about2__link:active {
-  color: var(--color-primary-active);
+  color: var(--accent-pressed);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -2748,12 +2744,12 @@
 }
 
 .about2__sep {
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 .about2__sig {
   font: var(--text-body-sm);
-  color: var(--text-muted-soft);
+  color: var(--ink-soft);
 }
 
 /* ------------------------------------------------------------- tabbar ---
@@ -2799,9 +2795,9 @@
    on Apply.                                                                  */
 
 .suggestion {
-  padding: var(--space-md);
-  background: var(--surface-soft);
-  border: var(--border-width-hairline) solid var(--border-hairline);
+  padding: var(--space-16);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) solid var(--line);
   border-radius: var(--radius-card);
 }
 
@@ -2830,8 +2826,8 @@
 
 .weight--v2 .weight__row {
   grid-template-columns: 1fr auto auto;
-  padding: var(--space-sm) var(--space-md);
-  border-top-color: var(--border-hairline);
+  padding: var(--space-12) var(--space-16);
+  border-top-color: var(--line);
 }
 .weight--v2 .weight__row:first-of-type {
   border-top: none;
@@ -2842,14 +2838,14 @@
 
 .weight--v2 .weight__row--edit .btn {
   min-height: 44px;
-  padding: 0 var(--space-sm);
+  padding: 0 var(--space-12);
 }
 
 /* the weigh-in now acknowledges the write, like Export does */
 .weight__save {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-12);
 }
 .weight__entry .weight__save .btn {
   align-self: auto;
@@ -2862,10 +2858,10 @@
 .set2-profile {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-16);
   width: 100%;
   min-height: 72px;
-  padding: var(--space-md);
+  padding: var(--space-16);
   text-align: left;
   background: transparent;
   border: none;
@@ -2873,7 +2869,7 @@
   transition: var(--transition-control);
 }
 .set2-profile:active {
-  background: var(--surface-cream-strong);
+  background: var(--bg-sunken);
 }
 .set2-profile:focus-visible {
   outline: none;
@@ -2888,9 +2884,9 @@
   width: 44px;
   height: 44px;
   border-radius: var(--radius-pill);
-  background: var(--surface-soft);
-  border: var(--border-width-hairline) solid var(--border-hairline);
-  color: var(--text-muted);
+  background: var(--bg-raised);
+  border: var(--border-width-hairline) solid var(--line);
+  color: var(--ink-muted);
 }
 .set2-profile__avatar svg {
   width: 22px;
@@ -2907,12 +2903,12 @@
 
 .set2-profile__name {
   font: var(--text-title-sm);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 
 .set2-profile__meta {
   font: var(--text-caption);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 /* ------------------------------------------------------------- intro ---
@@ -2928,8 +2924,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-xl);
-  background: var(--surface-canvas);
+  padding: var(--space-32);
+  background: var(--bg-canvas);
   cursor: pointer;
 }
 
@@ -2937,24 +2933,23 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-12);
   max-width: 32ch;
   text-align: center;
 }
 
 .intro__mark {
   font: var(--text-screen-title);
-  letter-spacing: var(--type-screen-title-track);
-  color: var(--text-ink);
+  color: var(--ink);
 }
 
 .intro__line {
   font: var(--text-body-md);
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 .intro__skip {
-  margin-top: var(--space-md);
+  margin-top: var(--space-16);
 }
 
 @keyframes intro-in {
@@ -2972,7 +2967,7 @@
 }
 .intro--out {
   opacity: 0;
-  transition: opacity 0.24s var(--ease-standard);
+  transition: opacity 0.24s var(--ease-out);
 }
 
 /* ============================================================================
@@ -3037,7 +3032,7 @@
 
 /* a small give on the tab icon when pressed */
 .tabbar__btn .tabbar__icon {
-  transition: transform 0.12s var(--ease-standard);
+  transition: transform 0.12s var(--ease-out);
 }
 .tabbar__btn:active .tabbar__icon {
   transform: scale(0.92);
@@ -3063,7 +3058,7 @@
 /* theme cross-fade (pass 19) — core/theme.js adds .theme-fading to <html> for
    one switch (a tap on the Settings toggle, or an OS light/dark flip while the
    pref is "system"). Everything eases its colours together over one
-   --duration-base, then the class comes off. The blanket reduced-motion rule
+   --dur-base, then the class comes off. The blanket reduced-motion rule
    in tokens.css zeroes transition-duration, but this selector is more specific
    AND !important, so it would win — the media block below opts it back out. */
 :root.theme-fading,
@@ -3071,11 +3066,11 @@
 :root.theme-fading *::before,
 :root.theme-fading *::after {
   transition:
-    background-color var(--duration-base) var(--ease-standard),
-    border-color var(--duration-base) var(--ease-standard),
-    color var(--duration-base) var(--ease-standard),
-    fill var(--duration-base) var(--ease-standard),
-    stroke var(--duration-base) var(--ease-standard) !important;
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out),
+    fill var(--dur-base) var(--ease-out),
+    stroke var(--dur-base) var(--ease-out) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3126,8 +3121,8 @@
 @media (min-width: 1024px) {
   .app-shell--tabbed {
     max-width: none;
-    padding: calc(var(--space-xl) + env(safe-area-inset-top))
-      calc(var(--gutter-desktop) + env(safe-area-inset-right)) var(--space-xl)
+    padding: calc(var(--space-32) + env(safe-area-inset-top))
+      calc(var(--gutter-desktop) + env(safe-area-inset-right)) var(--space-32)
       calc(var(--panel-nav-width) + var(--gutter-desktop) + env(safe-area-inset-left));
   }
 
@@ -3138,7 +3133,7 @@
     margin: 0 auto;
     /* nothing is fixed over the bottom any more, so the phone's bar clearance
        goes away and only ordinary end-of-page breathing room is left */
-    padding-bottom: var(--space-xl);
+    padding-bottom: var(--space-32);
   }
 
   .tabbar {
@@ -3150,12 +3145,12 @@
     transform: none;
     flex-direction: column;
     align-items: stretch;
-    gap: var(--space-xxs);
-    background: var(--surface-soft);
+    gap: var(--space-4);
+    background: var(--bg-raised);
     border-top: none;
-    border-right: var(--border-width-hairline) solid var(--border-hairline);
-    padding: calc(var(--space-lg) + env(safe-area-inset-top)) var(--space-sm) var(--space-lg)
-      calc(var(--space-sm) + env(safe-area-inset-left));
+    border-right: var(--border-width-hairline) solid var(--line);
+    padding: calc(var(--space-24) + env(safe-area-inset-top)) var(--space-12) var(--space-24)
+      calc(var(--space-12) + env(safe-area-inset-left));
   }
 
   /* The wordmark. Hidden on the phone, where the bar is four icons wide and a
@@ -3166,19 +3161,18 @@
     width: 100%;
     text-align: left;
     font: var(--text-display-sm);
-    letter-spacing: var(--type-display-sm-track);
-    color: var(--text-ink);
-    padding: 0 var(--space-sm) var(--space-lg);
+    color: var(--ink);
+    padding: 0 var(--space-12) var(--space-24);
     background: none;
     border: none;
     cursor: pointer;
   }
   .tabbar__brand:active {
-    color: var(--color-primary);
+    color: var(--accent);
   }
   .tabbar__brand:focus-visible {
     outline: none;
-    border-radius: var(--radius-control);
+    border-radius: var(--radius-field);
     box-shadow: var(--focus-ring);
   }
 
@@ -3189,12 +3183,12 @@
     flex: 0 0 auto;
     flex-direction: row;
     justify-content: flex-start;
-    gap: var(--space-sm);
+    gap: var(--space-12);
     min-height: 44px;
-    padding: var(--space-xs) var(--space-sm);
+    padding: var(--space-8) var(--space-12);
     border-top: none;
     border-left: 2px solid transparent;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
   }
 
   /* the rail has room for the fifth item the phone bar can't fit */
@@ -3206,12 +3200,12 @@
   }
   .tabbar__btn.is-active {
     border-top-color: transparent;
-    border-left-color: var(--color-primary);
-    background: var(--surface-card);
+    border-left-color: var(--accent);
+    background: var(--bg-raised);
   }
   /* the rail lights Recipes itself, so its phone-only parent stays plain */
   .tabbar__btn.is-parent-active:not(.is-active) {
-    color: var(--text-muted);
+    color: var(--ink-muted);
   }
 
   /* ---- the nav's foot: today at a glance ----
@@ -3228,33 +3222,33 @@
   .tabbar__glance {
     display: flex;
     flex-direction: column;
-    gap: var(--space-xxs);
+    gap: var(--space-4);
     /* Flush with the nav buttons above it: the column already pads itself by
-       --space-sm, so any margin here inset the card further than the tabs and
+       --space-12, so any margin here inset the card further than the tabs and
        made it read as a narrower, unrelated thing. */
     margin: auto 0 0;
-    padding: var(--space-sm);
+    padding: var(--space-12);
     border-radius: var(--radius-card);
-    background: var(--surface-card);
+    background: var(--bg-raised);
   }
   /* The label is a .group__label now (see navGlance) and inherits the eyebrow
      treatment from there; this only adds the gap to the rows beneath it. */
   .tabbar__glance .group__label {
-    padding-bottom: var(--space-xxs);
+    padding-bottom: var(--space-4);
   }
   .tabbar__glance-row {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: var(--space-sm);
+    gap: var(--space-12);
   }
   .tabbar__glance-key {
     font: var(--text-body-sm);
-    color: var(--text-muted);
+    color: var(--ink-muted);
   }
   .tabbar__glance-val {
     font: var(--text-caption);
-    color: var(--text-ink);
+    color: var(--ink);
     font-variant-numeric: tabular-nums;
   }
   /* Stated at two classes on purpose. The bare .is-* status rules are declared
@@ -3280,12 +3274,12 @@
   .planref__foods-head {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(120px, auto) 100px 72px;
-    column-gap: var(--space-lg);
-    padding-bottom: var(--space-xs);
-    font: var(--text-caption-upper);
-    letter-spacing: var(--type-caption-upper-track);
-    text-transform: uppercase;
-    color: var(--text-muted-soft);
+    column-gap: var(--space-24);
+    padding-bottom: var(--space-8);
+    font: var(--text-eyebrow);
+    letter-spacing: var(--eyebrow-tracking);
+    text-transform: var(--eyebrow-transform);
+    color: var(--ink-soft);
   }
   .planref__foods-head-kcal,
   .planref__foods-head-protein {
@@ -3293,15 +3287,15 @@
   }
   /* The key belongs to the first row, so that row drops its own top rule. */
   .planref__foods > .planref__food:first-child {
-    border-top: var(--border-width-hairline) solid var(--border-hairline);
+    border-top: var(--border-width-hairline) solid var(--line);
   }
 
   .planref__food {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(120px, auto) 100px 72px;
     align-items: baseline;
-    column-gap: var(--space-lg);
-    padding: var(--space-sm) 0;
+    column-gap: var(--space-24);
+    padding: var(--space-12) 0;
   }
   .planref__food-meta {
     display: contents;
@@ -3333,7 +3327,7 @@
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .tabbar__pin {
     display: block;
-    margin-top: var(--space-sm);
+    margin-top: var(--space-12);
   }
 
   /* The reserved gutter shrinks to match the rail's resting width. This is a
@@ -3362,7 +3356,7 @@
     width: var(--panel-nav-width-collapsed);
     overflow: hidden;
     transition:
-      width var(--duration-base) var(--ease-standard),
+      width var(--dur-base) var(--ease-out),
       overflow 0s;
   }
   .app-shell--nav-hover .tabbar:hover,
@@ -3370,8 +3364,8 @@
     width: var(--panel-nav-width);
     overflow: visible;
     transition:
-      width var(--duration-base) var(--ease-standard),
-      overflow 0s var(--duration-base);
+      width var(--dur-base) var(--ease-out),
+      overflow 0s var(--dur-base);
   }
 
   /* Everything a bare icon can't carry on its own — the wordmark, a nav
@@ -3388,8 +3382,8 @@
     opacity: 0;
     transform: translateX(-4px);
     transition:
-      opacity var(--duration-base) var(--ease-standard),
-      transform var(--duration-base) var(--ease-standard);
+      opacity var(--dur-base) var(--ease-out),
+      transform var(--dur-base) var(--ease-out);
   }
   .app-shell--nav-hover .tabbar:hover .tabbar__brand-word,
   .app-shell--nav-hover .tabbar:hover .tabbar__label,
@@ -3442,7 +3436,7 @@
     max-width: 0;
     overflow: hidden;
     white-space: nowrap;
-    transition: max-width var(--duration-base) var(--ease-standard);
+    transition: max-width var(--dur-base) var(--ease-out);
   }
   .app-shell--nav-hover .tabbar:hover .tabbar__brand-word,
   .app-shell--nav-hover .tabbar:focus-within .tabbar__brand-word {
@@ -3454,32 +3448,32 @@
      240px, so hovering/focusing only has to restore the bits the collapse
      changed.
 
-     `padding-left` is deliberately NOT touched: the row inherits --space-sm
+     `padding-left` is deliberately NOT touched: the row inherits --space-12
      from .tabbar--icons .tabbar__btn, and in a 72px rail (less the rail's own
-     --space-sm gutter and the 2px active-edge border) --space-sm lands the
+     --space-12 gutter and the 2px active-edge border) --space-12 lands the
      20px icon dead centre. Keeping it identical to the expanded row means the
      icon does not move at all as the rail opens — only the label's width and
      the gap behind it animate. `gap` still collapses to 0 because flex gap
      reserves space next to a zero-width item, which would otherwise shove the
      lone icon half a gap off centre; it (and the now-pointless right padding)
-     ease back on --duration-base so the label's left edge doesn't lurch. The
+     ease back on --dur-base so the label's left edge doesn't lurch. The
      label's own width eases 0 ↔ a real length (not `none`, which can't tween)
      so the opacity fade on it plays over a box that is genuinely narrowing. */
   .app-shell--nav-hover .tabbar--icons .tabbar__btn {
     gap: 0;
     padding-right: 0;
-    transition: gap var(--duration-base) var(--ease-standard);
+    transition: gap var(--dur-base) var(--ease-out);
   }
   .app-shell--nav-hover .tabbar--icons .tabbar__label {
     max-width: 0;
     overflow: hidden;
     white-space: nowrap;
-    transition: max-width var(--duration-base) var(--ease-standard);
+    transition: max-width var(--dur-base) var(--ease-out);
   }
   .app-shell--nav-hover .tabbar.tabbar--icons:hover .tabbar__btn,
   .app-shell--nav-hover .tabbar.tabbar--icons:focus-within .tabbar__btn {
-    gap: var(--space-sm);
-    padding-right: var(--space-sm);
+    gap: var(--space-12);
+    padding-right: var(--space-12);
   }
   .app-shell--nav-hover .tabbar.tabbar--icons:hover .tabbar__label,
   .app-shell--nav-hover .tabbar.tabbar--icons:focus-within .tabbar__label {
@@ -3520,17 +3514,17 @@
   /* nav */
   .tabbar__btn:hover,
   .tabbar__btn.is-parent-active:not(.is-active):hover {
-    color: var(--text-ink);
-    background: var(--surface-soft);
+    color: var(--ink);
+    background: var(--bg-raised);
   }
   /* The wordmark routes to Today, so it takes a hover like any other nav
      target. Colour only — the nav buttons step their background, and a filled
      display-sized wordmark would read as a fifth tab. */
   .tabbar__brand:hover {
-    color: var(--color-primary);
+    color: var(--accent);
   }
   .tabbar__btn.is-active:hover {
-    background: var(--surface-card);
+    background: var(--bg-raised);
   }
 
   /* buttons — a filled control has no lighter token between its rest coral
@@ -3542,16 +3536,16 @@
     filter: brightness(0.96);
   }
   .btn--secondary:hover {
-    background: var(--surface-soft);
+    background: var(--bg-raised);
   }
   .btn--text:hover {
-    color: var(--text-body-strong);
+    color: var(--ink);
   }
   .seg__btn:hover {
-    background: var(--surface-soft);
+    background: var(--bg-raised);
   }
 
-  /* tap rows — press is --surface-cream-strong, so hover takes --surface-card */
+  /* tap rows — press is --bg-sunken, so hover takes --bg-raised */
   .backfill:hover,
   .block-row__main:hover,
   .rotation__opt:hover,
@@ -3564,31 +3558,31 @@
   .set2-profile:hover,
   .planref__meal-head--btn:hover,
   .weight__row-edit:hover {
-    background: var(--surface-card);
+    background: var(--bg-raised);
   }
   .set2-row--static:hover {
     background: transparent;
   }
 
-  /* small icon triggers — press is --surface-card, so hover takes soft */
+  /* small icon triggers — press is --bg-raised, so hover takes soft */
   .block-row__swap:hover,
   .block-row__drop:hover,
   .lb__trigger:hover,
   .cal__trigger:hover,
   .cal__nav:hover {
-    background: var(--surface-soft);
+    background: var(--bg-raised);
   }
 
   /* text-only triggers have no fill to step, so they step one shade toward
      their own press colour instead */
   .addblock__trigger:hover {
-    color: var(--text-ink);
+    color: var(--ink);
   }
   /* Bounded in the actions strip it has a fill to step, so it takes the tap-row
      treatment rather than the text-only one. */
   .today-actions .addblock__trigger:hover {
-    color: var(--text-ink);
-    background: var(--surface-card);
+    color: var(--ink);
+    background: var(--bg-raised);
   }
   .about2__link:hover {
     text-decoration: underline;

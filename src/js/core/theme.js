@@ -21,9 +21,9 @@ import { loadProfile, saveProfile } from "./profile.js";
 export const THEME_PREFS = ["system", "light", "dark"];
 
 // Kept in step with the <meta name="theme-color"> pair in index.html and the
-// --night-canvas / --cream-50 tokens.
-const META_LIGHT = "#FAF9F5";
-const META_DARK = "#181715";
+// Paper --bg-canvas values (light and dark).
+const META_LIGHT = "#F7F1E8";
+const META_DARK = "#0B0A09";
 
 const darkMedia = () => window.matchMedia("(prefers-color-scheme: dark)");
 const motionOK = () => !window.matchMedia("(prefers-reduced-motion: reduce)").matches;

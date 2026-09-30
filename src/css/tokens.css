@@ -1,380 +1,559 @@
 /* ============================================================================
-   tokens.css — design foundation for the weight-gain tracker
+   tokens.css — Rise v3.0 design tokens
    ----------------------------------------------------------------------------
-   Source: the user's "Claude Design System" project on claude.ai/design, itself
-   based on claude.ai. Pulled from tokens/{colors,spacing,radii,elevation,
-   typography,fonts,motion,base}.css. Values below are verbatim from that system
-   except where marked APP LAYER.
+   Source: the v3.0 design handoff (tokens/{fonts,foundation,look-paper,
+   look-reel,screen}.css), copied verbatim except where marked APP LAYER. See
+   docs/design-system.md for what each token is for.
 
-   TO REBRAND: edit the base palette block only. Everything downstream reads the
-   semantic aliases, so a new palette propagates without touching any screen.
+   Layers, in order:
+     1. fonts       self-hosted woff2 under public/assets/fonts/
+     2. foundation  spacing, sizing, motion, sun gradients (Look-independent)
+     3. Paper       base palette + semantic tokens, light and dark (default)
+     4. Reel        the same semantic names with Reel values, light and dark
+     5. screen      eyebrow, section heading, hero CTA, nav dot (per Look)
+     6. APP LAYER   composite type, layout and control tokens that are Rise's
+                    own. Reads the layers above; never holds a Look value.
+     7. base        the document floor
 
-   OFFLINE: the source system @imports Google Fonts. That is removed here — this
-   app must work with no network, so faces are vendored in assets/fonts/.
+   Switch: <html data-look="paper|reel" data-theme="light|dark">. Components
+   read semantic tokens only; every Paper/Reel difference lives in this file.
+
+   OFFLINE: nothing here loads from a network. Fonts are vendored and precached.
    ========================================================================== */
 
-/* ---------------------------------------------------------------- fonts ---
-   Copernicus and StyreneB are licensed Anthropic faces and are not vendored;
-   local() keeps them first for anyone who has them installed, and the public
-   substitutions below (per the source system's readme) carry everyone else.  */
-
+/* ---------------------------------------------------------------- fonts --- */
 @font-face {
-  font-family: "Copernicus";
-  src: local("Copernicus"), local("Copernicus Book");
-  font-weight: 400;
+  font-family: "Fraunces";
+  src: url("/assets/fonts/fraunces-normal.woff2") format("woff2");
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: "StyreneB";
-  src: local("Styrene B"), local("StyreneB"), local("Styrene B Regular");
-  font-weight: 400;
-  font-style: normal;
+  font-family: "Fraunces";
+  src: url("/assets/fonts/fraunces-italic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: italic;
   font-display: swap;
 }
 @font-face {
-  font-family: "StyreneB";
-  src: local("Styrene B Medium"), local("StyreneB-Medium");
-  font-weight: 500;
+  font-family: "Atkinson Next";
+  src: url("/assets/fonts/atkinson-next.woff2") format("woff2");
+  font-weight: 200 800;
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "Newsreader";
-  src:
-    local("Newsreader"),
-    url("/assets/fonts/newsreader-400.woff2") format("woff2");
-  font-weight: 400;
+  src: url("/assets/fonts/newsreader-normal.woff2") format("woff2");
+  font-weight: 400 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: "Inter";
-  src:
-    local("Inter"),
-    url("/assets/fonts/inter-400.woff2") format("woff2");
+  font-family: "Newsreader";
+  src: url("/assets/fonts/newsreader-italic.woff2") format("woff2");
   font-weight: 400;
-  font-style: normal;
+  font-style: italic;
   font-display: swap;
 }
 @font-face {
-  font-family: "Inter";
-  src:
-    local("Inter Medium"),
-    url("/assets/fonts/inter-500.woff2") format("woff2");
+  font-family: "Barlow Semi Condensed";
+  src: url("/assets/fonts/barlow-semi-condensed-500.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: "Barlow Semi Condensed";
+  src: url("/assets/fonts/barlow-semi-condensed-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow Semi Condensed";
+  src: url("/assets/fonts/barlow-semi-condensed-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ------------------------------------------------------------ foundation --- */
+/* ---------- shared: spacing, motion, sizing (Look-independent) ---------- */
+:root {
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --gutter: 20px;
+  --row-min: 56px; /* tick rows — one-handed, mid-meal */
+  --control-h: 48px; /* fields, segmented */
+  --button-h: 52px;
+  --button-h-sm: 40px;
+  --icon-button: 44px;
+  --nav-h: 64px;
+
+  --dur-instant: 90ms; /* press feedback */
+  --dur-fast: 160ms; /* hover, toggles */
+  --dur-base: 260ms; /* sheet, toast */
+  --dur-slow: 520ms; /* sun travel on the horizon */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* tick pop, sun settle */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --sun: radial-gradient(circle at 40% 38%, #ffd392, #f8a959 42%, #eb7b49 72%, #e0673f);
+  --sun-wide: radial-gradient(120% 140% at 50% 110%, #ffd392 0%, #f8a959 35%, #e0673f 80%);
+}
+
+/* Motion off */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-instant: 0ms;
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+  }
+}
+
+/* ---------------------------------------------------------------- Paper --- */
+/* =====================================================================
+   LOOK: PAPER  (default)
+   ===================================================================== */
+:root,
+[data-look="paper"] {
+  --p-paper-50: #fffdf8;
+  --p-paper-100: #f7f1e8;
+  --p-paper-200: #efe6d8;
+  --p-paper-300: #e4d9ca;
+  --p-paper-400: #cdbfae;
+  --p-ink-900: #1c1916;
+  --p-ink-700: #4a423a;
+  --p-ink-600: #5a5047;
+  --p-ink-400: #8f8172;
+  --p-coral-500: #e0673f;
+  --p-coral-600: #d65c34;
+  --p-coral-700: #c9532e;
+  --p-coral-800: #a8441f;
+  --p-coral-200: #f2c6b4;
+  --p-green-600: #3f8f55;
+  --p-gold-600: #b8870f;
+  --p-rose-600: #c23a4b;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Atkinson Next", system-ui, sans-serif;
+  --font-numeric: "Atkinson Next", system-ui, sans-serif;
+  --font-caption: "Atkinson Next", system-ui, sans-serif;
+  --display-weight: 420;
+  --display-style: normal;
+  --due-title-style: normal;
+  --numeric-weight: 700;
+  --numeric-tracking: -0.03em;
+  --caption-size: 14px;
+  --caption-weight: 700;
+  --caption-tracking: 0;
+  --caption-transform: none;
+  --label-transform: none;
+  --label-tracking: 0;
+  --label-size: 16px;
+
+  --type-hero: 76px;
+  --type-display-lg: 32px;
+  --type-display-md: 24px;
+  --type-title: 18px;
+  --type-body: 16px;
+  --type-small: 14px;
+  --type-micro: 12px;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-card: 22px;
+  --radius-field: 14px;
+  --radius-pill: 999px;
+  --texture: none;
+}
+:root,
+[data-look="paper"] {
+  --bg-canvas: var(--p-paper-100);
+  --bg-raised: var(--p-paper-50);
+  --bg-sunken: var(--p-paper-200);
+  --bg-inverse: var(--p-ink-900);
+  --ink: var(--p-ink-900);
+  --ink-muted: var(--p-ink-600);
+  --ink-soft: var(--p-ink-400);
+  --ink-inverse: var(--p-paper-100);
+  --line: var(--p-paper-300);
+  --line-strong: var(--p-paper-400);
+  --accent: var(--p-coral-500);
+  --accent-hover: var(--p-coral-600);
+  --accent-pressed: var(--p-coral-700);
+  --accent-disabled: var(--p-coral-200);
+  --accent-ink: var(--p-ink-900);
+  --accent-text: var(--p-coral-800);
+  --danger: var(--p-rose-600);
+  --danger-ink: #ffffff;
+  --focus-ring: 0 0 0 2px var(--bg-canvas), 0 0 0 4px var(--p-coral-500);
+
+  --intake-on-track: var(--p-green-600);
+  --intake-partial: var(--p-gold-600);
+  --intake-low: var(--p-rose-600);
+  --intake-on-track-wash: #dcebdf;
+  --intake-partial-wash: #f2e6c4;
+  --intake-low-wash: #f4d8db;
+
+  --due-bg: var(--p-paper-50);
+  --due-ink: var(--p-ink-900);
+  --due-ink-muted: var(--p-ink-600);
+  --due-accent-text: var(--p-coral-800);
+  --due-edge: inset 0 0 0 1.5px var(--p-coral-500);
+  --due-glow: 0 22px 44px -22px rgba(224, 103, 63, 0.55);
+  --due-cta-bg: var(--p-coral-500);
+  --due-cta-ink: var(--p-ink-900);
+  --due-secondary-edge: var(--p-paper-400);
+  --now-line: var(--p-coral-500);
+  --sun-halo: rgba(248, 169, 89, 0.42);
+
+  --nav-bg: var(--p-paper-50);
+  --nav-edge: inset 0 0 0 1px var(--p-paper-300);
+  --nav-shadow: 0 12px 28px -14px rgba(80, 50, 25, 0.4);
+  --nav-ink: var(--p-ink-600);
+  --nav-active-bg: var(--p-ink-900);
+  --nav-active-ink: var(--p-paper-100);
+  --nav-active-glow: 0 8px 18px -8px rgba(224, 103, 63, 0.7);
+
+  --shadow-card: 0 1px 2px rgba(80, 50, 25, 0.08), 0 16px 32px -20px rgba(80, 50, 25, 0.3);
+  --shadow-float: 0 20px 48px -18px rgba(60, 40, 20, 0.45);
+  --scrim: rgba(28, 25, 22, 0.4);
+  --chart-band: rgba(224, 103, 63, 0.14);
+}
+[data-look="paper"][data-theme="dark"] {
+  --bg-canvas: #0b0a09;
+  --bg-raised: #1f1d1a;
+  --bg-sunken: #171513;
+  --bg-inverse: #f3ede3;
+  --ink: #f3ede3;
+  --ink-muted: #b9ad9f;
+  --ink-soft: #766a5c;
+  --ink-inverse: #0b0a09;
+  --line: #2a2622;
+  --line-strong: #3a352f;
+  --accent: #e0673f;
+  --accent-hover: #e8774f;
+  --accent-pressed: #c9532e;
+  --accent-disabled: #5a2e20;
+  --accent-ink: #121110;
+  --accent-text: #f08a64;
+  --danger: #e8697a;
+  --danger-ink: #121110;
+  --intake-on-track: #5db872;
+  --intake-partial: #d9a520;
+  --intake-low: #e8697a;
+  --intake-on-track-wash: #1e3324;
+  --intake-partial-wash: #3a3015;
+  --intake-low-wash: #3a1e22;
+  --due-bg: #1f1d1a;
+  --due-ink: #f3ede3;
+  --due-ink-muted: #b9ad9f;
+  --due-accent-text: #f08a64;
+  --due-edge: inset 0 0 0 1.5px #e0673f;
+  --due-glow: 0 0 44px -10px rgba(224, 103, 63, 0.45);
+  --due-cta-bg: #e0673f;
+  --due-cta-ink: #121110;
+  --due-secondary-edge: #4a433c;
+  --sun-halo: rgba(248, 169, 89, 0.32);
+  --nav-bg: #1f1d1a;
+  --nav-edge: inset 0 0 0 1px #34302b;
+  --nav-shadow: none;
+  --nav-ink: #b9ad9f;
+  --nav-active-bg: #f3ede3;
+  --nav-active-ink: #0b0a09;
+  --nav-active-glow: 0 0 22px -6px rgba(248, 169, 89, 0.55);
+  --shadow-card: inset 0 0 0 1px #2e2a26;
+  --shadow-float: inset 0 0 0 1px #34302b, 0 24px 48px -16px rgba(0, 0, 0, 0.7);
+  --scrim: rgba(0, 0, 0, 0.6);
+  --chart-band: rgba(240, 138, 100, 0.2);
+}
+
+/* ----------------------------------------------------------------- Reel --- */
+/* =====================================================================
+   LOOK: REEL
+   ===================================================================== */
+[data-look="reel"] {
+  --font-display: "Newsreader", Georgia, serif;
+  --font-body: "Barlow Semi Condensed", system-ui, sans-serif;
+  --font-numeric: "Barlow Semi Condensed", system-ui, sans-serif;
+  --font-caption: "Barlow Semi Condensed", system-ui, sans-serif;
+  --display-weight: 400;
+  --display-style: normal;
+  --due-title-style: italic;
+  --numeric-weight: 600;
+  --numeric-tracking: -0.01em;
+  --caption-size: 11px;
+  --caption-weight: 600;
+  --caption-tracking: 0.22em;
+  --caption-transform: uppercase;
+  --label-transform: uppercase;
+  --label-tracking: 0.14em;
+  --label-size: 13px;
+  --type-hero: 86px;
+  --type-display-lg: 40px;
+  --type-display-md: 26px;
+  --type-title: 19px;
+  --type-body: 16px;
+  --type-small: 14px;
+  --type-micro: 11px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-card: 24px;
+  --radius-field: 999px;
+  --radius-pill: 999px;
+  --texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .25 0 0 0 0 .14 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  --bg-canvas: #f3ede3;
+  --bg-raised: #fffaf2;
+  --bg-sunken: #e9e1d4;
+  --bg-inverse: #121110;
+  --ink: #121110;
+  --ink-muted: #6e655b;
+  --ink-soft: #8c8378;
+  --ink-inverse: #f3ede3;
+  --line: #ddd3c4;
+  --line-strong: #c9bba9;
+  --accent: #e0673f;
+  --accent-hover: #d65c34;
+  --accent-pressed: #c9532e;
+  --accent-disabled: #f2c6b4;
+  --accent-ink: #121110;
+  --accent-text: #b44a26;
+  --danger: #c23a4b;
+  --danger-ink: #ffffff;
+  --focus-ring: 0 0 0 2px var(--bg-canvas), 0 0 0 4px #e0673f;
+  --intake-on-track: #3d9656;
+  --intake-partial: #c4910f;
+  --intake-low: #c23a4b;
+  --intake-on-track-wash: #d6eedc;
+  --intake-partial-wash: #f3e3b0;
+  --intake-low-wash: #f4d8db;
+
+  --due-bg:
+    radial-gradient(120% 90% at 0% 0%, rgba(248, 169, 89, 0.32), rgba(248, 169, 89, 0) 55%), #1f1d1a;
+  --due-ink: #f3ede3;
+  --due-ink-muted: #b9ad9f;
+  --due-accent-text: #f4a07e;
+  --due-edge: inset 0 0 0 0 transparent;
+  --due-glow: 0 22px 44px -22px rgba(18, 17, 16, 0.7);
+  --due-cta-bg: #e0673f;
+  --due-cta-ink: #121110;
+  --due-secondary-edge: rgba(243, 237, 227, 0.35);
+  --now-line: #e0673f;
+  --sun-halo: rgba(248, 169, 89, 0.42);
+
+  --nav-bg: #121110;
+  --nav-edge: inset 0 0 0 0 transparent;
+  --nav-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.6);
+  --nav-ink: #a99e91;
+  --nav-active-bg: var(--sun-wide);
+  --nav-active-ink: #121110;
+  --nav-active-glow: 0 0 22px -4px rgba(248, 169, 89, 0.6);
+
+  --shadow-card: inset 0 0 0 1px #ddd3c4;
+  --shadow-float: 0 20px 48px -18px rgba(18, 17, 16, 0.5);
+  --scrim: rgba(18, 17, 16, 0.45);
+  --chart-band: rgba(224, 103, 63, 0.16);
+}
+[data-look="reel"][data-theme="dark"] {
+  --texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .92 0 0 0 0 .8 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --bg-canvas: #0e0d0b;
+  --bg-raised: #1f1d1a;
+  --bg-sunken: #171513;
+  --bg-inverse: #f3ede3;
+  --ink: #f3ede3;
+  --ink-muted: #a99e91;
+  --ink-soft: #6e655b;
+  --ink-inverse: #121110;
+  --line: #2a2622;
+  --line-strong: #3a352f;
+  --accent: #e0673f;
+  --accent-hover: #e8774f;
+  --accent-pressed: #c9532e;
+  --accent-disabled: #5a2e20;
+  --accent-ink: #121110;
+  --accent-text: #f08a64;
+  --danger: #e8697a;
+  --danger-ink: #121110;
+  --intake-on-track: #5db872;
+  --intake-partial: #d9a520;
+  --intake-low: #e8697a;
+  --intake-on-track-wash: #1e3324;
+  --intake-partial-wash: #3a3015;
+  --intake-low-wash: #3a1e22;
+  --due-bg: radial-gradient(120% 100% at 0% 0%, #f29a6e, #e0673f 60%);
+  --due-ink: #121110;
+  --due-ink-muted: #2a1a12;
+  --due-accent-text: #121110;
+  --due-edge: inset 0 0 0 0 transparent;
+  --due-glow: 0 0 56px -12px rgba(224, 103, 63, 0.6);
+  --due-cta-bg: #121110;
+  --due-cta-ink: #f3ede3;
+  --due-secondary-edge: rgba(18, 17, 16, 0.5);
+  --sun-halo: rgba(248, 169, 89, 0.32);
+  --nav-bg: #1f1d1a;
+  --nav-edge: inset 0 0 0 1px #34302b;
+  --nav-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.7);
+  --nav-ink: #a99e91;
+  --shadow-card: inset 0 0 0 1px #2a2622;
+  --shadow-float: inset 0 0 0 1px #34302b, 0 24px 48px -16px rgba(0, 0, 0, 0.7);
+  --scrim: rgba(0, 0, 0, 0.6);
+  --chart-band: rgba(240, 138, 100, 0.2);
+}
+
+/* --------------------------------------------------------------- screen --- */
+/* ---------- screen-level tokens (from the approved 5a / 5b mocks) ---------- */
+:root,
+[data-look="paper"] {
+  --eyebrow-size: 15px;
+  --eyebrow-weight: 700;
+  --eyebrow-tracking: 0;
+  --eyebrow-transform: none;
+  --eyebrow-ink: var(--p-ink-700);
+  --due-label-size: 13px;
+  --due-label-tracking: 0;
+  --section-font: var(--font-display);
+  --section-size: 18px;
+  --section-weight: 400;
+  --section-tracking: 0;
+  --section-transform: none;
+  --section-ink: var(--ink);
+  --horizon: rgba(28, 25, 22, 0.35);
+  --nav-dot: radial-gradient(circle at 40% 38%, #ffd392, #f8a959 45%, #e0673f);
+  --nav-label-size: 12px;
+  --nav-label-weight: 700;
+  --cta-hero-bg: var(--accent);
+  --cta-hero-ink: var(--accent-ink);
+  --cta-hero-glow: none;
+  --cta-hero-size: 16px;
+  --cta-hero-tracking: 0;
+  --cta-hero-transform: none;
+  --chip-bg: var(--bg-sunken);
+  --weighin-date-font: var(--font-display);
+  --weighin-date-size: 22px;
+  --weighin-date-weight: 400;
+  --band-flat: 1;
+  --band-sky: 0;
+}
+[data-look="paper"][data-theme="dark"] {
+  --eyebrow-ink: #cfc4b6;
+  --horizon: rgba(243, 237, 227, 0.35);
+}
+[data-look="reel"] {
+  --eyebrow-size: 12px;
+  --eyebrow-weight: 600;
+  --eyebrow-tracking: 0.22em;
+  --eyebrow-transform: uppercase;
+  --eyebrow-ink: var(--ink-muted);
+  --due-label-size: 11px;
+  --due-label-tracking: 0.18em;
+  --section-font: var(--font-caption);
+  --section-size: 11px;
+  --section-weight: 600;
+  --section-tracking: 0.22em;
+  --section-transform: uppercase;
+  --section-ink: var(--ink-muted);
+  --horizon: rgba(18, 17, 16, 0.35);
+  --nav-dot: transparent;
+  --nav-label-size: 11px;
+  --nav-label-weight: 600;
+  --cta-hero-bg: var(--sun-wide);
+  --cta-hero-ink: #121110;
+  --cta-hero-glow: 0 0 22px -6px rgba(248, 169, 89, 0.6);
+  --cta-hero-size: 13px;
+  --cta-hero-tracking: 0.16em;
+  --cta-hero-transform: uppercase;
+  --chip-bg: var(--bg-sunken);
+  --weighin-date-font: var(--font-numeric);
+  --weighin-date-size: 30px;
+  --weighin-date-weight: 600;
+  --band-flat: 0;
+  --band-sky: 1;
+}
+[data-look="reel"][data-theme="dark"] {
+  --eyebrow-ink: #cfc4b6;
+  --horizon: rgba(243, 237, 227, 0.35);
+}
+
+/* ============================================================================
+   APP LAYER — Rise's own tokens. Not from the design export. Everything here
+   reads the layers above, so a Look or theme change flows through unchanged.
+   ========================================================================== */
 
 :root {
   color-scheme: light;
 
-  /* ------------------------------------------------------- base palette ---
-   Edit THIS block to rebrand. Nothing else should hold a literal colour.   */
-
-  /* coral — the brand voltage */
-  --coral-500: #cc785c;
-  --coral-700: #a9583e;
-  --coral-200: #e6dfd8;
-  /* warm ink */
-  --ink-900: #141413;
-  --ink-800: #252523;
-  --ink-700: #3d3d3a;
-  --ink-500: #6c6a64;
-  --ink-400: #8e8b82;
-  /* cream surfaces */
-  --cream-50: #faf9f5;
-  --cream-100: #f5f0e8;
-  --cream-150: #ebe6df;
-  --cream-200: #efe9de;
-  --cream-250: #e6dfd8;
-  --cream-300: #e8e0d2;
-  /* night surfaces + ink — the dark theme's palette (pass 19). Mirrors the cream
-   ramp and the ink ramp step for step: canvas < soft < card < strong, plus a
-   floating-panel surface and two hairlines. Only the dark-theme alias block
-   near the end of this file reads these. */
-  --night-canvas: #171614;
-  --night-soft: #1e1c19;
-  --night-card: #232120;
-  --night-strong: #2c2a26;
-  --night-overlay: #262320;
-  --night-sunken: #0f0e0d;
-  --night-line: #34312c;
-  --night-line-soft: #2a2723;
-  --night-ink: #f7f5f0;
-  --night-ink-strong: #e8e4dc;
-  --night-ink-body: #d3cec4;
-  --night-ink-muted: #9a968c;
-  --night-ink-faint: #6f6b62;
-  /* accents + status */
-  --teal-500: #5db8a6;
-  --amber-500: #e8a55a;
-  --green-500: #5db872;
-  --gold-500: #d4a017;
-  --red-500: #c64545;
-  --white: #ffffff;
-
-  /* --------------------------------------------------- semantic aliases --- */
-
-  --color-primary: var(--coral-500);
-  --color-primary-active: var(--coral-700);
-  --color-primary-disabled: var(--coral-200);
-
-  --text-ink: var(--ink-900);
-  --text-body-strong: var(--ink-800);
-  --text-body: var(--ink-700);
-  --text-muted: var(--ink-500);
-  --text-muted-soft: var(--ink-400);
-  --text-on-primary: var(--white);
-  /* coral-500 as text measures ~3.0:1 on canvas and fails AA for normal-sized
-   text; coral-700 is ~4.7:1 and passes. Links are body-sized, so they take the
-   deep coral. Coral-500 stays correct as a FILL behind --text-on-primary. */
-  --text-link: var(--coral-700);
-
-  --surface-canvas: var(--cream-50);
-  --surface-soft: var(--cream-100);
-  --surface-card: var(--cream-200);
-  --surface-cream-strong: var(--cream-300);
-  /* the surface a floating panel (listbox, calendar) sits on. Same as the canvas
-   in light; the dark theme lifts it so a panel reads above the page. */
-  --surface-overlay: var(--surface-canvas);
-  /* a recessed well — search fields, code panels. The inverse of --surface-overlay:
-   that one lifts a panel off the page, this one presses a field into it. */
-  --surface-sunken: var(--cream-250);
-
-  --border-hairline: var(--cream-250);
-  --border-hairline-soft: var(--cream-150);
-
-  --accent-teal: var(--teal-500);
-  --accent-amber: var(--amber-500);
-  --status-success: var(--green-500);
-  --status-warning: var(--gold-500);
-  --status-error: var(--red-500);
-
-  /* focus ring — the canonical treatment, and the one every focusable surface
-   reads. A 2px gap in the theme's own canvas colour, then a 2px coral ring.
-   The canvas-coloured gap is what makes it work anywhere: the ring's immediate
-   neighbour is always the canvas, so it never has to fight the surface it
-   happens to sit on — including a coral button, where the old 15%-alpha coral
-   wash was very nearly invisible. There is deliberately no dark-theme override
-   below: --surface-canvas already flips, and custom properties resolve at use
-   time, so the same declaration produces the right ring in both themes. */
-  --border-focus: var(--coral-500);
-  --focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--border-focus);
-
-  /* coral washes that were inline literals before pass 19. Tokenised so the dark
-   theme can raise their alpha — at 6–10% they vanish on a night surface. */
-  --surface-primary-tint: rgba(204, 120, 92, 0.08); /* .is-picked row backgrounds */
-  --chart-cone-fill: rgba(204, 120, 92, 0.1); /* the weight trend target cone */
-  --divider-strong: rgba(20, 20, 19, 0.12); /* a rule that must show on cream-strong */
-
-  /* ============================ APP LAYER ==================================
-   Additions specific to this app. Not from the source system.
-   ======================================================================== */
-
-  /* --- intake status -------------------------------------------------------
-   DELIBERATE INVERSION. In a weight-GAIN context, under-eating is the failure,
-   so red means "well under target", not "over limit". These aliases exist so
-   that inversion is stated once, here, instead of being implied by every use of
-   --status-error. Do not "fix" this back. See docs/design-system.md.          */
-  --intake-on-track: var(--status-success); /* at or above the day's target */
-  --intake-partial: var(--status-warning); /* partway there */
-  --intake-low: var(--status-error); /* well under — the failure state */
-
-  /* ------------------------------------------------------------ spacing ---
-   base unit 4px                                                            */
-  --space-xxs: 4px;
-  --space-xs: 8px;
-  --space-sm: 12px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-xxl: 48px;
-  --space-section: 96px;
-
-  /* Below the 4pt scale. Exists for one hairline gap — the title-to-eyebrow
-   space in .screen-head, where 4px reads as a touch too loose. Don't reach
-   for this elsewhere; if a second use appears, question it. */
-  --space-xxxs: 2px;
-
-  --pad-card: var(--space-xl);
-  --pad-card-tight: var(--space-lg);
-  --pad-callout: var(--space-xxl);
-  --container-max: 1200px;
-  --control-height: 40px;
-  /* 36px in the source system, which its own readme admits is 'slightly under
-   WCAG 44'. Fine for a marketing page's decorative arrow; not for a one-handed
-   kitchen app. 36px is acceptable only in a mouse-driven desktop toolbar. */
-  --icon-button-size: 44px;
-
-  /* APP LAYER — the source system is desktop/marketing and fixes controls at
-   40px, below the 44px iOS / 48px Android minimum. This app is used one-handed
-   in a kitchen, so tap rows get a real thumb target. Genuine form controls stay
-   at --control-height.                                                       */
-  --touch-target: 56px;
-  --app-max-width: 580px; /* fills the viewport on a phone, caps for tablet / desktop */
-
-  /* -------------------------------------------------------- breakpoints ---
-   REFERENCE ONLY. A custom property cannot be used in an @media condition —
-   `@media (min-width: var(--bp-desktop))` does not work in any browser — so
-   media queries must repeat these as literals. They live here so the scale has
-   one authoritative home and the literals can be checked against it.
-   360 and 600 are what the app already ships; the rest land with phase 4.     */
-  --bp-compact: 360px; /* small phone — floor of support */
-  --bp-medium: 600px; /* large phone / small tablet */
-  --bp-expanded: 840px; /* tablet / foldable */
-  --bp-desktop: 1024px; /* side nav + main panel */
-  --bp-wide: 1440px; /* side nav + main + detail, three panels */
-
-  --gutter-compact: 16px;
-  --gutter-medium: 20px;
-  --gutter-desktop: 32px;
-  --panel-nav-width: 240px; /* desktop side nav */
-  --panel-nav-width-collapsed: 72px; /* the hover-to-expand rail (pass 47) */
-  --panel-detail-width: 360px; /* the third panel at --bp-wide */
-  --container-app: 960px; /* reading column inside the desktop main panel */
-
-  /* -------------------------------------------------------------- radii --- */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-pill: 9999px;
-  --radius-full: 9999px;
-
-  --radius-control: var(--radius-md); /* buttons, inputs, tabs */
-  --radius-card: var(--radius-lg); /* content cards, block rows */
-
-  /* ---------------------------------------------------------- elevation ---
-   Colour-block first, shadow rare.                                          */
-  --shadow-none: none;
-  --shadow-hover: 0 1px 3px rgba(20, 20, 19, 0.08);
-  --shadow-float: 0 8px 24px rgba(20, 20, 19, 0.12);
-  --border-width-hairline: 1px;
-
-  /* --------------------------------------------------------- typography --- */
-
-  --font-serif-display:
-    Copernicus, "Tiempos Headline", Newsreader, Georgia, "Times New Roman", serif;
-  --font-sans: StyreneB, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  /* No longer vendored. Numbers moved to the serif/sans metric roles, so the only
-   caller left is --text-code, for debug output this app does not currently
-   render. It falls back to the platform mono face; if a real code surface
-   ever appears, re-vendor the woff2 and re-add it to sw.js PRECACHE_URLS. */
-  --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
-
+  /* Composite type. The export gives families, sizes and weights; these are the
+     `font:` shorthands app.css reads, built only from those. Sentence-case
+     labels take --text-caption; the tracked small-caps register is
+     --text-eyebrow, paired at the call site with --eyebrow-tracking and
+     --eyebrow-transform so Reel can uppercase it and Paper cannot. */
   --weight-regular: 400;
   --weight-medium: 500;
+  --text-display-sm: var(--display-weight) var(--type-display-md) / 1.2 var(--font-display);
+  --text-screen-title: var(--display-weight) var(--type-display-lg) / 1.05 var(--font-display);
+  --text-metric: var(--display-weight) var(--type-display-lg) / 1.1 var(--font-display);
+  --text-metric-sm: var(--numeric-weight) var(--type-body) / 1.2 var(--font-numeric);
+  --text-title-sm: 600 var(--type-body) / 1.4 var(--font-body);
+  --text-body-md: var(--weight-regular) var(--type-body) / 1.55 var(--font-body);
+  --text-body-sm: var(--weight-regular) var(--type-small) / 1.55 var(--font-body);
+  --text-caption: var(--weight-medium) var(--type-small) / 1.4 var(--font-body);
+  --text-eyebrow: var(--eyebrow-weight) var(--eyebrow-size) / 1.4 var(--font-caption);
+  --text-button: 600 var(--type-small) / 1 var(--font-body);
+  --text-nav: var(--nav-label-weight) var(--nav-label-size) / 1.4 var(--font-body);
+  /* Debug surfaces only; not vendored, the platform mono face carries it. */
+  --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
+  --text-code: var(--weight-regular) 14px / 1.6 var(--font-mono);
 
-  /* display — serif, weight 400, negative tracking (non-negotiable) */
-  --type-display-xl-size: 64px;
-  --type-display-xl-line: 1.05;
-  --type-display-xl-track: -1.5px;
-  --type-display-lg-size: 48px;
-  --type-display-lg-line: 1.1;
-  --type-display-lg-track: -1px;
-  --type-display-md-size: 36px;
-  --type-display-md-line: 1.15;
-  --type-display-md-track: -0.5px;
-  --type-display-sm-size: 28px;
-  --type-display-sm-line: 1.2;
-  --type-display-sm-track: -0.3px;
+  /* A soft accent wash for picked rows and selected chips. */
+  --accent-tint: color-mix(in srgb, var(--accent) 12%, transparent);
 
-  /* titles + body — sans */
-  --type-title-lg-size: 22px;
-  --type-title-lg-line: 1.3;
-  --type-title-md-size: 18px;
-  --type-title-md-line: 1.4;
-  --type-title-sm-size: 16px;
-  --type-title-sm-line: 1.4;
-  --type-body-md-size: 16px;
-  --type-body-md-line: 1.55;
-  --type-body-sm-size: 14px;
-  --type-body-sm-line: 1.55;
-  --type-caption-size: 13px;
-  --type-caption-line: 1.4;
-  --type-caption-upper-size: 12px;
-  --type-caption-upper-line: 1.4;
-  --type-caption-upper-track: 1.5px;
-  --type-code-size: 14px;
-  --type-code-line: 1.6;
-  --type-button-size: 14px;
-  --type-button-line: 1;
-  --type-nav-size: 14px;
-  --type-nav-line: 1.4;
+  /* Below the export's 48. Page bottom padding clears the floating tab bar. */
+  --space-96: 96px;
+  --border-width-hairline: 1px;
+  --shadow-none: none;
 
-  /* composite shorthands: font: <weight> <size>/<line> <family> */
-  --text-display-xl: var(--weight-regular) var(--type-display-xl-size)/var(--type-display-xl-line)
-    var(--font-serif-display);
-  --text-display-lg: var(--weight-regular) var(--type-display-lg-size)/var(--type-display-lg-line)
-    var(--font-serif-display);
-  --text-display-md: var(--weight-regular) var(--type-display-md-size)/var(--type-display-md-line)
-    var(--font-serif-display);
-  --text-display-sm: var(--weight-regular) var(--type-display-sm-size)/var(--type-display-sm-line)
-    var(--font-serif-display);
-  --text-title-lg: var(--weight-medium) var(--type-title-lg-size)/var(--type-title-lg-line)
-    var(--font-sans);
-  --text-title-md: var(--weight-medium) var(--type-title-md-size)/var(--type-title-md-line)
-    var(--font-sans);
-  --text-title-sm: var(--weight-medium) var(--type-title-sm-size)/var(--type-title-sm-line)
-    var(--font-sans);
-  --text-body-md: var(--weight-regular) var(--type-body-md-size)/var(--type-body-md-line)
-    var(--font-sans);
-  --text-body-sm: var(--weight-regular) var(--type-body-sm-size)/var(--type-body-sm-line)
-    var(--font-sans);
-  --text-caption: var(--weight-medium) var(--type-caption-size)/var(--type-caption-line)
-    var(--font-sans);
-  --text-caption-upper: var(--weight-medium)
-    var(--type-caption-upper-size)/var(--type-caption-upper-line) var(--font-sans);
-  --text-code: var(--weight-regular) var(--type-code-size)/var(--type-code-line) var(--font-mono);
-  --text-button: var(--weight-medium) var(--type-button-size)/var(--type-button-line)
-    var(--font-sans);
-  --text-nav: var(--weight-medium) var(--type-nav-size)/var(--type-nav-line) var(--font-sans);
+  /* Layout carried over from v2. The shell pass (66) revisits these against the
+     desktop handoff (256px nav, 1080px column, 340px support column). */
+  --app-max-width: 580px; /* fills a phone, caps for tablet */
+  --gutter-desktop: 32px;
+  --panel-nav-width: 240px;
+  --panel-nav-width-collapsed: 72px;
+  --panel-detail-width: 360px;
+  --container-app: 960px;
 
-  /* APP LAYER — numbers are the point of this app, so they are typed rather than
-   set in mono. A standalone hero figure (the day's kcal total) takes the serif
-   display face: it is the loudest thing on the screen and should read as the
-   screen's headline, not as terminal output. Figures embedded in rows, tables
-   and chart axes take the sans face. Both are tabular — every call site also
-   declares font-variant-numeric, which is where column alignment actually comes
-   from, so mono was paying a width penalty for a benefit already in hand. */
-  --text-metric: var(--weight-regular) 36px/1.1 var(--font-serif-display);
-  --text-metric-sm: var(--weight-medium) 16px/1.2 var(--font-sans);
+  /* Breakpoints — REFERENCE ONLY. A custom property can't sit in an @media
+     condition, so queries repeat these as literals. */
+  --bp-compact: 360px;
+  --bp-medium: 600px;
+  --bp-expanded: 840px;
+  --bp-desktop: 1024px;
+  --bp-wide: 1440px;
 
-  /* APP LAYER — the top-level screen title (Today / Weight / Settings / setup).
-   The source system reserves display-lg (48px) for marketing heroes, but the
-   app's page titles are its loudest on-screen text and need to anchor the
-   screen, so they take that size. Serif, weight 400, display-lg tracking. The
-   backfill date header steps back down — see .screen__title--date. */
-  --type-screen-title-size: 48px;
-  --type-screen-title-line: 1.05;
-  --type-screen-title-track: -1px;
-  --text-screen-title: var(--weight-regular)
-    var(--type-screen-title-size)/var(--type-screen-title-line) var(--font-serif-display);
-
-  /* ------------------------------------------------------------- motion ---
-   The source spec documents default + active states only; motion is
-   intentionally minimal.                                                    */
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration-fast: 120ms;
-  --duration-base: 180ms;
-  --duration-entry: 220ms; /* sheet / modal / popover open */
   --transition-control:
-    background-color var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
+    background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
   --transition-entry:
-    transform var(--duration-entry) var(--ease-standard),
-    opacity var(--duration-entry) var(--ease-standard);
+    transform var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --accent-tint: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 /* ---------------------------------------------------------------- base ---
-   Minimal document floor, from the source system's tokens/base.css.
-   Heading sizes are overridden by the app stylesheet — display-xl at 64px is a
-   marketing hero size, not a phone screen size.                              */
+   The document floor. Sizes are set by the app stylesheet.                   */
 
 html {
   -webkit-font-smoothing: antialiased;
@@ -382,120 +561,29 @@ html {
 }
 body {
   margin: 0;
-  background: var(--surface-canvas);
-  color: var(--text-body);
+  background: var(--bg-canvas);
+  color: var(--ink);
   font: var(--text-body-md);
   text-wrap: pretty;
-}
-
-/* ============================================================================
-   DARK THEME (pass 19)
-   ----------------------------------------------------------------------------
-   The semantic aliases in :root above are the light theme. Dark re-points the
-   same names at the --night-* ramp and lifts a few coral washes; because every
-   screen reads the aliases and never a raw colour, nothing else has to change.
-
-   Two entry points, and the declaration list is repeated verbatim between them
-   because CSS can't share one across a media-query boundary — KEEP THEM IN
-   SYNC:
-     • :root[data-theme="dark"]      — the user pinned Dark in Settings
-     • prefers-color-scheme: dark    — the OS, unless Light/Dark is pinned
-   index.html sets data-theme before first paint; src/js/core/theme.js keeps it
-   and <meta name="theme-color"> in step, and runs the cross-fade on a switch.
-   ========================================================================== */
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-
-  --color-primary-active: #d98b6f;
-  --color-primary-disabled: #5a4038;
-
-  --text-ink: var(--night-ink);
-  --text-body-strong: var(--night-ink-strong);
-  --text-body: var(--night-ink-body);
-  --text-muted: var(--night-ink-muted);
-  --text-muted-soft: var(--night-ink-faint);
-  --text-link: #e0906f;
-
-  --surface-canvas: var(--night-canvas);
-  --surface-soft: var(--night-soft);
-  --surface-card: var(--night-card);
-  --surface-cream-strong: var(--night-strong);
-  --surface-overlay: var(--night-overlay);
-  --surface-sunken: var(--night-sunken);
-
-  --border-hairline: var(--night-line);
-  --border-hairline-soft: var(--night-line-soft);
-
-  --status-success: #63c17d;
-  --status-warning: #e0af3a;
-  --status-error: #d76a6a;
-
-  --surface-primary-tint: rgba(204, 120, 92, 0.18);
-  --chart-cone-fill: rgba(204, 120, 92, 0.16);
-  --divider-strong: rgba(247, 245, 240, 0.16);
-
-  /* a black shadow on a near-black surface is invisible, so dark elevation is
-     carried by a hairline outline and an inner top highlight instead. */
-  --shadow-hover: 0 0 0 1px var(--night-line);
-  --shadow-float: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 24px rgba(0, 0, 0, 0.5);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]):not([data-theme="dark"]) {
-    color-scheme: dark;
-
-    --color-primary-active: #d98b6f;
-    --color-primary-disabled: #5a4038;
-
-    --text-ink: var(--night-ink);
-    --text-body-strong: var(--night-ink-strong);
-    --text-body: var(--night-ink-body);
-    --text-muted: var(--night-ink-muted);
-    --text-muted-soft: var(--night-ink-faint);
-    --text-link: #e0906f;
-
-    --surface-canvas: var(--night-canvas);
-    --surface-soft: var(--night-soft);
-    --surface-card: var(--night-card);
-    --surface-cream-strong: var(--night-strong);
-    --surface-overlay: var(--night-overlay);
-    --surface-sunken: var(--night-sunken);
-
-    --border-hairline: var(--night-line);
-    --border-hairline-soft: var(--night-line-soft);
-
-    --status-success: #63c17d;
-    --status-warning: #e0af3a;
-    --status-error: #d76a6a;
-
-    --surface-primary-tint: rgba(204, 120, 92, 0.18);
-    --chart-cone-fill: rgba(204, 120, 92, 0.16);
-    --divider-strong: rgba(247, 245, 240, 0.16);
-
-    /* a black shadow on a near-black surface is invisible, so dark elevation is
-       carried by a hairline outline and an inner top highlight instead. */
-    --shadow-hover: 0 0 0 1px var(--night-line);
-    --shadow-float: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 24px rgba(0, 0, 0, 0.5);
-  }
 }
 h1,
 h2,
 h3 {
   margin: 0;
-  color: var(--text-ink);
-  font-family: var(--font-serif-display);
-  font-weight: var(--weight-regular);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-style: var(--display-style);
 }
 p {
   margin: 0;
 }
 a {
-  color: var(--text-link);
+  color: var(--accent-text);
   text-decoration: none;
 }
 a:hover {
-  color: var(--color-primary-active);
+  color: var(--accent-pressed);
   text-decoration: underline;
 }
 code,
