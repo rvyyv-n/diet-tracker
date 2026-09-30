@@ -3,6 +3,16 @@
  * (pass 62). Five screens each carried an identical `Icon`, four a
  * `GroupLabel`, and Plan and Weight a `Group`; Today and Weight each had
  * their own `Imperative`. One copy here, so a change lands everywhere.
+ *
+ * v3.0 (pass 65): the redesign's components live beside this file in
+ * core.jsx, tracking.jsx and surfaces.jsx. What stays here is split in two:
+ *   - kept: `NUM`, `fmtTime` and `Imperative` are plumbing, not design, and
+ *     the rebuilt screens use them as they are.
+ *   - superseded: `Icon` by core's `Icon` (the Rise set, falling back to the
+ *     same Lucide glyphs); `GroupLabel` and `Group` by `SectionHeading` and
+ *     `Eyebrow`; `EmptyState` by surfaces' `EmptyState`. Each goes when the
+ *     last screen using it is rebuilt (passes 67-71), not before, so the
+ *     screens keep working unchanged in between.
  */
 
 import { useEffect, useRef } from "react";

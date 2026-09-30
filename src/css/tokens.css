@@ -491,7 +491,11 @@
    reads the layers above, so a Look or theme change flows through unchanged.
    ========================================================================== */
 
-:root {
+/* Declared on every [data-look] as well as the root: a custom property that
+   reads others is resolved where it is declared, so a nested Look preview (the
+   Look picker, the component scratch page) needs these re-read in its scope. */
+:root,
+[data-look] {
   color-scheme: light;
 
   /* Composite type. The export gives families, sizes and weights; these are the
@@ -518,6 +522,20 @@
 
   /* A soft accent wash for picked rows and selected chips. */
   --accent-tint: color-mix(in srgb, var(--accent) 12%, transparent);
+
+  /* Component states (pass 65). Hover lays one wash over a control's fill and
+     press a deeper one, so hover is always one step below pressed whatever the
+     fill. Ink-based, so it darkens in light and lightens in dark. */
+  --hover-wash: color-mix(in srgb, var(--ink) 5%, transparent);
+  --press-wash: color-mix(in srgb, var(--ink) 10%, transparent);
+
+  /* The weight chart's sky band (Reel shows it, Paper the flat band). The
+     handoff draws it as an svg gradient from these two stops. */
+  --chart-sky-top: rgba(242, 154, 110, 0.38);
+  --chart-sky-bottom: rgba(248, 194, 142, 0.12);
+
+  /* Sheet top corners and the desktop dialog. */
+  --radius-sheet: 28px;
 
   /* Below the export's 48. Page bottom padding clears the floating tab bar. */
   --space-96: 96px;

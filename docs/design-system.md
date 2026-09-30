@@ -52,19 +52,20 @@ Paper's base palette (`--p-*`) is the only place Paper holds raw hex; everything
 else reads the semantic names below. Reel writes its values directly into the
 same semantic names.
 
-| Group      | Tokens                                                                                                              |
-| ---------- | ------------------------------------------------------------------------------------------------------------------- |
-| Surface    | `--bg-canvas` (the page), `--bg-raised` (cards, rows, sheets), `--bg-sunken` (wells, pressed), `--bg-inverse`       |
-| Ink        | `--ink`, `--ink-muted`, `--ink-soft` (decoration only), `--ink-inverse`                                             |
-| Line       | `--line`, `--line-strong`                                                                                           |
-| Accent     | `--accent` (fill), `--accent-hover`, `--accent-pressed`, `--accent-disabled`, `--accent-ink` (text on a coral fill) |
-| Coral text | **`--accent-text`**. Coral-500 as text is ~3:1 on cream and fails AA; any coral text uses this                      |
-| Danger     | `--danger`, `--danger-ink`. Only the destructive button, form errors and "well under target"                        |
-| Intake     | `--intake-on-track`, `--intake-partial`, `--intake-low` and their `-wash` fills                                     |
-| Focus      | `--focus-ring`: a 2px canvas-coloured gap, then a 2px coral ring                                                    |
-| Overlay    | `--scrim`, `--shadow-card`, `--shadow-float`, `--chart-band`                                                        |
-| Due-now    | `--due-*` (card background, ink, edge, glow, CTA), `--now-line`, `--sun-halo`                                       |
-| Nav        | `--nav-*` (bar, edge, shadow, ink, active pill and glow)                                                            |
+| Group      | Tokens                                                                                                               |
+| ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| Surface    | `--bg-canvas` (the page), `--bg-raised` (cards, rows, sheets), `--bg-sunken` (wells, pressed), `--bg-inverse`        |
+| Ink        | `--ink`, `--ink-muted`, `--ink-soft` (decoration only), `--ink-inverse`                                              |
+| Line       | `--line`, `--line-strong`                                                                                            |
+| Accent     | `--accent` (fill), `--accent-hover`, `--accent-pressed`, `--accent-disabled`, `--accent-ink` (text on a coral fill)  |
+| Coral text | **`--accent-text`**. Coral-500 as text is ~3:1 on cream and fails AA; any coral text uses this                       |
+| Danger     | `--danger`, `--danger-ink`. Only the destructive button, form errors and "well under target"                         |
+| Intake     | `--intake-on-track`, `--intake-partial`, `--intake-low` and their `-wash` fills                                      |
+| Focus      | `--focus-ring`: a 2px canvas-coloured gap, then a 2px coral ring                                                     |
+| Overlay    | `--scrim`, `--shadow-card`, `--shadow-float`, `--chart-band`; app layer: `--chart-sky-top` / `-bottom` (Reel's band) |
+| States     | app layer: `--hover-wash` and `--press-wash`, ink washes laid over a control's fill on hover and press               |
+| Due-now    | `--due-*` (card background, ink, edge, glow, CTA), `--now-line`, `--sun-halo`                                        |
+| Nav        | `--nav-*` (bar, edge, shadow, ink, active pill and glow)                                                             |
 
 The accent is `#E0673F`. Text on it is `--accent-ink` (near-black), not white.
 
@@ -118,7 +119,8 @@ Sizing: `--row-min` 56 (tick rows, one-handed), `--control-h` 48 (fields,
 segmented), `--button-h` 52 / `--button-h-sm` 40, `--icon-button` 44, `--nav-h` 64.
 
 Radii: `--radius-sm` 8 · `--radius-md` 14 · `--radius-card` 22 (24 Reel) ·
-`--radius-field` 14 (pill in Reel) · `--radius-pill`. Use `--radius-field` for
+`--radius-field` 14 (pill in Reel) · `--radius-pill`, plus the app-layer
+`--radius-sheet` 28 (sheet top corners, desktop dialogs). Use `--radius-field` for
 buttons, inputs and tabs so Reel's pill shape follows.
 
 Elevation is per Look: Paper uses soft warm shadows in light and hairline
@@ -187,17 +189,46 @@ Each was weighed and kept on purpose; do not "correct" them.
 | Accent tint          | not defined                         | `--accent-tint`, `color-mix` of `--accent`  | One definition serves both Looks; dark raises the mix from 12% to 20%     |
 | Copernicus, StyreneB | n/a                                 | dropped                                     | The v2 faces were licensed stand-ins; the Looks bring their own           |
 
-## Form controls and focus
+## Components
 
-Form controls use the existing class system (`.field`, `.field__control`,
-`.field__input`, `.seg`, …). Do not add a parallel set. The component pass (65)
-ports the export's Button, Chip, Segmented, Toggle, Radio, TextField and the
-rest, and this section is rewritten then.
+The shared set is in `src/components/`: `core.jsx` (Icon, Button, IconButton,
+Chip, Segmented, Toggle, Radio, TextField, Card, Eyebrow, SectionHeading),
+`tracking.jsx` (StatusDot, DotStrip, DayTotal, BlockList, BlockRow, NowMarker,
+DueCard, SuggestionCard, StatRow, PhaseLadder, GroceryList, WeightChart) and
+`surfaces.jsx` (Sheet, Toast, Banner, ConfirmPanel, EmptyState, ListGroup,
+ListRow, OptionRow, CalendarGrid). Props follow the handoff's `.d.ts` files.
+Their styles are the `r-` classes at the end of `app.css`; the prefix keeps
+them clear of the v2 classes until the screens are rebuilt (passes 67-71).
+Build a screen from these; don't add a parallel control. `dev/components.html`
+on the dev server shows every one in all four Look and theme pairs.
 
-Focus is one treatment in one token: `outline: none; box-shadow:
-var(--focus-ring)` on `:focus-visible`, never `:focus`, so a mouse click draws
-no ring. The canvas-coloured gap is what lets it read on any surface, including
-a coral button.
+`Icon` draws the Rise set (nav, check, lock, warn, info, search, chevrons,
+aisle marks) and falls back to the Lucide glyphs in `ui/icons.js` for any other
+name. `shared.jsx` keeps `NUM`, `fmtTime` and `Imperative`; its `Icon`,
+`Group`, `GroupLabel` and `EmptyState` go as their screens are rebuilt.
+
+**States**, one model for every component:
+
+- **Hover** only under `(hover: hover) and (pointer: fine)`: `--hover-wash` over
+  the fill. Primary uses `--accent-hover`. Nothing moves.
+- **Press**: `--press-wash` (primary: `--accent-pressed`), and controls scale to
+  .97 over `--dur-instant`. Full-width rows wash but don't scale.
+- **Focus**: `outline: none; box-shadow: var(--r-ring), var(--focus-ring)` on
+  `:focus-visible`, never `:focus`, so a mouse click draws no ring and an
+  outlined control keeps its outline. `--r-ring` is the control's own inset
+  ring (a transparent zero shadow when it has none, since `none` can't sit in
+  a shadow list). The canvas-coloured gap lets the ring read on any surface.
+- **Disabled**: primary fills with `--accent-disabled`; everything else fades
+  to .5. Toggle off, Button disabled and pressed are inferred in the handoff.
+
+The `ui/` widgets (listbox, calendar popover, date dropdowns) follow the same
+look: a TextField trigger, IconButton-style month nav, an ink fill for the
+picked option or day, and today ringed. The v2 form classes (`.field`,
+`.seg`, `.btn`, …) stay until their screens move.
+
+Nested Looks: the app layer of `tokens.css` is declared on `:root, [data-look]`,
+so an element carrying its own `data-look` and `data-theme` (the Look picker's
+tiles, the scratch page) resolves every composite token in its own scope.
 
 ## Breakpoints
 

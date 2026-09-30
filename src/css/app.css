@@ -1443,8 +1443,11 @@
 
 /* --------------------------------------------------- date controls ---
    Custom day/month/year dropdowns (date of birth) and a calendar popover
-   (plan start date), replacing the native inputs. Trigger boxes mirror
-   .field__control; panels float on --shadow-float. Press + focus only.       */
+   (plan start date), replacing the native inputs. Restyled to the v3.0
+   components (pass 65): the trigger is the TextField box, the month nav is
+   the IconButton ring, a picked day or option is the ink fill the Segmented
+   and Chip use, and today is ringed as in CalendarGrid. Panels float on
+   --shadow-float. Hover sits in the hover block at the end of this file.    */
 
 .lb,
 .cal {
@@ -1458,29 +1461,29 @@
   gap: var(--space-8);
   width: 100%;
   height: var(--control-h);
-  padding: 10px 12px 10px 14px;
+  padding: 0 var(--space-12) 0 var(--space-16);
   background: var(--bg-canvas);
-  border: var(--border-width-hairline) solid var(--line);
+  border: 0;
   border-radius: var(--radius-field);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
   color: var(--ink);
   font: var(--text-body-md);
   text-align: left;
   cursor: pointer;
-  transition:
-    var(--transition-control),
-    box-shadow var(--dur-fast) var(--ease-out);
+  transition: var(--transition-control);
 }
 .lb__trigger:active,
 .cal__trigger:active {
-  background: var(--bg-raised);
+  background: var(--bg-sunken);
 }
 .lb__trigger:focus-visible,
 .cal__trigger:focus-visible,
 .lb__trigger[aria-expanded="true"],
 .cal__trigger[aria-expanded="true"] {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: var(--focus-ring);
+  box-shadow:
+    inset 0 0 0 1.5px var(--line-strong),
+    var(--focus-ring);
 }
 
 .lb__value,
@@ -1492,7 +1495,7 @@
   white-space: nowrap;
 }
 .lb__value.is-placeholder {
-  color: var(--ink-soft);
+  color: var(--ink-muted);
 }
 
 /* Both carets draw the Lucide chevron now, not a "▾" text character — the
@@ -1518,7 +1521,7 @@
   flex-grow: 1.5;
 }
 .date-dmy.is-invalid .lb__trigger {
-  border-color: var(--danger);
+  box-shadow: inset 0 0 0 1.5px var(--danger);
 }
 
 /* floating panels ---------------------------------------------------- */
@@ -1526,31 +1529,33 @@
 .lb__panel,
 .cal__panel {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + var(--space-8));
   left: 0;
   z-index: 20;
-  background: var(--bg-raised);
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-field);
+  background-color: var(--bg-raised);
+  background-image: var(--texture);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-float);
 }
 
 .lb__panel {
   min-width: 100%;
-  max-height: 240px;
+  max-height: 272px;
   overflow-y: auto;
   padding: var(--space-4);
 }
 
 .lb__opt {
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 8px 12px;
+  min-height: var(--icon-button);
+  padding: 0 var(--space-12);
   background: transparent;
   border: none;
   border-radius: var(--radius-sm);
-  color: var(--text-body);
-  font: var(--text-body-sm);
+  color: var(--ink);
+  font: var(--text-body-md);
   text-align: left;
   cursor: pointer;
   transition: var(--transition-control);
@@ -1563,15 +1568,15 @@
   box-shadow: var(--focus-ring);
 }
 .lb__opt.is-picked {
-  color: var(--ink);
-  font-weight: var(--weight-medium);
-  background: var(--accent-tint);
+  background: var(--ink);
+  color: var(--bg-canvas);
+  font-weight: 700;
 }
 
 /* calendar --------------------------------------------------------- */
 
 .cal__panel {
-  width: min(320px, calc(100vw - 2 * var(--space-24)));
+  width: min(344px, calc(100vw - 2 * var(--space-24)));
   padding: var(--space-12);
 }
 
@@ -1584,22 +1589,26 @@
 
 .cal__heading {
   flex: 1;
+  min-width: 0;
   text-align: center;
   font: var(--text-title-sm);
   color: var(--ink);
 }
 
+/* the IconButton ring, at 36px so four fit beside the month */
 .cal__nav {
   flex: none;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
   background: transparent;
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-sm);
-  color: var(--ink-muted);
+  border: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+  color: var(--ink);
   cursor: pointer;
   transition: var(--transition-control);
 }
@@ -1608,7 +1617,9 @@
 }
 .cal__nav:focus-visible {
   outline: none;
-  box-shadow: var(--focus-ring);
+  box-shadow:
+    inset 0 0 0 1.5px var(--line-strong),
+    var(--focus-ring);
 }
 
 .cal__weekdays,
@@ -1618,15 +1629,13 @@
 }
 
 .cal__weekdays {
-  margin-bottom: 2px;
+  margin-bottom: var(--space-2);
 }
 .cal__weekdays span {
-  padding: 4px 0;
+  padding: var(--space-4) 0;
   text-align: center;
-  font: var(--text-eyebrow);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: var(--eyebrow-transform);
-  color: var(--ink-soft);
+  font-size: var(--type-micro);
+  color: var(--ink-muted);
 }
 
 .cal__cell {
@@ -1636,9 +1645,10 @@
   justify-content: center;
   background: transparent;
   border: none;
-  border-radius: var(--radius-sm);
-  color: var(--text-body);
+  border-radius: var(--radius-md);
+  color: var(--ink);
   font: var(--text-body-sm);
+  font-size: 15px;
   font-variant-numeric: tabular-nums;
   cursor: pointer;
   transition: var(--transition-control);
@@ -1654,14 +1664,22 @@
   box-shadow: var(--focus-ring);
 }
 .cal__cell.is-today {
-  font-weight: var(--weight-medium);
-  color: var(--accent);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.cal__cell.is-today:focus-visible {
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    var(--focus-ring);
 }
 .cal__cell.is-selected {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--ink);
+  color: var(--bg-canvas);
 }
-
+.cal__cell:disabled {
+  color: var(--ink-soft);
+  cursor: default;
+}
 /* ------------------------------------------------------------- tab bar ---
    Fixed to the bottom. On a phone it spans the whole viewport, edge to edge.
    Width is 100vw, not left:0 + right:0 — a fixed element honours the classic
@@ -3552,8 +3570,6 @@
   .extras__pick:hover,
   .appetite__chip:hover,
   .grocery__row:hover,
-  .lb__opt:hover,
-  .cal__cell:not(.is-blank):hover,
   .set2-row:hover,
   .set2-profile:hover,
   .planref__meal-head--btn:hover,
@@ -3566,11 +3582,18 @@
 
   /* small icon triggers — press is --bg-raised, so hover takes soft */
   .block-row__swap:hover,
-  .block-row__drop:hover,
+  .block-row__drop:hover {
+    background: var(--bg-raised);
+  }
+
+  /* the date controls (pass 65) sit on raised panels, so they take the
+     component wash rather than a surface step */
   .lb__trigger:hover,
   .cal__trigger:hover,
-  .cal__nav:hover {
-    background: var(--bg-raised);
+  .cal__nav:hover,
+  .lb__opt:not(.is-picked):hover,
+  .cal__cell:not(.is-blank, .is-selected, :disabled):hover {
+    background-image: linear-gradient(var(--hover-wash), var(--hover-wash));
   }
 
   /* text-only triggers have no fill to step, so they step one shade toward
@@ -3588,4 +3611,451 @@
     text-decoration: underline;
     text-underline-offset: 3px;
   }
+}
+/* ========================================================= components (65) ==
+   The v3.0 shared components in src/components/ (core, tracking, surfaces),
+   ported from the design handoff. Every class is prefixed `r-`, so nothing
+   here collides with the v2 classes the screens still use until they are
+   rebuilt (passes 67-71). Semantic tokens only: a Look or theme changes these
+   through tokens.css, never through markup.
+
+   States, one model for all of them:
+   - hover, under (hover: hover) and (pointer: fine) only, lays --hover-wash
+     over the fill; press lays --press-wash, one step further. Primary uses
+     its own --accent-hover / --accent-pressed instead. Nothing moves on hover.
+   - press scales a control to .97 over --dur-instant. Rows only wash.
+   - :focus-visible adds --focus-ring after the element's own ring (--r-ring),
+     so an outlined control keeps its outline while focused.
+   - disabled: primary takes --accent-disabled, everything else fades to .5.
+   Toggle off, Button disabled and pressed are inferred in the handoff.       */
+
+.r-icon {
+  display: inline-flex;
+  flex: none;
+}
+.r-icon svg {
+  display: block;
+}
+
+/* the wash layer and the ring every interactive component shares */
+.r-button,
+.r-icon-button,
+.r-chip,
+.r-segmented__option,
+.r-listrow,
+.r-option,
+.r-grocery__item,
+.r-calendar__day,
+.r-banner__action,
+.r-blockrow__link {
+  --r-wash: transparent;
+  --r-ring: 0 0 0 0 transparent;
+  background-image: linear-gradient(var(--r-wash), var(--r-wash));
+  box-shadow: var(--r-ring);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* --------------------------------------------------------------- button --- */
+
+.r-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  height: var(--button-h);
+  padding: 0 var(--space-20);
+  border: 0;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: var(--type-body);
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform var(--dur-instant) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.r-button--sm {
+  height: var(--button-h-sm);
+  padding: 0 var(--space-16);
+  font-size: 15px;
+}
+.r-button--full {
+  width: 100%;
+}
+.r-button--primary {
+  background-color: var(--accent);
+  color: var(--accent-ink);
+}
+.r-button--hero {
+  background: linear-gradient(var(--r-wash), var(--r-wash)), var(--cta-hero-bg);
+  color: var(--cta-hero-ink);
+  box-shadow: var(--cta-hero-glow);
+  font-size: var(--cta-hero-size);
+  letter-spacing: var(--cta-hero-tracking);
+  text-transform: var(--cta-hero-transform);
+}
+.r-button--secondary {
+  --r-ring: inset 0 0 0 1.5px var(--line-strong);
+  background-color: transparent;
+  color: var(--ink);
+}
+.r-button--text {
+  padding: 0 var(--space-4);
+  background-color: transparent;
+  color: var(--accent-text);
+}
+.r-button--danger {
+  background-color: var(--danger);
+  color: var(--danger-ink);
+}
+.r-button--due-cta {
+  background-color: var(--due-cta-bg);
+  color: var(--due-cta-ink);
+  font-size: 17px;
+}
+.r-button--due-secondary {
+  --r-ring: inset 0 0 0 1.5px var(--due-secondary-edge);
+  background-color: transparent;
+  color: inherit;
+}
+.r-button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.r-button--primary:disabled {
+  opacity: 1;
+  background-color: var(--accent-disabled);
+}
+
+.r-icon-button {
+  --r-ring: inset 0 0 0 1.5px var(--line-strong);
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-button);
+  height: var(--icon-button);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    transform var(--dur-instant) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.r-icon-button:disabled {
+  --r-ring: inset 0 0 0 1.5px var(--line);
+  color: var(--ink-soft);
+  cursor: default;
+}
+
+/* ----------------------------------------------------- chip, segmented --- */
+
+.r-chip {
+  height: var(--icon-button);
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background-color: var(--chip-bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  cursor: pointer;
+  transition:
+    transform var(--dur-instant) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.r-chip[aria-pressed="true"] {
+  background-color: var(--ink);
+  color: var(--bg-canvas);
+}
+
+.r-segmented {
+  display: grid;
+  gap: var(--space-4);
+  height: var(--control-h);
+  padding: var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--bg-sunken);
+}
+.r-segmented__option {
+  min-width: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background-color: transparent;
+  color: var(--ink-muted);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform var(--dur-instant) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.r-segmented__option[aria-checked="true"] {
+  background-color: var(--ink);
+  color: var(--bg-canvas);
+}
+
+/* ------------------------------------------------------- toggle, radio --- */
+
+.r-toggle {
+  position: relative;
+  flex: none;
+  width: 52px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--bg-sunken);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+  cursor: pointer;
+  transition:
+    transform var(--dur-instant) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.r-toggle__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--ink-soft);
+  transition:
+    transform var(--dur-fast) var(--ease-spring),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.r-toggle[aria-checked="true"] {
+  background: var(--ink);
+  box-shadow: none;
+}
+.r-toggle[aria-checked="true"] .r-toggle__thumb {
+  background: var(--bg-canvas);
+  transform: translateX(20px);
+}
+.r-toggle:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.r-radio {
+  flex: none;
+  display: inline-block;
+  width: var(--r-radio-size);
+  height: var(--r-radio-size);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--ink-soft);
+}
+.r-radio.is-selected {
+  box-shadow: inset 0 0 0 var(--r-radio-dot) var(--ink);
+}
+
+/* ----------------------------------------------------------- text field --- */
+
+.r-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.r-field__label {
+  font-size: var(--type-small);
+  font-weight: 700;
+}
+.r-field__box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  height: var(--control-h);
+  padding: 0 var(--space-16);
+  border-radius: var(--radius-field);
+  background: var(--bg-canvas);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+}
+.r-field__box:focus-within {
+  box-shadow:
+    inset 0 0 0 1.5px var(--line-strong),
+    var(--focus-ring);
+}
+.r-field.is-error .r-field__box {
+  box-shadow: inset 0 0 0 1.5px var(--danger);
+}
+.r-field.is-error .r-field__box:focus-within {
+  box-shadow:
+    inset 0 0 0 1.5px var(--danger),
+    var(--focus-ring);
+}
+.r-field__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--type-body);
+  font-variant-numeric: tabular-nums;
+}
+.r-field__input::placeholder {
+  color: var(--ink-muted);
+}
+.r-field__unit {
+  font-size: 15px;
+  color: var(--ink-muted);
+}
+.r-field__note {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.r-field.is-error .r-field__note {
+  color: var(--danger);
+}
+
+/* ------------------------------------------------ card, eyebrow, heading --- */
+
+.r-card {
+  padding: var(--space-16);
+  border-radius: var(--radius-card);
+}
+.r-card--raised {
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+.r-card--outlined {
+  background: var(--bg-raised);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.r-card--sunken {
+  background: var(--bg-sunken);
+}
+.r-card--danger {
+  background: var(--bg-raised);
+  box-shadow: inset 0 0 0 1.5px var(--danger);
+}
+
+.r-eyebrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--eyebrow-ink);
+}
+
+.r-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-12);
+}
+.r-section-heading__title {
+  margin: 0;
+  font-family: var(--section-font);
+  font-size: var(--section-size);
+  font-style: normal;
+  font-weight: var(--section-weight);
+  line-height: 1.3;
+  letter-spacing: var(--section-tracking);
+  text-transform: var(--section-transform);
+  color: var(--section-ink);
+}
+.r-section-heading__meta {
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------- shared states (65) --- */
+
+@media (hover: hover) and (pointer: fine) {
+  .r-button:not(:disabled):hover,
+  .r-icon-button:not(:disabled):hover,
+  .r-chip:hover,
+  .r-segmented__option:hover,
+  button.r-listrow:hover,
+  .r-option:hover,
+  .r-grocery__item:hover,
+  .r-calendar__day:not(:disabled):hover,
+  .r-banner__action:hover,
+  .r-blockrow__link:hover {
+    --r-wash: var(--hover-wash);
+  }
+  .r-button--primary:not(:disabled):hover {
+    --r-wash: transparent;
+    background-color: var(--accent-hover);
+  }
+  .r-blockrow__mark:not(:disabled):hover .r-blockrow__dot {
+    --r-wash: var(--hover-wash);
+  }
+  .r-toggle:not(:disabled):hover {
+    box-shadow: inset 0 0 0 1.5px var(--ink-muted);
+  }
+  .r-toggle[aria-checked="true"]:not(:disabled):hover {
+    box-shadow: none;
+  }
+}
+
+/* press: one step past hover, and after it so it wins */
+.r-button:not(:disabled):active,
+.r-icon-button:not(:disabled):active,
+.r-chip:active,
+.r-segmented__option:active,
+button.r-listrow:active,
+.r-option:active,
+.r-grocery__item:active,
+.r-calendar__day:not(:disabled):active,
+.r-banner__action:active,
+.r-blockrow__link:active {
+  --r-wash: var(--press-wash);
+}
+.r-button--primary:not(:disabled):active {
+  --r-wash: transparent;
+  background-color: var(--accent-pressed);
+}
+.r-blockrow__mark:not(:disabled):active .r-blockrow__dot {
+  --r-wash: var(--press-wash);
+  transform: scale(0.97);
+}
+.r-button:not(:disabled):active,
+.r-icon-button:not(:disabled):active,
+.r-chip:active,
+.r-segmented__option:active,
+.r-toggle:not(:disabled):active,
+.r-calendar__day:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+.r-button:focus-visible,
+.r-icon-button:focus-visible,
+.r-chip:focus-visible,
+.r-segmented__option:focus-visible,
+.r-listrow:focus-visible,
+.r-option:focus-visible,
+.r-grocery__item:focus-visible,
+.r-calendar__day:focus-visible,
+.r-banner__action:focus-visible,
+.r-blockrow__link:focus-visible {
+  outline: none;
+  box-shadow: var(--r-ring), var(--focus-ring);
+}
+/* the hero's glow may be `none`, which can't sit in a shadow list */
+.r-button--hero:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+.r-toggle:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1.5px var(--line-strong),
+    var(--focus-ring);
+}
+.r-toggle[aria-checked="true"]:focus-visible {
+  box-shadow: var(--focus-ring);
 }
