@@ -24,7 +24,6 @@ a fresh thread. The design refs are paths inside the design export
 
 | Build pass | Name                 | Targets (pass numbers)     | Model                      |
 | ---------- | -------------------- | -------------------------- | -------------------------- |
-| 8          | Final screenshots    | `shots` (78)               | Sonnet 5.5, high effort    |
 | 10         | Cleanup              | `tidy` (88)                | Sonnet 5.5, high effort    |
 | 11         | Data and logic audit | `upgrade`, `core` (89, 90) | Opus, high then max effort |
 | 12         | Security audit       | `secure` (91)              | Opus, high effort          |
@@ -34,21 +33,9 @@ Then a phone and desktop test pass, and the release.
 
 ### Build passes
 
-#### Build pass 8 — Final screenshots
+#### Interaction check (after build pass 8)
 
-Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion has landed, so the pictures show the finished app.
-
-- [ ] **Pass 78 · `shots`** — final screenshots and the README that uses them.
-      The pictures are retaken (`scripts/readme-shots.mjs`), the baselines are
-      green and the README links hold. Left:
-  - Also: a light polish of the README layout and its composed pictures
-    (the owner's call after pass 75: good, could be lifted a little).
-  - Also: runs the Android and Windows CI builds once on `release-3.0` and
-    checks the new `icon.svg` rasterises cleanly for the launcher icons and the
-    Tauri icon set (pass 73 only checked the SVG and PNGs in Chrome).
-  - Done when: the README shows the shipped screens, `test:visual` is green,
-    every image and link in the README resolves, and both CI icon builds
-    succeed.
+Pass 78 `shots` is done. This runs before build pass 10.
 
 - [ ] **Interaction check before the release review** — run
       `npm run interact` after pass 78 and before `/code-review`. It measures
