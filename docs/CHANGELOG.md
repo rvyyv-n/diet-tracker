@@ -277,6 +277,17 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   `--danger-tint`; new icon `trash`. The export draws these rows as text
   only, so this is recorded in the departures table.
 
+- **pass 81 — first run tidied:** Step 1's Height and Current weight each
+  have one label, with the box (or the ft and in, st and lb pair) and the unit
+  toggle on one row at the same height, so the labels no longer wrap and "11
+  in" no longer runs into its unit. Step 2's preview drops the "Tick Shake"
+  button, which looked tappable but did nothing. Step 3 is redrawn: the plan
+  start date under the title, then a card with the phase Today opens on, its
+  kcal and protein a day, then the details as a quieter list with an Edit
+  link. Height reads "5 ft 10 in". On desktop the buttons on Steps 2 and 3 sit
+  at the right, as on Step 1, and at 320px the Day select no longer clips.
+  No new tokens.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.

@@ -5467,18 +5467,6 @@ button.r-listrow:active,
   font-size: 13px;
   color: var(--due-ink-muted);
 }
-.r-lookpick__due-cta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 44px;
-  margin-top: var(--space-12);
-  border-radius: 22px;
-  background: var(--due-cta-bg);
-  color: var(--due-cta-ink);
-  font-size: 15px;
-  font-weight: 700;
-}
 
 .r-lookpick__options {
   display: grid;
@@ -5695,29 +5683,24 @@ button.r-listrow:active,
   grid-template-columns: 84px minmax(0, 1fr) 100px;
   gap: var(--space-8);
 }
-.r-firstrun__unit-row {
+/* Height and Weight: one label, the box (or a pair of boxes) and the unit
+   toggle on one row at the same height. */
+.r-firstrun__measure {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 156px;
+  grid-template-columns: minmax(0, 1fr) 132px;
   gap: 10px;
-  align-items: start;
-}
-.r-firstrun__unit {
-  width: 156px;
-  margin-top: 24px;
 }
 .r-firstrun__pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-8);
 }
+.r-firstrun__pair .r-field__box {
+  padding: 0 var(--space-12);
+}
 .r-firstrun__actions {
   margin-top: auto;
   padding-top: var(--space-24);
-}
-.r-firstrun__actions--stack {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
 }
 .r-firstrun__error {
   margin: 0;
@@ -5737,8 +5720,65 @@ button.r-listrow:active,
   text-align: left;
   cursor: pointer;
 }
-.r-firstrun__summary {
-  margin-top: 28px;
+/* Step 3: the day's targets first, then the details as a quieter list. */
+.r-firstrun__target {
+  margin-top: var(--space-24);
+}
+.r-firstrun__kcal {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-8);
+  margin: var(--space-8) 0 0;
+}
+.r-firstrun__figure {
+  font-family: var(--font-numeric);
+  font-size: 54px;
+  font-weight: var(--numeric-weight);
+  letter-spacing: var(--numeric-tracking);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.r-firstrun__per {
+  font-size: var(--type-body);
+  color: var(--ink-muted);
+}
+.r-firstrun__protein {
+  margin: var(--space-8) 0 0;
+  font-size: var(--type-body);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.r-firstrun__details {
+  margin-top: var(--space-24);
+}
+.r-firstrun__details-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+.r-firstrun__details-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: var(--display-style);
+  font-weight: var(--display-weight);
+  font-size: var(--type-title);
+}
+.r-firstrun__edit {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 0;
+  background: none;
+  color: var(--accent-text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.r-firstrun__edit:focus-visible {
+  outline: none;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--focus-ring);
 }
 .r-summary {
   margin: 0;
@@ -5748,32 +5788,27 @@ button.r-listrow:active,
   align-items: center;
   justify-content: space-between;
   gap: var(--space-12);
-  min-height: 56px;
-}
-.r-summary__row + .r-summary__row {
+  min-height: 44px;
   border-top: 1px solid var(--line);
 }
 .r-summary dt {
-  font-size: var(--type-body);
+  font-size: 15px;
   color: var(--ink-muted);
 }
 .r-summary dd {
   margin: 0;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
 @media (max-width: 340px) {
-  .r-firstrun__unit-row {
+  .r-firstrun__measure {
     grid-template-columns: minmax(0, 1fr);
   }
-  .r-firstrun__unit {
-    margin-top: 0;
-  }
   .r-firstrun__dob {
-    grid-template-columns: 64px minmax(0, 1fr) 84px;
+    grid-template-columns: 72px minmax(0, 1fr) 84px;
   }
   .r-firstrun__dob .r-select__control {
     padding: 0 28px 0 12px;
@@ -5817,6 +5852,9 @@ button.r-listrow:active,
     width: 240px;
     margin-top: 0;
     padding-top: var(--space-8);
+  }
+  .r-firstrun__body > .r-firstrun__actions {
+    align-self: flex-end;
   }
   .r-firstrun__error {
     grid-column: 1 / -1;

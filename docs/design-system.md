@@ -202,16 +202,17 @@ translated.
 
 Each was weighed and kept on purpose; do not "correct" them.
 
-| Topic                      | Export says  | Rise does                                         | Why                                                                                                            |
-| -------------------------- | ------------ | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Accent tint                | not defined  | `--accent-tint`, `color-mix` of `--accent`        | One definition serves both Looks; dark raises the mix from 12% to 20%                                          |
-| Settings rows and headings | text only    | an icon tile on each row, an icon on each heading | Asked for by the owner (pass 80); `--icon-tile`, `--danger-tint`, and the accent text colour for heading icons |
-| Copernicus, StyreneB       | n/a          | dropped                                           | The v2 faces were licensed stand-ins; the Looks bring their own                                                |
-| Reel light `--ink-muted`   | `#6E655B`    | `#6B6258`                                         | 4.40:1 on `--bg-sunken`; this clears 4.5:1 (pass 74)                                                           |
-| Reel light `--accent-text` | `#B44A26`    | `#A8441F`, Paper's coral-800                      | 4.10:1 on `--bg-sunken` (the ladder's "Now"); this gives 4.61:1                                                |
-| Side nav label ink         | `--nav-ink`  | `--sidenav-ink`                                   | `--nav-ink` is drawn for Reel light's dark pill; on the side nav's sunken fill it is 2.03:1                    |
-| Toast Undo ink             | `--accent`   | `--toast-action-ink`                              | `--accent` on the dark themes' light toast pill is 2.92:1                                                      |
-| Closed-day row times       | `--ink-soft` | `--ink-muted`                                     | `--ink-soft` is 3.2 to 3.8:1 on the canvas                                                                     |
+| Topic                      | Export says                           | Rise does                                         | Why                                                                                                            |
+| -------------------------- | ------------------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Accent tint                | not defined                           | `--accent-tint`, `color-mix` of `--accent`        | One definition serves both Looks; dark raises the mix from 12% to 20%                                          |
+| Settings rows and headings | text only                             | an icon tile on each row, an icon on each heading | Asked for by the owner (pass 80); `--icon-tile`, `--danger-tint`, and the accent text colour for heading icons |
+| Copernicus, StyreneB       | n/a                                   | dropped                                           | The v2 faces were licensed stand-ins; the Looks bring their own                                                |
+| Reel light `--ink-muted`   | `#6E655B`                             | `#6B6258`                                         | 4.40:1 on `--bg-sunken`; this clears 4.5:1 (pass 74)                                                           |
+| Reel light `--accent-text` | `#B44A26`                             | `#A8441F`, Paper's coral-800                      | 4.10:1 on `--bg-sunken` (the ladder's "Now"); this gives 4.61:1                                                |
+| Side nav label ink         | `--nav-ink`                           | `--sidenav-ink`                                   | `--nav-ink` is drawn for Reel light's dark pill; on the side nav's sunken fill it is 2.03:1                    |
+| Toast Undo ink             | `--accent`                            | `--toast-action-ink`                              | `--accent` on the dark themes' light toast pill is 2.92:1                                                      |
+| Closed-day row times       | `--ink-soft`                          | `--ink-muted`                                     | `--ink-soft` is 3.2 to 3.8:1 on the canvas                                                                     |
+| First-run Look preview     | a "Tick Shake" button in the due card | no button                                         | It looks tappable but does nothing, and the step read busy; the serif "Shake" still shows the Look             |
 
 ## Components
 

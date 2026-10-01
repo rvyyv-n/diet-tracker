@@ -17,7 +17,7 @@
 
 import { useEffect, useState } from "react";
 import { loadProfile, saveProfile, isComplete, validate, ageYears } from "./js/core/profile.js";
-import { TARGET_RATE_KG_PER_WEEK } from "./js/core/plan.js";
+import { TARGET_RATE_KG_PER_WEEK, defaultPhaseForWeek, phaseById } from "./js/core/plan.js";
 import {
   WEIGHT_UNITS,
   kgToLb,
@@ -26,12 +26,13 @@ import {
   stLbToKg,
   weightRangeText,
 } from "./js/core/units.js";
-import { MONTH_NAMES, daysInMonth, todayISO } from "./js/core/dates.js";
+import { MONTH_NAMES, daysInMonth, planWeek, todayISO } from "./js/core/dates.js";
 import { setLookPref, resolveLook, LOOKS } from "./js/core/theme.js";
 import {
   Button,
   Card,
   DateField,
+  Eyebrow,
   FieldGroup,
   Radio,
   Segmented,
@@ -41,6 +42,7 @@ import {
   Wordmark,
 } from "./components/core.jsx";
 import { CalendarGrid, Sheet } from "./components/surfaces.jsx";
+import { NUM } from "./components/shared.jsx";
 import { useWide } from "./components/useWide.js";
 
 const CM_PER_INCH = 2.54;
@@ -335,39 +337,39 @@ function FormScreen({ profile, editing, undoReset, onSaved }) {
           </div>
         </FieldGroup>
 
-        <div className="r-firstrun__unit-row">
-          {form.heightUnit === "cm" ? (
-            <TextField
-              label="Height"
-              unit="cm"
-              value={form.cm}
-              onChange={set("cm")}
-              placeholder="e.g. 170"
-              inputMode="decimal"
-              error={errors.height}
-            />
-          ) : (
-            <div className="r-firstrun__pair">
-              <TextField
-                label="Height, feet"
-                unit="ft"
-                value={form.ft}
-                onChange={set("ft")}
-                placeholder="e.g. 5"
-                inputMode="numeric"
-                error={errors.height}
+        <FieldGroup label="Height" labelId="height-label" error={errors.height}>
+          <div className="r-firstrun__measure">
+            {form.heightUnit === "cm" ? (
+              <UnitInput
+                label="Height in centimetres"
+                unit="cm"
+                value={form.cm}
+                onChange={set("cm")}
+                placeholder="e.g. 170"
+                inputMode="decimal"
+                invalid={Boolean(errors.height)}
               />
-              <TextField
-                label="Height, inches"
-                unit="in"
-                value={form.inch}
-                onChange={set("inch")}
-                placeholder="e.g. 7"
-                inputMode="numeric"
-              />
-            </div>
-          )}
-          <div className="r-firstrun__unit">
+            ) : (
+              <div className="r-firstrun__pair">
+                <UnitInput
+                  label="Height, feet"
+                  unit="ft"
+                  value={form.ft}
+                  onChange={set("ft")}
+                  placeholder="5"
+                  inputMode="numeric"
+                  invalid={Boolean(errors.height)}
+                />
+                <UnitInput
+                  label="Height, inches"
+                  unit="in"
+                  value={form.inch}
+                  onChange={set("inch")}
+                  placeholder="7"
+                  inputMode="numeric"
+                />
+              </div>
+            )}
             <Segmented
               label="Height unit"
               options={HEIGHT_UNITS}
@@ -375,41 +377,45 @@ function FormScreen({ profile, editing, undoReset, onSaved }) {
               onChange={changeHeightUnit}
             />
           </div>
-        </div>
+        </FieldGroup>
 
-        <div className="r-firstrun__unit-row">
-          {form.weightUnit === "st" ? (
-            <div className="r-firstrun__pair">
-              <TextField
-                label="Current weight, stone"
-                unit="st"
-                value={form.st}
-                onChange={set("st")}
-                placeholder="e.g. 9"
-                inputMode="numeric"
-                error={errors.weight}
-              />
-              <TextField
-                label="Current weight, pounds"
-                unit="lb"
-                value={form.stLb}
-                onChange={set("stLb")}
-                placeholder="e.g. 3"
+        <FieldGroup label="Current weight" labelId="weight-label" error={errors.weight}>
+          <div className="r-firstrun__measure">
+            {form.weightUnit === "st" ? (
+              <div className="r-firstrun__pair">
+                <UnitInput
+                  label="Current weight, stone"
+                  unit="st"
+                  value={form.st}
+                  onChange={set("st")}
+                  placeholder="9"
+                  inputMode="numeric"
+                  invalid={Boolean(errors.weight)}
+                />
+                <UnitInput
+                  label="Current weight, pounds"
+                  unit="lb"
+                  value={form.stLb}
+                  onChange={set("stLb")}
+                  placeholder="3"
+                  inputMode="decimal"
+                />
+              </div>
+            ) : (
+              <UnitInput
+                label={
+                  form.weightUnit === "lb"
+                    ? "Current weight in pounds"
+                    : "Current weight in kilograms"
+                }
+                unit={form.weightUnit}
+                value={form.weight}
+                onChange={set("weight")}
+                placeholder={form.weightUnit === "lb" ? "e.g. 129" : "e.g. 58.5"}
                 inputMode="decimal"
+                invalid={Boolean(errors.weight)}
               />
-            </div>
-          ) : (
-            <TextField
-              label="Current weight"
-              unit={form.weightUnit}
-              value={form.weight}
-              onChange={set("weight")}
-              placeholder={form.weightUnit === "lb" ? "e.g. 129" : "e.g. 58.5"}
-              inputMode="decimal"
-              error={errors.weight}
-            />
-          )}
-          <div className="r-firstrun__unit">
+            )}
             <Segmented
               label="Weight unit"
               options={WEIGHT_OPTIONS}
@@ -417,7 +423,7 @@ function FormScreen({ profile, editing, undoReset, onSaved }) {
               onChange={changeWeightUnit}
             />
           </div>
-        </div>
+        </FieldGroup>
 
         <TextField
           label="Target gain"
@@ -459,6 +465,29 @@ function FormScreen({ profile, editing, undoReset, onSaved }) {
         />
       ) : null}
     </section>
+  );
+}
+
+/**
+ * One TextField box without its own label, for Height and Weight: the group
+ * label sits above, and a pair (ft and in, st and lb) shares it. `label` names
+ * the input for assistive tech.
+ */
+function UnitInput({ label, unit, value, onChange, invalid, ...rest }) {
+  return (
+    <span className="r-field__box">
+      <input
+        className="r-field__input"
+        aria-label={label}
+        aria-invalid={invalid ? true : undefined}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        {...rest}
+      />
+      <span className="r-field__unit" aria-hidden="true">
+        {unit}
+      </span>
+    </span>
   );
 }
 
@@ -553,7 +582,6 @@ function LookScreen({ onDone }) {
               <div className="r-lookpick__due-prot">kcal · 22 g</div>
             </div>
           </div>
-          <div className="r-lookpick__due-cta">Tick Shake</div>
         </div>
       </div>
       <div className="r-lookpick__options" role="radiogroup" aria-label="Look">
@@ -592,7 +620,7 @@ function LookScreen({ onDone }) {
 function heightSummary(profile) {
   if (profile.heightUnit === "ftin" && profile.heightCm != null) {
     const { ft, inch } = cmToFtIn(profile.heightCm);
-    return `${ft}′ ${inch}″`;
+    return `${ft} ft ${inch} in`;
   }
   return `${profile.heightCm} cm`;
 }
@@ -609,6 +637,13 @@ function DoneScreen({ profile, onComplete, onEdit }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onComplete]);
 
+  const start = profile.startDate || todayISO();
+  // The phase Today opens on: the stored one, or later if the start date is
+  // far enough back for the ramp to be over (App.jsx does the same).
+  const phase = phaseById(
+    Math.max(profile.currentPhaseId ?? 1, defaultPhaseForWeek(planWeek(start, todayISO()))),
+  );
+
   const rows = [
     ["Height", heightSummary(profile)],
     [
@@ -618,31 +653,45 @@ function DoneScreen({ profile, onComplete, onEdit }) {
         : `${trim1(profile.weightUnit === "lb" ? kgToLb(profile.startWeightKg) : profile.startWeightKg)} ${profile.weightUnit === "lb" ? "lb" : "kg"}`,
     ],
     ...(age != null ? [["Age", `${age} years`]] : []),
-    ["Target", `+${Number(profile.targetRateKgPerWeek).toFixed(2)} kg/week`],
-    ["Start date", startLabel(profile.startDate || todayISO())],
+    ["Target gain", `${Number(profile.targetRateKgPerWeek).toFixed(2)} kg a week`],
   ];
 
   return (
     <section className="r-firstrun__body">
-      <StepHeader step={3} title="You’re set up" intro="Check these before you start." />
-      <div className="r-firstrun__summary">
-        <Card padding="4px 18px">
-          <dl className="r-summary">
-            {rows.map(([label, value]) => (
-              <div key={label} className="r-summary__row">
-                <dt>{label}</dt>
-                <dd>{value}</dd>
-              </div>
-            ))}
-          </dl>
-        </Card>
+      <StepHeader
+        step={3}
+        title="You’re set up"
+        intro={`Your plan starts on ${startLabel(start)}.`}
+      />
+      <Card className="r-firstrun__target" padding="18px">
+        <Eyebrow trailing={<span>{phase.when}</span>}>
+          Phase {phase.id} · {phase.name}
+        </Eyebrow>
+        <p className="r-firstrun__kcal">
+          <span className="r-firstrun__figure">{NUM.format(phase.kcal)}</span>
+          <span className="r-firstrun__per">kcal a day</span>
+        </p>
+        <p className="r-firstrun__protein">{phase.proteinG} g protein a day</p>
+      </Card>
+      <div className="r-firstrun__details">
+        <div className="r-firstrun__details-head">
+          <h2 className="r-firstrun__details-title">Your details</h2>
+          <button type="button" className="r-firstrun__edit" onClick={onEdit}>
+            Edit
+          </button>
+        </div>
+        <dl className="r-summary">
+          {rows.map(([label, value]) => (
+            <div key={label} className="r-summary__row">
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
-      <div className="r-firstrun__actions r-firstrun__actions--stack">
+      <div className="r-firstrun__actions">
         <Button fullWidth onClick={onComplete}>
           Start tracking
-        </Button>
-        <Button variant="text" fullWidth onClick={onEdit}>
-          Edit details
         </Button>
       </div>
     </section>
