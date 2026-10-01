@@ -342,8 +342,8 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   finished build at 2x by `scripts/readme-shots.mjs`, which seeds the demo
   data, shoots each screen and sets it in a phone or window frame. The
   baselines in `e2e/snapshots` were still current, so none were re-approved.
-  The Android CI build of `release-3.0` passed with the new `icon.svg`; the
-  Windows build was still running when this was written.
+  The Android and Windows CI builds of `release-3.0` both passed with the
+  new `icon.svg`.
 
 - **pass 78 review — the full review since v2.3.0:** Escape on an open
   calendar or listbox closes only that popover, not the sheet around it. A
