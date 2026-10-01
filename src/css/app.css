@@ -4345,6 +4345,8 @@ button.r-listrow {
 .r-settings__grid {
   display: flex;
   flex-direction: column;
+  /* the About sun's layer: it sits under every card, not just the text */
+  isolation: isolate;
   gap: 28px;
   margin-top: 22px;
   padding: 0 var(--gutter);
@@ -4663,7 +4665,6 @@ a.r-button {
 /* About: quiet, at the foot */
 .r-about {
   position: relative;
-  isolation: isolate;
   font-size: var(--type-small);
   line-height: 1.5;
   color: var(--ink-muted);
