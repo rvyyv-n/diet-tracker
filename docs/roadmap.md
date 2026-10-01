@@ -22,10 +22,13 @@ predecessor is unticked is flagged before it starts. Start each build pass in
 a fresh thread. The design refs are paths inside the design export
 (`design-system/…`, `screens/…`).
 
-| Build pass | Name                  | Targets (pass numbers)                              | Model                              |
-| ---------- | --------------------- | --------------------------------------------------- | ---------------------------------- |
-| 8          | Final screenshots     | `shots` (78)                                        | Sonnet 5.5, high effort            |
-| 9          | Pre-release hardening | `tidy`, `upgrade`, `core`, `secure`, `a11y` (88-92) | Per target, see Build pass 9 below |
+| Build pass | Name                 | Targets (pass numbers)     | Model                      |
+| ---------- | -------------------- | -------------------------- | -------------------------- |
+| 8          | Final screenshots    | `shots` (78)               | Sonnet 5.5, high effort    |
+| 9          | Cleanup              | `tidy` (88)                | Sonnet 5.5, high effort    |
+| 10         | Data and logic audit | `upgrade`, `core` (89, 90) | Opus, high then max effort |
+| 11         | Security audit       | `secure` (91)              | Opus, high effort          |
+| 12         | Accessibility        | `a11y` (92)                | Sonnet 5.5, high effort    |
 
 Then a phone and desktop test pass, and the release.
 
@@ -56,15 +59,15 @@ Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion has landed
       something it missed, add that check to `scripts/interact.mjs`. A phone
       test of touch behaviour is still by hand.
 
-#### Build pass 9 — Pre-release hardening
+#### Build pass 9 — Cleanup
 
-Model: set per target (Sonnet 5.5 for the mechanical ones, Opus for the
-audits). Runs after build pass 8 and the interaction check,
-and replaces the full `/code-review` that used to close v3.0 (a Sonnet 5.5
-review of everything since `v2.3.0` ran on 2026-10-01 and its fixes landed in
-pass 78 review). Start it in a fresh thread. Run the targets in order: `tidy`
-first, so the later audits read a smaller tree. One commit per target, plus a
-`pass N fix:` commit for what an audit finds.
+Model: Sonnet 5.5, high effort. Target: tidy. Runs after build pass 8 and the
+interaction check, and starts the pre-release hardening that replaces the full
+`/code-review` that used to close v3.0 (a Sonnet 5.5 review of everything since
+`v2.3.0` ran on 2026-10-01 and its fixes landed in pass 78 review). Build
+passes 9 to 12 each get a fresh thread, in order, so the later audits read a
+smaller tree. One commit per target, plus a `pass N fix:` commit for what an
+audit finds.
 
 - [ ] **Pass 88 · `tidy`** (Sonnet 5.5, high effort) — step 0: remove what the release does not need.
   - Find redundant files and dead code with a scan, not by eye: unreferenced
@@ -81,6 +84,10 @@ first, so the later audits read a smaller tree. One commit per target, plus a
   - Done when: `npm run check`, `test:offline` and `test:visual` pass with no
     baseline change, and the commit body lists what was removed.
 
+#### Build pass 10 — Data and logic audit
+
+Model: Opus, high effort for `upgrade`, max effort for `core`. Targets: upgrade, core.
+
 - [ ] **Pass 89 · `upgrade`** (Opus, high effort) — the v2.3.0 to v3.0 upgrade path. Load data
       saved by the v2.3.0 build (and an old backup file) into the v3.0 build.
       Check every storage migration, import, export, reset and undo, and that
@@ -90,9 +97,19 @@ first, so the later audits read a smaller tree. One commit per target, plus a
       (adjustment engine, trend, weights, day, plan, storage) and of the
       Sheet focus trap and popover Escape handling from pass 78 review. Look
       for wrong numbers, off-by-one days, time-zone and clock edge cases.
+
+#### Build pass 11 — Security audit
+
+Model: Opus, high effort. Target: secure.
+
 - [ ] **Pass 91 · `secure`** (Opus, high effort) — run `/security-review`. Cover `server/` (the push
       worker; say so in the commit, because it deploys by hand), the update check
       and the push subscription, and the rule that no diet data leaves the device.
+
+#### Build pass 12 — Accessibility
+
+Model: Sonnet 5.5, high effort. Target: a11y.
+
 - [ ] **Pass 92 · `a11y`** (Sonnet 5.5, high effort) — an accessibility pass in both Looks, light and
       dark: contrast, focus order, labels, touch-target size and reduced motion.
       Add any new check to `scripts/interact.mjs`.
