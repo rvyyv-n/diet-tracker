@@ -154,7 +154,7 @@ never write a shadow literal. `--texture` is Reel's grain, `none` in Paper.
 
 `--dur-instant` 90ms (press), `--dur-fast` 160 (hover, toggles), `--dur-base` 260
 (sheet, toast), `--dur-slow` 520 (sun travel), `--dur-breath` 2400 (one breath
-of the About sun, three per view, never a loop). Easings: `--ease-out`,
+of the About sun, whose glow simmers a few times per view, never a loop). Easings: `--ease-out`,
 `--ease-spring` (tick pop, sun settle), `--ease-in-out`. All five durations fall
 to 0 under `prefers-reduced-motion`. `--transition-control` and
 `--transition-entry` are app-layer shorthands over these.

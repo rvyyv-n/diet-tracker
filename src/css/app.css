@@ -4669,61 +4669,56 @@ a.r-button {
 .r-about p {
   margin: 0;
 }
-/* The Rise sun behind the block (pass 93), off to the right of the short
-   lines. Each time the block comes into view it breathes three times, its
-   rings spreading out like the halo round the sun, then rests. */
+/* The Rise sun behind the block (pass 93): a large, soft disc low behind
+   the right of the text, its glow spreading under the words. Each time the
+   block comes into view the glow simmers, swelling and easing a few times,
+   then rests lit. */
 .r-about__sun {
   position: absolute;
   z-index: -1;
-  top: -40px;
-  right: var(--space-16);
-  width: 96px;
-  height: 96px;
+  top: 50%;
+  right: calc(-1 * var(--space-16));
+  width: 240px;
+  height: 240px;
+  margin-top: -120px;
   pointer-events: none;
 }
 .r-about__disc,
-.r-about__ring {
+.r-about__glow {
   position: absolute;
   inset: 0;
   margin: auto;
   border-radius: 50%;
 }
-.r-about__disc {
-  width: 32px;
-  height: 32px;
-  background: var(--sun);
-  box-shadow: 0 0 22px 6px var(--sun-halo);
-}
-.r-about__ring {
+.r-about__glow {
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, var(--sun-halo), transparent 68%);
-  opacity: 0;
-  transform: scale(0.4);
+  background: radial-gradient(circle, var(--sun-halo), transparent 70%);
+  opacity: 0.8;
+}
+.r-about__disc {
+  width: 84px;
+  height: 84px;
+  background: var(--sun);
+  opacity: 0.45;
+  filter: blur(2px);
+}
+@keyframes r-sun-simmer {
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }
 @keyframes r-sun-breath {
   50% {
-    transform: scale(1.12);
+    transform: scale(1.05);
   }
 }
-@keyframes r-sun-ring {
-  from {
-    opacity: 0.9;
-    transform: scale(0.35);
-  }
-  to {
-    opacity: 0;
-    transform: scale(1);
-  }
+.r-about__sun.is-awake .r-about__glow {
+  animation: r-sun-simmer calc(var(--dur-breath) * 1.5) var(--ease-in-out) 4;
 }
 .r-about__sun.is-awake .r-about__disc {
-  animation: r-sun-breath var(--dur-breath) var(--ease-in-out) 3;
-}
-.r-about__sun.is-awake .r-about__ring {
-  animation: r-sun-ring var(--dur-breath) var(--ease-out) 3 both;
-}
-.r-about__sun.is-awake .r-about__ring + .r-about__ring {
-  animation-delay: calc(var(--dur-breath) / 2);
+  animation: r-sun-breath var(--dur-breath) var(--ease-in-out) 6;
 }
 .r-about__name {
   color: var(--ink);
@@ -4993,12 +4988,12 @@ a.r-button {
   display: grid;
   grid-template-columns: 20px minmax(0, 1fr) auto 16px;
   align-items: center;
-  gap: var(--space-12);
+  gap: var(--space-8) var(--space-12);
   /* 8px past the column, so the wash has room round the text (as list rows) */
   width: calc(100% + 2 * var(--space-8));
   min-height: 56px;
-  margin: 0 calc(-1 * var(--space-8));
-  padding: 0 var(--space-8);
+  margin: var(--space-4) calc(-1 * var(--space-8));
+  padding: var(--space-12) var(--space-8);
   border: 0;
   background-color: transparent;
   color: inherit;
@@ -5038,10 +5033,11 @@ a.r-button {
 .r-meals__meal.is-open .r-meals__chevron {
   transform: rotate(180deg);
 }
+/* Inside the head, under the name, so the hover wash wraps the rail too */
 .r-meals__share {
   display: block;
+  grid-column: 2 / -1;
   height: 3px;
-  margin: -6px 0 var(--space-8) 32px;
   overflow: hidden;
   border-radius: 2px;
   background: var(--line);
@@ -5346,7 +5342,7 @@ a.r-button {
     font-size: var(--type-small);
   }
   .r-meals__share {
-    margin-left: 0;
+    grid-column: 1 / -1;
   }
   .r-meals__opts {
     margin: 0 0 10px;

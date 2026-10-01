@@ -973,8 +973,8 @@ function updateHint(status, phase) {
 }
 
 /**
- * The Rise sun behind the About block (pass 93): it breathes a few times each
- * time the block scrolls into view, then rests. Decoration only.
+ * The Rise sun behind the About block (pass 93): its glow simmers a few times
+ * each time the block scrolls into view, then rests lit. Decoration only.
  */
 function AboutSun() {
   const ref = useRef(null);
@@ -986,8 +986,7 @@ function AboutSun() {
   }, []);
   return (
     <span ref={ref} className={`r-about__sun${awake ? " is-awake" : ""}`} aria-hidden="true">
-      <span className="r-about__ring" />
-      <span className="r-about__ring" />
+      <span className="r-about__glow" />
       <span className="r-about__disc" />
     </span>
   );

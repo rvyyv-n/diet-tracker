@@ -63,12 +63,12 @@ function Meal({ b, dayKcal, open, onToggle }) {
         </span>
         <span className="r-meals__fig">{fig}</span>
         <Icon name="chevron-down" size={16} className="r-meals__chevron" />
+        {share ? (
+          <span className="r-meals__share" aria-hidden="true">
+            <span className="r-meals__share-fill" style={{ width: `${share}%` }} />
+          </span>
+        ) : null}
       </button>
-      {share ? (
-        <span className="r-meals__share" aria-hidden="true">
-          <span className="r-meals__share-fill" style={{ width: `${share}%` }} />
-        </span>
-      ) : null}
       {open ? (
         <ul className="r-meals__opts">
           {opts.map((o, i) => (
