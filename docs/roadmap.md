@@ -22,10 +22,10 @@ predecessor is unticked is flagged before it starts. Start each build pass in
 a fresh thread. The design refs are paths inside the design export
 (`design-system/…`, `screens/…`).
 
-| Build pass | Name                  | Targets (pass numbers)                              | Model                   |
-| ---------- | --------------------- | --------------------------------------------------- | ----------------------- |
-| 8          | Final screenshots     | `shots` (78)                                        | Sonnet 5.5, high effort |
-| 9          | Pre-release hardening | `tidy`, `upgrade`, `core`, `secure`, `a11y` (88-92) | Opus, high effort       |
+| Build pass | Name                  | Targets (pass numbers)                              | Model                              |
+| ---------- | --------------------- | --------------------------------------------------- | ---------------------------------- |
+| 8          | Final screenshots     | `shots` (78)                                        | Sonnet 5.5, high effort            |
+| 9          | Pre-release hardening | `tidy`, `upgrade`, `core`, `secure`, `a11y` (88-92) | Per target, see Build pass 9 below |
 
 Then a phone and desktop test pass, and the release.
 
@@ -58,14 +58,15 @@ Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion has landed
 
 #### Build pass 9 — Pre-release hardening
 
-Model: Opus, high effort. Runs after build pass 8 and the interaction check,
+Model: set per target (Sonnet 5.5 for the mechanical ones, Opus for the
+audits). Runs after build pass 8 and the interaction check,
 and replaces the full `/code-review` that used to close v3.0 (a Sonnet 5.5
 review of everything since `v2.3.0` ran on 2026-10-01 and its fixes landed in
 pass 78 review). Start it in a fresh thread. Run the targets in order: `tidy`
 first, so the later audits read a smaller tree. One commit per target, plus a
 `pass N fix:` commit for what an audit finds.
 
-- [ ] **Pass 88 · `tidy`** — step 0: remove what the release does not need.
+- [ ] **Pass 88 · `tidy`** (Sonnet 5.5, high effort) — step 0: remove what the release does not need.
   - Find redundant files and dead code with a scan, not by eye: unreferenced
     files in `src/`, `public/`, `scripts/` and `docs/`, unused exports and unused
     dependencies (the `motion` package first: remove it only if nothing imports
@@ -80,19 +81,19 @@ first, so the later audits read a smaller tree. One commit per target, plus a
   - Done when: `npm run check`, `test:offline` and `test:visual` pass with no
     baseline change, and the commit body lists what was removed.
 
-- [ ] **Pass 89 · `upgrade`** — the v2.3.0 to v3.0 upgrade path. Load data
+- [ ] **Pass 89 · `upgrade`** (Opus, high effort) — the v2.3.0 to v3.0 upgrade path. Load data
       saved by the v2.3.0 build (and an old backup file) into the v3.0 build.
       Check every storage migration, import, export, reset and undo, and that
       appearance, reminders and What's New survive. Nothing a user saved may be
       lost or reshaped without a migration. Add a test for each gap found.
-- [ ] **Pass 90 · `core`** — a second review at max effort of `src/js/core/`
+- [ ] **Pass 90 · `core`** (Opus, max effort) — a second review at max effort of `src/js/core/`
       (adjustment engine, trend, weights, day, plan, storage) and of the
       Sheet focus trap and popover Escape handling from pass 78 review. Look
       for wrong numbers, off-by-one days, time-zone and clock edge cases.
-- [ ] **Pass 91 · `secure`** — run `/security-review`. Cover `server/` (the push
+- [ ] **Pass 91 · `secure`** (Opus, high effort) — run `/security-review`. Cover `server/` (the push
       worker; say so in the commit, because it deploys by hand), the update check
       and the push subscription, and the rule that no diet data leaves the device.
-- [ ] **Pass 92 · `a11y`** — an accessibility pass in both Looks, light and
+- [ ] **Pass 92 · `a11y`** (Sonnet 5.5, high effort) — an accessibility pass in both Looks, light and
       dark: contrast, focus order, labels, touch-target size and reduced motion.
       Add any new check to `scripts/interact.mjs`.
 
