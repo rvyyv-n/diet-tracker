@@ -22,10 +22,10 @@ predecessor is unticked is flagged before it starts. Start each build pass in
 a fresh thread. The design refs are paths inside the design export
 (`design-system/…`, `screens/…`).
 
-| Build pass | Name              | Targets (pass numbers)     | Model                   |
-| ---------- | ----------------- | -------------------------- | ----------------------- |
-| 7          | Motion            | `motion` (76), `rail` (77) | Sonnet 5.5, high effort |
-| 8          | Final screenshots | `shots` (78)               | Sonnet 5.5, high effort |
+| Build pass | Name              | Targets (pass numbers) | Model                   |
+| ---------- | ----------------- | ---------------------- | ----------------------- |
+| 7          | Motion            | `motion` (76)          | Sonnet 5.5, high effort |
+| 8          | Final screenshots | `shots` (78)           | Sonnet 5.5, high effort |
 
 Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
@@ -34,7 +34,7 @@ and desktop test pass, and the release.
 
 #### Build pass 7 — Motion
 
-Model: Sonnet 5.5, high effort. Targets: motion, rail. This is animation, last, then the one undesigned surface. Switch to Opus only if the choreography needs planning.
+Model: Sonnet 5.5, high effort. Target: motion. This is animation, last. The rail (pass 77) is done. Switch to Opus only if the choreography needs planning.
 
 - [ ] **Pass 76 · `motion`** — animation, last.
   - Reads: `guidelines/motion.html`, and the motion notes in `product-rules.md`.
@@ -47,23 +47,9 @@ Model: Sonnet 5.5, high effort. Targets: motion, rail. This is animation, last, 
   - Done when: nothing animates that the design doesn't describe, and reduced
     motion is fully still.
 
-- [ ] **Pass 77 · `rail`** — the on-hover desktop rail, restyled.
-  - Reads: `components/surfaces/SideNav.jsx`, `Wordmark.jsx`, the nav tokens
-    in `docs/design-system.md`. The handoff has no rail frame, so its look is
-    a stop-and-ask: propose it with options before building.
-  - Does: the collapsed 72px rail (`navPref: "hover"`, pass 47) in the v3.0
-    nav's style, in both Looks: the sun, the icons with the active pill and
-    sun dot, and the wordmark, labels, glance card and Pinned / On hover
-    toggle hidden until it opens; opening and closing use the `motion`
-    durations.
-  - Done when: the rail opens on hover and keyboard focus at 1440 in both
-    Looks, light and dark; nothing that stays visible moves as it opens; and
-    touch devices still get the pinned nav.
-
 #### Build pass 8 — Final screenshots
 
-Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion and the
-rail have landed, so the pictures show the finished app.
+Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion has landed, so the pictures show the finished app.
 
 - [ ] **Pass 78 · `shots`** — final screenshots and the README that uses them.
   - Reads: `scripts/shot.mjs`, the README, `e2e/snapshots`.
@@ -73,6 +59,8 @@ rail have landed, so the pictures show the finished app.
     `test:visual:update` if motion or the rail moved any pixel; updates the
     README images, alt text and any captions; checks the status line and every
     link still hold.
+  - Also: a light polish of the README layout and its composed pictures
+    (the owner's call after pass 75: good, could be lifted a little).
   - Also: runs the Android and Windows CI builds once on `release-3.0` and
     checks the new `icon.svg` rasterises cleanly for the launcher icons and the
     Tauri icon set (pass 73 only checked the SVG and PNGs in Chrome).
@@ -81,8 +69,7 @@ rail have landed, so the pictures show the finished app.
     succeed.
 
 Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
-`insight_copy_states_facts`). The collapsible desktop rail (pass 40b) is
-undesigned, so it is restyled last, as pass 77, once the redesign is done.
+`insight_copy_states_facts`). The collapsible desktop rail (pass 40b) was undesigned, and was restyled as pass 77.
 
 ## later
 
