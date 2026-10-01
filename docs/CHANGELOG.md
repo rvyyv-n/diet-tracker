@@ -308,6 +308,13 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   one week is noise and the trend already carries the status. New icons
   `arrow-up` and `arrow-down`; no new tokens.
 
+- **pass 84 — food table without wrapping:** on desktop the portion sits
+  under the food's name in the smaller muted type, in place of an Amount
+  column, so "150 g chicken" and the longer names stay on one line. Between
+  1024 and 1279px, beside the pinned rail, Recipes is one column (the book,
+  the meals, then the food table), as two columns there were about 316px
+  each. No new tokens.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.

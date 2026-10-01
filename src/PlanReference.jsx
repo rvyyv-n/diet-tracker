@@ -99,7 +99,6 @@ export function FoodsBlock({ foods, onHide }) {
     <div className="r-foods">
       <div className="r-foods__head" aria-hidden="true">
         <span>Food</span>
-        <span>Amount</span>
         <span className="r-foods__num">Kcal</span>
         <span className="r-foods__num">Protein</span>
         <span />

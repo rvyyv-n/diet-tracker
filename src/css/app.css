@@ -5108,12 +5108,30 @@ a.r-button {
   .r-foods {
     padding: 4px 18px 8px;
   }
+  /* The portion sits under the name rather than in its own column, so a
+     long name or portion ("150 g chicken") never wraps in the narrow column
+     between 1024 and 1440. */
   .r-foods__head,
   .r-foods__row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 90px 70px 60px var(--icon-button);
-    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) 80px 60px var(--icon-button);
+    column-gap: 10px;
     align-items: center;
+  }
+  .r-foods__row > .r-foods__name {
+    grid-area: 1 / 1;
+  }
+  .r-foods__portion {
+    grid-area: 2 / 1;
+  }
+  .r-foods__kcal {
+    grid-area: 1 / 2 / 3;
+  }
+  .r-foods__protein {
+    grid-area: 1 / 3 / 3;
+  }
+  .r-foods__hide {
+    grid-area: 1 / 4 / 3;
   }
   .r-foods__hide {
     position: static;
@@ -5133,7 +5151,7 @@ a.r-button {
   }
   .r-foods__row {
     min-height: 44px;
-    padding: 0;
+    padding: var(--space-8) 0;
     border-top: 1px solid var(--line);
     font-size: 15px;
   }
@@ -5142,6 +5160,9 @@ a.r-button {
   }
   .r-foods__name {
     font-size: 15px;
+  }
+  .r-foods__portion {
+    font-size: var(--type-small);
   }
   .r-foods__kcal,
   .r-foods__protein,
@@ -5155,6 +5176,20 @@ a.r-button {
   .r-foods__kcal::before,
   .r-foods__protein::before {
     content: none;
+  }
+}
+/* Beside the pinned rail, 1024 to 1279 leaves two columns of about 316px,
+   too narrow for the food table's names, so Recipes stays one column there:
+   the book, the meals, then the food table. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .r-rbook__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .r-rbook__sec--book,
+  .r-rbook__sec--meals,
+  .r-rbook__sec--foods {
+    grid-column: 1;
+    grid-row: auto;
   }
 }
 
