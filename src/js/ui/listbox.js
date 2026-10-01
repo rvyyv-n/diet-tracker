@@ -64,7 +64,7 @@ export function listbox({ options, value = null, placeholder = "—", ariaLabel,
   });
   const root = el("div", { class: "lb" }, trigger, panel);
 
-  const pop = attachPopover(root, trigger, panel, { onOpen: reveal });
+  const pop = attachPopover(root, trigger, panel, { onOpen: scrollToCurrent, float: true });
 
   function labelFor(v) {
     return opts.find((o) => o.value === v)?.label ?? null;
@@ -100,13 +100,6 @@ export function listbox({ options, value = null, placeholder = "—", ariaLabel,
         return btn;
       }),
     );
-  }
-
-  // The panel hangs below the trigger, so a dialog or sheet that scrolls would
-  // clip it at its own bottom edge. Scroll the whole list into view first.
-  function reveal() {
-    panel.scrollIntoView({ block: "nearest" });
-    scrollToCurrent();
   }
 
   function scrollToCurrent() {

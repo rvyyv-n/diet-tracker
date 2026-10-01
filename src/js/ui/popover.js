@@ -11,26 +11,69 @@
  * `trapFocus` (pass 59) keeps Tab inside the panel while it's open, for a
  * panel that takes focus itself (the calendar dialog). A listbox keeps focus
  * on its trigger instead, so it doesn't use it.
+ *
+ * `float` shows the panel in the browser's top layer, placed from the
+ * trigger's rectangle, so a scrolling dialog can't clip it. It opens below,
+ * or above when there is more room there.
  */
+const GAP = 8;
+const EDGE = 12;
+
 const FOCUSABLE = "button:not([disabled]):not([tabindex='-1']), [tabindex='0']";
 
-export function attachPopover(root, trigger, panel, { onOpen, trapFocus = false } = {}) {
+export function attachPopover(
+  root,
+  trigger,
+  panel,
+  { onOpen, trapFocus = false, float = false } = {},
+) {
   let open = false;
+  const top = float && typeof panel.showPopover === "function";
+  if (top) panel.setAttribute("popover", "manual");
+
+  function place() {
+    const r = trigger.getBoundingClientRect();
+    const below = innerHeight - r.bottom - GAP - EDGE;
+    const above = r.top - GAP - EDGE;
+    const up = below < Math.min(panel.scrollHeight, 272) && above > below;
+    const st = panel.style;
+    st.left = `${r.left}px`;
+    st.minWidth = `${r.width}px`;
+    st.maxHeight = `${Math.min(272, up ? above : below)}px`;
+    st.top = up ? "auto" : `${r.bottom + GAP}px`;
+    st.bottom = up ? `${innerHeight - r.top + GAP}px` : "auto";
+  }
+
+  function onMove(event) {
+    if (event.target !== panel) place();
+  }
 
   function setOpen(next) {
     if (next === open) return;
     open = next;
     panel.hidden = !open;
+    if (top) {
+      if (open) {
+        panel.showPopover();
+        place();
+      } else if (panel.matches(":popover-open")) panel.hidePopover();
+    }
     trigger.setAttribute("aria-expanded", String(open));
     if (open) {
       document.addEventListener("pointerdown", onOutside, true);
       document.addEventListener("keydown", onKey, true);
       root.addEventListener("focusout", onFocusOut);
+      if (top) {
+        addEventListener("scroll", onMove, true);
+        addEventListener("resize", onMove);
+      }
       onOpen?.();
     } else {
       document.removeEventListener("pointerdown", onOutside, true);
       document.removeEventListener("keydown", onKey, true);
       root.removeEventListener("focusout", onFocusOut);
+      removeEventListener("scroll", onMove, true);
+      removeEventListener("resize", onMove);
     }
   }
 
