@@ -9,6 +9,8 @@ import { Children, cloneElement, isValidElement, useEffect, useRef } from "react
 import { Button, Icon, IconButton, Radio } from "./core.jsx";
 
 const cx = (...names) => names.filter(Boolean).join(" ");
+const FOCUSABLE =
+  'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 /**
  * A modal surface with its scrim: a bottom sheet with a grabber on phone, a
@@ -39,7 +41,22 @@ export function Sheet({
 
   useEffect(() => {
     if (!onClose || contained) return undefined;
-    const onKey = (e) => e.key === "Escape" && onClose();
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key !== "Tab" || e.defaultPrevented || !panelRef.current) return;
+      // Keep Tab inside the dialog, as aria-modal promises.
+      const stops = [...panelRef.current.querySelectorAll(FOCUSABLE)];
+      if (!stops.length) return;
+      const first = stops[0];
+      const last = stops[stops.length - 1];
+      const at = document.activeElement;
+      const outside = !panelRef.current.contains(at);
+      if (e.shiftKey ? at === first || outside : at === last || outside) {
+        e.preventDefault();
+        // A keyboard move, so the focus ring shows.
+        (e.shiftKey ? last : first).focus({ focusVisible: true });
+      }
+    };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose, contained]);

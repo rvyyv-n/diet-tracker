@@ -143,7 +143,7 @@ export function SwapSheet({ day, blockId, dialog, onClose, commit }) {
   const [picked, setPicked] = useState(current);
   if (!block?.rotation) return null;
   const options = rotationOptions(block.rotation);
-  const droppable = ADDON_IDS.includes(block.id) && !dayBonus(day).includes(block.id);
+  const droppable = ADDON_IDS.includes(block.id);
 
   return (
     <Sheet title={`Swap ${block.name}`} meta={sheetMeta(day)} {...sheetProps(dialog, onClose)}>

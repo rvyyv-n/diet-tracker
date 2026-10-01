@@ -45,7 +45,14 @@ import {
   overviewMetricShown,
 } from "./js/core/profile.js";
 import { hiddenFoodIds, restoreFoods } from "./js/core/foods.js";
-import { setThemePref, setLookPref, resolveLook, THEME_PREFS, LOOKS } from "./js/core/theme.js";
+import {
+  applyAppearance,
+  setThemePref,
+  setLookPref,
+  resolveLook,
+  THEME_PREFS,
+  LOOKS,
+} from "./js/core/theme.js";
 import { phaseById } from "./js/core/plan.js";
 import { humanDate } from "./js/core/dates.js";
 import { APP_VERSION, REPO_URL } from "./js/core/appinfo.js";
@@ -199,6 +206,7 @@ export default function Settings({ onEditSetup, onReset }) {
       setImportError(err.message);
       return;
     }
+    applyAppearance();
     setPending(null);
   }
 
@@ -218,6 +226,7 @@ export default function Settings({ onEditSetup, onReset }) {
     }
     setResetNoUndo(false);
     clearStorage();
+    applyAppearance();
     onReset();
   }
 
@@ -240,8 +249,10 @@ export default function Settings({ onEditSetup, onReset }) {
   }
 
   function undoSnapshot() {
-    if (restoreSnapshot()) onReset();
-    else bump((n) => n + 1);
+    if (restoreSnapshot()) {
+      applyAppearance();
+      onReset();
+    } else bump((n) => n + 1);
   }
 
   function dismissSnapshot() {

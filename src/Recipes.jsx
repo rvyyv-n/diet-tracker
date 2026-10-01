@@ -22,7 +22,7 @@ import { todayISO } from "./js/core/dates.js";
 import { loadProfile, saveProfile } from "./js/core/profile.js";
 import { hideFood, visibleFoods } from "./js/core/foods.js";
 import { newDay } from "./js/core/day.js";
-import { getDay, putDay } from "./js/core/days.js";
+import { allDays, getDay, putDay } from "./js/core/days.js";
 import { FOOD_DB, normaliseAddOns } from "./js/core/plan.js";
 import { allRecipes, getRecipe, touchRecipe } from "./js/core/recipes.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
@@ -83,7 +83,9 @@ export default function Recipes({ onNavigate }) {
     bump((n) => n + 1);
   };
   const iso = todayISO();
-  const day = getDay(iso) ?? newDay(iso, profile.currentPhaseId, profile.addOns);
+  // A fresh day takes its rotations from the last recorded one, as Today does.
+  const day =
+    getDay(iso) ?? newDay(iso, profile.currentPhaseId, profile.addOns, allDays().at(-1)?.rotations);
   const phaseId = profile.currentPhaseId || 2;
   // The add-ons this user actually runs (the engine may have changed them),
   // so the meals listed match what Today shows — not the bare phase.

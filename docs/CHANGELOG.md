@@ -344,6 +344,16 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   baselines in `e2e/snapshots` were still current, so none were re-approved.
   The CI icon builds are still to run.
 
+- **pass 78 review — the full review since v2.3.0:** Escape on an open
+  calendar or listbox closes only that popover, not the sheet around it. A
+  bonus Snack or Shake 2 can be removed again from its Swap sheet. Reset,
+  Import and Undo re-apply the Look and theme at once. First run: a saved
+  profile marks the "What's new" card seen, and Edit re-reads the profile so
+  it can't resave an older Look. Logging a recipe from Recipes seeds the new
+  day's rotations from the last recorded day, as Today does. Sheets keep Tab
+  inside the dialog. The weight chart's on-pace band reads the plan's rate
+  constant. No new tokens.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.

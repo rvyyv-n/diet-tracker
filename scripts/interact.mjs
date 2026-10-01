@@ -257,6 +257,8 @@ for (const look_ of looks) {
           const ix = await page.evaluate(() => document.activeElement?.dataset?.ix ?? null);
           if (ix === null || seen.has(ix)) continue;
           seen.add(ix);
+          // An open trigger already wears the focus ring, so focus adds nothing.
+          if (await page.evaluate(() => document.activeElement?.ariaExpanded === "true")) continue;
           const now = await page.evaluate(look, ix);
           const was = before[ix];
           if (now && was && now.self === was.self && now.wrap === was.wrap)

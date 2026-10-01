@@ -153,8 +153,12 @@ export default function Weight() {
               <WeightChart
                 weights={series.map((s) => s.kg)}
                 labels={axisLabels(series)}
-                bandLow={series.map((s) => series[0].kg + 0.25 * (s.week - series[0].week))}
-                bandHigh={series.map((s) => series[0].kg + 0.4 * (s.week - series[0].week))}
+                bandLow={series.map(
+                  (s) => series[0].kg + TARGET_RATE_KG_PER_WEEK.min * (s.week - series[0].week),
+                )}
+                bandHigh={series.map(
+                  (s) => series[0].kg + TARGET_RATE_KG_PER_WEEK.max * (s.week - series[0].week),
+                )}
                 emptyText={
                   series.length
                     ? "The average line appears after 4 weigh-ins"

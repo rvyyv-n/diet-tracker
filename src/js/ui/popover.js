@@ -90,6 +90,8 @@ export function attachPopover(
 
   function onKey(event) {
     if (event.key === "Escape") {
+      // Only the popover closes; a sheet around it keeps its draft.
+      event.stopPropagation();
       setOpen(false);
       trigger.focus();
     } else if (event.key === "Tab" && trapFocus) {

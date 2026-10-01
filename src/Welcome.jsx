@@ -28,6 +28,7 @@ import {
 } from "./js/core/units.js";
 import { MONTH_NAMES, daysInMonth, planWeek, todayISO } from "./js/core/dates.js";
 import { setLookPref, resolveLook, LOOKS } from "./js/core/theme.js";
+import { markWhatsNewSeen } from "./js/core/whatsnew.js";
 import {
   Button,
   Card,
@@ -114,7 +115,17 @@ export default function Welcome({ onComplete, edit = false, undoReset = null }) 
 
   let screen;
   if (phase === "done") {
-    screen = <DoneScreen profile={data} onComplete={onComplete} onEdit={() => setPhase("form")} />;
+    screen = (
+      <DoneScreen
+        profile={data}
+        onComplete={onComplete}
+        onEdit={() => {
+          // Re-read, so the form doesn't resave a Look chosen since it last opened.
+          setData(loadProfile());
+          setPhase("form");
+        }}
+      />
+    );
   } else if (phase === "look") {
     screen = <LookScreen onDone={() => setPhase("done")} />;
   } else {
@@ -131,6 +142,9 @@ export default function Welcome({ onComplete, edit = false, undoReset = null }) 
             onComplete();
             return;
           }
+          // A saved profile is a finished first run, so the upgrade card for
+          // v2 users must not show to someone who closes the app from here.
+          markWhatsNewSeen();
           setPhase("look");
         }}
       />
