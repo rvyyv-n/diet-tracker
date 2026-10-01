@@ -4685,10 +4685,6 @@ a.r-button {
   height: 180px;
   pointer-events: none;
 }
-/* The desktop sun; hidden until the two-column layout has room for it */
-.r-about__sun.r-settings__sun {
-  display: none;
-}
 .r-about__disc,
 .r-about__glow {
   position: absolute;
@@ -4768,27 +4764,9 @@ a.r-button {
     grid-column: 1;
     grid-row: 1 / span 6;
   }
-  /* The sun leaves the About block for the empty foot of the left column,
-     under the Appearance card (at least 360px of room at desktop sizes). */
-  .r-settings__grid {
-    position: relative;
-    isolation: isolate;
-  }
-  .r-about .r-about__sun {
+  /* The About sun is phone only: desktop has no room beside the text */
+  .r-about__sun {
     display: none;
-  }
-  .r-about__sun.r-settings__sun {
-    display: block;
-    top: auto;
-    right: auto;
-    bottom: 0;
-    left: calc((100% - var(--space-32)) * 1.25 / 2.25 / 2 - 160px);
-    width: 320px;
-    height: 320px;
-  }
-  .r-settings__sun .r-about__disc {
-    width: 112px;
-    height: 112px;
   }
   .r-settings__sec--profile > .r-section-heading {
     display: flex;
