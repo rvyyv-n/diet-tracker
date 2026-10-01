@@ -1370,13 +1370,21 @@
     padding: 0 var(--space-12) 0 14px;
   }
 
+  /* The card and the toggle keep their open width, so the narrowing rail
+     clips them instead of reflowing them (a narrower card wraps taller and
+     slides up as it fades). They fade out faster than they fade in. */
+  .app-shell--nav-hover .r-sidenav__glance,
+  .app-shell--nav-hover .r-sidenav__pin {
+    flex: none;
+    width: calc(var(--panel-nav-width) - 2 * var(--space-12));
+  }
   .app-shell--nav-hover .r-wordmark__word,
   .app-shell--nav-hover .r-sidenav__label,
   .app-shell--nav-hover .r-sidenav__dot,
   .app-shell--nav-hover .r-sidenav__glance,
   .app-shell--nav-hover .r-sidenav__pin {
     opacity: 0;
-    transition: opacity var(--dur-base) var(--ease-out);
+    transition: opacity var(--dur-fast) var(--ease-out);
   }
   .app-shell--nav-hover
     .r-sidenav:hover
@@ -1391,6 +1399,7 @@
       .r-sidenav__pin
     ) {
     opacity: 1;
+    transition: opacity var(--dur-base) var(--ease-out);
   }
   /* Collapsed, each item is as wide as the rail's inside, so the active pill
      shrinks to a 48px lozenge round its icon rather than being cut off. */
