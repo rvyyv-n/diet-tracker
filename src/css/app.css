@@ -4791,6 +4791,7 @@ a.r-button {
   list-style: none;
 }
 .r-foods__row {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -4804,8 +4805,51 @@ a.r-button {
 }
 .r-foods__name {
   flex-basis: 100%;
+  padding-right: var(--icon-button);
   font-size: var(--type-body);
   color: var(--ink);
+}
+.r-foods__empty {
+  margin: 0;
+  padding: var(--space-16);
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+}
+/* A small delete mark per row: 28px drawn, 44px to hit (--target-min). */
+.r-foods__hide {
+  position: absolute;
+  top: 6px;
+  right: -8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-button);
+  height: var(--icon-button);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--dur-instant) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.r-foods__hide:active {
+  transform: scale(0.97);
+  background-color: var(--press-wash);
+}
+.r-foods__hide:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+@media (hover: hover) and (pointer: fine) {
+  .r-foods__hide:hover {
+    background-color: var(--hover-wash);
+    color: var(--ink);
+  }
 }
 .r-foods__kcal::before,
 .r-foods__protein::before {
@@ -5014,9 +5058,16 @@ a.r-button {
   .r-foods__head,
   .r-foods__row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 90px 70px 60px;
+    grid-template-columns: minmax(0, 1fr) 90px 70px 60px var(--icon-button);
     gap: 10px;
     align-items: center;
+  }
+  .r-foods__hide {
+    position: static;
+    margin: 0 -10px 0 auto;
+  }
+  .r-foods__name {
+    padding-right: 0;
   }
   .r-foods__head {
     padding: 10px 0;

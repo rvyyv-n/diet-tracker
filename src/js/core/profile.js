@@ -43,6 +43,8 @@ export const DEFAULT_PROFILE = {
   overviewMetrics: {}, // { [metricId]: false } for a readout the user hid on
   //                         Today's day-total card (pass 32). An absent id reads
   //                         as shown, so a metric added later defaults visible.
+  hiddenFoods: [], // food-table ids the user hid (pass 79); see core/foods.js.
+  //                         An absent field reads as none hidden.
   navPref: "visible", // "visible" | "hover" — the desktop side nav column
   //                         (pass 47). "hover" collapses it to an icon-only
   //                         rail that expands on pointer or keyboard focus;

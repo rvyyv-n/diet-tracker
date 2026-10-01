@@ -44,6 +44,7 @@ import {
   OVERVIEW_METRICS,
   overviewMetricShown,
 } from "./js/core/profile.js";
+import { hiddenFoodIds, restoreFoods } from "./js/core/foods.js";
 import { setThemePref, setLookPref, resolveLook, THEME_PREFS, LOOKS } from "./js/core/theme.js";
 import { phaseById } from "./js/core/plan.js";
 import { humanDate } from "./js/core/dates.js";
@@ -127,6 +128,7 @@ export default function Settings({ onEditSetup, onReset }) {
   );
 
   const profile = loadProfile();
+  const hiddenFoods = hiddenFoodIds(profile).length;
   const snap = snapshotInfo();
   const status = updateStatus();
 
@@ -294,6 +296,17 @@ export default function Settings({ onEditSetup, onReset }) {
                 trailing="chevron"
                 onClick={runUpdateCheck}
               />
+              {hiddenFoods ? (
+                <ListRow
+                  title="Restore hidden foods"
+                  hint={`${hiddenFoods} ${hiddenFoods === 1 ? "food is" : "foods are"} hidden from the food table and the pickers.`}
+                  trailing="chevron"
+                  onClick={() => {
+                    saveProfile(restoreFoods(profile));
+                    bump((n) => n + 1);
+                  }}
+                />
+              ) : null}
               <ListRow
                 title="Reset all data"
                 hint="Erases this browser's copy."

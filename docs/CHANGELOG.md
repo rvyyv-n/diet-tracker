@@ -261,6 +261,14 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   a duration token reduced motion doesn't zero, and a theme fade that
   reduced motion leaves on.
 
+- **pass 79 — hide foods from the food table:** each row of the food table on
+  Recipes has a small delete mark. It hides the food, and a toast says where
+  to restore it; nothing is deleted. The profile keeps the hidden ids
+  (`hiddenFoods`, no schema bump), and `core/foods.js` filters the table and
+  the Log food and recipe pickers. Settings, under Data, shows "Restore
+  hidden foods" while any are hidden. Recipes and logged food that already
+  used a hidden food keep their own copy. New icon: `x`.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.

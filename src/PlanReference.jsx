@@ -9,7 +9,7 @@
 
 import { NUM } from "./components/shared.jsx";
 import { Icon } from "./components/core.jsx";
-import { phaseTarget, activeBlocks, rotationOptions, FOOD_DB } from "./js/core/plan.js";
+import { phaseTarget, activeBlocks, rotationOptions } from "./js/core/plan.js";
 
 /**
  * The day's blocks in time order. A block with a rotation lists its options,
@@ -84,11 +84,17 @@ function Meal({ b, dayKcal, open, onToggle }) {
 }
 
 /**
- * The off-plan food table, straight from FOOD_DB. A name over a run-on
+ * The off-plan food table: `foods` is FOOD_DB without the rows the user hid
+ * (core/foods.js), and `onHide(food)` hides one. A name over a run-on
  * "250 ml · 160 kcal · 8 g" line on a phone; aligned columns, with a header
  * naming them, on desktop.
  */
-export function FoodsBlock() {
+export function FoodsBlock({ foods, onHide }) {
+  if (foods.length === 0) {
+    return (
+      <p className="r-foods__empty">Every food is hidden. Restore them in Settings, under Data.</p>
+    );
+  }
   return (
     <div className="r-foods">
       <div className="r-foods__head" aria-hidden="true">
@@ -96,14 +102,24 @@ export function FoodsBlock() {
         <span>Amount</span>
         <span className="r-foods__num">Kcal</span>
         <span className="r-foods__num">Protein</span>
+        <span />
       </div>
       <ul className="r-foods__list">
-        {FOOD_DB.map((f) => (
-          <li key={f.name} className="r-foods__row">
+        {foods.map((f) => (
+          <li key={f.id} className="r-foods__row">
             <span className="r-foods__name">{f.name}</span>
             <span className="r-foods__portion">{f.portion}</span>
             <span className="r-foods__kcal">{NUM.format(f.kcal)} kcal</span>
             <span className="r-foods__protein">{Math.round(f.proteinG)} g</span>
+            <button
+              type="button"
+              className="r-foods__hide"
+              aria-label={`Hide ${f.name}`}
+              title={`Hide ${f.name}`}
+              onClick={() => onHide(f)}
+            >
+              <Icon name="x" size={16} strokeWidth={2} />
+            </button>
           </li>
         ))}
       </ul>

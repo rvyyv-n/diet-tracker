@@ -19,7 +19,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { todayISO } from "./js/core/dates.js";
-import { loadProfile } from "./js/core/profile.js";
+import { loadProfile, saveProfile } from "./js/core/profile.js";
+import { hideFood, visibleFoods } from "./js/core/foods.js";
 import { newDay } from "./js/core/day.js";
 import { getDay, putDay } from "./js/core/days.js";
 import { FOOD_DB, normaliseAddOns } from "./js/core/plan.js";
@@ -76,6 +77,11 @@ export default function Recipes({ onNavigate }) {
   }, [toast]);
 
   const profile = loadProfile();
+  const hideFoodRow = (food) => {
+    saveProfile(hideFood(profile, food.id));
+    setToast(`${food.name} hidden. Restore hidden foods in Settings.`);
+    bump((n) => n + 1);
+  };
   const iso = todayISO();
   const day = getDay(iso) ?? newDay(iso, profile.currentPhaseId, profile.addOns);
   const phaseId = profile.currentPhaseId || 2;
@@ -237,7 +243,7 @@ export default function Recipes({ onNavigate }) {
           <section className="r-rbook__sec r-rbook__sec--foods" aria-label="Food table">
             <SectionHeading>Food table</SectionHeading>
             <div className="r-rbook__card">
-              <FoodsBlock />
+              <FoodsBlock foods={visibleFoods(profile)} onHide={hideFoodRow} />
             </div>
           </section>
         </div>

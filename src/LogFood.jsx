@@ -12,7 +12,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { announce } from "./js/ui/dom.js";
-import { FOOD_DB, ADDON_IDS, blockById, phaseTarget, rotationOptions } from "./js/core/plan.js";
+import { ADDON_IDS, blockById, phaseTarget, rotationOptions } from "./js/core/plan.js";
 import {
   dayTotals,
   dayAddOns,
@@ -24,6 +24,8 @@ import {
   intakeStatus,
 } from "./js/core/day.js";
 import { addExtra } from "./js/core/extras.js";
+import { loadProfile } from "./js/core/profile.js";
+import { visibleFoods } from "./js/core/foods.js";
 import { getDay } from "./js/core/days.js";
 import { todayISO, MONTH_NAMES, daysInMonth } from "./js/core/dates.js";
 import {
@@ -596,9 +598,11 @@ export function RecipeEditor({ extrasState, inline = false }) {
  * where the picked id lives and what a tap on the button does.
  */
 function PickForm({ label, foodId, onFoodChange, variant, buttonLabel, onAdd }) {
+  // The table minus the foods the user hid; read once, as the listbox is.
+  const [foods] = useState(() => visibleFoods(loadProfile()));
   const effectiveId =
-    foodId != null && FOOD_DB.some((f) => f.id === foodId) ? foodId : (FOOD_DB[0]?.id ?? null);
-  const food = FOOD_DB.find((f) => f.id === effectiveId) ?? null;
+    foodId != null && foods.some((f) => f.id === foodId) ? foodId : (foods[0]?.id ?? null);
+  const food = foods.find((f) => f.id === effectiveId) ?? null;
 
   // One listbox for the life of the form (pass 59), not one per render: the
   // re-render that follows every pick used to swap in a new trigger, which
@@ -610,7 +614,7 @@ function PickForm({ label, foodId, onFoodChange, variant, buttonLabel, onAdd }) 
   const lbRef = useRef(null);
   if (!lbRef.current) {
     lbRef.current = listbox({
-      options: FOOD_DB.map((f) => ({ value: f.id, label: `${f.name} — ${f.portion}` })),
+      options: foods.map((f) => ({ value: f.id, label: `${f.name} — ${f.portion}` })),
       value: effectiveId,
       ariaLabel: label,
       // Re-render so the kcal/protein hint and the button's captured food
@@ -627,7 +631,13 @@ function PickForm({ label, foodId, onFoodChange, variant, buttonLabel, onAdd }) 
     <div className="extras__form">
       <div className="r-field">
         <span className="r-field__label">{label}</span>
-        <Imperative node={lb.node} />
+        {foods.length ? (
+          <Imperative node={lb.node} />
+        ) : (
+          <span className="r-field__note">
+            Every food is hidden. Restore them in Settings, under Data.
+          </span>
+        )}
         {food ? (
           <span className="r-field__note">
             {NUM.format(food.kcal)} kcal · {Math.round(food.proteinG)} g protein
