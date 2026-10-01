@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { Button, Wordmark } from "./components/core.jsx";
 
 const HOLD_MS = 3500; // hard cap on how long the splash holds the screen
 const FADE_MS = 240; // must match .intro--out in app.css
@@ -50,13 +51,13 @@ export default function Intro({ onDone }) {
       onClick={finish}
     >
       <div className="intro__card">
-        <div className="intro__mark" aria-hidden="true">
-          Rise
+        <div className="intro__mark">
+          <Wordmark variant="reel" size={72} />
         </div>
         <p className="intro__line">Your daily plan for steady, sustainable weight gain.</p>
-        <button className="btn btn--text intro__skip" type="button" onClick={finish}>
+        <Button variant="secondary" className="intro__skip" onClick={finish}>
           Get started
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -158,6 +158,15 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   reference, recipe editor, group and empty-state rules are gone, and so are
   the old `shared.jsx` helpers. New glyphs `clock` and `close`; no new tokens.
 
+- **pass 72 — first run, intro and What's new:** first run is three steps
+  with a "Step N of 3" header and a progress bar: the figures, an optional
+  Look, then the summary. Step 2 shows a live preview of the Today card that
+  changes as a Look is picked; the Look applies on Continue, and Skip keeps
+  what is set (Paper on a fresh start). Editing the profile later is the
+  form alone, with no steps. The intro sets the "Rıse" wordmark (the sun as
+  the dot) over its line, and the What's new card takes the display type.
+  The slower theatrical motion for these waits for `motion`. No new tokens.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on

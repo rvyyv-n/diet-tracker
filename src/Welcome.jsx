@@ -20,7 +20,9 @@
  * two plain fields (name, target rate) are ordinary uncontrolled inputs read
  * by ref at submit time, exactly as they were read via `.value` before.
  *
- * Two view states replace renderForm()/renderDone(): "form" and "done".
+ * First run is three steps (pass 72): the figures, an optional Look, and the
+ * summary. Three view states carry them: "form", "look" and "done". Editing
+ * the profile later is the form alone, with no step header.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -32,6 +34,8 @@ import { el } from "./js/ui/dom.js";
 import { dateDropdowns } from "./js/ui/date-dropdowns.js";
 import { dateCalendar } from "./js/ui/date-calendar.js";
 import { weightInput } from "./js/ui/weight-input.js";
+import { setLookPref, resolveLook, LOOKS } from "./js/core/theme.js";
+import { Button, Radio } from "./components/core.jsx";
 
 const CM_PER_INCH = 2.54;
 
@@ -73,6 +77,9 @@ export default function Welcome({ onComplete, edit = false, undoReset = null }) 
   if (phase === "done") {
     return <DoneScreen profile={data} onComplete={onComplete} onEdit={() => setPhase("form")} />;
   }
+  if (phase === "look") {
+    return <LookScreen onDone={() => setPhase("done")} />;
+  }
   return (
     <FormScreen
       profile={data}
@@ -86,7 +93,7 @@ export default function Welcome({ onComplete, edit = false, undoReset = null }) 
           onComplete();
           return;
         }
-        setPhase("done");
+        setPhase("look");
       }}
     />
   );
@@ -149,6 +156,7 @@ function FormScreen({ profile, editing, undoReset, onSaved }) {
 
   return (
     <section className="screen">
+      {editing ? null : <StepHead step={1} />}
       <div className="screen-head screen-head--setup">
         <h1 className="screen__title">{editing ? "Edit profile" : "Set up your plan"}</h1>
         <p className="screen__intro">
@@ -196,10 +204,116 @@ function FormScreen({ profile, editing, undoReset, onSaved }) {
         </label>
         <MountOnce node={startRow.node} />
         {errorNote ? <p className="screen__intro field__hint--error">{errorNote}</p> : null}
-        <button className="btn btn--primary btn--full" type="submit">
-          {editing ? "Save changes" : "Start"}
-        </button>
+        <Button type="submit" fullWidth>
+          {editing ? "Save changes" : "Continue"}
+        </Button>
       </form>
+    </section>
+  );
+}
+
+/** The first-run header: "Step N of 3", an optional Skip, and three segments. */
+function StepHead({ step, optional = false, onSkip }) {
+  return (
+    <div className="r-steps">
+      <div className="r-steps__row">
+        <span className="r-steps__label">
+          Step {step} of 3{optional ? " · Optional" : ""}
+        </span>
+        {optional ? (
+          <button type="button" className="r-steps__skip" onClick={onSkip}>
+            Skip
+          </button>
+        ) : null}
+      </div>
+      <div className="r-steps__bar" aria-hidden="true">
+        {[1, 2, 3].map((n) => (
+          <span
+            key={n}
+            className={`r-steps__seg${n < step ? " is-done" : n === step ? " is-now" : ""}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const LOOK_PICKS = {
+  paper: { name: "Paper", note: "Clean sans, warm paper. The default." },
+  reel: { name: "Reel", note: "Film grain, serif italics, a bigger sun." },
+};
+
+/**
+ * Step 2, optional. Picking a Look only changes the preview; the Look applies
+ * on Continue. Skip leaves the Look as it is, which is Paper on a fresh start.
+ */
+function LookScreen({ onDone }) {
+  const [pick, setPick] = useState(() => resolveLook(loadProfile().lookPref));
+  const theme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+
+  return (
+    <section className="screen">
+      <StepHead step={2} optional onSkip={onDone} />
+      <div className="screen-head screen-head--setup">
+        <h1 className="screen__title">Pick a Look</h1>
+        <p className="screen__intro">
+          Changes the type and texture, not what the app does. You can switch any time in Settings.
+        </p>
+      </div>
+      <div className="r-lookpick__preview" data-look={pick} data-theme={theme} aria-hidden="true">
+        <div className="r-lookpick__eyebrow">
+          <span>Phase 1 · Week 1</span>
+          <span>Preview</span>
+        </div>
+        <div className="r-lookpick__total">
+          <span className="r-lookpick__figure">705</span>
+          <span className="r-lookpick__of">/ 2,565 kcal</span>
+        </div>
+        <div className="r-lookpick__horizon">
+          <span className="r-lookpick__bar" />
+          <span className="r-lookpick__sun" />
+        </div>
+        <div className="r-lookpick__due">
+          <div className="r-lookpick__due-top">
+            <div>
+              <div className="r-lookpick__due-label">Due now · 11:00</div>
+              <div className="r-lookpick__due-title">Shake</div>
+            </div>
+            <div className="r-lookpick__due-fig">
+              <div className="r-lookpick__due-kcal">580</div>
+              <div className="r-lookpick__due-prot">kcal · 22 g</div>
+            </div>
+          </div>
+          <div className="r-lookpick__due-cta">Tick Shake</div>
+        </div>
+      </div>
+      <div className="r-lookpick__options" role="radiogroup" aria-label="Look">
+        {LOOKS.map((id) => (
+          <button
+            key={id}
+            type="button"
+            role="radio"
+            aria-checked={pick === id}
+            className={`r-lookpick__option${pick === id ? " is-selected" : ""}`}
+            onClick={() => setPick(id)}
+          >
+            <Radio selected={pick === id} size={20} />
+            <span>
+              <span className="r-lookpick__name">{LOOK_PICKS[id].name}</span>
+              <span className="r-lookpick__note">{LOOK_PICKS[id].note}</span>
+            </span>
+          </button>
+        ))}
+      </div>
+      <Button
+        fullWidth
+        onClick={() => {
+          setLookPref(pick);
+          onDone();
+        }}
+      >
+        Continue with {LOOK_PICKS[pick].name}
+      </Button>
     </section>
   );
 }
@@ -236,6 +350,7 @@ function DoneScreen({ profile, onComplete, onEdit }) {
 
   return (
     <section className="screen">
+      <StepHead step={3} />
       <h1 className="screen__title">You’re set up</h1>
       <p className="screen__intro">
         Saved to this browser only. These are the figures the plan adjusts from.
@@ -251,9 +366,9 @@ function DoneScreen({ profile, onComplete, onEdit }) {
         <SummaryRow label="Start date" value={profile.startDate || todayISO()} />
       </div>
       <div className="form">
-        <button className="btn btn--primary btn--full" onClick={onComplete}>
+        <Button fullWidth onClick={onComplete}>
           Start tracking
-        </button>
+        </Button>
         <button className="btn btn--text" onClick={onEdit}>
           Edit details
         </button>

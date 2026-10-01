@@ -886,12 +886,13 @@
 }
 
 .intro__mark {
-  font: var(--text-screen-title);
+  display: flex;
   color: var(--ink);
 }
 
 .intro__line {
-  font: var(--text-body-md);
+  font-size: var(--type-body);
+  line-height: 1.45;
   color: var(--ink-muted);
 }
 
@@ -3019,8 +3020,10 @@ button.r-listrow {
 }
 .r-today__card-title {
   margin-bottom: var(--space-8);
-  font-size: var(--type-title);
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: var(--type-display-md);
+  line-height: 1.1;
 }
 .r-today__card .r-button {
   margin-top: 14px;
@@ -5099,4 +5102,242 @@ button.r-listrow:active,
 }
 .r-toggle[aria-checked="true"]:focus-visible {
   box-shadow: var(--focus-ring);
+}
+
+/* ------------------------------------------------------- first run (72) ---
+   The step header, and step 2's Look picker: a live preview that reads the
+   chosen Look through a nested data-look, then one radio card per Look.      */
+
+.r-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin-bottom: var(--space-16);
+}
+.r-steps__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+.r-steps__label {
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--eyebrow-ink);
+}
+.r-steps__skip {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--type-body);
+  font-weight: 700;
+  color: var(--accent-text);
+  cursor: pointer;
+}
+.r-steps__skip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+.r-steps__bar {
+  display: flex;
+  gap: 6px;
+}
+.r-steps__seg {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line-strong);
+}
+.r-steps__seg.is-done {
+  background: var(--ink);
+}
+.r-steps__seg.is-now {
+  background: var(--accent);
+}
+
+.r-lookpick__preview {
+  margin-top: var(--space-16);
+  padding: 18px 18px 16px;
+  overflow: hidden;
+  border-radius: 24px;
+  background-color: var(--bg-canvas);
+  background-image: var(--texture);
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    var(--shadow-card);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+.r-lookpick__eyebrow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--eyebrow-ink);
+}
+.r-lookpick__total {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 2px;
+}
+.r-lookpick__figure {
+  font-family: var(--font-numeric);
+  font-size: 54px;
+  font-weight: var(--numeric-weight);
+  letter-spacing: var(--numeric-tracking);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.r-lookpick__of {
+  font-size: var(--type-body);
+  color: var(--ink-muted);
+}
+.r-lookpick__horizon {
+  position: relative;
+  height: 30px;
+}
+.r-lookpick__horizon::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  right: -18px;
+  top: 17px;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--horizon) 12%,
+    var(--horizon) 88%,
+    transparent
+  );
+}
+.r-lookpick__bar {
+  position: absolute;
+  left: 0;
+  top: 16px;
+  width: 27%;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--intake-partial);
+}
+.r-lookpick__sun {
+  position: absolute;
+  left: calc(27% - 10px);
+  top: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--sun);
+  box-shadow: 0 0 14px 4px var(--sun-halo);
+}
+.r-lookpick__due {
+  margin-top: var(--space-12);
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--due-bg);
+  box-shadow: var(--due-edge), var(--due-glow);
+  color: var(--due-ink);
+}
+.r-lookpick__due-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.r-lookpick__due-label {
+  font-size: var(--due-label-size);
+  font-weight: 700;
+  letter-spacing: var(--due-label-tracking);
+  text-transform: var(--caption-transform);
+  color: var(--due-accent-text);
+}
+.r-lookpick__due-title {
+  font-family: var(--font-display);
+  font-style: var(--due-title-style);
+  font-weight: var(--display-weight);
+  font-size: 28px;
+  line-height: 1.05;
+}
+.r-lookpick__due-fig {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.r-lookpick__due-kcal {
+  font-size: 22px;
+  font-weight: 700;
+}
+.r-lookpick__due-prot {
+  font-size: 13px;
+  color: var(--due-ink-muted);
+}
+.r-lookpick__due-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  margin-top: var(--space-12);
+  border-radius: 22px;
+  background: var(--due-cta-bg);
+  color: var(--due-cta-ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.r-lookpick__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: var(--space-16) 0;
+}
+.r-lookpick__option {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  min-height: 72px;
+  padding: var(--space-12) 14px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--bg-raised);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.r-lookpick__option > .r-radio {
+  margin-top: 2px;
+}
+.r-lookpick__option.is-selected {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.r-lookpick__option:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    var(--focus-ring);
+}
+.r-lookpick__name {
+  display: block;
+  font-size: var(--type-body);
+  font-weight: 700;
+}
+.r-lookpick__note {
+  display: block;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--ink-muted);
+}
+@media (max-width: 340px) {
+  .r-lookpick__options {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

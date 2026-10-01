@@ -100,15 +100,6 @@ and desktop test pass, and the release.
 
 Model: Sonnet 5.5, high effort. Targets: firstrun, icons. This is the welcome flow and the redrawn app icon and logo.
 
-- [ ] **Pass 72 · `firstrun`** — first run, intro and What's new.
-  - Reads: `screens/Rise Secondary Phone.dc.html` (first-run frames),
-    `Welcome.jsx`, `Intro.jsx`.
-  - Does: the three-step first run with the Look as an optional step 2 (Skip
-    keeps Paper, the preview changes on pick, the Look applies on Continue);
-    the intro; the What's new card. These are the only places the slower
-    theatrical motion is allowed, described here and built in `motion`.
-  - Done when: a fresh profile walks through first run in both Looks.
-
 - [ ] **Pass 73 · `icons`** — app icon and logo.
   - Reads: `Wordmark.jsx`, the brand notes in the design system readme.
   - Does: redraws the app icon and wordmark (the "Rıse" with the sun as its
