@@ -43,7 +43,7 @@ import {
 } from "./js/core/trend.js";
 import { evaluate, applySuggestion } from "./js/core/adjust.js";
 import { NUM, Imperative } from "./components/shared.jsx";
-import { Button } from "./components/core.jsx";
+import { Button, Icon } from "./components/core.jsx";
 import { Sheet, Toast, EmptyState } from "./components/surfaces.jsx";
 import { WeightChart, SuggestionCard, StatRow } from "./components/tracking.jsx";
 import { useWide } from "./components/useWide.js";
@@ -338,6 +338,13 @@ function gainText(kgDelta, unit, withUnit = true) {
 
 // --- pieces --------------------------------------------------------------
 
+/** Up or down in ink beside a week's change; none when it rounds to zero. */
+function DeltaArrow({ kg, unit }) {
+  const shown = gainText(kg, unit, false);
+  if (/^.0\.0$/.test(shown)) return null;
+  return <Icon name={kg > 0 ? "arrow-up" : "arrow-down"} size={12} strokeWidth={2.5} />;
+}
+
 /** The latest weight in the numeric face, or a dash before the first. */
 function Figure({ latest, unit }) {
   if (!latest) {
@@ -427,6 +434,7 @@ function History({ series, unit, editing, setEditing, save }) {
               <div key={w.date} className="r-history__row">
                 <span className="r-history__date">{shortDate(w.date)}</span>
                 <span className="r-history__delta">
+                  {prev ? <DeltaArrow kg={w.kg - prev.kg} unit={unit} /> : null}
                   {prev ? gainText(w.kg - prev.kg, unit, false) : "start"}
                 </span>
                 <span className="r-history__kg">

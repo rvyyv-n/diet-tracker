@@ -2639,6 +2639,13 @@
 .r-chart__dots {
   fill: var(--ink);
 }
+.r-chart__ghost {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 2;
+  stroke-dasharray: 2 7;
+  stroke-linecap: round;
+}
 /* The sun on the latest average is HTML over the svg, so it reads the --sun
    gradient and halo tokens like every other sun in the app. */
 .r-chart__glow,
@@ -3587,7 +3594,11 @@ button.r-listrow {
   line-height: 1;
   letter-spacing: var(--numeric-tracking);
 }
+/* The dash sits at mid-height in the numeric face; lowered so it reads on
+   the same line as the unit beside it. */
 .r-weight__kg.is-empty {
+  position: relative;
+  top: 0.18em;
   color: var(--ink-soft);
 }
 .r-weight__unit {
@@ -3703,6 +3714,10 @@ button.r-listrow {
   font-size: var(--type-body);
 }
 .r-history__delta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
   font-size: var(--type-small);
   color: var(--ink-muted);
 }

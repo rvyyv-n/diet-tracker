@@ -370,6 +370,7 @@ export function GroceryList({ aisles, scaleNote, onToggle, onClear }) {
 
 /* The chart's drawing box, from the handoff: a 364×176 viewBox starting at x -8. */
 const VB = { x: -8, w: 364, h: 176 };
+const GHOST = { x: 16, y: 140, path: "M16 140 C120 136 220 104 332 64" };
 
 /**
  * Weekly weigh-ins as dots, the four-week rolling average as a line, an
@@ -409,12 +410,11 @@ export function WeightChart({
           .join(" ")}`
       : null;
   const last = n - 1;
-  const sun = trend
-    ? {
-        left: `${((X(last) - VB.x) / VB.w) * 100}%`,
-        top: `${(Y(avg[last]) / VB.h) * 100}%`,
-      }
-    : null;
+  const at = (x, y) => ({ left: `${((x - VB.x) / VB.w) * 100}%`, top: `${(y / VB.h) * 100}%` });
+  // Before the first weigh-in: a faint dashed rise, with the sun where the
+  // first weigh-in will land.
+  const ghost = n === 0;
+  const sun = trend ? at(X(last), Y(avg[last])) : ghost ? at(GHOST.x, GHOST.y) : null;
 
   return (
     <div className="r-chart">
@@ -434,6 +434,7 @@ export function WeightChart({
             </>
           ) : null}
           {trend ? <polyline points={pts(avg, 3)} className="r-chart__avg" /> : null}
+          {ghost ? <path d={GHOST.path} className="r-chart__ghost" /> : null}
           <g className="r-chart__dots">
             {weights.map((v, i) => (
               <circle key={i} cx={X(i)} cy={Y(v)} r="3" />

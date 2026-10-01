@@ -32,6 +32,9 @@ const PATHS = {
   "chevron-right": ["m9 18 6-6-6-6"],
   "chevron-left": ["m15 18-6-6 6-6"],
   "chevron-down": ["m6 9 6 6 6-6"],
+  // Weight history: which way a week moved, in ink beside the figure.
+  "arrow-up": ["m5 12 7-7 7 7", "M12 19V5"],
+  "arrow-down": ["M12 5v14", "m19 12-7 7-7-7"],
   // The year steppers in the calendar popover. Lucide's double chevrons, so
   // the month and year controls read as the same family at a glance.
   "chevrons-left": ["m11 17-5-5 5-5", "m18 17-5-5 5-5"],

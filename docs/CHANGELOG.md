@@ -299,6 +299,15 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   20px sides on desktop. The recipe book's intro line no longer tucks up
   under the New recipe button. New icon `info`; no new tokens.
 
+- **pass 83 — Weight before the first weigh-in, and arrows in History:**
+  with no weigh-ins, the chart draws a faint dashed rise with the sun on the
+  horizon where the first weigh-in will land, under "Your first weigh-in
+  starts the chart". The "—" in place of the weight is lowered to the line
+  of its unit. Each week in History has a small up or down arrow in ink
+  beside its change, and none when it rounds to zero; there is no colour, as
+  one week is noise and the trend already carries the status. New icons
+  `arrow-up` and `arrow-down`; no new tokens.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.
