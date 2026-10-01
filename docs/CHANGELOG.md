@@ -237,6 +237,16 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   78 retakes them from the finished build. Rise has no website yet, so a
   `later` roadmap item redoes the README when it has one.
 
+- **pass 77 — the on-hover rail:** the 72px rail keeps the v3.0 nav's parts
+  (the sun, the icons, the active lozenge with its glow, and the word,
+  labels, glance card and Pinned / On hover toggle that fade in on hover or
+  keyboard focus) and now has a shadow on its right edge while open, so it
+  reads as lying over the content. New token `--rail-open-shadow`, in light
+  and dark. It opens on keyboard focus only, so a mouse click no longer
+  holds it open. The look is the pinned nav in a narrow state, in both
+  Looks; the handoff has no rail frame. Touch devices still get the pinned
+  nav.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.
