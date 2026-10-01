@@ -363,9 +363,10 @@ export function SectionHeading({ children, meta, as: Tag = "h2" }) {
 /**
  * The wordmark, set in type with the sun disc; there is no drawn logo file.
  * `nav` is the side-nav lockup (sun, then "Rise"); `reel` is the italic
- * "Rıse" with the sun as the dot on its dotless i.
+ * "Rıse" with the sun as the dot on its dotless i. `enter` (reel only) plays
+ * the intro: the letters rise one by one, then the sun lands as the dot.
  */
-export function Wordmark({ variant = "nav", size = 26 }) {
+export function Wordmark({ variant = "nav", size = 26, enter = false }) {
   if (variant === "nav") {
     return (
       <span className="r-wordmark" style={{ "--r-wordmark-size": `${size}px` }}>
@@ -376,17 +377,24 @@ export function Wordmark({ variant = "nav", size = 26 }) {
   }
   return (
     <span
-      className="r-wordmark r-wordmark--reel"
+      className={`r-wordmark r-wordmark--reel${enter ? " r-wordmark--enter" : ""}`}
       role="img"
       aria-label="Rise"
       style={{ "--r-wordmark-size": `${size}px` }}
     >
-      R
-      <span className="r-wordmark__i">
+      <span className="r-wordmark__ch" style={{ "--i": 0 }}>
+        R
+      </span>
+      <span className="r-wordmark__ch r-wordmark__i" style={{ "--i": 1 }}>
         {"ı"}
         <span className="r-wordmark__dot" />
       </span>
-      se
+      <span className="r-wordmark__ch" style={{ "--i": 2 }}>
+        s
+      </span>
+      <span className="r-wordmark__ch" style={{ "--i": 3 }}>
+        e
+      </span>
     </span>
   );
 }

@@ -205,6 +205,17 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   summary list and their CSS are gone. The intro and What's new entrances are
   left to `motion`, with the timings recorded there. No new tokens.
 
+- **pass 72 motion — intro and What’s new move:** built now, from the
+  design’s timing tables, not left to the `motion` pass. The intro plays once
+  (about 1.4 s): the horizon fades in, R, ı, s and e rise one by one, the sun
+  comes up under the ı and settles into its dot on the spring curve, then the
+  copy and Get started fade in. `Wordmark` has its letters and dot as separate
+  elements for this. What’s new grows in once per load (about 1.1 s) with its
+  rows fading up in turn, and on Got it presses, fades, lifts and collapses
+  (260 ms) while the day total slides up; no toast and no Undo. All times are
+  duration tokens, so reduced motion shows the last frame at once. No new
+  tokens.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on

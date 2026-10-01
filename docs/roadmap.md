@@ -126,19 +126,13 @@ Model: Opus, high effort. Targets: sweep, readme. This is the cross-cutting audi
 Model: Sonnet 5.5, high effort. Targets: motion, rail. This is animation, last, then the one undesigned surface. Switch to Opus only if the choreography needs planning.
 
 - [ ] **Pass 76 · `motion`** — animation, last.
-  - Reads: `guidelines/motion.html`, the motion notes in `product-rules.md`,
-    and the two motion tables in
-    `private/design/first-run-handoff/rise-3-first-run/rise-3-first-run-handoff.md`
-    (the intro and the What's new card, sections 1 and 4).
+  - Reads: `guidelines/motion.html`, and the motion notes in `product-rules.md`.
   - Does: daily interactions at 90 to 260ms on `cubic-bezier(.22,1,.36,1)`,
     press scale .97, tick pop and sun settle on the spring curve, sun travel
     520ms, the theme cross-fade, the slow theatrical moments for intro, first
     run and What's new only; a test that animations use the duration tokens and
-    never their own milliseconds; reduced motion zeroes every duration. The
-    intro (about 1.4 s) needs the `Wordmark` dot split into its own element so
-    the sun can rise and settle into the ı; What's new grows and fades in
-    (about 1.1 s) and leaves on Got it with press .97, no toast and no Undo.
-    The layouts are already built (pass 72 fix).
+    never their own milliseconds; reduced motion zeroes every duration.
+    The intro and What’s new motion is already built (pass 72 motion).
   - Done when: nothing animates that the design doesn't describe, and reduced
     motion is fully still.
 

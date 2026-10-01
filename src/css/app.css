@@ -866,6 +866,67 @@
   margin: 0 auto;
 }
 
+/* The entrance, about 1.4 s, from the first-run handoff. Every time is a
+   duration token (so reduced motion lands on the last frame at once), and
+   `both` holds the first frame through each delay. Times in ms:
+     0    horizon fades in            (base)
+     160  R, ı, s, e rise 10px        (base each, 90 apart)
+     260  sun rises under the ı       (slow)
+     780  sun settles into the dot    (slow, spring)
+     1040 copy fades up 8px           (base)
+     1130 "Get started" fades in      (base)                                   */
+@keyframes r-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes r-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes r-letter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes r-sun-land {
+  0% {
+    opacity: 0;
+    transform: translate(-28%, 1.1em);
+    animation-timing-function: var(--ease-out);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-28%, 0.4em);
+    animation-timing-function: var(--ease-spring);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-28%, 0);
+  }
+}
+.r-intro__horizon {
+  animation: r-fade-in var(--dur-base) var(--ease-out) both;
+}
+.r-intro__line {
+  animation: r-fade-up var(--dur-base) var(--ease-out) calc(var(--dur-slow) * 2) both;
+}
+.r-intro__cta {
+  animation: r-fade-in var(--dur-base) var(--ease-out)
+    calc(var(--dur-slow) * 2 + var(--dur-instant)) both;
+}
+.r-wordmark--enter .r-wordmark__ch {
+  display: inline-block;
+  animation: r-letter-rise var(--dur-base) var(--ease-out)
+    calc(var(--dur-fast) + var(--i) * var(--dur-instant)) both;
+}
+.r-wordmark--enter .r-wordmark__dot {
+  animation: r-sun-land calc(var(--dur-slow) * 2) linear var(--dur-base) both;
+}
+
 /* ============================================================================
    micro-interactions — quiet, short, and disabled under prefers-reduced-motion
    (the blanket rule lives in tokens.css). Press + focus states only, as ever.
@@ -2973,6 +3034,61 @@ button.r-listrow {
   font-style: var(--display-style);
   font-size: var(--type-display-md);
   line-height: 1.15;
+}
+/* The card's slot: a one-row grid, so the row can run 0fr to 1fr and the day
+   total and blocks below slide with it. The clip only hides overflow while the
+   slot is moving, so the card's shadow is not cut off at rest.
+   Entrance (ms): 260 slot grows, fades and drops 12px (slow); 420 title, rows
+   and button fade up 8px, 90 apart (base). Exit: after the 90 ms press, the card
+   fades, lifts 8px and collapses together (base).                            */
+@keyframes r-whatsnew-open {
+  from {
+    grid-template-rows: 0fr;
+  }
+}
+@keyframes r-whatsnew-close {
+  to {
+    grid-template-rows: 0fr;
+  }
+}
+@keyframes r-whatsnew-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+@keyframes r-whatsnew-lift {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+.r-whatsnew-slot {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+.r-whatsnew-slot__clip {
+  min-height: 0;
+}
+.r-whatsnew-slot.is-entering .r-whatsnew-slot__clip,
+.r-whatsnew-slot.is-leaving .r-whatsnew-slot__clip {
+  overflow: hidden;
+}
+.r-whatsnew-slot.is-entering {
+  animation: r-whatsnew-open var(--dur-slow) var(--ease-out) var(--dur-base) backwards;
+}
+.r-whatsnew-slot.is-entering .r-today__card {
+  animation: r-whatsnew-drop var(--dur-slow) var(--ease-out) var(--dur-base) backwards;
+}
+.r-whatsnew-slot.is-leaving {
+  animation: r-whatsnew-close var(--dur-base) var(--ease-out) var(--dur-instant) forwards;
+}
+.r-whatsnew-slot.is-leaving .r-today__card {
+  animation: r-whatsnew-lift var(--dur-base) var(--ease-out) var(--dur-instant) forwards;
+}
+.r-whatsnew__rise {
+  animation: r-fade-up var(--dur-base) var(--ease-out)
+    calc(var(--dur-base) + var(--dur-fast) + var(--i) * var(--dur-instant)) backwards;
 }
 .r-whatsnew {
   margin: 10px 0 0;

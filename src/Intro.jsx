@@ -6,9 +6,10 @@
  * copy and a hero "Get started". A tap anywhere also continues, at any
  * moment; the button is the explicit control. It never advances on its own.
  *
- * The frames describe a 1.4 s entrance (the horizon, the letters, the sun
- * rising and settling into the ı, then the copy and the button). That is the
- * `motion` pass (76); this file is the finished layout it will animate.
+ * It plays a 1.4 s entrance once (the horizon, the letters, the sun rising
+ * and settling into the ı, then the copy and the button). It is all CSS in
+ * the `.r-intro` block, off the duration tokens, so reduced motion shows the
+ * last frame at once. Nothing waits on it: a tap works from the first frame.
  */
 
 import { Button, Wordmark } from "./components/core.jsx";
@@ -18,7 +19,7 @@ export default function Intro({ onDone }) {
     <div className="r-intro" onClick={onDone}>
       <main className="r-intro__main">
         <h1 className="r-intro__mark" aria-label="Rise">
-          <Wordmark variant="reel" size={88} />
+          <Wordmark variant="reel" size={88} enter />
         </h1>
         <div className="r-intro__horizon" aria-hidden="true" />
         <p className="r-intro__line">A daily plan for gaining weight at a steady pace.</p>

@@ -92,7 +92,10 @@ async function capture(variant) {
   // The "What's new" card covers the top of Today; dismiss it unless asked not to.
   if (plan.whatsNew !== true) {
     const got = page.getByRole("button", { name: "Got it" });
-    if (await got.count()) await got.first().click();
+    if (await got.count()) {
+      await got.first().click();
+      await got.first().waitFor({ state: "detached" });
+    }
   }
   for (const a of plan.actions ?? []) {
     if (a.click) await page.locator(a.click).first().click();

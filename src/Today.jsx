@@ -338,8 +338,9 @@ function phaseLine(profile, day) {
  * why a first-run setup never sees this. Dismiss is permanent; it names where
  * each change lives rather than describing it, in keeping with
  * insight_copy_states_facts. It sits between the date strip and the day
- * total, as in the first-run frames; its entrance and exit are the `motion`
- * pass (76).
+ * total, as in the first-run frames. It grows in once (about 1.1 s) and, on
+ * "Got it", fades and collapses (260 ms, after a 90 ms press); the CSS is
+ * the `.r-whatsnew-slot` block. No toast and no Undo.
  */
 const WHATS_NEW = [
   ["Two Looks, Paper and Reel", "Settings > Appearance"],
@@ -348,24 +349,53 @@ const WHATS_NEW = [
   ["Recipes", "The link at the foot of Plan"],
 ];
 
+// The entrance plays once per page load, not on every return to Today.
+let whatsNewPlayed = false;
+
 function WhatsNewCard({ onDismiss }) {
+  const [enter] = useState(() => !whatsNewPlayed);
+  const [opening, setOpening] = useState(enter);
+  const [leaving, setLeaving] = useState(false);
+  useEffect(() => {
+    whatsNewPlayed = true;
+  }, []);
+
+  // The slot's own height animation is the one that marks each end.
+  const onEnd = (e) => {
+    if (e.target !== e.currentTarget) return;
+    if (leaving) onDismiss();
+    else setOpening(false);
+  };
+  const state = leaving ? " is-leaving" : opening ? " is-entering" : "";
+  // Staggered lines: the title, the four rows, then the button.
+  const rise = (i, base = "") => ({
+    className: enter ? `${base} r-whatsnew__rise`.trim() : base || undefined,
+    style: enter ? { "--i": i } : undefined,
+  });
+
   return (
-    <section className="r-today__card" aria-label="What’s new in 3.0">
-      <Card padding="18px 18px 16px">
-        <h2 className="r-today__card-title">What&rsquo;s new in 3.0</h2>
-        <ul className="r-whatsnew">
-          {WHATS_NEW.map(([line, where]) => (
-            <li key={line} className="r-whatsnew__item">
-              <span className="r-whatsnew__line">{line}</span>
-              <span className="r-whatsnew__where">{where}</span>
-            </li>
-          ))}
-        </ul>
-        <Button variant="secondary" fullWidth onClick={onDismiss}>
-          Got it
-        </Button>
-      </Card>
-    </section>
+    <div className={`r-whatsnew-slot${state}`} onAnimationEnd={onEnd}>
+      <div className="r-whatsnew-slot__clip">
+        <section className="r-today__card" aria-label="What’s new in 3.0">
+          <Card padding="18px 18px 16px">
+            <h2 {...rise(0, "r-today__card-title")}>What&rsquo;s new in 3.0</h2>
+            <ul className="r-whatsnew">
+              {WHATS_NEW.map(([line, where], i) => (
+                <li key={line} {...rise(i + 1, "r-whatsnew__item")}>
+                  <span className="r-whatsnew__line">{line}</span>
+                  <span className="r-whatsnew__where">{where}</span>
+                </li>
+              ))}
+            </ul>
+            <div {...rise(WHATS_NEW.length + 1)}>
+              <Button variant="secondary" fullWidth onClick={() => setLeaving(true)}>
+                Got it
+              </Button>
+            </div>
+          </Card>
+        </section>
+      </div>
+    </div>
   );
 }
 

@@ -28,5 +28,9 @@ export async function seedApp(page, { look = "paper", theme = "light" } = {}) {
 /** Dismiss the "What's new" card if it is showing. */
 export async function dismissWhatsNew(page) {
   const got = page.getByRole("button", { name: "Got it" });
-  if (await got.count()) await got.first().click();
+  if (await got.count()) {
+    await got.first().click();
+    // The card fades and collapses before it leaves the page.
+    await got.first().waitFor({ state: "detached" });
+  }
 }
