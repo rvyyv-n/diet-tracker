@@ -63,12 +63,13 @@ function currentPref() {
   return THEME_PREFS.includes(p) ? p : "system";
 }
 
-/** Ease every colour on the page together for one --dur-base. */
+/** Ease every colour on the page together for one --dur-slow, then drop the class. */
 function crossfade() {
   if (!motionOK()) return;
   const root = document.documentElement;
+  const slow = parseFloat(getComputedStyle(root).getPropertyValue("--dur-slow")) || 0;
   root.classList.add("theme-fading");
-  window.setTimeout(() => root.classList.remove("theme-fading"), 260);
+  window.setTimeout(() => root.classList.remove("theme-fading"), slow);
 }
 
 /** Point <html> and the status-bar colour at the stored prefs. No animation. */

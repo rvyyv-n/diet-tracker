@@ -24,28 +24,12 @@ a fresh thread. The design refs are paths inside the design export
 
 | Build pass | Name              | Targets (pass numbers) | Model                   |
 | ---------- | ----------------- | ---------------------- | ----------------------- |
-| 7          | Motion            | `motion` (76)          | Sonnet 5.5, high effort |
 | 8          | Final screenshots | `shots` (78)           | Sonnet 5.5, high effort |
 
 Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
 
 ### Build passes
-
-#### Build pass 7 — Motion
-
-Model: Sonnet 5.5, high effort. Target: motion. This is animation, last. The rail (pass 77) is done. Switch to Opus only if the choreography needs planning.
-
-- [ ] **Pass 76 · `motion`** — animation, last.
-  - Reads: `guidelines/motion.html`, and the motion notes in `product-rules.md`.
-  - Does: daily interactions at 90 to 260ms on `cubic-bezier(.22,1,.36,1)`,
-    press scale .97, tick pop and sun settle on the spring curve, sun travel
-    520ms, the theme cross-fade, the slow theatrical moments for intro, first
-    run and What's new only; a test that animations use the duration tokens and
-    never their own milliseconds; reduced motion zeroes every duration.
-    The intro and What’s new motion is already built (pass 72 motion).
-  - Done when: nothing animates that the design doesn't describe, and reduced
-    motion is fully still.
 
 #### Build pass 8 — Final screenshots
 

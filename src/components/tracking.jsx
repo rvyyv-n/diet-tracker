@@ -7,7 +7,7 @@
  * target, gold partial, red well under. Every status dot sits beside a word.
  */
 
-import { useId } from "react";
+import { useId, useState } from "react";
 import { Button, Icon } from "./core.jsx";
 
 const cx = (...names) => names.filter(Boolean).join(" ");
@@ -131,6 +131,8 @@ export function BlockRow({
   onLink,
 }) {
   const done = state === "done" || state === "closedDone";
+  // A tap that ticks the block pops the check in; rows that load done stay still.
+  const [pop, setPop] = useState(false);
   return (
     <div className={`r-blockrow r-blockrow--${state === "closedDone" ? "closed-done" : state}`}>
       <span className="r-blockrow__time">
@@ -142,11 +144,18 @@ export function BlockRow({
         className="r-blockrow__mark"
         aria-label={state === "off" ? `${name}, off plan` : name}
         aria-pressed={state === "off" ? undefined : done}
-        onClick={onToggle}
+        onClick={(e) => {
+          setPop(!done);
+          onToggle?.(e);
+        }}
         disabled={!onToggle}
       >
         <span className="r-blockrow__dot">
-          {done ? <Icon name="check" size={14} /> : null}
+          {done ? (
+            <span className={cx("r-blockrow__check", pop && "is-pop")}>
+              <Icon name="check" size={14} />
+            </span>
+          ) : null}
           {state === "off" ? <span className="r-blockrow__diamond" /> : null}
         </span>
       </button>

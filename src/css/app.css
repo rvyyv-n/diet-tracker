@@ -968,7 +968,8 @@
 /* theme cross-fade (pass 19) — core/theme.js adds .theme-fading to <html> for
    one switch (a tap on the Settings toggle, or an OS light/dark flip while the
    pref is "system"). Everything eases its colours together over one
-   --dur-base, then the class comes off. The blanket reduced-motion rule
+   --dur-slow on --ease-in-out, as the motion guideline has it, then the class
+   comes off. The blanket reduced-motion rule
    in tokens.css zeroes transition-duration, but this selector is more specific
    AND !important, so it would win — the media block below opts it back out. */
 :root.theme-fading,
@@ -976,11 +977,11 @@
 :root.theme-fading *::before,
 :root.theme-fading *::after {
   transition:
-    background-color var(--dur-base) var(--ease-out),
-    border-color var(--dur-base) var(--ease-out),
-    color var(--dur-base) var(--ease-out),
-    fill var(--dur-base) var(--ease-out),
-    stroke var(--dur-base) var(--ease-out) !important;
+    background-color var(--dur-slow) var(--ease-in-out),
+    border-color var(--dur-slow) var(--ease-in-out),
+    color var(--dur-slow) var(--ease-in-out),
+    fill var(--dur-slow) var(--ease-in-out),
+    stroke var(--dur-slow) var(--ease-in-out) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2180,6 +2181,20 @@
   transition:
     transform var(--dur-instant) var(--ease-out),
     background-color var(--dur-fast) var(--ease-out);
+}
+/* The tick pops in on the spring curve, from .6. Only a tap sets .is-pop, so
+   rows that are already done when the screen opens stay still. */
+@keyframes r-tick-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+.r-blockrow__check {
+  display: flex;
+}
+.r-blockrow__check.is-pop {
+  animation: r-tick-pop var(--dur-base) var(--ease-spring) both;
 }
 .r-blockrow__mark:focus-visible {
   outline: none;

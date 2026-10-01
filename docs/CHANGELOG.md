@@ -247,6 +247,17 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   Looks; the handoff has no rail frame. Touch devices still get the pinned
   nav.
 
+- **pass 76 — motion:** the design's motion table, checked against what was
+  built. Most of it already ran (the 90 to 260ms interactions on
+  `--ease-out`, the .97 press, sun travel at `--dur-slow`, the intro and
+  What's new). This pass added the tick pop (the check scales in from .6 on
+  `--ease-spring`, on a tap only, so rows that open done stay still) and moved
+  the theme cross-fade to `--dur-slow` on `--ease-in-out`; `theme.js` now
+  reads that token for when to drop the class. `motion.test.js` fails any
+  transition or animation without a duration token, any own curve, any loop,
+  a duration token reduced motion doesn't zero, and a theme fade that
+  reduced motion leaves on.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.
