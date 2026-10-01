@@ -1,142 +1,80 @@
 /**
- * PlanReference.jsx — the plan as something to read (pass 48). The meals and
- * the food table live on Recipes, beside the book: they're what you read when
+ * PlanReference.jsx — the plan as something to read (pass 48), shown on
+ * Recipes: every meal option and the food table. They're what you read when
  * deciding what to eat or log, about once a month, and on Plan they sat as a
- * wall under the list opened every week. The target ladder is Plan's own
- * PhaseLadder since pass 69. Each block renders bare — the host screen puts
- * it in a card under its own group label.
+ * wall under the list opened every week. Plan's own ladder is the PhaseLadder
+ * (pass 69). Each block renders bare — the host screen puts it under its own
+ * heading. Restyled in pass 71.
  */
 
-import { NUM, Icon, fmtTime } from "./components/shared.jsx";
+import { NUM } from "./components/shared.jsx";
+import { Icon } from "./components/core.jsx";
 import { phaseTarget, activeBlocks, rotationOptions, FOOD_DB } from "./js/core/plan.js";
 
 /**
- * The day's blocks in time order. A block with a rotation lists four options,
- * each a full ingredient sentence that wraps to two or three lines on a phone
- * — printed flat that was ~25 unbroken lines of text, which is what made this
- * sheet unreadable. Two changes fix it: the options collapse behind the block
- * (closed by default, one open at a time), and each option is a bounded row
- * with a hairline above it rather than another paragraph in a run. The block
- * header carries the kcal range, so the sheet still answers "how big is
- * breakfast" without being opened.
+ * The day's blocks in time order. A block with a rotation lists its options,
+ * each a full ingredient sentence that can run to two or three lines on a
+ * phone — printed flat that was ~25 unbroken lines, so the options collapse
+ * behind the block (closed by default, one open at a time), and each is a
+ * bounded row with a hairline above it. The block's head carries the kcal
+ * range, so the list still answers "how big is breakfast" without opening it.
+ * A block whose meal never varies reads as a rotation of one.
  */
 export function MealsBlock({ addOns, phaseId, openMeal, setOpenMeal }) {
   const dayKcal = phaseTarget(phaseId).kcal || 0;
   return (
-    <div className="planref__block">
-      {activeBlocks(addOns).map((b) =>
-        b.rotation ? (
-          <RotationMeal
-            key={b.id}
-            b={b}
-            dayKcal={dayKcal}
-            openMeal={openMeal}
-            setOpenMeal={setOpenMeal}
-          />
-        ) : (
-          <FixedMeal
-            key={b.id}
-            b={b}
-            dayKcal={dayKcal}
-            openMeal={openMeal}
-            setOpenMeal={setOpenMeal}
-          />
-        ),
-      )}
+    <div className="r-meals">
+      {activeBlocks(addOns).map((b) => (
+        <Meal
+          key={b.id}
+          b={b}
+          dayKcal={dayKcal}
+          open={openMeal === b.id}
+          onToggle={() => setOpenMeal(openMeal === b.id ? null : b.id)}
+        />
+      ))}
     </div>
   );
 }
 
-/**
- * The share rail under a meal head: a hairline filled to the meal's largest
- * option as a fraction of the day's target.
- *
- * Deliberately a *size* readout and not a status one. Colour on this app
- * already means one thing — on-track / partway / under, and inverted for a
- * gain tracker — so a second meaning for colour on the same screen would
- * misread. This says "breakfast is about a quarter of your day" and nothing
- * about whether that is good, which is the only honest thing a plan sheet can
- * say about a meal you have not eaten yet.
- */
-function ShareRail({ kcal, dayKcal }) {
-  if (!dayKcal || !kcal) return null;
-  const pct = Math.min(100, Math.round((kcal / dayKcal) * 100));
-  return (
-    <span className="planref__share" aria-hidden="true">
-      <span className="planref__share-fill" style={{ width: `${pct}%` }} />
-    </span>
-  );
-}
-
-/**
- * A block whose meal never varies. It reads as a rotation with exactly one
- * option: same head, same figure, same chevron, and the one description sits
- * in the same disclosure the rotations use. Before, it was the only row on
- * the sheet showing its description unprompted and the only one quoting
- * protein beside its kcal, which made Pre-bed look like a different kind of
- * thing rather than the same thing with nothing to choose between.
- */
-function FixedMeal({ b, dayKcal, openMeal, setOpenMeal }) {
-  return (
-    <MealDisclosure
-      b={b}
-      fig={`${NUM.format(b.kcal)} kcal`}
-      opts={[{ desc: b.desc, kcal: b.kcal }]}
-      kcal={b.kcal}
-      dayKcal={dayKcal}
-      openMeal={openMeal}
-      setOpenMeal={setOpenMeal}
-    />
-  );
-}
-
-/** A block with a rotation: a disclosure button over the option list. */
-function RotationMeal({ b, dayKcal, openMeal, setOpenMeal }) {
-  const opts = rotationOptions(b.rotation);
+function Meal({ b, dayKcal, open, onToggle }) {
+  const opts = b.rotation ? rotationOptions(b.rotation) : [{ desc: b.desc, kcal: b.kcal }];
   const kcals = opts.map((o) => o.kcal);
   const lo = Math.min(...kcals);
   const hi = Math.max(...kcals);
-  const range = lo === hi ? `${NUM.format(lo)} kcal` : `${NUM.format(lo)}–${NUM.format(hi)} kcal`;
-  return (
-    <MealDisclosure
-      b={b}
-      fig={range}
-      opts={opts}
-      kcal={hi}
-      dayKcal={dayKcal}
-      openMeal={openMeal}
-      setOpenMeal={setOpenMeal}
-    />
-  );
-}
-
-/**
- * The shared meal row: a head that expands to a list of options. `fig` is the
- * figure shown beside the chevron — a range for a rotation, the single number
- * for a fixed meal.
- */
-function MealDisclosure({ b, fig, opts, kcal, dayKcal, openMeal, setOpenMeal }) {
-  const open = openMeal === b.id;
+  const fig = lo === hi ? `${NUM.format(hi)} kcal` : `${NUM.format(lo)}–${NUM.format(hi)} kcal`;
+  // The rail is a size readout, never a status: colour already means
+  // on-track, partway or under here, so this only says "about a quarter of
+  // the day" and nothing about whether that is good.
+  const share = dayKcal && hi ? Math.min(100, Math.round((hi / dayKcal) * 100)) : 0;
 
   return (
-    <div className={`planref__meal${open ? " is-open" : ""}`}>
+    <div className={`r-meals__meal${open ? " is-open" : ""}`}>
       <button
-        className="planref__meal-head planref__meal-head--btn"
         type="button"
+        className="r-meals__head"
         aria-expanded={open ? "true" : "false"}
-        onClick={() => setOpenMeal(open ? null : b.id)}
+        onClick={onToggle}
       >
-        <MealName b={b} />
-        <span className="planref__meal-fig">{fig}</span>
-        <Icon name="chevron-down" size={16} className="planref__meal-chev" />
+        <Icon name="clock" size={18} className="r-meals__icon" />
+        <span className="r-meals__name">
+          <b>{b.name}</b>
+          {b.time ? <span className="r-meals__time">{b.time}</span> : null}
+        </span>
+        <span className="r-meals__fig">{fig}</span>
+        <Icon name="chevron-down" size={16} className="r-meals__chevron" />
       </button>
-      <ShareRail kcal={kcal} dayKcal={dayKcal} />
+      {share ? (
+        <span className="r-meals__share" aria-hidden="true">
+          <span className="r-meals__share-fill" style={{ width: `${share}%` }} />
+        </span>
+      ) : null}
       {open ? (
-        <ul className="planref__opts">
+        <ul className="r-meals__opts">
           {opts.map((o, i) => (
-            <li key={i} className="planref__opt">
-              <span className="planref__opt-desc">{o.desc}</span>
-              <span className="planref__opt-kcal">{NUM.format(o.kcal)}</span>
+            <li key={i} className="r-meals__opt">
+              <span className="r-meals__opt-desc">{o.desc}</span>
+              <span className="r-meals__opt-kcal">{NUM.format(o.kcal)}</span>
             </li>
           ))}
         </ul>
@@ -146,66 +84,29 @@ function MealDisclosure({ b, fig, opts, kcal, dayKcal, openMeal, setOpenMeal }) 
 }
 
 /**
- * One Lucide glyph per meal block (pass 41, settling phase 6's open call).
- * Keyed by block id rather than name so renaming a block in plan.js does not
- * silently drop its glyph. Both shakes share `milk` — they are the same drink
- * at two times of day, and giving the second one its own glyph would imply a
- * difference that isn't there. A block with no entry simply renders no icon.
+ * The off-plan food table, straight from FOOD_DB. A name over a run-on
+ * "250 ml · 160 kcal · 8 g" line on a phone; aligned columns, with a header
+ * naming them, on desktop.
  */
-const BLOCK_GLYPH = {
-  B1: "egg", // Breakfast
-  B2: "milk", // Shake
-  B3: "sandwich", // Lunch
-  A1: "cookie", // Snack
-  A3: "milk", // Shake 2
-  B4: "utensils", // Dinner
-  A2: "moon", // Pre-bed
-};
-
-function MealName({ b }) {
-  const glyph = BLOCK_GLYPH[b.id];
-  return (
-    <span className="planref__meal-name">
-      {glyph ? <Icon name={glyph} size={16} className="planref__meal-icon" /> : null}
-      {b.name}
-      {b.time ? <span className="planref__meal-time">{fmtTime(b.time)}</span> : null}
-    </span>
-  );
-}
-
-/** The off-plan food table, straight from FOOD_DB. */
 export function FoodsBlock() {
   return (
-    <div className="planref__block">
-      {/* The column key. Four unlabelled columns of numbers left "160" and "8"
-          to be told apart by magnitude alone; this names them. Desktop only —
-          on a phone the row is a name over a run-on "250 ml · 160 kcal · 8 g"
-          line, where the units are already in the text and a header would be
-          labelling columns that do not exist. */}
-      <div className="planref__foods-head" aria-hidden="true">
+    <div className="r-foods">
+      <div className="r-foods__head" aria-hidden="true">
         <span>Food</span>
         <span>Amount</span>
-        <span className="planref__foods-head-kcal">Kcal</span>
-        <span className="planref__foods-head-protein">Protein</span>
+        <span className="r-foods__num">Kcal</span>
+        <span className="r-foods__num">Protein</span>
       </div>
-      <ul className="planref__foods">
+      <ul className="r-foods__list">
         {FOOD_DB.map((f) => (
-          <li key={f.name} className="planref__food">
-            <span className="planref__food-name">{f.name}</span>
-            {/* Three separate cells, not one joined sentence: the desktop
-                layout spreads them into aligned columns, and the "·"
-                separators that hold them together on a phone are drawn in
-                CSS. */}
-            <span className="planref__food-meta">
-              <span className="planref__food-portion">{f.portion}</span>
-              <span className="planref__food-kcal">{NUM.format(f.kcal)} kcal</span>
-              <span className="planref__food-protein">{Math.round(f.proteinG)} g</span>
-            </span>
+          <li key={f.name} className="r-foods__row">
+            <span className="r-foods__name">{f.name}</span>
+            <span className="r-foods__portion">{f.portion}</span>
+            <span className="r-foods__kcal">{NUM.format(f.kcal)} kcal</span>
+            <span className="r-foods__protein">{Math.round(f.proteinG)} g</span>
           </li>
         ))}
       </ul>
     </div>
   );
 }
-
-// --- helpers -------------------------------------------------------------

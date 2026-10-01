@@ -132,6 +132,24 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   animation are gone. `e2e/visual.spec.js` now runs both Looks; Reel's
   pictures wait for the sweep. No new tokens.
 
+- **pass 71 — Recipes, phone and desktop:** Recipes is rebuilt on the surface
+  components. On a phone it has a Plan link on top (Plan stays lit while it
+  is open). The book has a New recipe button, a filter and one row per
+  recipe with Edit and Log; Log puts it on today and shows a toast. The book
+  is ordered most logged first, and each row says "logged 9×" as a plain fact
+  (recipes logged equally often keep most-recent first; Log food on Today
+  still lists most recent first). An empty book has its empty state. The
+  recipe editor is one body (name, "Built from", add from the food table or
+  type a custom item, the running total beside Save) in a bottom sheet, or a
+  520px dialog on desktop; Log food on Today shows the same body inline.
+  Delete asks once more and has no Undo; days it was logged on keep their
+  kcal. The meal options (a disclosure per block, with the share rail) and
+  the food table moved here from Plan in pass 48 and are restyled: a name over
+  its figures on a phone, aligned columns on desktop, which fills two
+  columns (the book and the food table, then the meals). The v2 Plan
+  reference, recipe editor, group and empty-state rules are gone, and so are
+  the old `shared.jsx` helpers. New glyphs `clock` and `close`; no new tokens.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on

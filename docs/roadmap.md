@@ -84,31 +84,16 @@ predecessor is unticked is flagged before it starts. Start each build pass in
 a fresh thread. The design refs are paths inside the design export
 (`design-system/…`, `screens/…`).
 
-| Build pass | Name                       | Targets (pass numbers)        | Model                   |
-| ---------- | -------------------------- | ----------------------------- | ----------------------- |
-| 4          | Plan, settings and recipes | `recipes` (71)                | Sonnet 5.5, high effort |
-| 5          | First run and identity     | `firstrun` (72), `icons` (73) | Sonnet 5.5, high effort |
-| 6          | Audit and README           | `sweep` (74), `readme` (75)   | Opus, high effort       |
-| 7          | Motion                     | `motion` (76), `rail` (77)    | Sonnet 5.5, high effort |
+| Build pass | Name                   | Targets (pass numbers)        | Model                   |
+| ---------- | ---------------------- | ----------------------------- | ----------------------- |
+| 5          | First run and identity | `firstrun` (72), `icons` (73) | Sonnet 5.5, high effort |
+| 6          | Audit and README       | `sweep` (74), `readme` (75)   | Opus, high effort       |
+| 7          | Motion                 | `motion` (76), `rail` (77)    | Sonnet 5.5, high effort |
 
 Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
 
 ### Build passes
-
-#### Build pass 4 — Plan, settings and recipes
-
-Model: Sonnet 5.5, high effort. Targets: recipes (plan, pass 69, and settings, pass 70, are done). This is the remaining main screens, including the Look picker.
-
-- [ ] **Pass 71 · `recipes`** — Recipes, phone and desktop.
-  - Reads: `screens/Rise Secondary Phone.dc.html` (Recipes frames), the
-    Recipes frames in `Rise Desktop.dc.html`, `EmptyState.jsx`.
-  - Does: the recipe book, the recipe editor sheet, the two-step delete
-    confirm (no Undo), the recipe-book empty state, and the reference content
-    that moved here from Plan. Also rehome "most logged", which went with
-    Weight's weekly review in pass 68: order the book by `useCount`, most
-    logged first, as a fact with no praise.
-  - Done when: the grid matches, reached from Plan on phone with Plan lit.
 
 #### Build pass 5 — First run and identity
 

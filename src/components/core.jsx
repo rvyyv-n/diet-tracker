@@ -26,6 +26,8 @@ const GLYPHS = {
     1.8,
     '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
   ],
+  clock: [1.8, '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/>'],
+  close: [2.2, '<path d="M6 6l12 12M18 6L6 18"/>'],
   check: [3.2, '<path d="M5 12.5l4.5 4.5L19 7.5"/>'],
   lock: [
     1.8,

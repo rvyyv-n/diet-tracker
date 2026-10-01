@@ -462,17 +462,6 @@
   margin-bottom: var(--space-12);
 }
 
-/* The one line under a screen title (phase + week on Today, week + count on
-   Weight, a plain label on Settings). An uppercase tracked caption — the same
-   register as .group__label — so it reads as an eyebrow and leaves the serif
-   title as the single large thing in the header. */
-.phase-banner {
-  font: var(--text-eyebrow);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: var(--eyebrow-transform);
-  color: var(--ink-muted);
-}
-
 /* the one-time v2 "what's new" card: its list needs the usual <ul> reset
    (see pass 37/38's note on this) */
 .whatsnew__list {
@@ -484,37 +473,6 @@
   gap: var(--space-4);
   font: var(--text-body-sm);
   color: var(--text-body);
-}
-
-/* empty states (pass 41) --------------------------------------------------
-   One large muted glyph over one line of copy, centred in the space the real
-   content would have filled. Only two surfaces use it — the weight history and
-   the recipe book — because only those two are ever genuinely empty.
-
-   The glyph is --ink-soft rather than a status colour: nothing here is
-   a warning, and colour in this app already means on-track/partway/under. The
-   block is padded, not min-height'd, so it never reserves more space than the
-   copy needs. */
-
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-12);
-  padding: var(--space-32) var(--space-16);
-  text-align: center;
-}
-
-.empty__icon {
-  display: inline-flex;
-  color: var(--ink-soft);
-}
-
-.empty__line {
-  max-width: 34ch;
-  margin: 0;
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
 }
 
 .block-row__tick {
@@ -594,31 +552,6 @@
   box-shadow: var(--focus-ring);
 }
 
-.extras__row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
-  min-height: var(--row-min);
-  padding: var(--space-12) var(--space-16);
-  background: var(--bg-raised);
-  border: var(--border-width-hairline) dashed var(--line);
-  border-radius: var(--radius-card);
-}
-
-.extras__name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font: var(--text-title-sm);
-  color: var(--ink);
-}
-
-.extras__modeseg {
-  align-self: flex-start;
-}
-
 .extras__form {
   display: flex;
   flex-direction: column;
@@ -629,63 +562,9 @@
   display: flex;
   gap: var(--space-12);
 }
-.extras__row-fields .field {
+.extras__row-fields .r-field {
   flex: 1;
   min-width: 0;
-}
-
-/* recipe editor (pass 28) ------------------------------------------------
-   Name a recipe and manage its ingredient list, expand-in-place over the
-   Recipes tab. Reuses .field, .extras__row, .seg and the .btn kit; adds
-   only layout and the ingredient add-box. */
-
-.recipe-editor {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-16);
-}
-
-.recipe-editor__items {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
-/* Ingredient rows are the same dashed .extras__row card as a logged extra. */
-
-.recipe-editor__total {
-  margin: 0;
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.recipe-editor__add {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-12);
-  padding: var(--space-12);
-  background: var(--bg-raised);
-  border: var(--border-width-hairline) solid var(--line);
-  border-radius: var(--radius-card);
-}
-
-.recipe-editor__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-8) var(--space-12);
-}
-
-.recipe-editor__delete {
-  margin-left: auto;
-  color: var(--danger);
-}
-
-.recipe-editor__error {
-  margin: 0;
-  font: var(--text-body-sm);
-  color: var(--danger);
 }
 
 /* --------------------------------------------------- date controls ---
@@ -927,253 +806,6 @@
   color: var(--ink-soft);
   cursor: default;
 }
-/* ----------------------------------------------------- reference sheet ---
-   The meals and food table blocks Recipes still shows (built from plan.js).
-   Plan itself is `.r-plan`, near the end of this file (pass 69).           */
-
-.planscreen {
-  gap: var(--space-16);
-}
-
-/* the reference sheet -------------------------------------------------- */
-
-/* The three sections sit in one card, so the gap between them is the only
-   thing separating Targets from Meals from the food table — --space-16 read as
-   another row gap once the subheads gained weight. */
-.planref {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-24);
-}
-
-.planref__block {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
-/* one meal block, with its rotation options nested beneath */
-.planref__meal {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-8) 0;
-  border-top: var(--border-width-hairline) solid var(--line);
-}
-.planref__meal:first-of-type {
-  border-top: none;
-}
-
-.planref__meal-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-12);
-}
-
-/* The disclosure form of the header. A full-width tap row, so it takes the
-   app's touch target rather than the text's own height. */
-.planref__meal-head--btn {
-  width: 100%;
-  min-height: var(--row-min);
-  padding: 0;
-  text-align: left;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-control);
-}
-.planref__meal-head--btn:active .planref__meal-name {
-  color: var(--accent);
-}
-.planref__meal-head--btn:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-.planref__meal-chev {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  color: var(--ink-soft);
-  transition: transform var(--dur-base) var(--ease-out);
-}
-.planref__meal.is-open .planref__meal-chev {
-  transform: rotate(180deg);
-}
-/* The name takes the slack, which is what puts the figure and the chevron
-   together at the trailing edge. With space-between doing the work instead, the
-   figure drifted to the middle of the row as the row got wider — fine at 390px,
-   obviously wrong at 960 where it ended up nowhere near either end. */
-.planref__meal-name {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-8);
-  font: var(--text-title-sm);
-  color: var(--ink);
-}
-/* The block glyph. `align-self: center` because the row is baseline-aligned for
-   the text, and an svg box has no useful baseline — left to itself it hangs
-   below the name it sits beside. */
-.planref__meal-icon {
-  flex: none;
-  align-self: center;
-  display: inline-flex;
-  color: var(--ink-soft);
-}
-
-.planref__meal-time {
-  font: var(--text-caption);
-  font-weight: var(--weight-regular);
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
-}
-.planref__meal-fig {
-  flex: none;
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-/* The rotation options, revealed under an open block. Each option is a bounded
-   row with a hairline above it, not another paragraph in a run — a 2–3 line
-   ingredient sentence needs a visible edge or four of them read as one block of
-   text. The left rule ties the whole list back to its parent block. */
-.planref__opts {
-  display: flex;
-  flex-direction: column;
-  margin: var(--space-4) 0 var(--space-8);
-  padding: 0 0 0 var(--space-12);
-  list-style: none;
-  border-left: var(--border-width-hairline) solid var(--line);
-}
-.planref__opt {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-12);
-  padding: var(--space-8) 0;
-  font: var(--text-body-sm);
-  color: var(--text-body);
-  border-top: var(--border-width-hairline) solid var(--line);
-}
-.planref__opt:first-child {
-  border-top: none;
-}
-.planref__opt-desc {
-  /* Keeps "(1 tsp)" off a line of its own where the browser supports it. */
-  text-wrap: pretty;
-}
-.planref__opt-kcal {
-  flex: none;
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-/* The share rail under a meal head (pass 40): a hairline filled to the meal's
-   largest option as a fraction of the day's target. A size readout, not a
-   status one — see shareRail() in plan-view.js for why it may not take the
-   intake ramp's colours. Teal because that is already the sheet's "second
-   number" accent, the one the protein figures use. */
-.planref__share {
-  display: block;
-  height: 3px;
-  margin-top: var(--space-4);
-  border-radius: var(--radius-pill);
-  background: var(--line);
-  overflow: hidden;
-}
-.planref__share-fill {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--accent);
-}
-
-/* The food table's column key. Hidden on the phone, where the row is a name
-   over a run-on meta line and there are no columns to label; the desktop
-   grid below repeats this selector to inherit the row's exact tracks. */
-.planref__foods-head {
-  display: none;
-}
-
-/* the food table — a <ul>, so it needs the same reset as the other two */
-.planref__foods {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.planref__food {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: var(--space-8) 0;
-  border-top: var(--border-width-hairline) solid var(--line);
-}
-.planref__food:first-child {
-  border-top: none;
-}
-.planref__food-name {
-  font: var(--text-body-sm);
-  color: var(--ink);
-}
-/* Portion / kcal / protein are three cells so the desktop layout can align them
-   into columns. On a phone they read as one line, and the "·" between them is
-   drawn here rather than baked into the text. */
-.planref__food-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  font: var(--text-caption);
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-}
-.planref__food-meta > span + span::before {
-  content: "·";
-  margin-right: var(--space-4);
-  color: var(--ink-soft);
-}
-
-/* ============================================================================
-   settings.css — the Settings / About screen (pass 4).
-   ----------------------------------------------------------------------------
-   Same rules as the rest: press + focus states only, no hover, hairline
-   borders, 12px card radius, coral only on the control that commits. Merged
-   from docs/handoff/additions.css; the v1-only list rows (.set-row, .set-card,
-   .set-about, .set-danger) were dropped — the v2 block below is what ships.
-   ========================================================================== */
-
-/* ------------------------------------------------------------- groups ---
-   An uppercase tracked label above a card, matching .field__label. Named for
-   the job, not the screen — Weight uses it for Trend and History too.        */
-
-.group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
-/* The eyebrow above a card. Flex since pass 39, so it can carry a leading
-   glyph — see groupLabel() in ui/dom.js. */
-.group__label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-4);
-  font: var(--text-eyebrow);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: var(--eyebrow-transform);
-  color: var(--ink-muted);
-}
-/* One notch softer than the label, so the word stays the thing being read. */
-.group__label-icon {
-  flex: none;
-  display: inline-flex;
-  color: var(--ink-soft);
-}
 
 /* ---------------------------------------------------------------- ack ---
    A transient coral acknowledgement after a write — Copied, Saved. The one
@@ -1381,50 +1013,6 @@
     max-width: var(--container-app);
     margin: 0 auto;
     padding-bottom: 0;
-  }
-
-  /* ---- the food table becomes a table ----
-     The one list that wants the width rather than a cap. On a phone it is a
-     name over a run-on meta line, which at 960px left five sixths of the row
-     empty. Here the three cells become columns: name takes the slack, portion
-     sits to its right, and the two figures are right-aligned so the digits line
-     up down the page (every cell already declares tabular-nums). The "·"
-     separators are for the phone's single line and come off. */
-  .planref__foods-head {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(120px, auto) 100px 72px;
-    column-gap: var(--space-24);
-    padding-bottom: var(--space-8);
-    font: var(--text-eyebrow);
-    letter-spacing: var(--eyebrow-tracking);
-    text-transform: var(--eyebrow-transform);
-    color: var(--ink-soft);
-  }
-  .planref__foods-head-kcal,
-  .planref__foods-head-protein {
-    text-align: right;
-  }
-  /* The key belongs to the first row, so that row drops its own top rule. */
-  .planref__foods > .planref__food:first-child {
-    border-top: var(--border-width-hairline) solid var(--line);
-  }
-
-  .planref__food {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(120px, auto) 100px 72px;
-    align-items: baseline;
-    column-gap: var(--space-24);
-    padding: var(--space-12) 0;
-  }
-  .planref__food-meta {
-    display: contents;
-  }
-  .planref__food-meta > span + span::before {
-    content: none;
-  }
-  .planref__food-kcal,
-  .planref__food-protein {
-    text-align: right;
   }
 }
 
@@ -1825,11 +1413,6 @@
     background: var(--bg-raised);
   }
 
-  /* tap rows — press is --bg-sunken, so hover takes --bg-raised */
-  .planref__meal-head--btn:hover {
-    background: var(--bg-raised);
-  }
-
   /* small icon triggers — press is --bg-raised, so hover takes soft */
   .block-row__drop:hover {
     background: var(--bg-raised);
@@ -1879,6 +1462,12 @@
 .r-option,
 .r-grocery__item,
 .r-plan__link,
+.r-meals__head,
+.r-rbook__edit,
+.r-rbook__back,
+.r-recipe-editor__remove,
+.r-recipe-editor__more,
+.r-recipe-editor__delete,
 .r-calendar__day,
 .r-banner__action,
 .r-blockrow__link {
@@ -4801,6 +4390,491 @@ a.r-button {
   }
 }
 
+/* -------------------------------------------------- recipes (pass 71) ---
+   Recipes on the surface components. A phone column pads itself by --gutter
+   and keeps a Plan link on top (Recipes is reached from Plan there); from
+   1024px it is two columns: the book and the food table on the left, the meals
+   on the right. The recipe editor is one body, `.r-recipe-editor`, used in the
+   Recipes sheet and inline in Log food. */
+
+.r-rbook {
+  display: flex;
+  flex-direction: column;
+  margin: 0 calc(-1 * (var(--space-16) + env(safe-area-inset-right))) 0
+    calc(-1 * (var(--space-16) + env(safe-area-inset-left)));
+}
+@media (min-width: 600px) {
+  .r-rbook {
+    margin: 0 calc(-1 * (var(--space-24) + env(safe-area-inset-right))) 0
+      calc(-1 * (var(--space-24) + env(safe-area-inset-left)));
+  }
+}
+.r-rbook__head {
+  padding: 0 var(--gutter);
+}
+.r-rbook__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: var(--icon-button);
+  margin: 2px 0 0 calc(-1 * var(--space-8));
+  padding: 0 var(--space-8);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--accent-text);
+  font-family: inherit;
+  font-size: var(--type-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+.r-rbook__title {
+  margin: 4px 0 0;
+  font: var(--text-screen-title);
+  line-height: 1.1;
+}
+.r-rbook__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-top: var(--space-24);
+  padding: 0 var(--gutter);
+}
+.r-rbook__sec {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.r-rbook__sec > .r-section-heading {
+  margin-bottom: 10px;
+}
+.r-rbook__intro {
+  margin: -4px 0 var(--space-12);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+.r-rbook__new--wide {
+  display: none;
+}
+.r-rbook__new--phone {
+  margin-bottom: var(--space-12);
+}
+.r-rbook__sec .r-search {
+  margin-bottom: var(--space-4);
+}
+.r-rbook__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.r-rbook__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-12);
+  min-height: 64px;
+  border-bottom: 1px solid var(--line);
+}
+.r-rbook__text {
+  min-width: 0;
+}
+.r-rbook__name,
+.r-rbook__meta {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.r-rbook__name {
+  font-size: 17px;
+}
+.r-rbook__meta {
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.r-rbook__edit {
+  height: var(--icon-button);
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--accent-text);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.r-rbook__card {
+  border-radius: var(--radius-card);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-card);
+}
+
+/* meals: a disclosure per block */
+.r-meals {
+  padding: 0 var(--space-16);
+}
+.r-meals__meal + .r-meals__meal {
+  border-top: 1px solid var(--line);
+}
+.r-meals__head {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto 16px;
+  align-items: center;
+  gap: var(--space-12);
+  width: 100%;
+  min-height: 56px;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.r-meals__icon {
+  display: flex;
+  color: var(--ink-soft);
+}
+.r-meals__name b {
+  font-size: 17px;
+  font-weight: 700;
+}
+.r-meals__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-8);
+  min-width: 0;
+}
+.r-meals__time {
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.r-meals__fig {
+  font-size: 15px;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.r-meals__chevron {
+  display: flex;
+  color: var(--ink-muted);
+}
+.r-meals__meal.is-open .r-meals__chevron {
+  transform: rotate(180deg);
+}
+.r-meals__share {
+  display: block;
+  height: 3px;
+  margin: -6px 0 var(--space-8) 32px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--line);
+}
+.r-meals__share-fill {
+  display: block;
+  height: 100%;
+  background: var(--ink-soft);
+}
+.r-meals__opts {
+  margin: 0 0 var(--space-12) 32px;
+  padding: 0;
+  list-style: none;
+}
+.r-meals__opt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-12);
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+  line-height: 1.4;
+}
+.r-meals__opt-desc {
+  color: var(--ink-muted);
+}
+.r-meals__opt-kcal {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* food table: a name over its figures on a phone, columns on desktop */
+.r-foods {
+  padding: 0 var(--space-16);
+}
+.r-foods__head {
+  display: none;
+}
+.r-foods__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.r-foods__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  padding: var(--space-12) 0;
+  font-size: var(--type-small);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.r-foods__row + .r-foods__row {
+  border-top: 1px solid var(--line);
+}
+.r-foods__name {
+  flex-basis: 100%;
+  font-size: var(--type-body);
+  color: var(--ink);
+}
+.r-foods__kcal::before,
+.r-foods__protein::before {
+  content: "·";
+  margin: 0 6px;
+}
+
+/* the recipe editor */
+.r-recipe-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.r-recipe-editor__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-12);
+}
+.r-recipe-editor__title {
+  margin: 0;
+  font-size: var(--type-display-md);
+  line-height: 1.2;
+}
+.r-recipe-editor__delete {
+  height: var(--icon-button);
+  padding: 0 var(--space-8);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--danger);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.r-recipe-editor__label {
+  font-size: var(--type-small);
+  font-weight: 700;
+}
+.r-recipe-editor__items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.r-recipe-editor__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 44px;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: 48px;
+  border-bottom: 1px solid var(--line);
+}
+.r-recipe-editor__name {
+  font-size: var(--type-body);
+  overflow-wrap: anywhere;
+}
+.r-recipe-editor__kcal {
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.r-recipe-editor__remove {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: var(--icon-button);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+.r-recipe-editor__more {
+  align-self: flex-start;
+  height: var(--icon-button);
+  margin-top: var(--space-4);
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--accent-text);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.r-recipe-editor__add {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  margin-top: var(--space-12);
+}
+.r-recipe-editor__error {
+  margin: 0;
+  font-size: var(--type-small);
+  color: var(--danger);
+}
+.r-recipe-editor__foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.r-recipe-editor__total {
+  flex: 1 1 auto;
+  font-size: 15px;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.r-recipe-editor__total b {
+  font-size: 17px;
+  color: var(--ink);
+}
+
+@media (min-width: 1024px) {
+  .r-rbook {
+    margin: 0;
+  }
+  .r-rbook__head {
+    padding: 0;
+  }
+  .r-rbook__back {
+    display: none;
+  }
+  .r-rbook__title {
+    margin-top: 6px;
+    font-size: calc(var(--type-display-lg) * 1.25);
+    line-height: 1.05;
+  }
+  .r-rbook__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 40px;
+    row-gap: 28px;
+    align-items: start;
+    margin-top: 26px;
+    padding: 0;
+  }
+  .r-rbook__sec--book {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .r-rbook__sec--meals {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .r-rbook__sec--foods {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .r-rbook__sec > .r-section-heading {
+    align-items: center;
+  }
+  .r-rbook__new--wide {
+    display: inline-flex;
+    height: var(--icon-button);
+    padding: 0 var(--space-20);
+  }
+  .r-rbook__new--phone {
+    display: none;
+  }
+  .r-rbook__intro {
+    margin: -6px 0 var(--space-12);
+  }
+  .r-rbook__row {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    gap: 14px;
+    min-height: 60px;
+  }
+  .r-rbook__text {
+    display: contents;
+  }
+  .r-rbook__meta {
+    text-align: right;
+  }
+  .r-meals {
+    padding: 0 18px;
+  }
+  .r-meals__head {
+    grid-template-columns: minmax(0, 1fr) auto 16px;
+    min-height: 54px;
+  }
+  .r-meals__icon {
+    display: none;
+  }
+  .r-meals__name b {
+    font-size: var(--type-body);
+  }
+  .r-meals__fig {
+    font-size: var(--type-small);
+  }
+  .r-meals__share {
+    margin-left: 0;
+  }
+  .r-meals__opts {
+    margin: 0 0 10px;
+  }
+  .r-meals__opt {
+    padding: 9px 0;
+  }
+  .r-foods {
+    padding: 4px 18px 8px;
+  }
+  .r-foods__head,
+  .r-foods__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 90px 70px 60px;
+    gap: 10px;
+    align-items: center;
+  }
+  .r-foods__head {
+    padding: 10px 0;
+    font-family: var(--font-caption);
+    font-size: var(--type-micro);
+    font-weight: 700;
+    letter-spacing: var(--label-tracking);
+    text-transform: var(--label-transform);
+    color: var(--ink-muted);
+  }
+  .r-foods__row {
+    min-height: 44px;
+    padding: 0;
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+  }
+  .r-foods__row + .r-foods__row {
+    border-top: 1px solid var(--line);
+  }
+  .r-foods__name {
+    font-size: 15px;
+  }
+  .r-foods__kcal,
+  .r-foods__protein,
+  .r-foods__num {
+    text-align: right;
+  }
+  .r-foods__kcal {
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .r-foods__kcal::before,
+  .r-foods__protein::before {
+    content: none;
+  }
+}
+
 /* ------------------------------------------------ today's sheets (pass 67) --- */
 
 .r-sheet__note {
@@ -4914,6 +4988,12 @@ a.r-button {
   .r-option:hover,
   .r-grocery__item:hover,
   .r-plan__link:hover,
+  .r-meals__head:hover,
+  .r-rbook__edit:hover,
+  .r-rbook__back:hover,
+  .r-recipe-editor__remove:hover,
+  .r-recipe-editor__more:hover,
+  .r-recipe-editor__delete:hover,
   .r-setprofile:hover,
   .r-calendar__day:not(:disabled):hover,
   .r-banner__action:hover,
@@ -4944,6 +5024,12 @@ button.r-listrow:active,
 .r-option:active,
 .r-grocery__item:active,
 .r-plan__link:active,
+.r-meals__head:active,
+.r-rbook__edit:active,
+.r-rbook__back:active,
+.r-recipe-editor__remove:active,
+.r-recipe-editor__more:active,
+.r-recipe-editor__delete:active,
 .r-setprofile:active,
 .r-calendar__day:not(:disabled):active,
 .r-banner__action:active,
@@ -4975,6 +5061,12 @@ button.r-listrow:active,
 .r-option:focus-visible,
 .r-grocery__item:focus-visible,
 .r-plan__link:focus-visible,
+.r-meals__head:focus-visible,
+.r-rbook__edit:focus-visible,
+.r-rbook__back:focus-visible,
+.r-recipe-editor__remove:focus-visible,
+.r-recipe-editor__more:focus-visible,
+.r-recipe-editor__delete:focus-visible,
 .r-setprofile:focus-visible,
 .r-calendar__day:focus-visible,
 .r-banner__action:focus-visible,

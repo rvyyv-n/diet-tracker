@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { justOpened, announce } from "./js/ui/dom.js";
+import { announce } from "./js/ui/dom.js";
 import { FOOD_DB, ADDON_IDS, blockById, phaseTarget, rotationOptions } from "./js/core/plan.js";
 import {
   dayTotals,
@@ -37,9 +37,15 @@ import {
   saveRecipe,
 } from "./js/core/recipes.js";
 import { listbox } from "./js/ui/listbox.js";
-import { NUM, EmptyState, Imperative } from "./components/shared.jsx";
+import { NUM, Imperative } from "./components/shared.jsx";
 import { Button, Segmented, TextField, Toggle, Icon } from "./components/core.jsx";
-import { Sheet, OptionRow, CalendarGrid } from "./components/surfaces.jsx";
+import {
+  Sheet,
+  OptionRow,
+  CalendarGrid,
+  ConfirmPanel,
+  EmptyState,
+} from "./components/surfaces.jsx";
 
 /** The desktop nav's width, which a dialog centres beside. Matches --panel-nav-width. */
 const NAV_INSET = 256;
@@ -51,7 +57,7 @@ export function nowHHMM() {
 }
 
 /** Log an extra, stamped with the time when it goes on today. */
-function logExtra(day, item) {
+export function logExtra(day, item) {
   return addExtra(day, { ...item, at: day.date === todayISO() ? nowHHMM() : undefined });
 }
 
@@ -69,7 +75,7 @@ export function shortDate(iso, weekday = true) {
   return weekday ? `${WEEKDAY_SHORT[new Date(y, m - 1, d).getDay()]} ${date}` : date;
 }
 
-function sheetProps(dialog, onClose) {
+export function sheetProps(dialog, onClose) {
   return dialog ? { variant: "dialog", navInset: NAV_INSET, onClose } : { onClose };
 }
 
@@ -321,7 +327,7 @@ export function resolveDesc(day, block) {
  *  today, so Log still puts the recipe on today. */
 export function ExtrasRecipeForm({ day, extrasState, setExtrasOpen, commit }) {
   return extrasState.recipeEditor ? (
-    <RecipeEditorPanel extrasState={extrasState} />
+    <RecipeEditor extrasState={extrasState} inline />
   ) : (
     <RecipeList day={day} extrasState={extrasState} setExtrasOpen={setExtrasOpen} commit={commit} />
   );
@@ -411,10 +417,9 @@ function RecipeList({ day, extrasState, setExtrasOpen, commit }) {
           {visible.length ? null : <p className="r-sheet__note">No recipe matches.</p>}
         </div>
       ) : (
-        <EmptyState
-          glyph="book-open"
-          line="No saved recipes yet. Build one below, or save a food as you log it."
-        />
+        <EmptyState icon="recipes">
+          No saved recipes yet. Build one below, or save a food as you log it.
+        </EmptyState>
       )}
       <Button variant="secondary" fullWidth onClick={() => openEditor(null)}>
         + New recipe
@@ -424,13 +429,17 @@ function RecipeList({ day, extrasState, setExtrasOpen, commit }) {
 }
 
 /**
- * The recipe editor (pass 28): a name field, the working ingredient list, an
- * add-ingredient sub-form (pick from FOOD_DB or quick-type, mirroring the
- * extras entry), and the running total. Save routes to createRecipe (new) or
- * updateRecipe (existing, which also renames). Delete only shows when editing
- * an existing recipe.
+ * The recipe editor (pass 28, restyled pass 71): a name field, the ingredients
+ * it is built from, an add-ingredient area (pick from FOOD_DB or quick-type,
+ * mirroring the extras entry), and the running total beside Save. Save routes
+ * to createRecipe (new) or updateRecipe (existing, which also renames). Delete
+ * only shows when editing an existing recipe, and asks once more, with no
+ * Undo: a recipe is real effort to rebuild, and days it was logged on keep
+ * their kcal. `inline` is the copy inside the Log food sheet, which has no
+ * sheet of its own to close, so it gets a Cancel; the Recipes screen wraps the
+ * editor in its own Sheet.
  */
-function RecipeEditorPanel({ extrasState }) {
+export function RecipeEditor({ extrasState, inline = false }) {
   const {
     recipeEditor: ed,
     setRecipeEditor,
@@ -439,13 +448,14 @@ function RecipeEditorPanel({ extrasState }) {
     recipeDeleteConfirming,
     setRecipeDeleteConfirming,
   } = extrasState;
+  const [adding, setAdding] = useState(ed.items.length === 0);
   const totals = recipeTotals(ed.items);
-  const deleteConfirmJustOpened = justOpened("today.recipeDelete", recipeDeleteConfirming);
   const canSave = Boolean(ed.name.trim()) && ed.items.length > 0;
 
   function addItem(item) {
     setRecipeEditor((prev) => ({ ...prev, items: [...prev.items, item] }));
     setRecipeEditorError(null);
+    setAdding(false);
   }
 
   function removeItem(index) {
@@ -477,144 +487,104 @@ function RecipeEditorPanel({ extrasState }) {
   }
 
   return (
-    <div className="recipe-editor">
-      <div className="field">
-        <span className="field__label">Name</span>
-        <div className="field__control">
-          <input
-            className="field__input"
-            type="text"
-            value={ed.name}
-            placeholder="e.g. Morning shake"
-            maxLength={60}
-            onChange={(e) => setRecipeEditor((prev) => ({ ...prev, name: e.target.value }))}
-          />
-        </div>
-      </div>
-      <div className="recipe-editor__items">
-        {ed.items.length ? (
-          ed.items.map((item, i) => (
-            <RecipeItemRow key={i} item={item} onRemove={() => removeItem(i)} />
-          ))
-        ) : (
-          <p className="field__hint">Add an ingredient below.</p>
-        )}
-      </div>
-      <p className="recipe-editor__total">
-        Total {NUM.format(Math.round(totals.kcal))} kcal · {Math.round(totals.proteinG)} g protein
-      </p>
-      <div className="recipe-editor__add">
-        <RecipeAddModeToggle extrasState={extrasState} />
-        {ed.addMode === "pick" ? (
-          <RecipeAddPickForm extrasState={extrasState} onAdd={addItem} />
-        ) : (
-          <RecipeAddTypeForm onAdd={addItem} />
-        )}
-      </div>
-      {recipeEditorError ? <p className="recipe-editor__error">{recipeEditorError}</p> : null}
-      <div className="recipe-editor__actions">
-        <button
-          className="btn btn--primary btn--full"
-          type="button"
-          disabled={!canSave}
-          onClick={save}
-        >
-          {ed.id == null ? "Save recipe" : "Save changes"}
-        </button>
-        <button className="btn btn--text" type="button" onClick={close}>
-          Cancel
-        </button>
+    <div className="r-recipe-editor">
+      <div className="r-recipe-editor__top">
+        <h3 className="r-recipe-editor__title">{ed.id == null ? "New recipe" : "Edit recipe"}</h3>
         {ed.id != null && !recipeDeleteConfirming ? (
           <button
-            className="btn btn--text recipe-editor__delete"
             type="button"
+            className="r-recipe-editor__delete"
             onClick={() => setRecipeDeleteConfirming(true)}
           >
-            Delete recipe
+            Delete
           </button>
         ) : null}
       </div>
+      <TextField
+        label="Name"
+        placeholder="e.g. Morning shake"
+        maxLength={60}
+        value={ed.name}
+        onChange={(v) => setRecipeEditor((prev) => ({ ...prev, name: v }))}
+      />
+      <div className="r-recipe-editor__built">
+        <div className="r-recipe-editor__label">Built from</div>
+        {ed.items.length ? (
+          <ul className="r-recipe-editor__items">
+            {ed.items.map((item, i) => (
+              <li key={i} className="r-recipe-editor__item">
+                <span className="r-recipe-editor__name">{item.name}</span>
+                <span className="r-recipe-editor__kcal">
+                  {NUM.format(Math.round(Number(item.kcal) || 0))}
+                </span>
+                <button
+                  type="button"
+                  className="r-recipe-editor__remove"
+                  aria-label={`Remove ${item.name}`}
+                  onClick={() => removeItem(i)}
+                >
+                  <Icon name="close" size={18} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="r-sheet__note">Add an ingredient below.</p>
+        )}
+        {adding ? (
+          <div className="r-recipe-editor__add">
+            <Segmented
+              label="Add from"
+              value={ed.addMode}
+              onChange={(mode) => setRecipeEditor((prev) => ({ ...prev, addMode: mode }))}
+              options={[
+                { value: "pick", label: "Foods" },
+                { value: "type", label: "Custom" },
+              ]}
+            />
+            {ed.addMode === "pick" ? (
+              <RecipeAddPickForm extrasState={extrasState} onAdd={addItem} />
+            ) : (
+              <RecipeAddTypeForm onAdd={addItem} />
+            )}
+          </div>
+        ) : (
+          <button type="button" className="r-recipe-editor__more" onClick={() => setAdding(true)}>
+            + Add from the food table
+          </button>
+        )}
+      </div>
+      {recipeEditorError ? (
+        <p className="r-recipe-editor__error" role="alert">
+          {recipeEditorError}
+        </p>
+      ) : null}
       {ed.id != null && recipeDeleteConfirming ? (
-        <RecipeDeleteConfirm
-          ed={ed}
-          justOpenedNow={deleteConfirmJustOpened}
+        <ConfirmPanel
+          title={`Delete “${ed.name.trim() || "this recipe"}”?`}
+          body="This cannot be undone. Days it was logged on keep their kcal."
+          confirmLabel="Delete"
+          onConfirm={() => {
+            deleteRecipe(ed.id);
+            close();
+          }}
           onCancel={() => setRecipeDeleteConfirming(false)}
-          onClose={close}
         />
       ) : null}
-    </div>
-  );
-}
-
-/**
- * Delete's own two-step, reusing Settings' .set-confirm rather than the
- * rejected undo-toast pattern — a recipe is real effort to rebuild and this is
- * the app's only unconfirmed destructive tap outside Settings.
- */
-function RecipeDeleteConfirm({ ed, justOpenedNow, onCancel, onClose }) {
-  return (
-    <div className={`set-confirm${justOpenedNow ? " is-entering" : ""}`}>
-      <p className="set-confirm__title">Delete "{ed.name.trim() || "this recipe"}"?</p>
-      <p className="set-confirm__body">This cannot be undone.</p>
-      <div className="set-confirm__actions">
-        <button
-          className="btn btn--danger"
-          type="button"
-          onClick={() => {
-            deleteRecipe(ed.id);
-            onClose();
-          }}
-        >
-          Delete recipe
-        </button>
-        <button className="btn btn--text" type="button" onClick={onCancel}>
-          Cancel
-        </button>
+      <div className="r-recipe-editor__foot">
+        <span className="r-recipe-editor__total">
+          <b>{NUM.format(Math.round(totals.kcal))} kcal</b> · {Math.round(totals.proteinG)} g
+          protein
+        </span>
+        {inline ? (
+          <Button variant="text" onClick={close}>
+            Cancel
+          </Button>
+        ) : null}
+        <Button disabled={!canSave} onClick={save}>
+          Save
+        </Button>
       </div>
-    </div>
-  );
-}
-
-function RecipeItemRow({ item, onRemove }) {
-  return (
-    <div className="extras__row recipe-editor__item">
-      <span className="extras__name">{item.name}</span>
-      <span className="block-row__kcal">
-        {NUM.format(Math.round(Number(item.kcal) || 0))}
-        <span className="block-row__unit">kcal</span>
-      </span>
-      <button
-        className="block-row__drop"
-        type="button"
-        aria-label={`Remove ${item.name}`}
-        onClick={onRemove}
-      >
-        ×
-      </button>
-    </div>
-  );
-}
-
-function RecipeAddModeToggle({ extrasState }) {
-  const { recipeEditor: ed, setRecipeEditor } = extrasState;
-  return (
-    <div className="seg extras__modeseg">
-      {[
-        ["pick", "Foods"],
-        ["type", "Custom"],
-      ].map(([mode, label]) => (
-        <button
-          key={mode}
-          className={`seg__btn${ed.addMode === mode ? " is-on" : ""}`}
-          type="button"
-          onClick={() => {
-            if (ed.addMode === mode) return;
-            setRecipeEditor((prev) => ({ ...prev, addMode: mode }));
-          }}
-        >
-          {label}
-        </button>
-      ))}
     </div>
   );
 }
@@ -655,15 +625,15 @@ function PickForm({ label, foodId, onFoodChange, variant, buttonLabel, onAdd }) 
 
   return (
     <div className="extras__form">
-      <div className="field">
-        <span className="field__label">{label}</span>
+      <div className="r-field">
+        <span className="r-field__label">{label}</span>
         <Imperative node={lb.node} />
+        {food ? (
+          <span className="r-field__note">
+            {NUM.format(food.kcal)} kcal · {Math.round(food.proteinG)} g protein
+          </span>
+        ) : null}
       </div>
-      {food ? (
-        <p className="field__hint">
-          {NUM.format(food.kcal)} kcal · {Math.round(food.proteinG)} g protein
-        </p>
-      ) : null}
       <Button variant={variant} fullWidth disabled={!food} onClick={() => food && onAdd(food)}>
         {buttonLabel}
       </Button>

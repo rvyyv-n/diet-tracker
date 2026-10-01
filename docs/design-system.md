@@ -204,14 +204,14 @@ DueCard, SuggestionCard, StatRow, PhaseLadder, GroceryList, WeightChart) and
 `surfaces.jsx` (Sheet, Toast, Banner, ConfirmPanel, EmptyState, ListGroup,
 ListRow, OptionRow, CalendarGrid). Props follow the handoff's `.d.ts` files.
 Their styles are the `r-` classes at the end of `app.css`; the prefix keeps
-them clear of the v2 classes until the screens are rebuilt (passes 67-71; Today, Weight, Plan and Settings are done).
+them clear of the v2 classes. Every main screen is built on them (passes 67-71); the first-run screens still use the v2 form classes until pass 72.
 Build a screen from these; don't add a parallel control. `dev/components.html`
 on the dev server shows every one in all four Look and theme pairs.
 
 `Icon` draws the Rise set (nav, check, lock, warn, info, search, chevrons,
 aisle marks) and falls back to the Lucide glyphs in `ui/icons.js` for any other
-name. `shared.jsx` keeps `NUM`, `fmtTime` and `Imperative`; its `Icon`,
-`Group`, `GroupLabel` and `EmptyState` go as their screens are rebuilt.
+name. `shared.jsx` is only `NUM` and `Imperative` now; its old `Icon`, `Group`,
+`GroupLabel`, `EmptyState` and `fmtTime` went with the last screen that used them.
 
 **States**, one model for every component:
 
@@ -230,7 +230,7 @@ name. `shared.jsx` keeps `NUM`, `fmtTime` and `Imperative`; its `Icon`,
 The `ui/` widgets (listbox, calendar popover, date dropdowns) follow the same
 look: a TextField trigger, IconButton-style month nav, an ink fill for the
 picked option or day, and today ringed. The v2 form classes (`.field`,
-`.seg`, `.btn`, …) stay until their screens move.
+`.seg`, `.btn`, …) stay for the first-run screens until pass 72.
 
 Nested Looks: the app layer of `tokens.css` is declared on `:root, [data-look]`,
 so an element carrying its own `data-look` and `data-theme` (the Look picker's
