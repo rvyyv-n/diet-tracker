@@ -319,7 +319,7 @@
   --bg-sunken: #e9e1d4;
   --bg-inverse: #121110;
   --ink: #121110;
-  --ink-muted: #6e655b;
+  --ink-muted: #6b6258; /* export #6e655b, 4.40:1 on --bg-sunken; this clears 4.5:1 */
   --ink-soft: #8c8378;
   --ink-inverse: #f3ede3;
   --line: #ddd3c4;
@@ -329,7 +329,7 @@
   --accent-pressed: #c9532e;
   --accent-disabled: #f2c6b4;
   --accent-ink: #121110;
-  --accent-text: #b44a26;
+  --accent-text: #a8441f; /* export #b44a26, 4.10:1 on --bg-sunken; Paper's coral-800 */
   --danger: #c23a4b;
   --danger-ink: #ffffff;
   --focus-ring: 0 0 0 2px var(--bg-canvas), 0 0 0 4px #e0673f;
@@ -554,6 +554,15 @@
   --nav-inset: 12px;
   --nav-lift: 14px;
 
+  /* The smallest hit area a control may have (pass 74). A control drawn
+     smaller keeps its drawn size and reaches this with an invisible ::after. */
+  --target-min: var(--icon-button);
+
+  /* Side nav labels. --nav-ink is drawn for the phone pill, which Reel light
+     paints dark; the side nav sits on --bg-sunken, so Reel light reads
+     --ink-muted there (below). */
+  --sidenav-ink: var(--nav-ink);
+
   /* Breakpoints — REFERENCE ONLY. A custom property can't sit in an @media
      condition, so queries repeat these as literals. */
   --bp-compact: 360px;
@@ -571,6 +580,10 @@
 [data-theme="dark"] {
   color-scheme: dark;
   --accent-tint: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+/* --nav-ink on Reel light's sunken fill is 2.03:1. */
+[data-look="reel"]:not([data-theme="dark"]) {
+  --sidenav-ink: var(--ink-muted);
 }
 
 /* ---------------------------------------------------------------- base ---

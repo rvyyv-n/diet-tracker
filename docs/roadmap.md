@@ -84,11 +84,11 @@ predecessor is unticked is flagged before it starts. Start each build pass in
 a fresh thread. The design refs are paths inside the design export
 (`design-system/…`, `screens/…`).
 
-| Build pass | Name              | Targets (pass numbers)      | Model                   |
-| ---------- | ----------------- | --------------------------- | ----------------------- |
-| 6          | Audit and README  | `sweep` (74), `readme` (75) | Opus, high effort       |
-| 7          | Motion            | `motion` (76), `rail` (77)  | Sonnet 5.5, high effort |
-| 8          | Final screenshots | `shots` (78)                | Sonnet 5.5, high effort |
+| Build pass | Name              | Targets (pass numbers)     | Model                   |
+| ---------- | ----------------- | -------------------------- | ----------------------- |
+| 6          | Audit and README  | `readme` (75)              | Opus, high effort       |
+| 7          | Motion            | `motion` (76), `rail` (77) | Sonnet 5.5, high effort |
+| 8          | Final screenshots | `shots` (78)               | Sonnet 5.5, high effort |
 
 Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
@@ -97,22 +97,7 @@ and desktop test pass, and the release.
 
 #### Build pass 6 — Audit and README
 
-Model: Opus, high effort. Targets: sweep, readme. This is the cross-cutting audit that approves the visual baselines, then the README redesign from final screenshots.
-
-- [ ] **Pass 74 · `sweep`** — the cross-cutting pass.
-  - Reads: the Verify list in the design README, `guidelines/sizing.html`.
-  - Does: every remaining sheet and confirm at phone and as 520px dialogs;
-    320px nothing clips on every screen; body contrast at least 4.5:1; 44px
-    targets (the first-run handoff flags the Segmented segments at 40px, small
-    buttons at 40px and the DotStrip dots under 44px); Segmented's unselected
-    label on Reel light is 4.40:1 and needs 4.5:1; a status word beside every
-    status dot; reduced motion; drives
-    `literals.test.js` to zero (only `theme.js` hex stays); re-approves any
-    baseline it moves with `test:visual:update`. The baselines for both Looks,
-    light and dark, were approved after pass 73, so `test:visual` is a live
-    gate until then.
-  - Done when: `check`, `test:offline` and `test:visual` are green across Paper
-    and Reel, light and dark.
+Model: Opus, high effort. Target: readme. The README redesign from final screenshots (the sweep, pass 74, is done).
 
 - [ ] **Pass 75 · `readme`** — README redesign in the style of the owner's
       other project.

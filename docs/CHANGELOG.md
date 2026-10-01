@@ -215,6 +215,15 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   (260 ms) while the day total slides up; no toast and no Undo. All times are
   duration tokens, so reduced motion shows the last frame at once. No new
   tokens.
+- **pass 74 — the cross-cutting sweep:** every screen, sheet, confirm and
+  first-run step checked at 390, 320 and 1440 in both Looks, light and dark.
+  Nothing clips at 320, and a short viewport now scrolls a sheet instead of
+  squeezing it. Every sheet is a 520px dialog on desktop. Body text is 4.5:1
+  or better: Reel light's muted ink and coral text are a shade darker, and
+  the side nav labels read `--sidenav-ink`. Controls drawn under 44px get an
+  invisible 44px hit area (`--target-min`), and inputs fill their 48px
+  fields. Reduced motion leaves nothing animating. `literals.test.js` is at
+  zero outside `theme.js`, and the visual baselines are re-approved.
 
 ## v2.3.0 — shipped
 
