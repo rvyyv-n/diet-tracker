@@ -11,6 +11,13 @@
       "Bash(npx prettier --check *)",
       "Bash(node scripts/shot.mjs *)",
       "Bash(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:5199/)"
+    ],
+    "deny": [
+      "Read(./private/showreel/**)",
+      "Read(./private/design/handoff-package/**)",
+      "Read(./e2e/snapshots/**)",
+      "Read(./docs/screenshots/**)",
+      "Read(./docs/roadmap-history.md)"
     ]
   },
   "hooks": {

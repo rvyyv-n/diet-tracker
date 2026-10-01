@@ -20,7 +20,7 @@ Each build pass lists its model in the roadmap. If this session is on a differen
 
 ## 3. For each target, in order
 
-**Read first.** The target's entry in `docs/roadmap.md`, plus the Architectural Decisions and Not doing sections. Its "Reads" files in the design export at `private/design/export-3.0/` (paths are relative to `design-system/` or `screens/`); read only what the target lists. The tokens are the source of truth, so never re-derive a value from a screenshot. After `tokens` lands, read `docs/design-system.md` too. Anything the roadmap marks as an open decision is a stop-and-ask: ask a short question with options.
+**Read first.** The target's entry in `docs/roadmap.md`. Read `docs/decisions.md` (settled decisions, Not doing) only if the target adds something its entry doesn't cover. Its "Reads" files in the design export at `private/design/export-3.0/` (paths are relative to `design-system/` or `screens/`); read only what the target lists. The tokens are the source of truth, so never re-derive a value from a screenshot. After `tokens` lands, read `docs/design-system.md` too. Anything the roadmap marks as an open decision is a stop-and-ask: ask a short question with options.
 
 **Plan in under ten lines, then build.** One target is one commit: typically 3 to 8 files and a few hundred lines. If it will be much larger, split it into `pass N step M` commits that each build, and say so first.
 
@@ -34,12 +34,13 @@ Rules that always apply:
 
 **Verify.**
 
-- `npm run check` and `npm run test:offline` pass.
-- Look at the change running: one grid from `scripts/shot.mjs` through the `check-screen` skill, in the combinations the target touches (looks x themes, 390 / 320 / 1440). Prefer text or computed-style proof when the question isn't about appearance.
-- If the target is meant to change how screens look, run `npm run test:visual:update` and commit the new pictures with it. Never approve a picture to hide an unintended change.
+- The pre-commit hook is the full gate (`npm run check`, `test:offline`, `test:visual`). Don't run those by hand first. While building, run only `npx vitest run <touched test files>` and `npx eslint <touched files>`.
+- Prove the change with page text (`"text":true` in `scripts/shot.mjs`) or an `eval` of a computed style or size. Take no screenshot per target.
+- One grid per build pass, not per target: after the last target, run one `check-screen` grid for the screens the group changed.
+- Re-approve pictures once, in the last commit of the group that changed how screens look: run `npm run test:visual:update` and commit the pictures with it. If an earlier commit is blocked by `test:visual` only because of an intended change, approve it then. Never approve a picture to hide an unintended change.
 - Lower `LEFTOVER` in `src/css/literals.test.js` for any literal the target removed.
 
-**Docs and commit.** Remove the target's entry from `docs/roadmap.md` and add a short entry under a `v3.0 - in progress` heading in `docs/CHANGELOG.md` (create it above v2.3.0 on the first target), in the same commit. Commit per the rubric in the project brief: `pass N: <what it does>`, then one bullet per area. No mention of the assistant, no co-author or generated-by line; the hooks enforce it.
+**Docs and commit.** Remove the target's entry from `docs/roadmap.md` and add a short entry under the `v3.0 - in progress` heading in `docs/CHANGELOG.md`. Never read CHANGELOG whole, because it is long. Use `Grep` for the heading, or `Read` with an offset and limit, and append the entry at the end of that section, in the same commit. Commit per the rubric in the project brief: `pass N: <what it does>`, then one bullet per area. No mention of the assistant, no co-author or generated-by line; the hooks enforce it.
 
 **Keep going or stop.** Continue to the next target in the group only if checks are green and nothing needs a decision. Otherwise stop there and say why.
 

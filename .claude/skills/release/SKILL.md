@@ -59,8 +59,7 @@ to `PRECACHE_URLS` in the same edit.
 
 ## Step 2 — the docs
 
-**`docs/CHANGELOG.md`** — add a section at the top, above the previous release,
-matching the existing house style exactly:
+**`docs/CHANGELOG.md`** — add a section above the "Older releases" heading, and move the previous release's section to `docs/changelog-archive.md` (newest first) so CHANGELOG holds only the current release. Never read the archive whole. Match the existing house style exactly:
 
 - Heading `## vX.Y.Z — shipped`, then an italic `*Status — released as \`vX.Y.Z\`.*`
   line summarising how it was built and shipped.
@@ -71,7 +70,7 @@ matching the existing house style exactly:
 
 **`docs/roadmap.md`** — mark the release's phase `✅ done`, write the
 "Passes N–M are done" paragraph, and move anything that slipped into a later
-phase or `later`. Leave the "Not doing" and "Architectural Decisions" blocks
+phase or `later`. Leave `docs/decisions.md` (Architectural Decisions and Not doing)
 alone unless the user explicitly reopened one.
 
 ## Step 3 — commit, merge, tag

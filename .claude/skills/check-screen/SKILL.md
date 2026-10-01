@@ -5,11 +5,11 @@ description: Visually check a Rise screen against the v3.0 design handoff using 
 
 # Check a screen
 
-Screenshots are the most expensive thing to look at, so take as few as possible: one grid image per question, never a series of single shots.
+Screenshots are the most expensive thing to look at, so take as few as possible: one grid image per question, never a series of single shots, and at most one per build pass (at the end of the group), not one per target.
 
 ## 1. Decide whether a screenshot is needed
 
-Unintended changes are caught without looking: `npm run test:visual` compares the key screens, in every Look and theme, with approved pictures (the pre-commit hook runs it once pictures exist). This skill is for judging whether an _intended_ change looks right. When it does, run `npm run test:visual:update` so the new look becomes the approved one, and commit the pictures with the change.
+Unintended changes are caught without looking: `npm run test:visual` compares the key screens, in every Look and theme, with approved pictures (the pre-commit hook runs it once pictures exist). This skill is for judging whether an _intended_ change looks right. When it does, run `npm run test:visual:update` once, in the last commit of the build pass that changed how screens look, and commit the pictures with it.
 
 Prefer cheaper proof first: tests, the page text (`"text":true` in `scripts/shot.mjs`), or an `eval` of a computed style or element size. Take a screenshot only when the answer is about how it looks.
 

@@ -54,7 +54,7 @@ public/           manifest.json, sw.js, icons, vendored fonts
 android/          Kotlin shell and native reminders
 desktop/          Tauri shell: tray, start-with-OS, native reminders
 server/           Cloudflare Worker for web push reminders
-docs/             roadmap.md, CHANGELOG.md, design-system.md, plan-spec.md
+docs/             roadmap.md, decisions.md, CHANGELOG.md (+ archive), design-system.md, plan-spec.md
 ```
 
 ## How work lands
@@ -90,8 +90,8 @@ no review gate.
 - **Motion and interaction polish come after feature and layout work**, so
   effects aren't built twice. Pass 48 (moving Plan's reference sheet) is an
   open decision that comes before any motion pass.
-- Read the "Architectural Decisions" and "Not doing" sections of
-  `docs/roadmap.md` before proposing anything. Don't re-propose a "Not doing"
+- Read `docs/decisions.md` (Architectural Decisions and Not doing) before
+  proposing anything. Skip it for a scoped build-pass target. Don't re-propose a "Not doing"
   item without a new reason.
 
 ## Build passes (v3.0)
@@ -104,6 +104,7 @@ each target is one commit, and each build pass lists the model to use.
 
 ## Docs
 
+- Don't read `docs/CHANGELOG.md` or `docs/changelog-archive.md` whole. Grep them or read a range. Don't read `docs/roadmap-history.md` or `private/` media unless asked.
 - `docs/roadmap.md` holds only **unfinished** work. When a pass is done, remove
   it from there and add a short entry to `docs/CHANGELOG.md` under the current
   release, in the same commit as the work.
@@ -111,8 +112,8 @@ each target is one commit, and each build pass lists the model to use.
 
 ## Releases
 
-Version line: v1 → 1.5 → 1.6 → 2.0 → 2.1 → 2.2 → 2.3 → 3.0 (the Claude Design overhaul). Never invent a number;
-ask which one this is.
+Version line: v1 → 1.5 → 1.6 → 2.0 → 2.1 → 2.2 → 2.3 → 3.0 (the design overhaul). A major number marks a redesign, a minor number a batch of passes. Never
+invent a number; ask which one this is.
 
 Flow: work lands on `release-X.Y` → before release, a full `/code-review` over
 everything since the last tag, then a test pass on phone and desktop →
