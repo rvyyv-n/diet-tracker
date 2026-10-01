@@ -386,10 +386,12 @@ function navGlance() {
   const target = phaseTarget(day.phaseId).kcal;
   const latest = allWeights().at(-1) ?? null;
 
+  const kcal = dayTotals(day).kcal;
   return {
-    kcal: NUM.format(dayTotals(day).kcal),
+    kcal: NUM.format(kcal),
     target: target ? NUM.format(target) : null,
-    status: intakeStatus(day),
+    // As Today: nothing eaten yet is "Not started", not "Low".
+    status: kcal === 0 ? "none" : intakeStatus(day),
     latest: latest ? formatWeight(latest.kg, profile.weightUnit || "kg") : null,
   };
 }

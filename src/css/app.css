@@ -2691,6 +2691,8 @@
   fill: var(--ink);
 }
 .r-chart__ghost {
+  /* the chart scales up on desktop; the dashes keep their phone size */
+  vector-effect: non-scaling-stroke;
   fill: none;
   stroke: var(--ink-soft);
   stroke-width: 2;

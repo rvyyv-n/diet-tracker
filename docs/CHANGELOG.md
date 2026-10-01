@@ -331,6 +331,12 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   N×" for the three most logged; the rest of the line stays muted. Green and
   gold are kept off, as they mean intake status. No new tokens.
 
+- **pass 87 — fresh-install sweep:** with nothing eaten yet, the side nav's
+  Today glance reads "Not started" in the neutral dot, as Today does, in
+  place of a red "Low". The ghost chart's dashes keep their phone weight on
+  the wider desktop chart. The storage line under Export data reads "Under 1
+  KB of about 5 MB used." with its capital. No new tokens.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.

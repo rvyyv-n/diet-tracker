@@ -937,7 +937,7 @@ function storageUsedText() {
 }
 
 function formatSize(chars) {
-  if (chars < 1024) return "under 1 KB";
+  if (chars < 1024) return "Under 1 KB";
   if (chars < 1024 * 1024) return `${Math.round(chars / 1024)} KB`;
   return `${(chars / (1024 * 1024)).toFixed(1).replace(/\.0$/, "")} MB`;
 }
