@@ -223,7 +223,10 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   the side nav labels read `--sidenav-ink`. Controls drawn under 44px get an
   invisible 44px hit area (`--target-min`), and inputs fill their 48px
   fields. Reduced motion leaves nothing animating. `literals.test.js` is at
-  zero outside `theme.js`, and the visual baselines are re-approved.
+  zero outside `theme.js`, and the visual baselines are re-approved. A follow-up
+  covered first run, the toast and the closed and backfill days: Undo has
+  `--toast-action-ink`, closed-day times read `--ink-muted`, and Undo and
+  Skip reach 44px.
 
 ## v2.3.0 — shipped
 

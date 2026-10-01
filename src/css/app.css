@@ -1500,7 +1500,9 @@
 .r-blockrow__link,
 .r-history__edit,
 .r-sidenav__brand,
-.r-weekcard__day {
+.r-weekcard__day,
+.r-toast__action,
+.r-stephead__skip {
   position: relative;
 }
 .r-segmented__option::after,
@@ -1509,7 +1511,9 @@
 .r-blockrow__link::after,
 .r-history__edit::after,
 .r-sidenav__brand::after,
-.r-weekcard__day::after {
+.r-weekcard__day::after,
+.r-toast__action::after,
+.r-stephead__skip::after {
   content: "";
   position: absolute;
   inset: min(0px, (100% - var(--target-min)) / 2);
@@ -2101,7 +2105,7 @@
 .r-blockrow--closed,
 .r-blockrow--closed-done {
   --r-mark-ring: inset 0 0 0 1.5px var(--line-strong);
-  --r-tc: var(--ink-soft);
+  --r-tc: var(--ink-muted); /* the export's --ink-soft is 3.2:1 */
   --r-nc: var(--ink-muted);
   --r-kc: var(--ink-muted);
   --r-ns: var(--type-body);
@@ -2737,7 +2741,7 @@
   border: 0;
   border-radius: var(--radius-pill);
   background: none;
-  color: var(--accent);
+  color: var(--toast-action-ink);
   font-family: inherit;
   font-size: 15px;
   font-weight: 700;

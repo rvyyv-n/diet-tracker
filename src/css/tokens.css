@@ -563,6 +563,10 @@
      --ink-muted there (below). */
   --sidenav-ink: var(--nav-ink);
 
+  /* The toast's Undo. The pill is --bg-inverse, light in dark themes, where
+     --accent is 2.92:1; there it takes Paper's light coral text instead. */
+  --toast-action-ink: var(--accent);
+
   /* Breakpoints — REFERENCE ONLY. A custom property can't sit in an @media
      condition, so queries repeat these as literals. */
   --bp-compact: 360px;
@@ -580,6 +584,7 @@
 [data-theme="dark"] {
   color-scheme: dark;
   --accent-tint: color-mix(in srgb, var(--accent) 20%, transparent);
+  --toast-action-ink: var(--p-coral-800);
 }
 /* --nav-ink on Reel light's sunken fill is 2.03:1. */
 [data-look="reel"]:not([data-theme="dark"]) {

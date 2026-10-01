@@ -40,7 +40,10 @@ test("every bundled web font loads", async ({ page }) => {
     else bad.push(`${res.status()} ${res.url()}`);
   });
   await seedApp(page, { look: "paper", theme: "light" });
+  // Under a parallel run the first font can land after fonts.ready, so wait for it.
+  const font = page.waitForResponse((res) => /\.woff2(\?|$)/.test(res.url()));
   await page.goto("/?tab=today");
+  await font;
   await page.evaluate("document.fonts.ready");
   expect(bad).toEqual([]);
   expect(loaded, "at least one bundled font is requested").toBeGreaterThan(0);

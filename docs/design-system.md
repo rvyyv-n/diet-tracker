@@ -123,6 +123,8 @@ invisible `::after`. Two known limits, kept by choice: the phone dot strip's
 days are 22px wide (the 44px Calendar button reaches the same days), and the
 calendar's days are 40px wide at 320. `--sidenav-ink` (app layer) colours the
 side nav labels: `--nav-ink`, except Reel light, where it is `--ink-muted`.
+`--toast-action-ink` colours the toast's Undo: `--accent`, or Paper's coral-800
+on the light inverse pill of the dark themes.
 
 Shell (pass 66, app layer): `--panel-nav-width` 256 (the desktop side nav),
 `--panel-nav-width-collapsed` 72 (the on-hover rail at rest),
@@ -197,13 +199,15 @@ translated.
 
 Each was weighed and kept on purpose; do not "correct" them.
 
-| Topic                      | Export says | Rise does                                  | Why                                                                                         |
-| -------------------------- | ----------- | ------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| Accent tint                | not defined | `--accent-tint`, `color-mix` of `--accent` | One definition serves both Looks; dark raises the mix from 12% to 20%                       |
-| Copernicus, StyreneB       | n/a         | dropped                                    | The v2 faces were licensed stand-ins; the Looks bring their own                             |
-| Reel light `--ink-muted`   | `#6E655B`   | `#6B6258`                                  | 4.40:1 on `--bg-sunken`; this clears 4.5:1 (pass 74)                                        |
-| Reel light `--accent-text` | `#B44A26`   | `#A8441F`, Paper's coral-800               | 4.10:1 on `--bg-sunken` (the ladder's "Now"); this gives 4.61:1                             |
-| Side nav label ink         | `--nav-ink` | `--sidenav-ink`                            | `--nav-ink` is drawn for Reel light's dark pill; on the side nav's sunken fill it is 2.03:1 |
+| Topic                      | Export says  | Rise does                                  | Why                                                                                         |
+| -------------------------- | ------------ | ------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| Accent tint                | not defined  | `--accent-tint`, `color-mix` of `--accent` | One definition serves both Looks; dark raises the mix from 12% to 20%                       |
+| Copernicus, StyreneB       | n/a          | dropped                                    | The v2 faces were licensed stand-ins; the Looks bring their own                             |
+| Reel light `--ink-muted`   | `#6E655B`    | `#6B6258`                                  | 4.40:1 on `--bg-sunken`; this clears 4.5:1 (pass 74)                                        |
+| Reel light `--accent-text` | `#B44A26`    | `#A8441F`, Paper's coral-800               | 4.10:1 on `--bg-sunken` (the ladder's "Now"); this gives 4.61:1                             |
+| Side nav label ink         | `--nav-ink`  | `--sidenav-ink`                            | `--nav-ink` is drawn for Reel light's dark pill; on the side nav's sunken fill it is 2.03:1 |
+| Toast Undo ink             | `--accent`   | `--toast-action-ink`                       | `--accent` on the dark themes' light toast pill is 2.92:1                                   |
+| Closed-day row times       | `--ink-soft` | `--ink-muted`                              | `--ink-soft` is 3.2 to 3.8:1 on the canvas                                                  |
 
 ## Components
 
