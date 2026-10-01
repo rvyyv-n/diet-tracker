@@ -82,12 +82,15 @@ no review gate.
   reached through the 7-day dot strip and the calendar popover.
 - **Motion and interaction polish come after feature and layout work**, so
   effects aren't built twice.
-- **Look at the app cheaply.** Make one grid with `node scripts/shot.mjs
-  '<json>'` (`look`, `theme`, `width`, `tab`; examples at the top of the
-  script) or the `check-screen` skill, at about 800px wide, and don't read
-  the same image twice in a session. Many separate shots are fine for the
-  README and other deliberate artwork. Dev server: `npm run dev -- --port
-  5199`.
+- **Screenshots are the last resort.** Every image stays in context for the
+  rest of the session. Prove a change with page text (`"text":true` in
+  `scripts/shot.mjs`) or an `eval` of a computed style, size or position
+  first. Take a screenshot only when the question is how something looks
+  (a new or restyled screen, spacing, colour) and numbers can't answer it.
+  Then make one grid (`node scripts/shot.mjs '<json>'`, or the `check-screen`
+  skill) at about 800px wide, and don't read the same image twice. Many
+  separate shots are fine for the README and other deliberate artwork. Dev
+  server: `npm run dev -- --port 5199`.
 - **Batch the work.** Every turn re-reads the whole context, so fewer turns
   cost less. Group related edits into one call, verify once when the target
   is done, and fix a finished pass in one `pass N fix:` commit.
