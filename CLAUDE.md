@@ -32,6 +32,11 @@ Everything lives in the browser's storage.
   compares screens with the approved pictures in `e2e/snapshots` (taken on
   Windows with installed Chrome, local only). `npm run test:visual:update`
   approves a deliberate change. Both need `dev-seed.html`.
+- `npm run interact` is the interaction check: hover washes, focus changes,
+  clipping, panels leaving the window and Escape, by measurement, with only
+  failures printed. It needs the dev server. Run it before a release review,
+  not per target. `INTERACT_CSS` and its scene names are at the top of
+  `scripts/interact.mjs`.
 - The v3.0 design export is tracked at `private/design/export-3.0/`. The rest
   of `private/` (the reel source) stays ignored; never commit it.
 

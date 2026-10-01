@@ -52,6 +52,15 @@ Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion has landed
     every image and link in the README resolves, and both CI icon builds
     succeed.
 
+- [ ] **Interaction check before the release review** — run
+      `npm run interact` after pass 78 and before `/code-review`. It measures
+      hover washes, focus changes, clipped text, panels leaving the window,
+      field alignment and Escape on every screen, in both Looks, both themes,
+      phone and desktop, and prints only failures (about two minutes). Fix
+      what it reports, then re-approve the pictures once. When it finds
+      something it missed, add that check to `scripts/interact.mjs`. A phone
+      test of touch behaviour is still by hand.
+
 Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
 `insight_copy_states_facts`). The collapsible desktop rail (pass 40b) was undesigned, and was restyled as pass 77.
 

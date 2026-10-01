@@ -16,7 +16,8 @@
     "test:visual": "playwright test e2e/visual.spec.js",
     "test:visual:update": "playwright test e2e/visual.spec.js --update-snapshots",
     "test:offline": "playwright test e2e/offline.spec.js",
-    "shot": "node scripts/shot.mjs"
+    "shot": "node scripts/shot.mjs",
+    "interact": "node scripts/interact.mjs"
   },
   "dependencies": {
     "motion": "^13.2.0",
