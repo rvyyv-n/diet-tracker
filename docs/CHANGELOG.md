@@ -395,6 +395,17 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   counted hidden buttons as stops, so Tab could leave the dialog; it counts
   only visible ones. The engine, `dayReplay`, plan maths, dates and storage
   were read and found correct.
+- **pass 91 secure:** a security review of the push worker in `server/`
+  (nothing changed there, so nothing needs deploying), the update check, the
+  push subscription and the service worker. No diet data leaves the device: the
+  worker stores only an endpoint, a timezone and block times, and sends an empty
+  push. No findings. One note: `POST /subscribe` accepts any HTTPS endpoint, so
+  anyone can make the worker send an empty POST to a host they choose. It
+  reaches no private network and leaks no secret, so it was left.
+- **interaction check:** `npm run interact` run in full (every screen, both
+  Looks, both themes, phone and desktop, with the new accessibility checks and
+  the Today sun slider keys): no problems. The phone touch test was done by
+  hand.
 - **pass 92 a11y:** an accessibility check added to `scripts/interact.mjs`:
   accessible names, touch targets of at least 24px (a grown `::after` hit area
   counts), text contrast of 4.5:1 (3:1 for large text), motion under reduced
