@@ -2,9 +2,12 @@
 
 where the build is, and what each completed pass did. numbers for the plan itself live in `plan-spec.md`; design tokens in `design-system.md`.
 
-## v3.0 - in progress
+## v3.0.0 — shipped
 
-Built on `release-3.0` in build passes; the design handoff is the spec.
+*Status — released as `v3.0.0` on 2026-10-02.* Passes 63–93 built on
+`release-3.0` in build passes, with the design handoff as the spec, then
+closed by a tidy, an upgrade test, a core review, a security review and an
+accessibility check.
 
 - **pass 63 — the v3.0 token layer, fonts and service worker:** `tokens.css`
   is now the handoff's foundation, Paper, Reel and screen layers, with a small

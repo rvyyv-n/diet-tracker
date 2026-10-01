@@ -3,60 +3,12 @@
 What's still unbuilt. Shipped history in brief is `docs/CHANGELOG.md`; the
 pass-by-pass detail through pass 17 is `docs/roadmap-history.md`. Settled decisions and the "Not doing" list are in `docs/decisions.md`; read it before proposing anything.
 
-## v3.0 — the design overhaul
+## v3.0 — the design overhaul ✅ done
 
-The brief is `docs/design-overhaul-brief.md`. The design handoff landed on
-2026-10-01 and supersedes `tokens_reuse_first` for everything it covers. It
-ships two Looks, Paper (default) and Reel, each with light and dark, switched
-by `data-look` and `data-theme` on `<html>`. Components read semantic tokens
-only. The export is committed at `private/design/export-3.0/`.
-
-### How to run a build pass
-
-Say the build pass by number or name ("build pass 1", "foundation", or one
-of its targets like "tokens" or "pass 63"). It runs to the protocol in the
-`build-pass` skill: for each target in order, read its design refs, build it,
-verify it and make one commit; then stop and report. Build passes run in
-order because each builds on the one before, and a build pass whose
-predecessor is unticked is flagged before it starts. Start each build pass in
-a fresh thread. The design refs are paths inside the design export
-(`design-system/…`, `screens/…`).
-
-| Build pass | Name                 | Targets (pass numbers)     | Model                            |
-| ---------- | -------------------- | -------------------------- | -------------------------------- |
-| 10         | Cleanup              | `tidy` (88)                | Sonnet 5.5, high effort          |
-| 11         | Data and logic audit | `upgrade`, `core` (89, 90) | Sonnet 5.5, high then max effort |
-| 12         | Security audit       | `secure` (91)              | Sonnet 5.5, high effort          |
-| 13         | Accessibility        | `a11y` (92)                | Sonnet 5.5, high effort          |
-
-Then a phone and desktop test pass, and the release.
-
-### Build passes
-
-#### Build pass 10 — Cleanup
-
-Model: Sonnet 5.5, high effort. Target: tidy. Runs after build pass 8 and the
-interaction check, and starts the pre-release hardening that replaces the full
-`/code-review` that used to close v3.0 (a Sonnet 5.5 review of everything since
-`v2.3.0` ran on 2026-10-01 and its fixes landed in pass 78 review). Build
-passes 9 to 12 each get a fresh thread, in order, so the later audits read a
-smaller tree. One commit per target, plus a `pass N fix:` commit for what an
-audit finds.
-
-#### Build pass 11 — Data and logic audit
-
-Model: Sonnet 5.5, high effort for `upgrade`, max effort for `core`. Targets: upgrade, core.
-
-#### Build pass 12 — Security audit
-
-Model: Sonnet 5.5, high effort. Target: secure.
-
-#### Build pass 13 — Accessibility
-
-Model: Sonnet 5.5, high effort. Target: a11y.
-
-Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
-`insight_copy_states_facts`). The collapsible desktop rail (pass 40b) was undesigned, and was restyled as pass 77.
+Passes 63–93 are done and **v3.0.0 shipped 2026-10-02**. The build passes, the
+tidy, the upgrade test, the core review, the security review and the
+accessibility check are recorded in `docs/CHANGELOG.md`. Nothing is open for
+v3.0. The next release gets its own section here.
 
 ## later
 

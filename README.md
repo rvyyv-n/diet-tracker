@@ -31,10 +31,6 @@ questions to set up your plan. [Install it](#install) to use it as an app,
 offline too. There's nothing to sign up for, and your data never leaves your
 device.
 
-> **Rise 3.0 is on its way.** These pictures show the new design, which is
-> being built on the `release-3.0` branch. The live app and the downloads are
-> still version 2.3 until it's released.
-
 ## Contents
 
 - [What it does](#what-it-does)
