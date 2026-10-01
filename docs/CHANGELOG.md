@@ -361,8 +361,9 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   returns to now. Blocks count at their planned time (`dayReplay` in
   `day.js`). The weight chart gains weight gridlines, "On pace" on the band,
   the sun's own reading, a dotted average while it builds up, and the legend
-  on phones. A large, soft Rise sun glows under the About text and
-  simmers a few times as it comes into view. The phone nav loses its active-tab dot. Smaller fixes: Settings'
+  on phones. A soft Rise sun glows beside the About text on a phone,
+  and fills the empty foot of the left column on desktop; its glow simmers
+  a few times as it comes into view. The phone nav loses its active-tab dot. Smaller fixes: Settings'
   line reads "28 days", History's Edit sits by the weight, Recipes' rows
   have room and their header is capitalised, meal-share bars are sunlit
   and sit inside their row's hover wash,

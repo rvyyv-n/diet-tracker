@@ -398,6 +398,7 @@ export default function Settings({ onEditSetup, onReset }) {
           <Section label="About" icon="info" className="r-settings__sec--about">
             <AboutBlock />
           </Section>
+          <AboutSun className="r-settings__sun" />
         </div>
       </section>
     </div>
@@ -973,10 +974,11 @@ function updateHint(status, phase) {
 }
 
 /**
- * The Rise sun behind the About block (pass 93): its glow simmers a few times
- * each time the block scrolls into view, then rests lit. Decoration only.
+ * The Rise sun (pass 93): its glow simmers a few times each time it scrolls
+ * into view, then rests lit. Decoration only. On a phone it sits in the About
+ * block; on desktop a larger one fills the empty foot of the left column.
  */
-function AboutSun() {
+function AboutSun({ className = "" }) {
   const ref = useRef(null);
   const [awake, setAwake] = useState(false);
   useEffect(() => {
@@ -985,7 +987,11 @@ function AboutSun() {
     return () => io.disconnect();
   }, []);
   return (
-    <span ref={ref} className={`r-about__sun${awake ? " is-awake" : ""}`} aria-hidden="true">
+    <span
+      ref={ref}
+      className={`r-about__sun ${className}${awake ? " is-awake" : ""}`}
+      aria-hidden="true"
+    >
       <span className="r-about__glow" />
       <span className="r-about__disc" />
     </span>
