@@ -22,12 +22,12 @@ predecessor is unticked is flagged before it starts. Start each build pass in
 a fresh thread. The design refs are paths inside the design export
 (`design-system/…`, `screens/…`).
 
-| Build pass | Name              | Targets (pass numbers) | Model                   |
-| ---------- | ----------------- | ---------------------- | ----------------------- |
-| 8          | Final screenshots | `shots` (78)           | Sonnet 5.5, high effort |
+| Build pass | Name                  | Targets (pass numbers)                              | Model                   |
+| ---------- | --------------------- | --------------------------------------------------- | ----------------------- |
+| 8          | Final screenshots     | `shots` (78)                                        | Sonnet 5.5, high effort |
+| 9          | Pre-release hardening | `tidy`, `upgrade`, `core`, `secure`, `a11y` (88-92) | Opus, high effort       |
 
-Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
-and desktop test pass, and the release.
+Then a phone and desktop test pass, and the release.
 
 ### Build passes
 
@@ -55,6 +55,46 @@ Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion has landed
       what it reports, then re-approve the pictures once. When it finds
       something it missed, add that check to `scripts/interact.mjs`. A phone
       test of touch behaviour is still by hand.
+
+#### Build pass 9 — Pre-release hardening
+
+Model: Opus, high effort. Runs after build pass 8 and the interaction check,
+and replaces the full `/code-review` that used to close v3.0 (a Sonnet 5.5
+review of everything since `v2.3.0` ran on 2026-10-01 and its fixes landed in
+pass 78 review). Start it in a fresh thread. Run the targets in order: `tidy`
+first, so the later audits read a smaller tree. One commit per target, plus a
+`pass N fix:` commit for what an audit finds.
+
+- [ ] **Pass 88 · `tidy`** — step 0: remove what the release does not need.
+  - Find redundant files and dead code with a scan, not by eye: unreferenced
+    files in `src/`, `public/`, `scripts/` and `docs/`, unused exports and unused
+    dependencies (the `motion` package first: remove it only if nothing imports
+    it, and check that the motion work in `docs/roadmap.md` does not need it).
+  - Clear caches and build output that should not be tracked or lingering
+    (`dist/`, `node_modules/.vite`, Playwright and test-results folders, stray
+    `*.log` and temp files). Confirm `.gitignore` covers each one.
+  - Tidy organisation: files in the wrong folder, duplicated helpers, stale
+    comments, and the literal px props the review found. Keep `private/` out.
+  - Do not delete a doc, a script or a baseline without checking the references
+    first. `docs/roadmap-history.md` and `docs/changelog-archive.md` stay.
+  - Done when: `npm run check`, `test:offline` and `test:visual` pass with no
+    baseline change, and the commit body lists what was removed.
+
+- [ ] **Pass 89 · `upgrade`** — the v2.3.0 to v3.0 upgrade path. Load data
+      saved by the v2.3.0 build (and an old backup file) into the v3.0 build.
+      Check every storage migration, import, export, reset and undo, and that
+      appearance, reminders and What's New survive. Nothing a user saved may be
+      lost or reshaped without a migration. Add a test for each gap found.
+- [ ] **Pass 90 · `core`** — a second review at max effort of `src/js/core/`
+      (adjustment engine, trend, weights, day, plan, storage) and of the
+      Sheet focus trap and popover Escape handling from pass 78 review. Look
+      for wrong numbers, off-by-one days, time-zone and clock edge cases.
+- [ ] **Pass 91 · `secure`** — run `/security-review`. Cover `server/` (the push
+      worker; say so in the commit, because it deploys by hand), the update check
+      and the push subscription, and the rule that no diet data leaves the device.
+- [ ] **Pass 92 · `a11y`** — an accessibility pass in both Looks, light and
+      dark: contrast, focus order, labels, touch-target size and reduced motion.
+      Add any new check to `scripts/interact.mjs`.
 
 Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
 `insight_copy_states_facts`). The collapsible desktop rail (pass 40b) was undesigned, and was restyled as pass 77.
