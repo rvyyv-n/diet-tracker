@@ -2103,10 +2103,10 @@
 }
 .r-daytotal__halo {
   position: absolute;
-  left: calc(var(--r-x) - 60px);
-  top: -25px;
-  width: 120px;
-  height: 120px;
+  left: calc(var(--r-x) - 50px);
+  top: -15px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background: radial-gradient(circle, var(--sun-halo), transparent 65%);
   pointer-events: none;
