@@ -1,0 +1,178 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-01T01:36:24Z"
+ },
+ "title": "Rise 3.0 first run",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Main.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Intro · Paper light",
+   "radius": 44
+  },
+  "Intro-Reel-Dark.dc.html": {
+   "x": 470,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Intro · Reel dark",
+   "radius": 44
+  },
+  "Step1-Empty-Paper-Light.dc.html": {
+   "x": 0,
+   "y": 1184,
+   "w": 390,
+   "h": 844,
+   "title": "Step 1 empty · Paper light",
+   "radius": 44
+  },
+  "Step1-Empty-Reel-Dark.dc.html": {
+   "x": 470,
+   "y": 1184,
+   "w": 390,
+   "h": 844,
+   "title": "Step 1 empty · Reel dark",
+   "radius": 44
+  },
+  "Step1-Invalid-Paper-Light.dc.html": {
+   "x": 940,
+   "y": 1184,
+   "w": 390,
+   "h": 844,
+   "title": "Step 1 invalid · Paper light",
+   "radius": 44
+  },
+  "Step1-Invalid-Reel-Dark.dc.html": {
+   "x": 1410,
+   "y": 1184,
+   "w": 390,
+   "h": 844,
+   "title": "Step 1 invalid · Reel dark",
+   "radius": 44
+  },
+  "Step1-Desktop-Paper-Light.dc.html": {
+   "x": 0,
+   "y": 2368,
+   "w": 1440,
+   "h": 900,
+   "title": "Step 1 desktop · Paper light",
+   "radius": 14
+  },
+  "Step3-Paper-Light.dc.html": {
+   "x": 0,
+   "y": 3608,
+   "w": 390,
+   "h": 844,
+   "title": "Step 3 · Paper light",
+   "radius": 44
+  },
+  "Step3-Reel-Dark.dc.html": {
+   "x": 470,
+   "y": 3608,
+   "w": 390,
+   "h": 844,
+   "title": "Step 3 · Reel dark",
+   "radius": 44
+  },
+  "WhatsNew-Paper-Light.dc.html": {
+   "x": 0,
+   "y": 4792,
+   "w": 390,
+   "h": 844,
+   "title": "What's new on Today · Paper light",
+   "radius": 44
+  },
+  "WhatsNew-Reel-Dark.dc.html": {
+   "x": 470,
+   "y": 4792,
+   "w": 390,
+   "h": 844,
+   "title": "What's new on Today · Reel dark",
+   "radius": 44
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "Intro-Reel-Dark.dc.html",
+  "Step1-Empty-Paper-Light.dc.html",
+  "Step1-Empty-Reel-Dark.dc.html",
+  "Step1-Invalid-Paper-Light.dc.html",
+  "Step1-Invalid-Reel-Dark.dc.html",
+  "Step1-Desktop-Paper-Light.dc.html",
+  "Step3-Paper-Light.dc.html",
+  "Step3-Reel-Dark.dc.html",
+  "WhatsNew-Paper-Light.dc.html",
+  "WhatsNew-Reel-Dark.dc.html"
+ ],
+ "notes": {
+  "t-intro": {
+   "x": 0,
+   "y": -260,
+   "text": "1 · Intro",
+   "kind": "title1",
+   "maxW": 860
+  },
+  "t-step1": {
+   "x": 0,
+   "y": 924,
+   "text": "2 · Step 1 of 3, Set up your plan",
+   "kind": "title1",
+   "maxW": 1800
+  },
+  "t-desk": {
+   "x": 0,
+   "y": 2108,
+   "text": "2b · Step 1, desktop",
+   "kind": "title1",
+   "maxW": 1440
+  },
+  "t-step3": {
+   "x": 0,
+   "y": 3348,
+   "text": "3 · Step 3 of 3, You're set up",
+   "kind": "title1",
+   "maxW": 860
+  },
+  "t-wn": {
+   "x": 0,
+   "y": 4532,
+   "text": "4 · What's new in 3.0, on Today",
+   "kind": "title1",
+   "maxW": 860
+  },
+  "m-intro": {
+   "x": 940,
+   "y": 0,
+   "text": "Intro motion: plays once, about 1.4 s\n0 ms: horizon fades in. 260 ms (dur-base), ease-out.\n160 ms: R, ı, s, e rise 10 px and fade in, 90 ms apart (dur-instant), 260 ms each (dur-base), ease-out.\n260 ms: the sun rises from below the horizon. 520 ms (dur-slow), ease-out.\n780 ms: the sun settles into the ı as its dot, small overshoot. 520 ms (dur-slow), ease-spring.\n1040 ms: copy fades up 8 px. 260 ms (dur-base), ease-out.\n1130 ms: Get started fades in. 260 ms (dur-base), ease-out.\nTap anywhere, or Get started, continues at any moment; nothing waits for the sequence. Reduced motion: durations are 0, the final frame shows at once. The seen flag is stored on the device.",
+   "w": 560,
+   "maxH": 700,
+   "size": "s",
+   "fill": "blue"
+  },
+  "m-wn": {
+   "x": 940,
+   "y": 4792,
+   "text": "What's new motion: plays once, about 1.1 s\n0 ms: Today paints as usual, no card.\n260 ms (dur-base delay): the card slot grows from 0 to full height, fades in and moves 12 px down into place. 520 ms (dur-slow), ease-out. Day total and blocks move down with it.\n420 ms: title, four lines and Got it fade up 8 px, 90 ms apart (dur-instant), 260 ms each (dur-base), ease-out. Done at about 1.13 s.\nDismiss: Got it presses to .97 for 90 ms (dur-instant). The card fades, lifts 8 px and collapses over 260 ms (dur-base), ease-out; the day total slides up. No toast or Undo (Undo is for tick, weigh-in save and grocery Clear only).\nReduced motion: durations are 0, instant. Shown once, on the first Today after updating to 3.0; the seen flag is stored on the device.",
+   "w": 560,
+   "maxH": 700,
+   "size": "s",
+   "fill": "blue"
+  }
+ },
+ "designSystems": [
+  {
+   "title": "Rise",
+   "namespace": "rise",
+   "version": "1790797756-502e",
+   "copiedAt": "2026-10-01T01:36:24Z"
+  }
+ ]
+}

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Intro - Reel dark</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/rise/components/bundle.css">
+<script src="ds/rise/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:'Fraunces';src:url('ds/rise/fonts/fraunces-normal.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Fraunces';src:url('ds/rise/fonts/fraunces-italic.woff2') format('woff2');font-weight:100 900;font-style:italic;font-display:swap}
+@font-face{font-family:'Atkinson Next';src:url('ds/rise/fonts/atkinson-next.woff2') format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
+@font-face{font-family:'Newsreader';src:url('ds/rise/fonts/newsreader-normal.woff2') format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
+@font-face{font-family:'Newsreader';src:url('ds/rise/fonts/newsreader-italic.woff2') format('woff2');font-weight:200 800;font-style:italic;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-600.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+body{margin:0}
+input::placeholder{color:var(--ink-muted);opacity:1}
+.rs-field{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:100%;height:var(--control-h);border:0;border-radius:var(--radius-field);background:var(--bg-canvas);box-shadow:inset 0 0 0 1.5px var(--line-strong);font-family:var(--font-body);font-size:16px;font-variant-numeric:tabular-nums;color:var(--ink);margin:0}
+select.rs-field{padding:0 36px 0 16px;cursor:pointer}
+select.rs-field.is-empty{color:var(--ink-muted)}
+button.rs-field{padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;cursor:pointer}
+.rs-field:focus-visible{outline:none;box-shadow:inset 0 0 0 1.5px var(--line-strong),var(--focus-ring)}
+</style>
+</helmet>
+<div data-look="{{look}}" data-theme="{{theme}}" style="position: relative; width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; background-color: var(--bg-canvas); background-image: var(--texture); color: var(--ink); font-family: var(--font-body)">
+<main style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 44px 20px 120px; box-sizing: border-box; text-align: center">
+<h1 aria-label="Rise" style="margin: 0; font-size: inherit; font-weight: inherit"><x-import component-from-global-scope="RiseDS.Wordmark" variant="reel" size="{{wordSize}}"></x-import></h1>
+<div aria-hidden="true" style="align-self: stretch; margin: 40px -20px 32px; height: 1.5px; background: linear-gradient(90deg, transparent, var(--horizon) 12%, var(--horizon) 88%, transparent)"></div>
+<p style="margin: 0; max-width: 290px; font-family: var(--font-display); font-weight: var(--display-weight); font-style: var(--display-style); font-size: var(--type-display-md); line-height: 1.25; color: var(--ink)">A daily plan for gaining weight at a steady pace.</p>
+</main>
+<div style="position: absolute; left: 20px; right: 20px; bottom: 36px">
+<x-import component-from-global-scope="RiseDS.Button" variant="hero" full-width="{{yes}}" style="display: block">Get started</x-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"look":{"editor":"enum","options":["paper","reel"],"default":"reel"},"theme":{"editor":"enum","options":["light","dark"],"default":"dark"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      look: this.props.look ?? 'reel',
+      theme: this.props.theme ?? 'dark',
+      yes: true,
+      wordSize: 88,
+    };
+  }
+}
+</script>
+</body>
+</html>

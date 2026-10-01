@@ -9,6 +9,8 @@ data.local.json
 !/private/design/
 /private/design/*
 !/private/design/export-3.0/
+# The first-run handoff (steps 1 and 3, intro, What's new) is tracked too.
+!/private/design/first-run-handoff/
 
 # Source plan documents — contain personal health data
 *.docx

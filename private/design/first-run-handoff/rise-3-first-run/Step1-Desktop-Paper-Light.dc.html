@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Step 1 desktop - Paper light</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/rise/components/bundle.css">
+<script src="ds/rise/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:'Fraunces';src:url('ds/rise/fonts/fraunces-normal.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Fraunces';src:url('ds/rise/fonts/fraunces-italic.woff2') format('woff2');font-weight:100 900;font-style:italic;font-display:swap}
+@font-face{font-family:'Atkinson Next';src:url('ds/rise/fonts/atkinson-next.woff2') format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
+@font-face{font-family:'Newsreader';src:url('ds/rise/fonts/newsreader-normal.woff2') format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
+@font-face{font-family:'Newsreader';src:url('ds/rise/fonts/newsreader-italic.woff2') format('woff2');font-weight:200 800;font-style:italic;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-600.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+body{margin:0}
+input::placeholder{color:var(--ink-muted);opacity:1}
+.rs-field{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:100%;height:var(--control-h);border:0;border-radius:var(--radius-field);background:var(--bg-canvas);box-shadow:inset 0 0 0 1.5px var(--line-strong);font-family:var(--font-body);font-size:16px;font-variant-numeric:tabular-nums;color:var(--ink);margin:0}
+select.rs-field{padding:0 36px 0 16px;cursor:pointer}
+select.rs-field.is-empty{color:var(--ink-muted)}
+button.rs-field{padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;cursor:pointer}
+.rs-field:focus-visible{outline:none;box-shadow:inset 0 0 0 1.5px var(--line-strong),var(--focus-ring)}
+</style>
+</helmet>
+<div data-look="{{look}}" data-theme="{{theme}}" style="position: relative; width: 1440px; height: 900px; overflow: hidden; box-sizing: border-box; background-color: var(--bg-canvas); background-image: var(--texture); color: var(--ink); font-family: var(--font-body)">
+<div style="position: absolute; left: 48px; top: 40px">
+<x-import component-from-global-scope="RiseDS.Wordmark" variant="nav"></x-import>
+</div>
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 40px 0; box-sizing: border-box">
+<div style="width: 640px">
+<header>
+<x-import component-from-global-scope="RiseDS.Eyebrow" style="display: block">Step 1 of 3</x-import>
+<div aria-hidden="true" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 10px">
+<span style="height: 4px; border-radius: var(--radius-pill); background: var(--accent)"></span>
+<span style="height: 4px; border-radius: var(--radius-pill); background: var(--line-strong)"></span>
+<span style="height: 4px; border-radius: var(--radius-pill); background: var(--line-strong)"></span>
+</div>
+<h1 style="margin: 16px 0 0; font-family: var(--font-display); font-weight: var(--display-weight); font-style: var(--display-style); font-size: var(--type-display-lg); line-height: 1.1">Set up your plan</h1>
+<p style="margin: 6px 0 0; font-size: 16px; line-height: 22px; color: var(--ink-muted)">Everything stays on this device.</p>
+</header>
+<form style="margin: 32px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; row-gap: 20px; align-items: start; line-height: 18px">
+<x-import component-from-global-scope="RiseDS.TextField" label="Name (optional)" value="" placeholder="Your name" style="display: block"></x-import>
+<div role="group" aria-labelledby="dobLabel" style="display: flex; flex-direction: column; gap: 6px">
+<span id="dobLabel" style="font-size: 14px; font-weight: 700">Date of birth</span>
+<div style="display: grid; grid-template-columns: 80px minmax(0, 1fr) 96px; gap: 8px">
+<span style="position: relative; display: block"><select class="rs-field is-empty" aria-label="Day"><option>Day</option></select><span aria-hidden="true" style="position: absolute; right: 14px; top: 0; height: 48px; display: flex; align-items: center; color: var(--ink-muted); pointer-events: none; transform: rotate(90deg)"><x-import component-from-global-scope="RiseDS.Icon" name="chevronRight" size="16"></x-import></span></span>
+<span style="position: relative; display: block"><select class="rs-field is-empty" aria-label="Month"><option>Month</option></select><span aria-hidden="true" style="position: absolute; right: 14px; top: 0; height: 48px; display: flex; align-items: center; color: var(--ink-muted); pointer-events: none; transform: rotate(90deg)"><x-import component-from-global-scope="RiseDS.Icon" name="chevronRight" size="16"></x-import></span></span>
+<span style="position: relative; display: block"><select class="rs-field is-empty" aria-label="Year"><option>Year</option></select><span aria-hidden="true" style="position: absolute; right: 14px; top: 0; height: 48px; display: flex; align-items: center; color: var(--ink-muted); pointer-events: none; transform: rotate(90deg)"><x-import component-from-global-scope="RiseDS.Icon" name="chevronRight" size="16"></x-import></span></span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 156px; gap: 10px; align-items: start">
+<x-import component-from-global-scope="RiseDS.TextField" label="Height" unit="cm" value="" placeholder="e.g. 170" input-mode="decimal" style="display: block"></x-import>
+<div role="group" aria-label="Height unit" style="margin-top: 24px; width: 156px"><x-import component-from-global-scope="RiseDS.Segmented" options="{{heightOpts}}" value="cm" style="display: block"></x-import></div>
+</div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 156px; gap: 10px; align-items: start">
+<x-import component-from-global-scope="RiseDS.TextField" label="Current weight" unit="kg" value="" placeholder="e.g. 58.5" input-mode="decimal" style="display: block"></x-import>
+<div role="group" aria-label="Weight unit" style="margin-top: 24px; width: 156px"><x-import component-from-global-scope="RiseDS.Segmented" options="{{weightOpts}}" value="kg" style="display: block"></x-import></div>
+</div>
+<x-import component-from-global-scope="RiseDS.TextField" label="Target gain" unit="kg/week" value="" placeholder="e.g. 0.30" hint="Aim for 0.25 to 0.4 kg/week." input-mode="decimal" style="display: block"></x-import>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span id="startLabel" style="font-size: 14px; font-weight: 700">Plan start date</span>
+<button type="button" class="rs-field" aria-labelledby="startLabel startValue"><span id="startValue">Thu 1 Oct 2026</span><span style="font-size: 15px; color: var(--ink-muted)">Calendar</span></button>
+<span style="font-size: 13px; color: var(--ink-muted)">Defaults to today.</span>
+</div>
+</form>
+<div style="margin: 32px 0 0; display: flex; justify-content: flex-end">
+<div style="width: 240px">
+<x-import component-from-global-scope="RiseDS.Button" variant="primary" full-width="{{yes}}" style="display: block">Continue</x-import>
+</div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"look":{"editor":"enum","options":["paper","reel"],"default":"paper"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      look: this.props.look ?? 'paper',
+      theme: this.props.theme ?? 'light',
+      yes: true,
+      heightOpts: [{ value: 'cm', label: 'cm' }, { value: 'ftin', label: 'ft/in' }],
+      weightOpts: [{ value: 'kg', label: 'kg' }, { value: 'lb', label: 'lb' }, { value: 'st', label: 'st' }],
+    };
+  }
+}
+</script>
+</body>
+</html>

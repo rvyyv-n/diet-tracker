@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Step 3 - Paper light</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/rise/components/bundle.css">
+<script src="ds/rise/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:'Fraunces';src:url('ds/rise/fonts/fraunces-normal.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Fraunces';src:url('ds/rise/fonts/fraunces-italic.woff2') format('woff2');font-weight:100 900;font-style:italic;font-display:swap}
+@font-face{font-family:'Atkinson Next';src:url('ds/rise/fonts/atkinson-next.woff2') format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
+@font-face{font-family:'Newsreader';src:url('ds/rise/fonts/newsreader-normal.woff2') format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
+@font-face{font-family:'Newsreader';src:url('ds/rise/fonts/newsreader-italic.woff2') format('woff2');font-weight:200 800;font-style:italic;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-600.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+body{margin:0}
+input::placeholder{color:var(--ink-muted);opacity:1}
+.rs-field{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:100%;height:var(--control-h);border:0;border-radius:var(--radius-field);background:var(--bg-canvas);box-shadow:inset 0 0 0 1.5px var(--line-strong);font-family:var(--font-body);font-size:16px;font-variant-numeric:tabular-nums;color:var(--ink);margin:0}
+select.rs-field{padding:0 36px 0 16px;cursor:pointer}
+select.rs-field.is-empty{color:var(--ink-muted)}
+button.rs-field{padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;cursor:pointer}
+.rs-field:focus-visible{outline:none;box-shadow:inset 0 0 0 1.5px var(--line-strong),var(--focus-ring)}
+</style>
+</helmet>
+<div data-look="{{look}}" data-theme="{{theme}}" style="position: relative; width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; background-color: var(--bg-canvas); background-image: var(--texture); color: var(--ink); font-family: var(--font-body)">
+<div style="position: absolute; inset: 0; padding: 44px 20px 0; box-sizing: border-box">
+<header>
+<x-import component-from-global-scope="RiseDS.Eyebrow" style="display: block">Step 3 of 3</x-import>
+<div aria-hidden="true" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 10px">
+<span style="height: 4px; border-radius: var(--radius-pill); background: var(--ink)"></span>
+<span style="height: 4px; border-radius: var(--radius-pill); background: var(--ink)"></span>
+<span style="height: 4px; border-radius: var(--radius-pill); background: var(--accent)"></span>
+</div>
+<h1 style="margin: 16px 0 0; font-family: var(--font-display); font-weight: var(--display-weight); font-style: var(--display-style); font-size: var(--type-display-lg); line-height: 1.1">You're set up</h1>
+<p style="margin: 6px 0 0; font-size: 16px; line-height: 22px; color: var(--ink-muted)">Check these before you start.</p>
+</header>
+<div style="margin-top: 28px">
+<x-import component-from-global-scope="RiseDS.Card" padding="{{cardPad}}" style="display: block"><dl style="margin: 0">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-height: 56px; align-items: center"><dt style="font-size: 16px; color: var(--ink-muted)">Height</dt><dd style="margin: 0; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right">168 cm</dd></div>
+<div style="border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-height: 56px; align-items: center"><dt style="font-size: 16px; color: var(--ink-muted)">Start weight</dt><dd style="margin: 0; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right">58.5 kg</dd></div>
+<div style="border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-height: 56px; align-items: center"><dt style="font-size: 16px; color: var(--ink-muted)">Age</dt><dd style="margin: 0; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right">27 years</dd></div>
+<div style="border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-height: 56px; align-items: center"><dt style="font-size: 16px; color: var(--ink-muted)">Target</dt><dd style="margin: 0; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right">+0.30 kg/week</dd></div>
+<div style="border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-height: 56px; align-items: center"><dt style="font-size: 16px; color: var(--ink-muted)">Start date</dt><dd style="margin: 0; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right">Thu 1 Oct 2026</dd></div>
+</dl></x-import>
+</div>
+</div>
+<div style="position: absolute; left: 20px; right: 20px; bottom: 24px; display: flex; flex-direction: column; gap: 4px">
+<x-import component-from-global-scope="RiseDS.Button" variant="primary" full-width="{{yes}}" style="display: block">Start tracking</x-import>
+<x-import component-from-global-scope="RiseDS.Button" variant="text" full-width="{{yes}}" style="display: block">Edit details</x-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"look":{"editor":"enum","options":["paper","reel"],"default":"paper"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      look: this.props.look ?? 'paper',
+      theme: this.props.theme ?? 'light',
+      yes: true,
+      cardPad: '4px 18px',
+    };
+  }
+}
+</script>
+</body>
+</html>

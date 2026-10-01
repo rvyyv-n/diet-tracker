@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>What's new on Today - Paper light</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/rise/components/bundle.css">
+<script src="ds/rise/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:'Fraunces';src:url('ds/rise/fonts/fraunces-normal.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Fraunces';src:url('ds/rise/fonts/fraunces-italic.woff2') format('woff2');font-weight:100 900;font-style:italic;font-display:swap}
+@font-face{font-family:'Atkinson Next';src:url('ds/rise/fonts/atkinson-next.woff2') format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
+@font-face{font-family:'Newsreader';src:url('ds/rise/fonts/newsreader-normal.woff2') format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
+@font-face{font-family:'Newsreader';src:url('ds/rise/fonts/newsreader-italic.woff2') format('woff2');font-weight:200 800;font-style:italic;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-600.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url('ds/rise/fonts/barlow-semi-condensed-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+body{margin:0}
+input::placeholder{color:var(--ink-muted);opacity:1}
+.rs-field{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:100%;height:var(--control-h);border:0;border-radius:var(--radius-field);background:var(--bg-canvas);box-shadow:inset 0 0 0 1.5px var(--line-strong);font-family:var(--font-body);font-size:16px;font-variant-numeric:tabular-nums;color:var(--ink);margin:0}
+select.rs-field{padding:0 36px 0 16px;cursor:pointer}
+select.rs-field.is-empty{color:var(--ink-muted)}
+button.rs-field{padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;cursor:pointer}
+.rs-field:focus-visible{outline:none;box-shadow:inset 0 0 0 1.5px var(--line-strong),var(--focus-ring)}
+</style>
+</helmet>
+<div data-look="{{look}}" data-theme="{{theme}}" style="position: relative; width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; background-color: var(--bg-canvas); background-image: var(--texture); color: var(--ink); font-family: var(--font-body)">
+<div style="position: absolute; inset: 0; overflow: hidden">
+<div style="height: 44px"></div>
+<div style="padding: 8px 20px 0">
+<x-import component-from-global-scope="RiseDS.DotStrip" days="{{days}}" label="Thu 1" style="display: block"></x-import>
+</div>
+<section aria-label="What's new in 3.0" style="padding: 16px 20px 0">
+<x-import component-from-global-scope="RiseDS.Card" padding="{{cardPad}}" style="display: block"><h2 style="margin: 0; font-family: var(--font-display); font-weight: var(--display-weight); font-style: var(--display-style); font-size: var(--type-display-md); line-height: 1.15">What's new in 3.0</h2>
+<ul style="list-style: none; margin: 10px 0 0; padding: 0">
+<li style="padding: 10px 0"><span style="display: block; font-size: 16px; line-height: 22px; font-weight: 700">Two Looks, Paper and Reel</span><span style="display: block; font-size: 14px; line-height: 19px; color: var(--ink-muted)">Settings &gt; Appearance</span></li>
+<li style="border-top: 1px solid var(--line); padding: 10px 0"><span style="display: block; font-size: 16px; line-height: 22px; font-weight: 700">Light, dark, or follow your device</span><span style="display: block; font-size: 14px; line-height: 19px; color: var(--ink-muted)">Settings &gt; Appearance</span></li>
+<li style="border-top: 1px solid var(--line); padding: 10px 0"><span style="display: block; font-size: 16px; line-height: 22px; font-weight: 700">Every screen redrawn</span><span style="display: block; font-size: 14px; line-height: 19px; color: var(--ink-muted)">Today, Plan, Weight and Settings</span></li>
+<li style="border-top: 1px solid var(--line); padding: 10px 0"><span style="display: block; font-size: 16px; line-height: 22px; font-weight: 700">Recipes</span><span style="display: block; font-size: 14px; line-height: 19px; color: var(--ink-muted)">The link at the foot of Plan</span></li>
+</ul>
+<div style="margin-top: 12px">
+<x-import component-from-global-scope="RiseDS.Button" variant="secondary" full-width="{{yes}}" style="display: block">Got it</x-import>
+</div></x-import>
+</section>
+<div style="margin-top: 22px">
+<x-import component-from-global-scope="RiseDS.DayTotal" eyebrow="Phase 2 · Week 6" kcal="{{kcal}}" target="{{target}}" status="partial" remaining="825 to go · 3 blocks" protein="{{protein}}" protein-target="{{proteinTarget}}" style="display: block"></x-import>
+</div>
+<div style="margin-top: 26px">
+<x-import component-from-global-scope="RiseDS.BlockList" style="display: block"><x-import component-from-global-scope="RiseDS.BlockRow" time="08:00" name="Breakfast" kcal="705" state="done" style="display: block"></x-import><x-import component-from-global-scope="RiseDS.BlockRow" time="11:00" name="Shake" kcal="580" state="done" style="display: block"></x-import></x-import>
+</div>
+</div>
+<x-import component-from-global-scope="RiseDS.PhoneNav" active="today"></x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"look":{"editor":"enum","options":["paper","reel"],"default":"paper"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      look: this.props.look ?? 'paper',
+      theme: this.props.theme ?? 'light',
+      yes: true,
+      cardPad: '18px 18px 16px',
+      kcal: 2285, target: 3110, protein: 113, proteinTarget: 150,
+      days: [{ status: 'on-track' }, { status: 'on-track' }, { status: 'partial' }, { status: 'low' }, { status: 'on-track' }, { status: 'on-track' }, { status: 'today', selected: true }],
+    };
+  }
+}
+</script>
+</body>
+</html>
