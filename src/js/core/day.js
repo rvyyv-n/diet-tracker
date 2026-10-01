@@ -204,9 +204,13 @@ export function dayTotals(day) {
  * Returns "on-track" | "partial" | "low".
  */
 export function intakeStatus(day) {
-  const target = phaseTarget(day.phaseId).kcal;
+  return kcalStatus(dayTotals(day).kcal, phaseTarget(day.phaseId).kcal);
+}
+
+/** intakeStatus() for a bare kcal figure: a point partway through a replayed day. */
+export function kcalStatus(kcal, target) {
   if (!target) return "low";
-  const ratio = dayTotals(day).kcal / target;
+  const ratio = kcal / target;
   if (ratio >= ON_TRACK_AT) return "on-track";
   if (ratio >= PARTIAL_AT) return "partial";
   return "low";
@@ -220,4 +224,37 @@ export function intakeStatus(day) {
  */
 export function isDayEditable(day, todayIso) {
   return day.date === todayIso || day.date === addDays(todayIso, -1);
+}
+
+/**
+ * The day replayed in clock order, for Today's scrubber (pass 93): a start
+ * point at zero, then the running totals after each eaten block and logged
+ * food. A tick stores no clock, so a block counts at its planned time; food
+ * logged without one (before pass 67) comes last, as it does on Today. The
+ * last point always equals dayTotals().
+ *
+ * Returns [{ id, time, name, kcal, proteinG }]; the start point's id, time
+ * and name are null.
+ */
+export function dayReplay(day) {
+  const eaten = [];
+  const blocks = [...activeBlocks(dayAddOns(day)), ...dayBonus(day).map(blockById).filter(Boolean)];
+  blocks.sort((a, b) => a.order - b.order);
+  for (const block of blocks) {
+    if (!day.completed[block.id]) continue;
+    eaten.push({ id: block.id, time: block.time, name: block.name, ...blockValue(day, block.id) });
+  }
+  for (const e of dayExtras(day)) {
+    eaten.push({ id: e.id, time: e.at ?? null, name: e.name, kcal: e.kcal, proteinG: e.proteinG });
+  }
+  eaten.sort((a, b) => (a.time ?? "99:99").localeCompare(b.time ?? "99:99"));
+  let kcal = 0;
+  let proteinG = 0;
+  const points = [{ id: null, time: null, name: null, kcal: 0, proteinG: 0 }];
+  for (const it of eaten) {
+    kcal += it.kcal;
+    proteinG += it.proteinG;
+    points.push({ id: it.id, time: it.time, name: it.name, kcal, proteinG });
+  }
+  return points;
 }

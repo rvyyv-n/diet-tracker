@@ -58,6 +58,10 @@ Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion has landed
       what it reports, then re-approve the pictures once. When it finds
       something it missed, add that check to `scripts/interact.mjs`. A phone
       test of touch behaviour is still by hand.
+  - Also: pass 93 (the owner's pre-release mark-up) changed Today, Weight,
+    Recipes and Settings, so the baselines differ until this re-approval.
+    Add the Today sun slider (drag and arrow keys) and the About sun to the
+    checks, and try the slider by touch on the phone.
 
 #### Build pass 10 — Cleanup
 
@@ -94,7 +98,7 @@ Model: Opus, high effort for `upgrade`, max effort for `core`. Targets: upgrade,
       appearance, reminders and What's New survive. Nothing a user saved may be
       lost or reshaped without a migration. Add a test for each gap found.
 - [ ] **Pass 90 · `core`** (Opus, max effort) — a second review at max effort of `src/js/core/`
-      (adjustment engine, trend, weights, day, plan, storage) and of the
+      (adjustment engine, trend, weights, day and its `dayReplay`, plan, storage) and of the
       Sheet focus trap and popover Escape handling from pass 78 review. Look
       for wrong numbers, off-by-one days, time-zone and clock edge cases.
 
@@ -111,8 +115,8 @@ Model: Opus, high effort. Target: secure.
 Model: Sonnet 5.5, high effort. Target: a11y.
 
 - [ ] **Pass 92 · `a11y`** (Sonnet 5.5, high effort) — an accessibility pass in both Looks, light and
-      dark: contrast, focus order, labels, touch-target size and reduced motion.
-      Add any new check to `scripts/interact.mjs`.
+      dark: contrast, focus order, labels, touch-target size and reduced motion,
+      including the Today sun slider from pass 93. Add any new check to `scripts/interact.mjs`.
 
 Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
 `insight_copy_states_facts`). The collapsible desktop rail (pass 40b) was undesigned, and was restyled as pass 77.

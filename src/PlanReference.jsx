@@ -7,7 +7,7 @@
  * heading. Restyled in pass 71.
  */
 
-import { NUM } from "./components/shared.jsx";
+import { NUM, MealDesc } from "./components/shared.jsx";
 import { Icon } from "./components/core.jsx";
 import { phaseTarget, activeBlocks, rotationOptions } from "./js/core/plan.js";
 
@@ -73,7 +73,9 @@ function Meal({ b, dayKcal, open, onToggle }) {
         <ul className="r-meals__opts">
           {opts.map((o, i) => (
             <li key={i} className="r-meals__opt">
-              <span className="r-meals__opt-desc">{o.desc}</span>
+              <span className="r-meals__opt-desc">
+                <MealDesc text={o.desc} />
+              </span>
               <span className="r-meals__opt-kcal">{NUM.format(o.kcal)}</span>
             </li>
           ))}

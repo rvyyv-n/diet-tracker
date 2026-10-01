@@ -7,8 +7,10 @@
  * target, gold partial, red well under. Every status dot sits beside a word.
  */
 
-import { useId, useState } from "react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import { Button, Icon } from "./core.jsx";
+import { MealDesc } from "./shared.jsx";
+import { kgToLb, lbToKg, weightUnitLabel } from "../js/core/units.js";
 
 const cx = (...names) => names.filter(Boolean).join(" ");
 const nf = (n) => (typeof n === "number" ? n.toLocaleString("en-US") : n);
@@ -70,13 +72,89 @@ export function DotStrip({ days, label, onSelect, onCalendar }) {
 /**
  * The Today hero: the kcal figure, a bar on the horizon coloured by intake
  * status, and the sun riding the bar's end. Runs edge to edge and pads its
- * own text by the gutter.
+ * own text by the gutter. `scrub` ({ stops, value, label, onChange }) makes
+ * the sun a slider: `stops` are the replay points as fractions of the bar,
+ * `value` the point shown (null for now), `label` its words for a reader.
  */
-export function DayTotal({ eyebrow, kcal, target, status, remaining, protein, proteinTarget }) {
+export function DayTotal({
+  eyebrow,
+  kcal,
+  target,
+  status,
+  remaining,
+  protein,
+  proteinTarget,
+  scrub,
+}) {
   const key = statusKey(status);
   const f = target > 0 ? Math.max(0, Math.min(1, kcal / target)) : 0;
+  const horizonRef = useRef(null);
+  const barRef = useRef(null);
+  const dragging = useRef(false);
+  // A slider once at least one thing is eaten (pass 93): drag the sun back and
+  // Today shows the day as it stood. Letting go returns it to now.
+  const s = scrub && scrub.stops.length > 1 ? scrub : null;
+  const last = s ? s.stops.length - 1 : 0;
+  const at = s?.value ?? null;
+
+  /** The replay point nearest a pointer; null for the last, which is now. */
+  function pointAt(clientX) {
+    const box = horizonRef.current.getBoundingClientRect();
+    const gutter = barRef.current.offsetLeft;
+    const x = (clientX - box.left - gutter) / Math.max(1, box.width - 2 * gutter);
+    let best = 0;
+    s.stops.forEach((stop, i) => {
+      // Ties go to the later point, so a run of points past target still ends on the day.
+      if (Math.abs(stop - x) <= Math.abs(s.stops[best] - x)) best = i;
+    });
+    return best === last ? null : best;
+  }
+  const set = (v) => {
+    if (v !== at) s.onChange(v);
+  };
+  const drag = s
+    ? {
+        onPointerDown: (e) => {
+          if (e.button !== 0) return;
+          e.currentTarget.setPointerCapture(e.pointerId);
+          dragging.current = true;
+          set(pointAt(e.clientX));
+        },
+        onPointerMove: (e) => {
+          if (dragging.current) set(pointAt(e.clientX));
+        },
+        onPointerUp: () => {
+          dragging.current = false;
+          set(null);
+        },
+        onPointerCancel: () => {
+          dragging.current = false;
+          set(null);
+        },
+      }
+    : {};
+  function onKeyDown(e) {
+    const now = at ?? last;
+    const step = { ArrowLeft: -1, ArrowDown: -1, ArrowRight: 1, ArrowUp: 1 }[e.key];
+    let next;
+    if (step) next = Math.max(0, Math.min(last, now + step));
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End" || e.key === "Escape") next = last;
+    else return;
+    e.preventDefault();
+    set(next === last ? null : next);
+  }
+
   return (
-    <div className={`r-daytotal r-status--${key}`} style={{ "--r-fill": f }}>
+    <div
+      className={cx(
+        "r-daytotal",
+        `r-status--${key}`,
+        s && "r-daytotal--scrub",
+        at != null && "is-scrubbing",
+      )}
+      style={{ "--r-fill": f }}
+    >
       <div className="r-daytotal__head">
         <span>{eyebrow}</span>
         <StatusDot status={key} />
@@ -85,12 +163,31 @@ export function DayTotal({ eyebrow, kcal, target, status, remaining, protein, pr
         <span className="r-daytotal__kcal">{nf(kcal)}</span>
         <span className="r-daytotal__target">/ {nf(target)} kcal</span>
       </div>
-      <div className="r-daytotal__horizon" aria-hidden="true">
-        <span className="r-daytotal__line" />
-        <span className="r-daytotal__bar" />
-        <span className="r-daytotal__halo" />
-        <span className="r-daytotal__sun" />
-        {f < 0.9 ? <span className="r-daytotal__end">{nf(target)}</span> : null}
+      <div className="r-daytotal__horizon" ref={horizonRef} {...drag}>
+        <span className="r-daytotal__line" aria-hidden="true" />
+        <span className="r-daytotal__bar" ref={barRef} aria-hidden="true" />
+        <span className="r-daytotal__halo" aria-hidden="true" />
+        {s ? (
+          <span
+            className="r-daytotal__sun"
+            role="slider"
+            tabIndex={0}
+            aria-label="Replay the day"
+            aria-valuemin={0}
+            aria-valuemax={last}
+            aria-valuenow={at ?? last}
+            aria-valuetext={s.label}
+            onKeyDown={onKeyDown}
+            onBlur={() => set(null)}
+          />
+        ) : (
+          <span className="r-daytotal__sun" aria-hidden="true" />
+        )}
+        {f < 0.9 ? (
+          <span className="r-daytotal__end" aria-hidden="true">
+            {nf(target)}
+          </span>
+        ) : null}
       </div>
       <div className="r-daytotal__foot">
         <span>{remaining}</span>
@@ -114,8 +211,35 @@ function TickPop({ size, pop, onPopEnd }) {
 }
 
 /** The day's checklist; draws the time rail behind the markers. */
-export function BlockList({ children }) {
-  return <div className="r-blocklist">{children}</div>;
+export function BlockList({ children, flipKey }) {
+  const ref = useRef(null);
+  const tops = useRef(new Map());
+  const lastKey = useRef(flipKey);
+  // When `flipKey` changes (the replay point on Today), rows that moved
+  // glide from where they were instead of jumping: the now marker travels up
+  // the rail and the rows part round it.
+  useLayoutEffect(() => {
+    const moved = lastKey.current !== flipKey;
+    lastKey.current = flipKey;
+    const next = new Map();
+    for (const el of ref.current.children) {
+      const top = el.offsetTop;
+      const was = tops.current.get(el);
+      next.set(el, top);
+      if (!moved || was == null || was === top) continue;
+      el.style.transition = "none";
+      el.style.transform = `translateY(${was - top}px)`;
+      el.getBoundingClientRect();
+      el.style.transition = "";
+      el.style.transform = "";
+    }
+    tops.current = next;
+  });
+  return (
+    <div className="r-blocklist" ref={ref}>
+      {children}
+    </div>
+  );
 }
 
 /**
@@ -140,6 +264,7 @@ export function BlockRow({
   linkLabel,
   onToggle,
   onLink,
+  ahead = false,
 }) {
   const done = state === "done" || state === "closedDone";
   // The check pops in when this row goes from open to done on screen, or when
@@ -152,7 +277,13 @@ export function BlockRow({
     setPop(state === "done" && (prevState === "idle" || prevState === "receded"));
   }
   return (
-    <div className={`r-blockrow r-blockrow--${state === "closedDone" ? "closed-done" : state}`}>
+    <div
+      className={cx(
+        "r-blockrow",
+        `r-blockrow--${state === "closedDone" ? "closed-done" : state}`,
+        ahead && "is-ahead",
+      )}
+    >
       <span className="r-blockrow__time">
         {time}
         {state === "off" ? <span className="r-blockrow__off">off plan</span> : null}
@@ -185,7 +316,11 @@ export function BlockRow({
         {tag ? (
           <span className={cx("r-blockrow__tag", tagEmphasis && "is-emphasis")}>{tag}</span>
         ) : null}
-        {desc ? <span className="r-blockrow__desc">{desc}</span> : null}
+        {desc ? (
+          <span className="r-blockrow__desc">
+            <MealDesc text={desc} />
+          </span>
+        ) : null}
       </span>
       <span className="r-blockrow__kcal">
         {nf(kcal)}
@@ -207,16 +342,16 @@ export function NowMarker({ time }) {
 }
 
 /** The block due now: the only emphasised item on Today, with Tick as its action. */
-export function DueCard({ label, name, desc, kcal, protein, swappable, onTick, onSwap }) {
+export function DueCard({ label, name, desc, kcal, protein, swappable, onTick, onSwap, ahead }) {
   return (
-    <div className="r-due">
+    <div className={cx("r-due", ahead && "is-ahead")}>
       <div className="r-due__head">
         <div className="r-due__text">
           <div className="r-due__label">{label}</div>
           <div className="r-due__name">{name}</div>
           {desc ? (
             <div className="r-due__desc">
-              {desc}
+              <MealDesc text={desc} />
               <span className="r-due__inline">
                 {" · "}
                 <b>{nf(kcal)} kcal</b> · {protein} g
@@ -371,18 +506,27 @@ export function GroceryList({ aisles, scaleNote, onToggle, onClear }) {
 /* The chart's drawing box, from the handoff: a 364×176 viewBox starting at x -8. */
 const VB = { x: -8, w: 364, h: 176 };
 const GHOST = { x: 16, y: 140, path: "M16 140 C120 136 220 104 332 64" };
+// Gridline steps to try, in the display unit; the first that gives at most
+// three lines wins.
+const GRID_STEPS = [0.1, 0.2, 0.25, 0.5, 1, 2, 2.5, 5, 10, 20];
 
 /**
  * Weekly weigh-ins as dots, the four-week rolling average as a line, an
  * optional target band, and the sun on the latest average. The horizon runs
  * full-bleed; the axis labels are HTML so they follow the theme. Band maths
  * is inferred in the handoff, so callers pass the band as two series.
+ *
+ * Pass 93 made it readable without the legend: gridlines with weights in the
+ * user's `unit` (stone reads in pounds, as the deltas do), the average drawn
+ * dashed while it is still averaging in its first weeks, "On pace" written
+ * on the band, and the sun's own reading beside it.
  */
 export function WeightChart({
   weights,
   labels = [],
   bandLow,
   bandHigh,
+  unit = "kg",
   emptyText = "A trend appears after four weigh-ins.",
 }) {
   const id = useId().replace(/:/g, "");
@@ -397,9 +541,9 @@ export function WeightChart({
     const s = weights.slice(Math.max(0, i - 3), i + 1);
     return s.reduce((a, b) => a + b, 0) / s.length;
   });
-  const pts = (arr, from = 0) =>
+  const pts = (arr, from = 0, to = arr.length - 1) =>
     arr
-      .map((v, i) => (i >= from ? `${X(i)},${Y(v)}` : null))
+      .map((v, i) => (i >= from && i <= to ? `${X(i)},${Y(v)}` : null))
       .filter(Boolean)
       .join(" ");
   const band =
@@ -416,6 +560,23 @@ export function WeightChart({
   const ghost = n === 0;
   const sun = trend ? at(X(last), Y(avg[last])) : ghost ? at(GHOST.x, GHOST.y) : null;
 
+  // Gridlines at round weights in the display unit.
+  const inLb = unit === "lb" || unit === "st";
+  const show = (kg) => (inLb ? kgToLb(kg) : kg);
+  const step = GRID_STEPS.find((c) => Math.floor(show(hi) / c) - Math.ceil(show(lo) / c) < 3);
+  const grid = [];
+  if (n && step) {
+    for (let k = Math.ceil(show(lo) / step); k * step <= show(hi); k++) {
+      const v = k * step;
+      const kg = inLb ? lbToKg(v) : v;
+      if (Y(kg) > 12 && Y(kg) < 136) grid.push({ v, y: Y(kg) });
+    }
+  }
+  const digits = step === 0.25 ? 2 : step < 1 || step === 2.5 ? 1 : 0;
+  const unitWord = weightUnitLabel(inLb ? "lb" : "kg");
+  // "On pace" sits on the band's top edge at its end, the reading under the sun.
+  const bandEnd = trend && bandHigh ? Y(bandHigh[last]) : null;
+
   return (
     <div className="r-chart">
       <span className="r-chart__horizon" aria-hidden="true" />
@@ -427,13 +588,28 @@ export function WeightChart({
               <stop offset="1" className="r-chart__sky-bottom" />
             </linearGradient>
           </defs>
+          {grid.map((g) => (
+            <line
+              key={g.v}
+              x1={VB.x}
+              x2={VB.x + VB.w}
+              y1={g.y}
+              y2={g.y}
+              className="r-chart__grid"
+            />
+          ))}
           {trend && band ? (
             <>
               <polygon points={band} className="r-chart__band" />
               <polygon points={band} fill={`url(#${id}sky)`} className="r-chart__band-sky" />
             </>
           ) : null}
-          {trend ? <polyline points={pts(avg, 3)} className="r-chart__avg" /> : null}
+          {trend ? (
+            <>
+              <polyline points={pts(avg, 0, 3)} className="r-chart__avg r-chart__avg--early" />
+              <polyline points={pts(avg, 3)} className="r-chart__avg" />
+            </>
+          ) : null}
           {ghost ? <path d={GHOST.path} className="r-chart__ghost" /> : null}
           <g className="r-chart__dots">
             {weights.map((v, i) => (
@@ -441,11 +617,27 @@ export function WeightChart({
             ))}
           </g>
         </svg>
+        {grid.map((g, i) => (
+          <span key={g.v} className="r-chart__tick" style={at(VB.x, g.y)} aria-hidden="true">
+            {g.v.toFixed(digits)}
+            {i === grid.length - 1 ? ` ${unitWord}` : null}
+          </span>
+        ))}
+        {bandEnd != null ? (
+          <span className="r-chart__band-label" style={at(X(last), bandEnd)} aria-hidden="true">
+            On pace
+          </span>
+        ) : null}
         {sun ? (
           <>
             <span className="r-chart__glow" style={sun} aria-hidden="true" />
             <span className="r-chart__sun" style={sun} aria-hidden="true" />
           </>
+        ) : null}
+        {trend ? (
+          <span className="r-chart__reading" style={sun} aria-hidden="true">
+            {show(avg[last]).toFixed(1)} avg
+          </span>
         ) : null}
       </div>
       {!trend ? <div className="r-chart__empty">{emptyText}</div> : null}

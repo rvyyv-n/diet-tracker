@@ -354,6 +354,20 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   inside the dialog. The weight chart's on-pace band reads the plan's rate
   constant. No new tokens.
 
+- **pass 93 — the owner's pre-release mark-up:** Today's day-total sun is a
+  slider: drag it (or use the arrow keys) back through the day, and the
+  total, status, protein and a "11:00 · after Shake" caption follow it, while
+  the now marker glides up the rail and later rows quieten. Letting go
+  returns to now. Blocks count at their planned time (`dayReplay` in
+  `day.js`). The weight chart gains weight gridlines, "On pace" on the band,
+  the sun's own reading, a dotted average while it builds up, and the legend
+  on phones. The About block has a sun that breathes three times as it comes
+  into view. The phone nav loses its active-tab dot. Smaller fixes: Settings'
+  line reads "28 days", History's Edit sits by the weight, Recipes' rows
+  have room and their header is capitalised, meal-share bars are sunlit,
+  and ingredient lists wrap only between foods. New tokens:
+  `--dur-breath`, `--meal-share-fill`.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.

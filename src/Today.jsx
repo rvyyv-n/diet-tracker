@@ -37,6 +37,8 @@ import {
   setAppetite,
   APPETITE_VALUES,
   intakeStatus,
+  kcalStatus,
+  dayReplay,
   isDayEditable,
   removeBlock,
 } from "./js/core/day.js";
@@ -97,6 +99,8 @@ export default function Today() {
   const [recipeEditor, setRecipeEditor] = useState(null);
   const [recipeEditorError, setRecipeEditorError] = useState(null);
   const [recipeDeleteConfirming, setRecipeDeleteConfirming] = useState(false);
+  // The replay point the day-total sun is dragged to, or null for now.
+  const [scrub, setScrub] = useState(null);
 
   useEffect(() => {
     const node = paneRef.current;
@@ -126,6 +130,7 @@ export default function Today() {
 
   function goToDate(iso) {
     setViewDate(iso);
+    setScrub(null);
     setSheet(null);
     setToast(null);
   }
@@ -181,6 +186,7 @@ export default function Today() {
   };
 
   const week = weekDays(profile, day.date);
+  const replay = dayReplay(day);
   const closeSheet = () => setSheet(null);
   const openCalendar = () => setSheet("calendar");
 
@@ -211,9 +217,17 @@ export default function Today() {
               />
             )}
             <DayBanner day={day} editable={editable} goToDate={goToDate} />
-            <TotalCard day={day} profile={profile} />
+            <TotalCard
+              day={day}
+              profile={profile}
+              replay={replay}
+              scrub={scrub}
+              onScrub={setScrub}
+            />
             <Blocks
               day={day}
+              replay={replay}
+              scrub={scrub}
               editable={editable}
               onTick={tick}
               setSheet={setSheet}
@@ -443,10 +457,13 @@ function DayBanner({ day, editable, goToDate }) {
  * line and the protein line are each behind a Settings toggle (pass 32,
  * profile.overviewMetrics).
  */
-function TotalCard({ day, profile }) {
+function TotalCard({ day, profile, replay, scrub, onScrub }) {
   const totals = dayTotals(day);
   const target = phaseTarget(day.phaseId);
-  const status = totals.kcal === 0 ? "none" : intakeStatus(day);
+  // Dragged back (pass 93), the card reads the replay point instead of the day.
+  const point = scrub == null ? null : replay[scrub];
+  const kcal = point ? point.kcal : totals.kcal;
+  const status = kcal === 0 ? "none" : point ? kcalStatus(kcal, target.kcal) : intakeStatus(day);
   const closed = !isDayEditable(day, todayISO());
   const gap = target.kcal - totals.kcal;
   const left = Math.max(0, totals.total - totals.planDone);
@@ -470,6 +487,18 @@ function TotalCard({ day, profile }) {
     );
   }
 
+  if (point) {
+    remaining = point.id ? (
+      <>
+        {point.time ? <b>{point.time} · </b> : null}after {point.name}
+      </>
+    ) : (
+      <b>Start of the day</b>
+    );
+  }
+  const words = (p, now) =>
+    now ? "Now" : !p.id ? "Start of the day" : `${p.time ? `${p.time}, ` : ""}after ${p.name}`;
+
   return (
     <div className="r-today__total">
       <DayTotal
@@ -479,12 +508,22 @@ function TotalCard({ day, profile }) {
             {phaseLine(profile, day)}
           </>
         }
-        kcal={totals.kcal}
+        kcal={kcal}
         target={target.kcal}
         status={status}
-        remaining={overviewMetricShown(profile, "remaining") ? remaining : null}
-        protein={overviewMetricShown(profile, "protein") ? Math.round(totals.proteinG) : undefined}
+        remaining={point || overviewMetricShown(profile, "remaining") ? remaining : null}
+        protein={
+          overviewMetricShown(profile, "protein")
+            ? Math.round(point ? point.proteinG : totals.proteinG)
+            : undefined
+        }
         proteinTarget={target.proteinG}
+        scrub={{
+          stops: replay.map((p) => (target.kcal > 0 ? Math.min(1, p.kcal / target.kcal) : 0)),
+          value: scrub,
+          label: `${words(point ?? replay.at(-1), !point)}, ${NUM.format(kcal)} kcal`,
+          onChange: onScrub,
+        }}
       />
     </div>
   );
@@ -501,7 +540,7 @@ const EXTRA_DESC = {
   custom: "Typed in",
 };
 
-function Blocks({ day, editable, onTick, setSheet, commit }) {
+function Blocks({ day, replay, scrub, editable, onTick, setSheet, commit }) {
   // The due card turns into a row when it is ticked; that new row pops its check once.
   const [popId, setPopId] = useState(null);
   const wide = useWide();
@@ -530,16 +569,24 @@ function Blocks({ day, editable, onTick, setSheet, commit }) {
   // Tagged while it is still to come: a fact from the history, never a verdict.
   const skipped = live ? mostSkippedBlock(allDays())?.blockId : null;
 
+  // While the sun is dragged back, the marker stands after the last thing
+  // eaten by that point, on any day, and what follows it is ahead.
+  const point = scrub == null ? null : replay[scrub];
   const rows = [];
-  let nowPlaced = !live;
+  let nowPlaced = !live && !point;
   const placeNow = () => {
     if (nowPlaced) return;
-    rows.push(<NowMarker key="now" time={now} />);
+    rows.push(<NowMarker key="now" time={point ? (point.time ?? "Start") : now} />);
     nowPlaced = true;
   };
+  const ahead = () => Boolean(point) && nowPlaced;
+  const after = (id) => {
+    if (point?.id === id) placeNow();
+  };
+  if (point && !point.id) placeNow();
 
   for (const it of items) {
-    if (it.time && it.time > now) placeNow();
+    if (!point && it.time && it.time > now) placeNow();
     if (it.kind === "extra") {
       const { extra } = it;
       rows.push(
@@ -555,8 +602,10 @@ function Blocks({ day, editable, onTick, setSheet, commit }) {
           link={editable ? "Remove" : undefined}
           linkLabel={`Remove ${extra.name}`}
           onLink={() => commit(removeExtra(day, extra.id))}
+          ahead={ahead()}
         />,
       );
+      after(extra.id);
       continue;
     }
     const { block, bonus } = it;
@@ -564,7 +613,7 @@ function Blocks({ day, editable, onTick, setSheet, commit }) {
     const isDone = done(it);
     const addOn = ADDON_IDS.includes(block.id);
     if (due && block.id === due.block.id) {
-      placeNow();
+      if (!point) placeNow();
       rows.push(
         <DueCard
           key={block.id}
@@ -585,6 +634,7 @@ function Blocks({ day, editable, onTick, setSheet, commit }) {
             onTick(block.id);
           }}
           onSwap={() => setSheet({ swap: block.id })}
+          ahead={ahead()}
         />,
       );
       continue;
@@ -635,14 +685,16 @@ function Blocks({ day, editable, onTick, setSheet, commit }) {
               )
         }
         onToggle={editable ? () => onTick(block.id) : undefined}
+        ahead={ahead()}
       />,
     );
+    after(block.id);
   }
   placeNow();
 
   return (
     <div className="r-today__blocks">
-      <BlockList>{rows}</BlockList>
+      <BlockList flipKey={scrub}>{rows}</BlockList>
     </div>
   );
 }

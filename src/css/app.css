@@ -1150,15 +1150,6 @@
   color: var(--nav-active-ink);
   box-shadow: var(--nav-active-glow);
 }
-.r-phonenav__dot {
-  position: absolute;
-  top: 6px;
-  right: 14px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--nav-dot);
-}
 
 /* ------------------------------------------------------------- side nav --- */
 
@@ -2040,6 +2031,11 @@
   font-size: 15px;
 }
 
+/* An ingredient sentence's foods hold together; it wraps at the joins. */
+.r-nobreak {
+  white-space: nowrap;
+}
+
 /* ------------------------------------------------------------ day total --- */
 
 /* Edge to edge: it pads its own text by the gutter. The halo stays centred on
@@ -2134,6 +2130,45 @@
   background: var(--sun);
   transition: left var(--dur-slow) var(--ease-out);
 }
+/* The sun as a slider (pass 93): grab it and drag back through the day. The
+   strip takes sideways drags; up and down still scroll the page. */
+.r-daytotal--scrub .r-daytotal__horizon {
+  touch-action: pan-y;
+  cursor: grab;
+  -webkit-tap-highlight-color: transparent;
+}
+.r-daytotal--scrub.is-scrubbing .r-daytotal__horizon {
+  cursor: grabbing;
+}
+.r-daytotal--scrub .r-daytotal__sun {
+  transition:
+    left var(--dur-slow) var(--ease-out),
+    transform var(--dur-fast) var(--ease-spring),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.r-daytotal--scrub .r-daytotal__sun::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+}
+.r-daytotal--scrub .r-daytotal__sun:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.r-daytotal.is-scrubbing .r-daytotal__sun {
+  transform: scale(1.2);
+}
+/* Dragging snaps point to point quickly; letting go glides back to now. */
+.r-daytotal.is-scrubbing .r-daytotal__bar {
+  transition:
+    width var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.r-daytotal.is-scrubbing .r-daytotal__halo,
+.r-daytotal.is-scrubbing .r-daytotal__sun {
+  transition-duration: var(--dur-fast);
+}
 .r-daytotal__end {
   position: absolute;
   right: var(--gutter);
@@ -2160,6 +2195,29 @@
   position: relative;
   isolation: isolate;
   padding-right: var(--gutter);
+}
+/* Replay (pass 93): rows the now marker passes glide to their new place, and
+   what lies ahead of it quietens, its ticks fading back to open markers. */
+.r-blocklist > * {
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out);
+}
+.r-blocklist > .is-ahead {
+  opacity: 0.45;
+}
+.r-blockrow.is-ahead {
+  --r-bg: var(--bg-canvas);
+  --r-mark-ring: inset 0 0 0 1.5px var(--ink-soft);
+}
+.r-blockrow .r-tickpop {
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-spring);
+}
+.r-blockrow.is-ahead .r-tickpop {
+  opacity: 0;
+  transform: scale(0.6);
 }
 /* the time rail, behind the markers */
 .r-blocklist::before {
@@ -2747,6 +2805,44 @@
   font-size: var(--type-micro);
   color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
+}
+
+/* Gridlines and their weights, "On pace" on the band, and the sun's reading
+   (pass 93): the chart reads without the legend. */
+.r-chart__grid {
+  vector-effect: non-scaling-stroke;
+  stroke: var(--line);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+.r-chart__avg--early {
+  stroke-dasharray: 1 6;
+  stroke-width: 2;
+  opacity: 0.6;
+}
+.r-chart__tick,
+.r-chart__band-label,
+.r-chart__reading {
+  position: absolute;
+  font-size: var(--type-micro);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.r-chart__tick {
+  transform: translateY(calc(-100% - 3px));
+  color: var(--ink-muted);
+}
+.r-chart__band-label {
+  transform: translate(-100%, calc(-100% - 4px));
+  color: var(--accent-text);
+  font-weight: 700;
+}
+.r-chart__reading {
+  transform: translate(calc(-100% - 6px), 10px);
+  color: var(--ink);
+  font-weight: 700;
 }
 
 /* ---------------------------------------------------------------- sheet --- */
@@ -3708,7 +3804,36 @@ button.r-listrow {
   min-height: 120px;
 }
 .r-weight__legend {
-  display: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.r-weight__key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.r-weight__key::before {
+  content: "";
+  background: var(--ink);
+}
+.r-weight__key--dot::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.r-weight__key--line::before {
+  width: 16px;
+  height: 2.5px;
+}
+.r-weight__key--band::before {
+  width: 16px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--chart-band);
 }
 .r-weight__suggestion {
   margin-top: 18px;
@@ -3778,7 +3903,7 @@ button.r-listrow {
 }
 .r-history__row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto 56px;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: center;
   column-gap: var(--space-12);
   min-height: 52px;
@@ -3802,7 +3927,7 @@ button.r-listrow {
 .r-history__edit {
   justify-self: end;
   min-height: var(--icon-button);
-  padding: 0;
+  padding: 0 0 0 var(--space-4);
   border: 0;
   background: none;
   color: var(--accent-text);
@@ -3954,38 +4079,6 @@ button.r-listrow {
   .r-weight__chart {
     margin-top: 22px;
   }
-  .r-weight__legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 18px;
-    margin-top: 10px;
-    font-size: 13px;
-    color: var(--ink-muted);
-  }
-  .r-weight__key {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .r-weight__key::before {
-    content: "";
-    background: var(--ink);
-  }
-  .r-weight__key--dot::before {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-  }
-  .r-weight__key--line::before {
-    width: 16px;
-    height: 2.5px;
-  }
-  .r-weight__key--band::before {
-    width: 16px;
-    height: 10px;
-    border-radius: 2px;
-    background: var(--chart-band);
-  }
   .r-weight__suggestion--phone {
     display: none;
   }
@@ -4018,7 +4111,7 @@ button.r-listrow {
     margin-top: 0;
   }
   .r-history__row {
-    grid-template-columns: minmax(0, 1fr) auto auto 44px;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
     min-height: 48px;
   }
   .r-history__date {
@@ -4567,12 +4660,70 @@ a.r-button {
 
 /* About: quiet, at the foot */
 .r-about {
+  position: relative;
+  isolation: isolate;
   font-size: var(--type-small);
   line-height: 1.5;
   color: var(--ink-muted);
 }
 .r-about p {
   margin: 0;
+}
+/* The Rise sun behind the block (pass 93), off to the right of the short
+   lines. Each time the block comes into view it breathes three times, its
+   rings spreading out like the halo round the sun, then rests. */
+.r-about__sun {
+  position: absolute;
+  z-index: -1;
+  top: -40px;
+  right: var(--space-16);
+  width: 96px;
+  height: 96px;
+  pointer-events: none;
+}
+.r-about__disc,
+.r-about__ring {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  border-radius: 50%;
+}
+.r-about__disc {
+  width: 32px;
+  height: 32px;
+  background: var(--sun);
+  box-shadow: 0 0 22px 6px var(--sun-halo);
+}
+.r-about__ring {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, var(--sun-halo), transparent 68%);
+  opacity: 0;
+  transform: scale(0.4);
+}
+@keyframes r-sun-breath {
+  50% {
+    transform: scale(1.12);
+  }
+}
+@keyframes r-sun-ring {
+  from {
+    opacity: 0.9;
+    transform: scale(0.35);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+.r-about__sun.is-awake .r-about__disc {
+  animation: r-sun-breath var(--dur-breath) var(--ease-in-out) 3;
+}
+.r-about__sun.is-awake .r-about__ring {
+  animation: r-sun-ring var(--dur-breath) var(--ease-out) 3 both;
+}
+.r-about__sun.is-awake .r-about__ring + .r-about__ring {
+  animation-delay: calc(var(--dur-breath) / 2);
 }
 .r-about__name {
   color: var(--ink);
@@ -4777,8 +4928,9 @@ a.r-button {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: var(--space-12);
-  min-height: 64px;
+  gap: var(--space-8);
+  min-height: 72px;
+  padding: var(--space-12) 0;
   border-bottom: 1px solid var(--line);
 }
 .r-rbook__text {
@@ -4793,9 +4945,18 @@ a.r-button {
   font-size: 17px;
 }
 .r-rbook__meta {
+  margin-top: var(--space-2);
   font-size: var(--type-small);
+  line-height: 1.45;
   color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
+}
+/* On a phone the count takes its own line under the figures. */
+.r-rbook__sep {
+  display: none;
+}
+.r-rbook__count {
+  display: block;
 }
 .r-rbook__protein,
 .r-rbook__count.is-top {
@@ -4888,7 +5049,8 @@ a.r-button {
 .r-meals__share-fill {
   display: block;
   height: 100%;
-  background: var(--ink-soft);
+  border-radius: inherit;
+  background: var(--meal-share-fill);
 }
 .r-meals__opts {
   margin: 0 0 var(--space-12) 32px;
@@ -5154,12 +5316,18 @@ a.r-button {
     grid-template-columns: minmax(0, 1fr) auto auto auto;
     gap: 14px;
     min-height: 60px;
+    padding: 0;
   }
   .r-rbook__text {
     display: contents;
   }
   .r-rbook__meta {
+    margin-top: 0;
     text-align: right;
+  }
+  .r-rbook__sep,
+  .r-rbook__count {
+    display: inline;
   }
   .r-meals {
     padding: var(--space-4) var(--space-20) var(--space-8);

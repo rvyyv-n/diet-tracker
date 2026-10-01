@@ -161,7 +161,7 @@ export default function Recipes({ onNavigate }) {
             <Icon name="chevronLeft" size={18} />
             Plan
           </button>
-          <Eyebrow>Recipe book · meals · food table</Eyebrow>
+          <Eyebrow>Recipe book · Meals · Food table</Eyebrow>
           <h1 className="r-rbook__title">Recipes</h1>
         </header>
 
@@ -274,17 +274,27 @@ export default function Recipes({ onNavigate }) {
 /**
  * "620 kcal · 23 g · 5 items · logged 3×": the figures, then the fact. The
  * protein is in the accent, and so is the count for the three most logged.
+ * Each figure keeps its words together; on a phone the count takes its own
+ * line, so a row wraps at a separator and never mid-figure (pass 93).
  */
 function recipeMeta(r, top) {
   const n = r.items?.length ?? 0;
   return (
     <>
-      {NUM.format(r.kcal)} kcal ·{" "}
-      <span className="r-rbook__protein">{Math.round(r.proteinG)} g</span>
-      {n ? ` · ${n} item${n === 1 ? "" : "s"}` : null}
-      {r.useCount ? (
+      <span className="r-nobreak">{NUM.format(r.kcal)} kcal</span>
+      {" · "}
+      <span className="r-rbook__protein r-nobreak">{Math.round(r.proteinG)} g</span>
+      {n ? (
         <>
           {" · "}
+          <span className="r-nobreak">
+            {n} item{n === 1 ? "" : "s"}
+          </span>
+        </>
+      ) : null}
+      {r.useCount ? (
+        <>
+          <span className="r-rbook__sep"> · </span>
           <span className={top ? "r-rbook__count is-top" : "r-rbook__count"}>
             logged {r.useCount}×
           </span>

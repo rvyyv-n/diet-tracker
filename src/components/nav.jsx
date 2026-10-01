@@ -30,7 +30,6 @@ export function PhoneNav({ items, active, lit, onSelect }) {
               aria-current={item.id === active ? "page" : undefined}
               onClick={() => onSelect(item.id)}
             >
-              {on ? <span className="r-phonenav__dot" aria-hidden="true" /> : null}
               <Icon name={item.icon} size={20} strokeWidth={on ? 1.9 : 1.8} />
               {item.label}
             </button>

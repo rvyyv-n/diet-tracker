@@ -422,7 +422,7 @@ function Section({ label, icon, className, children }) {
 function recordSubtitle() {
   const { days, weights, recipes } = countRecords(exportAll());
   return (
-    `${days} day${days === 1 ? "" : "s"} logged · ${weights} weigh-in${weights === 1 ? "" : "s"}` +
+    `${days} day${days === 1 ? "" : "s"} · ${weights} weigh-in${weights === 1 ? "" : "s"}` +
     (recipes ? ` · ${recipes} recipe${recipes === 1 ? "" : "s"}` : "")
   );
 }
@@ -972,9 +972,31 @@ function updateHint(status, phase) {
   return `${status.version} available`;
 }
 
+/**
+ * The Rise sun behind the About block (pass 93): it breathes a few times each
+ * time the block scrolls into view, then rests. Decoration only.
+ */
+function AboutSun() {
+  const ref = useRef(null);
+  const [awake, setAwake] = useState(false);
+  useEffect(() => {
+    const io = new IntersectionObserver(([e]) => setAwake(e.isIntersecting), { threshold: 0.6 });
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <span ref={ref} className={`r-about__sun${awake ? " is-awake" : ""}`} aria-hidden="true">
+      <span className="r-about__ring" />
+      <span className="r-about__ring" />
+      <span className="r-about__disc" />
+    </span>
+  );
+}
+
 function AboutBlock() {
   return (
     <div className="r-about">
+      <AboutSun />
       <p className="r-about__name">
         {APP_NAME} · v{APP_VERSION}
         <span className="r-about__schema"> · schema wgt v{SCHEMA_VERSION}</span>

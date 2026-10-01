@@ -1,8 +1,9 @@
 /**
  * shared.jsx — the small plumbing every screen uses (pass 62). v3.0 (passes
  * 65-71) moved the design components to core.jsx, tracking.jsx and
- * surfaces.jsx; what stays here is `NUM` and `Imperative`, which are not
- * design: a number format, and the bridge that mounts a vanilla widget.
+ * surfaces.jsx; what stays here is `NUM`, `Imperative` and `MealDesc`: a
+ * number format, the bridge that mounts a vanilla widget, and the meal
+ * description that wraps only between its foods (pass 93).
  */
 
 import { useEffect, useRef } from "react";
@@ -23,4 +24,18 @@ export function Imperative({ node }) {
       ref.current.replaceChildren(node);
   });
   return <span style={{ display: "contents" }} ref={ref} />;
+}
+
+/**
+ * An ingredient sentence ("Eggs (3) + milk (250 ml) + …") that wraps only at
+ * the "+" joins, so a quantity never splits from its food ("milk (250 / ml)").
+ */
+export function MealDesc({ text }) {
+  const parts = String(text).split(" + ");
+  return parts.map((part, i) => (
+    <span key={i}>
+      <span className="r-nobreak">{part}</span>
+      {i < parts.length - 1 ? " + " : null}
+    </span>
+  ));
 }

@@ -153,6 +153,7 @@ export default function Weight() {
               <WeightChart
                 weights={series.map((s) => s.kg)}
                 labels={axisLabels(series)}
+                unit={unit}
                 bandLow={series.map(
                   (s) => series[0].kg + TARGET_RATE_KG_PER_WEEK.min * (s.week - series[0].week),
                 )}

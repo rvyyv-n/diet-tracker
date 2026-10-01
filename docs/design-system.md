@@ -64,6 +64,7 @@ same semantic names.
 | Overlay    | `--scrim`, `--shadow-card`, `--shadow-float`, `--chart-band`; app layer: `--chart-sky-top` / `-bottom` (Reel's band) |
 | States     | app layer: `--hover-wash` and `--press-wash`, ink washes laid over a control's fill on hover and press               |
 | Due-now    | `--due-*` (card background, ink, edge, glow, CTA), `--now-line`, `--sun-halo`                                        |
+| Meals      | `--meal-share-fill`: a sunlight gradient for a meal's share of the day on Recipes, never an intake status            |
 | Nav        | `--nav-*` (bar, edge, shadow, ink, active pill and glow)                                                             |
 
 The accent is `#E0673F`. Text on it is `--accent-ink` (near-black), not white.
@@ -152,8 +153,9 @@ never write a shadow literal. `--texture` is Reel's grain, `none` in Paper.
 ## Motion
 
 `--dur-instant` 90ms (press), `--dur-fast` 160 (hover, toggles), `--dur-base` 260
-(sheet, toast), `--dur-slow` 520 (sun travel). Easings: `--ease-out`,
-`--ease-spring` (tick pop, sun settle), `--ease-in-out`. All four durations fall
+(sheet, toast), `--dur-slow` 520 (sun travel), `--dur-breath` 2400 (one breath
+of the About sun, three per view, never a loop). Easings: `--ease-out`,
+`--ease-spring` (tick pop, sun settle), `--ease-in-out`. All five durations fall
 to 0 under `prefers-reduced-motion`. `--transition-control` and
 `--transition-entry` are app-layer shorthands over these.
 
