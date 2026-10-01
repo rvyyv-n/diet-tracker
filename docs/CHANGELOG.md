@@ -228,6 +228,16 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   `--toast-action-ink`, closed-day times read `--ink-muted`, and Undo and
   Skip reach 44px.
 
+- **pass 75 — the README redesign:** the README follows Bookcook's: a
+  centred header with the icon, a one-line pitch, links and the Test, Pages
+  and licence badges, then a desktop hero, contents, install for Android,
+  iPhone and computer, features with a five-screen phone row and a Looks
+  grid, privacy, how it's built, development and deployment. The status
+  note says v3.0 is in progress and the live site is still v2.3.0. The
+  screenshots are retaken from `scripts/shot.mjs` in the v3.0 design; pass
+  78 retakes them from the finished build. Rise has no website yet, so a
+  `later` roadmap item redoes the README when it has one.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.

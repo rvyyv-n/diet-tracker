@@ -24,7 +24,6 @@ a fresh thread. The design refs are paths inside the design export
 
 | Build pass | Name              | Targets (pass numbers)     | Model                   |
 | ---------- | ----------------- | -------------------------- | ----------------------- |
-| 6          | Audit and README  | `readme` (75)              | Opus, high effort       |
 | 7          | Motion            | `motion` (76), `rail` (77) | Sonnet 5.5, high effort |
 | 8          | Final screenshots | `shots` (78)               | Sonnet 5.5, high effort |
 
@@ -32,17 +31,6 @@ Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
 
 ### Build passes
-
-#### Build pass 6 — Audit and README
-
-Model: Opus, high effort. Target: readme. The README redesign from final screenshots (the sweep, pass 74, is done).
-
-- [ ] **Pass 75 · `readme`** — README redesign in the style of the owner's
-      other project.
-  - Does: centred header, badges, a screenshot row from `scripts/shot.mjs`,
-    contents, install, features, privacy and development sections; keeps the
-    status line honest.
-  - Done when: it renders cleanly on GitHub and every link resolves.
 
 #### Build pass 7 — Motion
 
@@ -98,6 +86,10 @@ undesigned, so it is restyled last, as pass 77, once the redesign is done.
 
 ## later
 
+- [ ] **Redo the README once Rise has a website** — pass 75 drafted it
+      without one, after Bookcook's README. When the site is live, make it the
+      first link and the hero picture, as Bookcook does, and add a Website
+      section.
 - [ ] **v2.3.0 phone and desktop pass** — Plan → Recipes and back on a real
       phone, the storage-full banner, and reminder sync on the deployed build
       (reminders are unavailable locally). Scheduled for after the release.
