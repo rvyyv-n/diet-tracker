@@ -104,6 +104,15 @@ export function DayTotal({ eyebrow, kcal, target, status, remaining, protein, pr
   );
 }
 
+/** A check that pops in on the spring curve when `pop` is set (a change the user just made). */
+function TickPop({ size, pop, onPopEnd }) {
+  return (
+    <span className={cx("r-tickpop", pop && "is-pop")} onAnimationEnd={onPopEnd}>
+      <Icon name="check" size={size} />
+    </span>
+  );
+}
+
 /** The day's checklist; draws the time rail behind the markers. */
 export function BlockList({ children }) {
   return <div className="r-blocklist">{children}</div>;
@@ -157,11 +166,7 @@ export function BlockRow({
         disabled={!onToggle}
       >
         <span className="r-blockrow__dot">
-          {done ? (
-            <span className={cx("r-blockrow__check", pop && "is-pop")} onAnimationEnd={onPopEnd}>
-              <Icon name="check" size={14} />
-            </span>
-          ) : null}
+          {done ? <TickPop size={14} pop={pop} onPopEnd={onPopEnd} /> : null}
           {state === "off" ? <span className="r-blockrow__diamond" /> : null}
         </span>
       </button>
@@ -309,6 +314,29 @@ export function PhaseLadder({ rungs, note }) {
   );
 }
 
+/** One grocery line. Ticking it pops the check; a week reset or a phase change does not. */
+function GroceryItem({ item: it, onToggle }) {
+  const [pop, setPop] = useState(false);
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={!!it.done}
+      onClick={() => {
+        setPop(!it.done);
+        onToggle();
+      }}
+      className={cx("r-grocery__item", it.done && "is-done", it.changed && "is-changed")}
+    >
+      <span className="r-grocery__box">
+        {it.done ? <TickPop size={15} pop={pop} onPopEnd={() => setPop(false)} /> : null}
+      </span>
+      <span className="r-grocery__name">{it.name}</span>
+      <span className="r-grocery__qty">{it.qty}</span>
+    </button>
+  );
+}
+
 /**
  * The weekly grocery checklist, by aisle. Ticked items strike through and
  * quieten; a quantity changed by a phase change shows in accent text.
@@ -325,20 +353,7 @@ export function GroceryList({ aisles, scaleNote, onToggle, onClear }) {
           </div>
           <div className="r-grocery__items">
             {a.items.map((it, ii) => (
-              <button
-                key={ii}
-                type="button"
-                role="checkbox"
-                aria-checked={!!it.done}
-                onClick={() => onToggle?.(ai, ii)}
-                className={cx("r-grocery__item", it.done && "is-done", it.changed && "is-changed")}
-              >
-                <span className="r-grocery__box">
-                  {it.done ? <Icon name="check" size={15} /> : null}
-                </span>
-                <span className="r-grocery__name">{it.name}</span>
-                <span className="r-grocery__qty">{it.qty}</span>
-              </button>
+              <GroceryItem key={ii} item={it} onToggle={() => onToggle?.(ai, ii)} />
             ))}
           </div>
         </div>

@@ -1369,6 +1369,12 @@
   .app-shell--nav-hover .r-sidenav__item {
     width: calc(var(--panel-nav-width) - 2 * var(--space-12));
     padding: 0 var(--space-12) 0 14px;
+    /* The item narrows and widens with the rail, so the active pill shrinks
+       to its lozenge on the same curve instead of snapping. */
+    transition:
+      width var(--dur-base) var(--ease-out),
+      transform var(--dur-instant) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out);
   }
 
   /* The card and the toggle keep their open width, so the narrowing rail
@@ -2033,7 +2039,7 @@
   height: 4px;
   border-radius: 2px;
   background: var(--r-status-color);
-  transition: width var(--dur-base) var(--ease-out);
+  transition: width var(--dur-slow) var(--ease-out);
 }
 .r-daytotal__halo {
   position: absolute;
@@ -2044,6 +2050,7 @@
   border-radius: 50%;
   background: radial-gradient(circle, var(--sun-halo), transparent 65%);
   pointer-events: none;
+  transition: left var(--dur-slow) var(--ease-out);
 }
 .r-daytotal__sun {
   position: absolute;
@@ -2182,18 +2189,19 @@
     transform var(--dur-instant) var(--ease-out),
     background-color var(--dur-fast) var(--ease-out);
 }
-/* The tick pops in on the spring curve, from .6. Only a tap sets .is-pop, so
-   rows that are already done when the screen opens stay still. */
+/* The tick pops in on the spring curve, from .6 (block rows and the grocery
+   list). Only a change on screen sets .is-pop, so ticks that are already done
+   when the screen opens stay still. */
 @keyframes r-tick-pop {
   from {
     opacity: 0;
     transform: scale(0.6);
   }
 }
-.r-blockrow__check {
+.r-tickpop {
   display: flex;
 }
-.r-blockrow__check.is-pop {
+.r-tickpop.is-pop {
   animation: r-tick-pop var(--dur-base) var(--ease-spring) both;
 }
 .r-blockrow__mark:focus-visible {

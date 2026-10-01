@@ -252,7 +252,9 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   `--ease-out`, the .97 press, sun travel at `--dur-slow`, the intro and
   What's new). This pass added the tick pop (the check scales in from .6 on
   `--ease-spring`, from a tap on the row or on the due card's Tick, so rows
-  that open done stay still) and moved
+  that open done stay still; the grocery list pops its ticks too). The
+  rail's active pill now eases with the rail instead of snapping, and the
+  day total's glow glides with the sun, with the bar on the same 520ms and moved
   the theme cross-fade to `--dur-slow` on `--ease-in-out`; `theme.js` now
   reads that token for when to drop the class. `motion.test.js` fails any
   transition or animation without a duration token, any own curve, any loop,
