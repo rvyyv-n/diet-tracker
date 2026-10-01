@@ -566,6 +566,11 @@
   /* The on-hover rail's right edge while it is open over the content (pass 77). */
   --rail-open-shadow: 14px 0 28px -16px rgba(80, 50, 25, 0.35);
 
+  /* Settings rows (pass 80): the soft tile behind a row's icon, and its tint
+     on the destructive row. */
+  --icon-tile: 36px;
+  --danger-tint: color-mix(in srgb, var(--danger) 14%, transparent);
+
   /* The toast's Undo. The pill is --bg-inverse, light in dark themes, where
      --accent is 2.92:1; there it takes Paper's light coral text instead. */
   --toast-action-ink: var(--accent);

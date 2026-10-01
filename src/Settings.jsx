@@ -257,27 +257,28 @@ export default function Settings({ onEditSetup, onReset }) {
           <h1 className="r-settings__title">Settings</h1>
         </header>
         <div className="r-settings__grid">
-          <Section label="Profile" className="r-settings__sec--profile">
+          <Section label="Profile" icon="user" className="r-settings__sec--profile">
             <ProfileCard profile={profile} onOpen={onEditSetup} />
           </Section>
 
-          <Section label="Appearance" className="r-settings__sec--appearance">
+          <Section label="Appearance" icon="palette" className="r-settings__sec--appearance">
             <AppearanceCard profile={profile} bump={() => bump((n) => n + 1)} />
           </Section>
 
-          <Section label="Overview">
+          <Section label="Overview" icon="layout-dashboard">
             <OverviewGroup profile={profile} bump={() => bump((n) => n + 1)} />
           </Section>
 
           {reminderSupport() === "native" ? <NativeNotificationsGroup /> : <NotificationsGroup />}
 
-          <Section label="Data">
+          <Section label="Data" icon="database">
             {snap ? (
               <UndoPanel snap={snap} onUndo={undoSnapshot} onDismiss={dismissSnapshot} />
             ) : null}
             <ListGroup>
               <ListRow
                 title="Export data"
+                icon="download"
                 hint={`Save all records as a JSON file. ${exportFreshnessText()} ${storageUsedText()}`}
                 trailing={
                   justDownloaded ? <span className="r-setrow__trail">Downloaded</span> : "chevron"
@@ -286,12 +287,14 @@ export default function Settings({ onEditSetup, onReset }) {
               />
               <ListRow
                 title="Import data"
+                icon="upload"
                 hint="Replaces what is here, after a preview."
                 trailing="chevron"
                 onClick={toggleImport}
               />
               <ListRow
                 title="Check for updates"
+                icon="refresh-cw"
                 hint={updateHint(status, updatePhase)}
                 trailing="chevron"
                 onClick={runUpdateCheck}
@@ -299,6 +302,7 @@ export default function Settings({ onEditSetup, onReset }) {
               {hiddenFoods ? (
                 <ListRow
                   title="Restore hidden foods"
+                  icon="rotate-ccw"
                   hint={`${hiddenFoods} ${hiddenFoods === 1 ? "food is" : "foods are"} hidden from the food table and the pickers.`}
                   trailing="chevron"
                   onClick={() => {
@@ -309,6 +313,7 @@ export default function Settings({ onEditSetup, onReset }) {
               ) : null}
               <ListRow
                 title="Reset all data"
+                icon="trash"
                 hint="Erases this browser's copy."
                 trailing="chevron"
                 danger
@@ -387,10 +392,10 @@ export default function Settings({ onEditSetup, onReset }) {
 }
 
 /** A titled block of the screen. */
-function Section({ label, className, children }) {
+function Section({ label, icon, className, children }) {
   return (
     <section className={`r-settings__sec${className ? ` ${className}` : ""}`} aria-label={label}>
-      <SectionHeading>{label}</SectionHeading>
+      <SectionHeading icon={icon}>{label}</SectionHeading>
       <div className="r-settings__body">{children}</div>
     </section>
   );
@@ -534,8 +539,16 @@ function LookTile({ look, theme, name, note, selected, onPick }) {
  */
 function OverviewGroup({ profile, bump }) {
   const rows = {
-    protein: { name: "Protein line", hint: "Protein logged against the daily target." },
-    remaining: { name: "Remaining line", hint: "How much kcal and how many blocks remain." },
+    protein: {
+      name: "Protein line",
+      icon: "drumstick",
+      hint: "Protein logged against the daily target.",
+    },
+    remaining: {
+      name: "Remaining line",
+      icon: "gauge",
+      hint: "How much kcal and how many blocks remain.",
+    },
   };
   function set(id, shown) {
     const p = loadProfile();
@@ -548,6 +561,7 @@ function OverviewGroup({ profile, bump }) {
         <ListRow
           key={id}
           title={rows[id].name}
+          icon={rows[id].icon}
           hint={rows[id].hint}
           trailing={
             <Toggle
@@ -617,10 +631,11 @@ function NotificationsGroup() {
   const showToggle = state === "on" || state === "off" || state === "loading";
 
   return (
-    <Section label="Notifications">
+    <Section label="Notifications" icon="bell">
       <ListGroup>
         <ListRow
           title="Meal reminders"
+          icon="bell"
           hint={
             <span role={error ? "alert" : undefined} aria-live={error ? undefined : "off"}>
               {hint}
@@ -708,12 +723,13 @@ function NativeNotificationsGroup() {
   }
 
   return (
-    <Section label="Notifications">
+    <Section label="Notifications" icon="bell">
       <ListGroup>
         {rows.map(({ key, name, hint }) => (
           <ListRow
             key={key}
             title={name}
+            icon="bell"
             hint={
               <span role={error === key ? "alert" : undefined}>
                 {error === key ? "Couldn't change that. Try again." : hint}

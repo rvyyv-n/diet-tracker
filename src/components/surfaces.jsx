@@ -162,14 +162,19 @@ export function ListGroup({ children }) {
 }
 
 /** A settings or data row: title, hint, and a chevron or a control. */
-export function ListRow({ title, hint, trailing, danger, onClick, first }) {
+export function ListRow({ title, hint, trailing, danger, onClick, first, icon }) {
   const Tag = onClick ? "button" : "div";
   return (
     <Tag
       type={onClick ? "button" : undefined}
       onClick={onClick}
-      className={cx("r-listrow", first && "is-first", danger && "is-danger")}
+      className={cx("r-listrow", first && "is-first", danger && "is-danger", icon && "has-icon")}
     >
+      {icon ? (
+        <span className="r-listrow__icon">
+          <Icon name={icon} size={18} />
+        </span>
+      ) : null}
       <span className="r-listrow__text">
         <span className="r-listrow__title">{title}</span>
         {hint ? <span className="r-listrow__hint">{hint}</span> : null}

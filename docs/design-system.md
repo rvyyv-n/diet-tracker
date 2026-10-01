@@ -129,6 +129,8 @@ on the light inverse pill of the dark themes.
 Shell (pass 66, app layer): `--panel-nav-width` 256 (the desktop side nav),
 `--panel-nav-width-collapsed` 72 (the on-hover rail at rest),
 `--rail-open-shadow` (the open rail's right-edge shadow, pass 77),
+`--icon-tile` 36 and `--danger-tint` (the icon tile on a Settings row and its
+danger tint, pass 80),
 `--container-app` 1080 (the content column), `--gutter-desktop` 48 (its side
 padding), `--panel-support-width` 340 (the support column beside the main one,
 `.r-columns`, from 1280px), and `--nav-inset` 12 / `--nav-lift` 14 (the phone
@@ -200,15 +202,16 @@ translated.
 
 Each was weighed and kept on purpose; do not "correct" them.
 
-| Topic                      | Export says  | Rise does                                  | Why                                                                                         |
-| -------------------------- | ------------ | ------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| Accent tint                | not defined  | `--accent-tint`, `color-mix` of `--accent` | One definition serves both Looks; dark raises the mix from 12% to 20%                       |
-| Copernicus, StyreneB       | n/a          | dropped                                    | The v2 faces were licensed stand-ins; the Looks bring their own                             |
-| Reel light `--ink-muted`   | `#6E655B`    | `#6B6258`                                  | 4.40:1 on `--bg-sunken`; this clears 4.5:1 (pass 74)                                        |
-| Reel light `--accent-text` | `#B44A26`    | `#A8441F`, Paper's coral-800               | 4.10:1 on `--bg-sunken` (the ladder's "Now"); this gives 4.61:1                             |
-| Side nav label ink         | `--nav-ink`  | `--sidenav-ink`                            | `--nav-ink` is drawn for Reel light's dark pill; on the side nav's sunken fill it is 2.03:1 |
-| Toast Undo ink             | `--accent`   | `--toast-action-ink`                       | `--accent` on the dark themes' light toast pill is 2.92:1                                   |
-| Closed-day row times       | `--ink-soft` | `--ink-muted`                              | `--ink-soft` is 3.2 to 3.8:1 on the canvas                                                  |
+| Topic                      | Export says  | Rise does                                         | Why                                                                                                            |
+| -------------------------- | ------------ | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Accent tint                | not defined  | `--accent-tint`, `color-mix` of `--accent`        | One definition serves both Looks; dark raises the mix from 12% to 20%                                          |
+| Settings rows and headings | text only    | an icon tile on each row, an icon on each heading | Asked for by the owner (pass 80); `--icon-tile`, `--danger-tint`, and the accent text colour for heading icons |
+| Copernicus, StyreneB       | n/a          | dropped                                           | The v2 faces were licensed stand-ins; the Looks bring their own                                                |
+| Reel light `--ink-muted`   | `#6E655B`    | `#6B6258`                                         | 4.40:1 on `--bg-sunken`; this clears 4.5:1 (pass 74)                                                           |
+| Reel light `--accent-text` | `#B44A26`    | `#A8441F`, Paper's coral-800                      | 4.10:1 on `--bg-sunken` (the ladder's "Now"); this gives 4.61:1                                                |
+| Side nav label ink         | `--nav-ink`  | `--sidenav-ink`                                   | `--nav-ink` is drawn for Reel light's dark pill; on the side nav's sunken fill it is 2.03:1                    |
+| Toast Undo ink             | `--accent`   | `--toast-action-ink`                              | `--accent` on the dark themes' light toast pill is 2.92:1                                                      |
+| Closed-day row times       | `--ink-soft` | `--ink-muted`                                     | `--ink-soft` is 3.2 to 3.8:1 on the canvas                                                                     |
 
 ## Components
 

@@ -269,6 +269,14 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   hidden foods" while any are hidden. Recipes and logged food that already
   used a hidden food keep their own copy. New icon: `x`.
 
+- **pass 80 — Settings icons and group headings:** every Settings row has a
+  36px soft tile with its icon (Export, Import, Updates, Reset, Restore,
+  Protein, Remaining, the reminders), and the Reset tile is tinted with the
+  danger colour. Each group heading has an icon too (Profile, Appearance,
+  Overview, Notifications, Data). New tokens `--icon-tile` and
+  `--danger-tint`; new icon `trash`. The export draws these rows as text
+  only, so this is recorded in the departures table.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.

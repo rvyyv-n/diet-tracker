@@ -351,10 +351,18 @@ export function Eyebrow({ children, trailing }) {
 }
 
 /** A section title inside a screen, with optional right-aligned meta. */
-export function SectionHeading({ children, meta, as: Tag = "h2" }) {
+export function SectionHeading({ children, meta, icon, as: Tag = "h2" }) {
+  const title = <Tag className="r-section-heading__title">{children}</Tag>;
   return (
     <div className="r-section-heading">
-      <Tag className="r-section-heading__title">{children}</Tag>
+      {icon ? (
+        <span className="r-section-heading__lead">
+          <Icon name={icon} size={18} className="r-section-heading__icon" />
+          {title}
+        </span>
+      ) : (
+        title
+      )}
       {meta ? <span className="r-section-heading__meta">{meta}</span> : null}
     </div>
   );
