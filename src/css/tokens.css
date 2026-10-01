@@ -225,6 +225,9 @@
   --nav-active-bg: var(--p-ink-900);
   --nav-active-ink: var(--p-paper-100);
   --nav-active-glow: 0 8px 18px -8px rgba(224, 103, 63, 0.7);
+  /* The side nav's pill sits among other rows, not over the page's foot,
+     so its glow is even all round rather than dropped below. */
+  --sidenav-active-glow: 0 2px 14px -4px rgba(224, 103, 63, 0.4);
 
   --shadow-card: 0 1px 2px rgba(80, 50, 25, 0.08), 0 16px 32px -20px rgba(80, 50, 25, 0.3);
   --shadow-float: 0 20px 48px -18px rgba(60, 40, 20, 0.45);
@@ -273,6 +276,7 @@
   --nav-active-bg: #f3ede3;
   --nav-active-ink: #0b0a09;
   --nav-active-glow: 0 0 22px -6px rgba(248, 169, 89, 0.55);
+  --sidenav-active-glow: var(--nav-active-glow);
   --shadow-card: inset 0 0 0 1px #2e2a26;
   --shadow-float: inset 0 0 0 1px #34302b, 0 24px 48px -16px rgba(0, 0, 0, 0.7);
   --scrim: rgba(0, 0, 0, 0.6);

@@ -32,6 +32,7 @@ const PATHS = {
   "chevron-right": ["m9 18 6-6-6-6"],
   "chevron-left": ["m15 18-6-6 6-6"],
   "chevron-down": ["m6 9 6 6 6-6"],
+  "chevron-up": ["m18 15-6-6-6 6"],
   // Weight history: which way a week moved, in ink beside the figure.
   "arrow-up": ["m5 12 7-7 7 7", "M12 19V5"],
   "arrow-down": ["M12 5v14", "m19 12-7 7-7-7"],

@@ -213,10 +213,39 @@ export function TextField({
           onChange={(e) => onChange?.(e.target.value)}
           {...rest}
         />
+        {rest.type === "number" ? (
+          <Stepper value={value} step={rest.step} min={rest.min} onChange={onChange} />
+        ) : null}
         {unit ? <span className="r-field__unit">{unit}</span> : null}
       </span>
       {error || hint ? <span className="r-field__note">{error || hint}</span> : null}
     </label>
+  );
+}
+
+/**
+ * Up and down for a number TextField, in place of the browser's own spinner.
+ * Steps by `step` (rounded to its decimals) and never below `min`. Out of the
+ * tab order: the arrow keys already step a focused number input.
+ */
+function Stepper({ value, step = 1, min, onChange }) {
+  const size = Number(step) || 1;
+  const places = (String(step).split(".")[1] ?? "").length;
+  const bump = (dir) => {
+    const now = Number(value) || 0;
+    let next = Math.round((now + dir * size) * 10 ** places) / 10 ** places;
+    if (min != null && next < Number(min)) next = Number(min);
+    onChange?.(String(next));
+  };
+  return (
+    <span className="r-stepper" aria-hidden="true">
+      <button type="button" tabIndex={-1} className="r-stepper__btn" onClick={() => bump(1)}>
+        <Icon name="chevron-up" size={14} strokeWidth={2.5} />
+      </button>
+      <button type="button" tabIndex={-1} className="r-stepper__btn" onClick={() => bump(-1)}>
+        <Icon name="chevron-down" size={14} strokeWidth={2.5} />
+      </button>
+    </span>
   );
 }
 

@@ -452,7 +452,10 @@ function TotalCard({ day, profile }) {
   const left = Math.max(0, totals.total - totals.planDone);
 
   let remaining;
-  if (gap <= 0) {
+  if (gap === 0) {
+    // Exactly on it: "-0 over target" would read as a glitch.
+    remaining = <b>At target</b>;
+  } else if (gap < 0) {
     remaining = (
       <>
         <b>{NUM.format(-gap)}</b> over target

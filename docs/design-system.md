@@ -129,6 +129,9 @@ on the light inverse pill of the dark themes.
 Shell (pass 66, app layer): `--panel-nav-width` 256 (the desktop side nav),
 `--panel-nav-width-collapsed` 72 (the on-hover rail at rest),
 `--rail-open-shadow` (the open rail's right-edge shadow, pass 77),
+`--sidenav-active-glow` (the side nav's active pill: an even glow in Paper
+light, where `--nav-active-glow` drops below for the phone nav; elsewhere the
+same as `--nav-active-glow`),
 `--icon-tile` 36 and `--danger-tint` (the icon tile on a Settings row and its
 danger tint, pass 80),
 `--container-app` 1080 (the content column), `--gutter-desktop` 48 (its side

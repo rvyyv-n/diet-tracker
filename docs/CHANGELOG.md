@@ -315,6 +315,17 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   the meals, then the food table), as two columns there were about 316px
   each. No new tokens.
 
+- **pass 85 — pre-release polish:** the day total's halo stays centred on
+  the sun at any fill (pass 76 had held it in from the edge, so at full fill
+  it sat off to the left); on desktop it is no longer clipped, and on a phone
+  it clips at the screen's edge. Exactly on target now reads "At target", not
+  "-0 over target". The meal rows on Recipes and the Remove and Swap links on
+  Today have a rounded wash with room round the text. The side nav's active
+  pill in Paper light has an even glow (new token `--sidenav-active-glow`).
+  The wordmark's sun is centred on the letters, and its halo grows under the
+  pointer. Number fields (Log food → Custom) have their own up and down
+  arrows in place of the browser's spinner. New icon `chevron-up`.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.
