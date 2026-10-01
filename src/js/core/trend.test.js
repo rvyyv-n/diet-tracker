@@ -57,13 +57,13 @@ describe("weeklyGains", () => {
     ]);
   });
 
-  it("spans a gap as one step, dated to the later week", () => {
+  it("spreads a change across a gap, dated to the later week", () => {
     expect(
       weeklyGains([
         { week: 1, kg: 60 },
         { week: 4, kg: 61 },
       ]),
-    ).toEqual([{ week: 4, gainKg: 1 }]);
+    ).toEqual([{ week: 4, gainKg: 0.33 }]);
   });
 
   it("is empty with fewer than two weights", () => {

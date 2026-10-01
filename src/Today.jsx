@@ -122,6 +122,28 @@ export default function Today() {
     [],
   );
 
+  // A screen left open past midnight (a phone app resumed in the morning)
+  // moves to the new day, unless the user had gone back to an earlier one.
+  // Without it, ticks would land on yesterday while the strip marks a new today.
+  const shownToday = useRef(todayISO());
+  useEffect(() => {
+    function rollOver() {
+      const now = todayISO();
+      const was = shownToday.current;
+      if (now === was) return;
+      shownToday.current = now;
+      setViewDate((v) => (v === was ? now : v));
+      setScrub(null);
+      bump((n) => n + 1);
+    }
+    document.addEventListener("visibilitychange", rollOver);
+    const timer = setInterval(rollOver, 60_000);
+    return () => {
+      document.removeEventListener("visibilitychange", rollOver);
+      clearInterval(timer);
+    };
+  }, []);
+
   useEffect(() => {
     if (!toast) return undefined;
     const t = setTimeout(() => setToast(null), TOAST_MS);

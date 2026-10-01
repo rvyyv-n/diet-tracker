@@ -89,6 +89,13 @@ export function attachPopover(
   }
 
   function onKey(event) {
+    // The control was removed while open (its screen repainted or closed). Let
+    // go of the document listeners, or this one would swallow every later
+    // Escape, including the one meant for a sheet.
+    if (!root.isConnected) {
+      setOpen(false);
+      return;
+    }
     if (event.key === "Escape") {
       // Only the popover closes; a sheet around it keeps its draft.
       event.stopPropagation();

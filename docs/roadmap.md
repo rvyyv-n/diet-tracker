@@ -64,11 +64,6 @@ audit finds.
 
 Model: Sonnet 5.5, high effort for `upgrade`, max effort for `core`. Targets: upgrade, core.
 
-- [ ] **Pass 90 · `core`** (Sonnet 5.5, max effort) — a second review at max effort of `src/js/core/`
-      (adjustment engine, trend, weights, day and its `dayReplay`, plan, storage) and of the
-      Sheet focus trap and popover Escape handling from pass 78 review. Look
-      for wrong numbers, off-by-one days, time-zone and clock edge cases.
-
 #### Build pass 12 — Security audit
 
 Model: Sonnet 5.5, high effort. Target: secure.

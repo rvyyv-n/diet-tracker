@@ -384,6 +384,17 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   it); and a record from a newer build inside an older-stamped backup was
   restamped as current (it now falls back, as `load` does). A day saved before
   rotations were recorded no longer throws when totalled.
+- **pass 90 core:** a second review of `src/js/core/`, the Sheet focus trap
+  and popover Escape. Fixed: a change across a skipped weigh-in week was read
+  as one week's gain (1 kg over three weeks counted as 1 kg/week, so it could
+  trip "too fast"); it is now spread over the weeks it took. Today left open
+  past midnight kept showing, and ticking onto, the old day; it now moves to
+  the new day on resume or within a minute, unless an earlier day was open.
+  A popover whose screen closed while it was open kept a document listener
+  that swallowed every later Escape; it lets go now. The Sheet's Tab trap
+  counted hidden buttons as stops, so Tab could leave the dialog; it counts
+  only visible ones. The engine, `dayReplay`, plan maths, dates and storage
+  were read and found correct.
 
 ## Older releases
 

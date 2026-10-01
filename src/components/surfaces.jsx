@@ -45,7 +45,11 @@ export function Sheet({
       if (e.key === "Escape") onClose();
       if (e.key !== "Tab" || e.defaultPrevented || !panelRef.current) return;
       // Keep Tab inside the dialog, as aria-modal promises.
-      const stops = [...panelRef.current.querySelectorAll(FOCUSABLE)];
+      // Only what can take focus now: a closed popover's buttons are in the
+      // DOM but hidden, and would otherwise count as the last stop.
+      const stops = [...panelRef.current.querySelectorAll(FOCUSABLE)].filter(
+        (n) => n.getClientRects().length > 0,
+      );
       if (!stops.length) return;
       const first = stops[0];
       const last = stops[stops.length - 1];

@@ -34,11 +34,16 @@ export function weeklyWeights(readings, startISO) {
     .map(([week, r]) => ({ week, date: r.date, kg: r.kg }));
 }
 
-/** Week-over-week change, in kg. One fewer entry than `weeklyWeights`. */
+/**
+ * Change per week, in kg. One fewer entry than `weeklyWeights`. Across a
+ * skipped week the change is spread over the weeks it took, so a rate is
+ * always kg/week: 1 kg over three weeks is 0.33, not 1.
+ */
 export function weeklyGains(series) {
   const out = [];
   for (let i = 1; i < series.length; i++) {
-    out.push({ week: series[i].week, gainKg: round2(series[i].kg - series[i - 1].kg) });
+    const weeks = series[i].week - series[i - 1].week;
+    out.push({ week: series[i].week, gainKg: round2((series[i].kg - series[i - 1].kg) / weeks) });
   }
   return out;
 }
