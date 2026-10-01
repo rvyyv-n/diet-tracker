@@ -563,6 +563,9 @@
      --ink-muted there (below). */
   --sidenav-ink: var(--nav-ink);
 
+  /* The on-hover rail's right edge while it is open over the content (pass 77). */
+  --rail-open-shadow: 14px 0 28px -16px rgba(80, 50, 25, 0.35);
+
   /* The toast's Undo. The pill is --bg-inverse, light in dark themes, where
      --accent is 2.92:1; there it takes Paper's light coral text instead. */
   --toast-action-ink: var(--accent);
@@ -585,6 +588,7 @@
   color-scheme: dark;
   --accent-tint: color-mix(in srgb, var(--accent) 20%, transparent);
   --toast-action-ink: var(--p-coral-800);
+  --rail-open-shadow: 14px 0 28px -16px rgba(0, 0, 0, 0.6);
 }
 /* --nav-ink on Reel light's sunken fill is 2.03:1. */
 [data-look="reel"]:not([data-theme="dark"]) {

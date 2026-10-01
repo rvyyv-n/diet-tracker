@@ -128,6 +128,7 @@ on the light inverse pill of the dark themes.
 
 Shell (pass 66, app layer): `--panel-nav-width` 256 (the desktop side nav),
 `--panel-nav-width-collapsed` 72 (the on-hover rail at rest),
+`--rail-open-shadow` (the open rail's right-edge shadow, pass 77),
 `--container-app` 1080 (the content column), `--gutter-desktop` 48 (its side
 padding), `--panel-support-width` 340 (the support column beside the main one,
 `.r-columns`, from 1280px), and `--nav-inset` 12 / `--nav-lift` 14 (the phone

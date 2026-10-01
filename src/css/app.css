@@ -1317,17 +1317,17 @@
    The side nav's second mode, off by default: profile.navPref "hover" puts
    .app-shell--nav-hover on #app, and the nav rests as a --panel-nav-width-
    collapsed rail of icons that widens over the content on hover or keyboard
-   focus. The rail itself is undesigned in the v3.0 handoff (roadmap: it waits
-   until the redesign is done), so this keeps pass 47's behaviour on the new
-   nav without restyling it. Gated on (hover: hover) and (pointer: fine) too:
-   a touch device at desktop width couldn't open it, so it always gets the
-   pinned nav, and the toggle isn't offered there.
+   focus. Focus means :has(:focus-visible), not :focus-within: a click leaves
+   focus on the button, and the rail must close when the pointer leaves. The
+   v3.0 handoff has no rail frame, so pass 77 settled its look as the pinned
+   nav in a narrow state, with a shadow on the open rail's right edge. Gated on (hover: hover) and (pointer: fine) too: a touch device at
+   desktop width couldn't open it, so it always gets the pinned nav, and the
+   toggle isn't offered there.
 
    Nothing that stays visible moves as the rail opens: the side padding is
    12px in both states, which puts the sun and each 20px icon on the rail's
    centre line, and everything a lone icon can't carry (the word, the labels,
-   the glance card and the toggle) fades in place. The rail is restyled in
-   pass 77 (rail).                                                         */
+   the glance card and the toggle) fades in place.                         */
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .r-sidenav__pin {
     display: block;
@@ -1347,14 +1347,19 @@
     padding-right: var(--space-12);
     transition:
       width var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out),
       overflow 0s;
   }
   .app-shell--nav-hover .r-sidenav:hover,
-  .app-shell--nav-hover .r-sidenav:focus-within {
+  .app-shell--nav-hover .r-sidenav:has(:focus-visible) {
     width: calc(var(--panel-nav-width) + env(safe-area-inset-left));
     overflow-y: auto;
+    box-shadow:
+      inset -1px 0 0 var(--line),
+      var(--rail-open-shadow);
     transition:
       width var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out),
       overflow 0s var(--dur-base);
   }
   .app-shell--nav-hover .r-sidenav__brand {
@@ -1377,7 +1382,7 @@
     .r-sidenav:hover
     :is(.r-wordmark__word, .r-sidenav__label, .r-sidenav__dot, .r-sidenav__glance, .r-sidenav__pin),
   .app-shell--nav-hover
-    .r-sidenav:focus-within
+    .r-sidenav:has(:focus-visible)
     :is(
       .r-wordmark__word,
       .r-sidenav__label,
@@ -1389,7 +1394,7 @@
   }
   /* Collapsed, each item is as wide as the rail's inside, so the active pill
      shrinks to a 48px lozenge round its icon rather than being cut off. */
-  .app-shell--nav-hover .r-sidenav:not(:hover, :focus-within) .r-sidenav__item {
+  .app-shell--nav-hover .r-sidenav:not(:hover, :has(:focus-visible)) .r-sidenav__item {
     width: calc(var(--panel-nav-width-collapsed) - 2 * var(--space-12));
   }
 }
