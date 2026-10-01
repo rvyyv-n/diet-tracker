@@ -129,7 +129,12 @@ move it, use **Settings → Export data** and **Import data** on the other one.
 - **A short setup.** First run asks for your details and sets up your plan.
   Nothing personal is in this repo.
 
-![Today on a phone in the two Looks, Paper and Reel, each in light and dark](docs/screenshots/looks.png)
+<p>
+  <img src="docs/screenshots/look-paper-light.png" width="24%" alt="Today in Paper, light" />
+  <img src="docs/screenshots/look-paper-dark.png" width="24%" alt="Today in Paper, dark" />
+  <img src="docs/screenshots/look-reel-light.png" width="24%" alt="Today in Reel, light" />
+  <img src="docs/screenshots/look-reel-dark.png" width="24%" alt="Today in Reel, dark" />
+</p>
 
 ## Privacy
 
