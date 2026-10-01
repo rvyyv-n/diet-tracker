@@ -147,7 +147,7 @@ export function blockValue(day, blockId) {
   const block = blockById(blockId);
   if (!block) return { kcal: 0, proteinG: 0 };
   if (block.rotation) {
-    const option = rotationOptionById(block.rotation, day.rotations[block.rotation]);
+    const option = rotationOptionById(block.rotation, day.rotations?.[block.rotation]);
     if (option) return { kcal: option.kcal, proteinG: option.proteinG };
   }
   return { kcal: block.kcal, proteinG: block.proteinG };

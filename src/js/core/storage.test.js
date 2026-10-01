@@ -175,11 +175,13 @@ describe("clear", () => {
     localStorage.setItem("wgt:profile", "{}");
     localStorage.setItem("wgt:corrupt:days", "x");
     localStorage.setItem("wgt:snapshot", "{}");
+    localStorage.setItem("wgt:whatsnew", "{}");
     localStorage.setItem("other", "1");
     storage.clear();
     expect(localStorage.getItem("wgt:profile")).toBeNull();
     expect(localStorage.getItem("wgt:corrupt:days")).toBeNull();
     expect(localStorage.getItem("wgt:snapshot")).toBe("{}");
+    expect(localStorage.getItem("wgt:whatsnew")).toBe("{}");
     expect(localStorage.getItem("other")).toBe("1");
   });
 });

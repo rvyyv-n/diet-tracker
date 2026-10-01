@@ -139,7 +139,7 @@ export function LogFoodSheet({ day, dialog, extrasState, onClose, commit }) {
  */
 export function SwapSheet({ day, blockId, dialog, onClose, commit }) {
   const block = blockById(blockId);
-  const current = block?.rotation ? day.rotations[block.rotation] : null;
+  const current = block?.rotation ? day.rotations?.[block.rotation] : null;
   const [picked, setPicked] = useState(current);
   if (!block?.rotation) return null;
   const options = rotationOptions(block.rotation);
@@ -315,7 +315,9 @@ export function longDate(iso) {
 /** The description to show for a block: the chosen rotation option's, if any. */
 export function resolveDesc(day, block) {
   if (block.rotation) {
-    const opt = rotationOptions(block.rotation).find((o) => o.id === day.rotations[block.rotation]);
+    const opt = rotationOptions(block.rotation).find(
+      (o) => o.id === day.rotations?.[block.rotation],
+    );
     if (opt) return opt.desc;
   }
   return block.desc;

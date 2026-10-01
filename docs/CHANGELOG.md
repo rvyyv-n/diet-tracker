@@ -376,6 +376,14 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   `isGroceryChecked`, `topLoggedRecipes`, `formatWeightDelta`). The last two
   literal px paddings in Today and Welcome now read a token. New token:
   `--space-18`.
+- **pass 89 upgrade:** the v2.3.0 to v3.0 path, tested with data shaped as the
+  v2.3.0 build saved it and with a v1 backup file (`upgrade.test.js`). Profile,
+  days, weights, recipes, appearance and import and export all carry over with
+  no migration needed. Two gaps fixed: Undo after a reset showed the What's new
+  card again, because its flag is device state and was wiped (a reset now keeps
+  it); and a record from a newer build inside an older-stamped backup was
+  restamped as current (it now falls back, as `load` does). A day saved before
+  rotations were recorded no longer throws when totalled.
 
 ## Older releases
 

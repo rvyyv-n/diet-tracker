@@ -22,12 +22,12 @@ predecessor is unticked is flagged before it starts. Start each build pass in
 a fresh thread. The design refs are paths inside the design export
 (`design-system/…`, `screens/…`).
 
-| Build pass | Name                 | Targets (pass numbers)     | Model                      |
-| ---------- | -------------------- | -------------------------- | -------------------------- |
-| 10         | Cleanup              | `tidy` (88)                | Sonnet 5.5, high effort    |
-| 11         | Data and logic audit | `upgrade`, `core` (89, 90) | Opus, high then max effort |
-| 12         | Security audit       | `secure` (91)              | Opus, high effort          |
-| 13         | Accessibility        | `a11y` (92)                | Sonnet 5.5, high effort    |
+| Build pass | Name                 | Targets (pass numbers)     | Model                            |
+| ---------- | -------------------- | -------------------------- | -------------------------------- |
+| 10         | Cleanup              | `tidy` (88)                | Sonnet 5.5, high effort          |
+| 11         | Data and logic audit | `upgrade`, `core` (89, 90) | Sonnet 5.5, high then max effort |
+| 12         | Security audit       | `secure` (91)              | Sonnet 5.5, high effort          |
+| 13         | Accessibility        | `a11y` (92)                | Sonnet 5.5, high effort          |
 
 Then a phone and desktop test pass, and the release.
 
@@ -62,23 +62,18 @@ audit finds.
 
 #### Build pass 11 — Data and logic audit
 
-Model: Opus, high effort for `upgrade`, max effort for `core`. Targets: upgrade, core.
+Model: Sonnet 5.5, high effort for `upgrade`, max effort for `core`. Targets: upgrade, core.
 
-- [ ] **Pass 89 · `upgrade`** (Opus, high effort) — the v2.3.0 to v3.0 upgrade path. Load data
-      saved by the v2.3.0 build (and an old backup file) into the v3.0 build.
-      Check every storage migration, import, export, reset and undo, and that
-      appearance, reminders and What's New survive. Nothing a user saved may be
-      lost or reshaped without a migration. Add a test for each gap found.
-- [ ] **Pass 90 · `core`** (Opus, max effort) — a second review at max effort of `src/js/core/`
+- [ ] **Pass 90 · `core`** (Sonnet 5.5, max effort) — a second review at max effort of `src/js/core/`
       (adjustment engine, trend, weights, day and its `dayReplay`, plan, storage) and of the
       Sheet focus trap and popover Escape handling from pass 78 review. Look
       for wrong numbers, off-by-one days, time-zone and clock edge cases.
 
 #### Build pass 12 — Security audit
 
-Model: Opus, high effort. Target: secure.
+Model: Sonnet 5.5, high effort. Target: secure.
 
-- [ ] **Pass 91 · `secure`** (Opus, high effort) — run `/security-review`. Cover `server/` (the push
+- [ ] **Pass 91 · `secure`** (Sonnet 5.5, high effort) — run `/security-review`. Cover `server/` (the push
       worker; say so in the commit, because it deploys by hand), the update check
       and the push subscription, and the rule that no diet data leaves the device.
 

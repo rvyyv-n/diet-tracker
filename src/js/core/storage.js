@@ -176,6 +176,9 @@ function migrate(data, name) {
  */
 export function migrateRecord(data, name, fallback = {}) {
   if (!data || typeof data !== "object") return fallback;
+  // A record from a newer build is never guessed at, and never restamped as
+  // current: an envelope can be old while one record inside it is not.
+  if ((data.schemaVersion ?? 1) > SCHEMA_VERSION) return fallback;
   return migrate(data, name) ?? fallback;
 }
 
@@ -231,11 +234,13 @@ export function remove(name) {
 }
 
 /**
- * Records that survive a "reset all data". Only the undo snapshot: a reset that
- * could not be undone would defeat the point of taking one. backup.js writes
- * and consumes it.
+ * Records that survive a "reset all data": the undo snapshot, because a reset
+ * that could not be undone would defeat the point of taking one (backup.js
+ * writes and consumes it), and the What's new flag, which is device state and
+ * is not in the snapshot, so an Undo would otherwise show the card again to
+ * someone who already dismissed it.
  */
-const PRESERVE_ON_CLEAR = new Set([key("snapshot")]);
+const PRESERVE_ON_CLEAR = new Set([key("snapshot"), key("whatsnew")]);
 
 /**
  * Remove every record this app owns — the "reset all data" path. Only keys under
