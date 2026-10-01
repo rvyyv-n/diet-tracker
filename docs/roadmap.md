@@ -84,29 +84,16 @@ predecessor is unticked is flagged before it starts. Start each build pass in
 a fresh thread. The design refs are paths inside the design export
 (`design-system/…`, `screens/…`).
 
-| Build pass | Name                   | Targets (pass numbers)        | Model                   |
-| ---------- | ---------------------- | ----------------------------- | ----------------------- |
-| 5          | First run and identity | `firstrun` (72), `icons` (73) | Sonnet 5.5, high effort |
-| 6          | Audit and README       | `sweep` (74), `readme` (75)   | Opus, high effort       |
-| 7          | Motion                 | `motion` (76), `rail` (77)    | Sonnet 5.5, high effort |
-| 8          | Final screenshots      | `shots` (78)                  | Sonnet 5.5, high effort |
+| Build pass | Name              | Targets (pass numbers)      | Model                   |
+| ---------- | ----------------- | --------------------------- | ----------------------- |
+| 6          | Audit and README  | `sweep` (74), `readme` (75) | Opus, high effort       |
+| 7          | Motion            | `motion` (76), `rail` (77)  | Sonnet 5.5, high effort |
+| 8          | Final screenshots | `shots` (78)                | Sonnet 5.5, high effort |
 
 Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
 
 ### Build passes
-
-#### Build pass 5 — First run and identity
-
-Model: Sonnet 5.5, high effort. Targets: firstrun, icons. This is the welcome flow and the redrawn app icon and logo.
-
-- [ ] **Pass 73 · `icons`** — app icon and logo.
-  - Reads: `Wordmark.jsx`, the brand notes in the design system readme.
-  - Does: redraws the app icon and wordmark (the "Rıse" with the sun as its
-    dot) on the new palette; regenerates the PNG, maskable and mono icons, the
-    theme-aware favicon, `manifest.json` colours, and the Android and Windows
-    icon sources through `tools/make-icons.py`.
-  - Done when: the icon reads well at 16px and 512px, light and dark.
 
 #### Build pass 6 — Audit and README
 

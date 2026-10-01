@@ -169,6 +169,18 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   type; it shows once, including on devices that dismissed the 2.0 card.
   The slower theatrical motion for these waits for `motion`. No new tokens.
 
+- **pass 73 — app icon and logo:** the egg is replaced by a sun rising over
+  a horizon: a half disc with the sun gradient, the line it rests on and a
+  shorter line below, with a soft halo on the dark canvas tile. It reads at
+  16px and at 512px. `icon.svg`, the tile-less `icon-dark.svg` favicon for
+  dark tab strips and the Android `icon-mono.svg` are redrawn, and
+  `tools/make-icons.py` regenerates the 192, 512, maskable and Apple touch
+  PNGs from the same geometry. Android and Windows rasterise `icon.svg` in
+  CI, so they pick it up unchanged. The manifest and the Android window use
+  the Paper canvas (`#F7F1E8`). The in-app wordmark ("Rıse" with the sun as
+  its dot) was already drawn by pass 65 and is unchanged. `CACHE_NAME` is
+  `rise-v41`. No new tokens.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on
