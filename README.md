@@ -189,15 +189,16 @@ Open the address Vite prints, then `dev-seed.html` on the same server to load
 four weeks of demo data. Reminders show "unavailable" locally; that's
 expected.
 
-| Command                | What it does                                                  |
-| ---------------------- | ------------------------------------------------------------- |
-| `npm run dev`          | Start the dev server                                          |
-| `npm run build`        | Build to `dist/`                                              |
-| `npm run preview`      | Serve the build                                               |
-| `npm run check`        | Tests, ESLint, Prettier and the build                         |
-| `npm run test:offline` | Fail if anything but the update check leaves home             |
-| `npm run test:visual`  | Compare screens with the approved pictures                    |
-| `npm run shot`         | Screenshot the app (options at the top of `scripts/shot.mjs`) |
+| Command                         | What it does                                                  |
+| ------------------------------- | ------------------------------------------------------------- |
+| `npm run dev`                   | Start the dev server                                          |
+| `npm run build`                 | Build to `dist/`                                              |
+| `npm run preview`               | Serve the build                                               |
+| `npm run check`                 | Tests, ESLint, Prettier and the build                         |
+| `npm run test:offline`          | Fail if anything but the update check leaves home             |
+| `npm run test:visual`           | Compare screens with the approved pictures                    |
+| `npm run shot`                  | Screenshot the app (options at the top of `scripts/shot.mjs`) |
+| `node scripts/readme-shots.mjs` | Retake the pictures in this README (needs the dev server)     |
 
 The service worker caches hard, so hard-reload while you work, or bump
 `CACHE_NAME` in `public/sw.js`. The [Android](android/README.md),

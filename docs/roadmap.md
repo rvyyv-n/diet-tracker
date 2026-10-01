@@ -36,13 +36,8 @@ and desktop test pass, and the release.
 Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion has landed, so the pictures show the finished app.
 
 - [ ] **Pass 78 · `shots`** — final screenshots and the README that uses them.
-  - Reads: `scripts/shot.mjs`, the README, `e2e/snapshots`.
-  - Does: retakes the README screenshot row from the finished build (Today,
-    Weight, Plan, Recipes and Settings, phone and desktop, Paper and Reel,
-    light and dark); re-approves the visual baselines with
-    `test:visual:update` if motion or the rail moved any pixel; updates the
-    README images, alt text and any captions; checks the status line and every
-    link still hold.
+      The pictures are retaken (`scripts/readme-shots.mjs`), the baselines are
+      green and the README links hold. Left:
   - Also: a light polish of the README layout and its composed pictures
     (the owner's call after pass 75: good, could be lifted a little).
   - Also: runs the Android and Windows CI builds once on `release-3.0` and

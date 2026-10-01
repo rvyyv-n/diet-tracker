@@ -337,6 +337,13 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   the wider desktop chart. The storage line under Export data reads "Under 1
   KB of about 5 MB used." with its capital. No new tokens.
 
+- **pass 78 — final screenshots (pictures):** the five README pictures
+  (hero, Today, Weight, Plan with Recipes, Looks) are retaken from the
+  finished build at 2x by `scripts/readme-shots.mjs`, which seeds the demo
+  data, shoots each screen and sets it in a phone or window frame. The
+  baselines in `e2e/snapshots` were still current, so none were re-approved.
+  The CI icon builds are still to run.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.
