@@ -1968,13 +1968,13 @@
   align-items: center;
   min-width: 0;
 }
-/* 22px wide is the handoff's 14px dot plus its 8px gap, so the dots sit
-   where it draws them while each hit area runs the full 44px tall. */
+/* 24px wide is the 14px dot plus a 10px gap (the handoff draws 8), the
+   smallest hit area WCAG 2.2 allows, and each runs the full 44px tall. */
 .r-dotstrip__day {
   flex: none;
   display: grid;
   place-items: center;
-  width: 22px;
+  width: 24px;
   height: var(--icon-button);
   padding: 0;
   border: 0;

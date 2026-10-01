@@ -138,6 +138,123 @@ function audit(INTERACTIVE) {
   return out;
 }
 
+// Runs in the page. Accessibility problems that need no input: controls with
+// no name, touch targets under 24px (WCAG 2.2 AA, counting a grown ::after hit area), text under 4.5:1
+// (3:1 for large text), and motion that ignores reduced-motion.
+function a11y(INTERACTIVE) {
+  const out = [];
+  const vis = (el) => {
+    const r = el.getBoundingClientRect();
+    const s = getComputedStyle(el);
+    return r.width > 0 && r.height > 0 && s.visibility !== "hidden" && s.display !== "none";
+  };
+  const name = (el) =>
+    el.tagName.toLowerCase() +
+    (el.classList.length ? "." + [...el.classList].slice(0, 2).join(".") : "") +
+    (el.textContent.trim() ? ` "${el.textContent.trim().slice(0, 24)}"` : "");
+
+  // Controls need an accessible name.
+  for (const el of document.querySelectorAll(`${INTERACTIVE}, [role="slider"]`)) {
+    if (!vis(el) || el.closest("[hidden], [inert], [aria-hidden='true']")) continue;
+    const labelled =
+      el.getAttribute("aria-label") ||
+      el.getAttribute("aria-labelledby") ||
+      el.textContent.trim() ||
+      el.getAttribute("title") ||
+      el.labels?.length ||
+      el.querySelector("img[alt]:not([alt=''])");
+    if (!labelled) out.push(`${name(el)} has no accessible name`);
+  }
+
+  // Touch target size: the control's own box, or its wrapping label for a field.
+  for (const el of document.querySelectorAll(INTERACTIVE)) {
+    if (!vis(el) || el.closest("[hidden], [inert]") || el.type === "hidden") continue;
+    // A text link inside a sentence is exempt (WCAG 2.5.8).
+    if (el.tagName === "A" && getComputedStyle(el).display === "inline") continue;
+    const r = el.getBoundingClientRect();
+    // Many controls grow their hit area with an ::after box (--target-min).
+    const pseudo = getComputedStyle(el, "::after");
+    const grown = pseudo.content !== "none" && pseudo.position === "absolute";
+    const w = Math.max(r.width, grown ? parseFloat(pseudo.width) || 0 : 0);
+    const h = Math.max(r.height, grown ? parseFloat(pseudo.height) || 0 : 0);
+    if (Math.min(w, h) < 24)
+      out.push(`${name(el)} is a small target (${Math.round(w)}x${Math.round(h)}px)`);
+  }
+
+  // Contrast: text colour against the nearest opaque background behind it.
+  const parse = (c) => {
+    const m = c.match(/[\d.]+/g)?.map(Number);
+    return m ? { r: m[0], g: m[1], b: m[2], a: m[3] ?? 1 } : null;
+  };
+  const over = (top, bottom) => ({
+    r: top.r * top.a + bottom.r * (1 - top.a),
+    g: top.g * top.a + bottom.g * (1 - top.a),
+    b: top.b * top.a + bottom.b * (1 - top.a),
+    a: 1,
+  });
+  const lum = ({ r, g, b }) => {
+    const f = (v) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+  };
+  const behind = (el) => {
+    const layers = [];
+    for (let p = el; p; p = p.parentElement) {
+      const s = getComputedStyle(p);
+      // A gradient or image behind the text can't be measured here.
+      if (s.backgroundImage !== "none") return null;
+      const c = parse(s.backgroundColor);
+      if (c && c.a > 0) layers.push(c);
+      if (c && c.a === 1) break;
+    }
+    let base = { r: 255, g: 255, b: 255, a: 1 };
+    if (layers.length && layers.at(-1).a < 1) base = { r: 255, g: 255, b: 255, a: 1 };
+    for (const l of layers.reverse()) base = over(l, base);
+    return base;
+  };
+  const seen = new Set();
+  for (const el of document.querySelectorAll("body *")) {
+    if (!vis(el) || el.closest("[hidden], [aria-hidden='true'], .sr-only")) continue;
+    const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+    if (!own) continue;
+    const s = getComputedStyle(el);
+    if (Number(s.opacity) < 1) continue;
+    const fg = parse(s.color);
+    const bg = behind(el);
+    if (!fg || !bg) continue;
+    const text = over(fg, bg);
+    const [a, b] = [lum(text), lum(bg)];
+    const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+    const px = parseFloat(s.fontSize);
+    const large = px >= 24 || (px >= 18.66 && Number(s.fontWeight) >= 700);
+    const need = large ? 3 : 4.5;
+    if (ratio < need) {
+      const key = `${name(el)} ${ratio.toFixed(1)}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(`low contrast ${ratio.toFixed(1)}:1 (needs ${need}) in ${name(el)}`);
+    }
+  }
+
+  // Reduced motion: with the preference on, nothing may animate for long.
+  for (const el of document.querySelectorAll("body *")) {
+    if (!vis(el)) continue;
+    const s = getComputedStyle(el);
+    const secs = (v) => Math.max(...v.split(",").map((x) => parseFloat(x) || 0));
+    if (
+      s.animationName !== "none" &&
+      secs(s.animationDuration) > 0.011 &&
+      s.animationIterationCount === "infinite"
+    )
+      out.push(`${name(el)} loops an animation under reduced motion`);
+    else if (
+      secs(s.transitionDuration) > 0.011 ||
+      (s.animationName !== "none" && secs(s.animationDuration) > 0.011)
+    )
+      out.push(`${name(el)} still moves under reduced motion (${s.transitionDuration})`);
+  }
+  return out;
+}
+
 // Runs in the page. Indexes the controls so Node can find them again.
 function mark(INTERACTIVE) {
   let n = 0;
@@ -243,6 +360,7 @@ for (const look_ of looks) {
         if (!opened) continue;
 
         for (const problem of await page.evaluate(audit, INTERACTIVE)) here(problem);
+        for (const problem of await page.evaluate(a11y, INTERACTIVE)) here(`a11y: ${problem}`);
 
         // Focus: Tab through, and each stop must look different once focused.
         await page.evaluate(() => document.activeElement?.blur());
@@ -282,6 +400,26 @@ for (const look_ of looks) {
               here(`${now.tag} "${now.label}" has a hover wash that touches its rounded parent`);
           }
           await page.mouse.move(0, 0);
+        }
+
+        // The Today sun slider answers the arrow keys, Home and Escape.
+        if (scene.name === "today") {
+          const sun = page.locator('[role="slider"]');
+          if (!(await sun.count())) here("a11y: the Today sun slider is missing");
+          else {
+            const val = () => sun.getAttribute("aria-valuenow");
+            await sun.focus();
+            const end = await val();
+            await page.keyboard.press("ArrowLeft");
+            const back = await val();
+            if (back === end) here("a11y: ArrowLeft does not move the sun slider");
+            await page.keyboard.press("Home");
+            if ((await val()) !== "0") here("a11y: Home does not move the sun slider to the start");
+            if (!(await sun.getAttribute("aria-valuetext")))
+              here("a11y: the sun slider has no value text");
+            await page.keyboard.press("Escape");
+            await page.evaluate(() => document.activeElement?.blur());
+          }
         }
 
         // Escape closes what this scene opened.

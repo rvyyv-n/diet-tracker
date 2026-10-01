@@ -395,6 +395,13 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   counted hidden buttons as stops, so Tab could leave the dialog; it counts
   only visible ones. The engine, `dayReplay`, plan maths, dates and storage
   were read and found correct.
+- **pass 92 a11y:** an accessibility check added to `scripts/interact.mjs`:
+  accessible names, touch targets of at least 24px (a grown `::after` hit area
+  counts), text contrast of 4.5:1 (3:1 for large text), motion under reduced
+  motion, and the Today sun slider's arrow keys, Home and value text. Run on
+  every screen in both Looks and themes, at phone and desktop width. The only
+  failure was the 22px phone dot-strip days, now 24px. Contrast, names,
+  reduced motion and the slider passed with no change.
 
 ## Older releases
 

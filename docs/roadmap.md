@@ -76,10 +76,6 @@ Model: Sonnet 5.5, high effort. Target: secure.
 
 Model: Sonnet 5.5, high effort. Target: a11y.
 
-- [ ] **Pass 92 · `a11y`** (Sonnet 5.5, high effort) — an accessibility pass in both Looks, light and
-      dark: contrast, focus order, labels, touch-target size and reduced motion,
-      including the Today sun slider from pass 93. Add any new check to `scripts/interact.mjs`.
-
 Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
 `insight_copy_states_facts`). The collapsible desktop rail (pass 40b) was undesigned, and was restyled as pass 77.
 
