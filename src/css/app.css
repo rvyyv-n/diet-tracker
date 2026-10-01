@@ -1766,6 +1766,7 @@
   gap: 6px;
 }
 .r-field__label {
+  padding-inline: var(--space-16);
   font-size: var(--type-small);
   font-weight: 700;
 }
@@ -1851,8 +1852,10 @@
   font-size: 15px;
   color: var(--ink-muted);
 }
+/* 14px, so the dot on an i survives next to a capital: "Aim" read as "Alm" at 13 */
 .r-field__note {
-  font-size: 13px;
+  padding-inline: var(--space-16);
+  font-size: var(--type-small);
   color: var(--ink-muted);
 }
 .r-field.is-error .r-field__note {
