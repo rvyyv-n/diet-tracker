@@ -164,7 +164,9 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   changes as a Look is picked; the Look applies on Continue, and Skip keeps
   what is set (Paper on a fresh start). Editing the profile later is the
   form alone, with no steps. The intro sets the "Rıse" wordmark (the sun as
-  the dot) over its line, and the What's new card takes the display type.
+  the dot) over its line. The What's new card is now a 3.0 card (the Looks,
+  the theme choice, the redrawn screens, where Recipes went) in the display
+  type; it shows once, including on devices that dismissed the 2.0 card.
   The slower theatrical motion for these waits for `motion`. No new tokens.
 
 ## v2.3.0 — shipped

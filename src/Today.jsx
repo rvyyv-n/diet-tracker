@@ -334,21 +334,21 @@ function phaseLine(profile, day) {
 // --- pieces --------------------------------------------------------------
 
 /**
- * A one-time card for a device upgrading from v1.6 into v2 — see
- * core/whatsnew.js for why a first-run setup never sees this. Dismiss is
- * permanent; it names where each feature lives rather than describing it, in
- * keeping with insight_copy_states_facts. Restyled with first run (pass 72).
+ * A one-time card for a device upgrading into v3.0 — see core/whatsnew.js for
+ * why a first-run setup never sees this. Dismiss is permanent; it names where
+ * each change lives rather than describing it, in keeping with
+ * insight_copy_states_facts.
  */
 function WhatsNewCard({ onDismiss }) {
   return (
     <div className="r-today__card">
       <Card>
-        <p className="r-today__card-title">What&rsquo;s new in 2.0</p>
+        <p className="r-today__card-title">What&rsquo;s new in 3.0</p>
         <ul className="whatsnew__list">
-          <li>Off-plan food and a recipe book — Log food, below the checklist.</li>
-          <li>A weekly grocery checklist — the new Plan tab.</li>
-          <li>Choose which numbers show on the day total — Settings → Overview.</li>
-          <li>A wider layout on tablet and desktop.</li>
+          <li>Two Looks, Paper and Reel — Settings → Appearance.</li>
+          <li>Light, dark, or follow your device — Settings → Appearance.</li>
+          <li>Every screen redrawn: Today, Plan, Weight, Recipes and Settings.</li>
+          <li>Recipes — the link at the foot of Plan.</li>
         </ul>
         <Button variant="secondary" size="sm" onClick={onDismiss}>
           Got it
