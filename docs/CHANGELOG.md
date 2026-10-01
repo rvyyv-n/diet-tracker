@@ -326,6 +326,11 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   pointer. Number fields (Log food → Custom) have their own up and down
   arrows in place of the browser's spinner. New icon `chevron-up`.
 
+- **pass 86 — Recipes: protein and the most logged in the accent:** each
+  recipe's protein figure is in the accent text colour, and so is "logged
+  N×" for the three most logged; the rest of the line stays muted. Green and
+  gold are kept off, as they mean intake status. No new tokens.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.

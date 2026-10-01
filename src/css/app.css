@@ -4773,6 +4773,11 @@ a.r-button {
   color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
+.r-rbook__protein,
+.r-rbook__count.is-top {
+  font-weight: 700;
+  color: var(--accent-text);
+}
 .r-rbook__edit {
   height: var(--icon-button);
   padding: 0 10px;

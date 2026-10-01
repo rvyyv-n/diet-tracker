@@ -94,6 +94,13 @@ export default function Recipes({ onNavigate }) {
   const recipes = [...allRecipes()].sort((a, b) => (b.useCount ?? 0) - (a.useCount ?? 0));
   const q = filter.trim().toLowerCase();
   const visible = q === "" ? recipes : recipes.filter((r) => r.name.toLowerCase().includes(q));
+  // The three most logged (any logged at all) carry their count in the accent.
+  const top = new Set(
+    recipes
+      .filter((r) => r.useCount)
+      .slice(0, 3)
+      .map((r) => r.id),
+  );
 
   function openEditor(id) {
     setRecipeEditorError(null);
@@ -198,7 +205,7 @@ export default function Recipes({ onNavigate }) {
                     <li key={r.id} className="r-rbook__row">
                       <span className="r-rbook__text">
                         <span className="r-rbook__name">{r.name}</span>
-                        <span className="r-rbook__meta">{recipeMeta(r)}</span>
+                        <span className="r-rbook__meta">{recipeMeta(r, top.has(r.id))}</span>
                       </span>
                       <button
                         type="button"
@@ -262,11 +269,25 @@ export default function Recipes({ onNavigate }) {
   );
 }
 
-/** "620 kcal · 23 g · 5 items · logged 3×": the figures, then the fact. */
-function recipeMeta(r) {
+/**
+ * "620 kcal · 23 g · 5 items · logged 3×": the figures, then the fact. The
+ * protein is in the accent, and so is the count for the three most logged.
+ */
+function recipeMeta(r, top) {
   const n = r.items?.length ?? 0;
-  const parts = [`${NUM.format(r.kcal)} kcal`, `${Math.round(r.proteinG)} g`];
-  if (n) parts.push(`${n} item${n === 1 ? "" : "s"}`);
-  if (r.useCount) parts.push(`logged ${r.useCount}×`);
-  return parts.join(" · ");
+  return (
+    <>
+      {NUM.format(r.kcal)} kcal ·{" "}
+      <span className="r-rbook__protein">{Math.round(r.proteinG)} g</span>
+      {n ? ` · ${n} item${n === 1 ? "" : "s"}` : null}
+      {r.useCount ? (
+        <>
+          {" · "}
+          <span className={top ? "r-rbook__count is-top" : "r-rbook__count"}>
+            logged {r.useCount}×
+          </span>
+        </>
+      ) : null}
+    </>
+  );
 }
