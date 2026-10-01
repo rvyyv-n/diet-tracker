@@ -617,6 +617,15 @@
   padding: var(--space-4);
 }
 
+/* in the top layer (popover.js): placed from the trigger, not the page flow */
+.lb__panel[popover] {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  border: 0;
+  color: var(--ink);
+}
+
 .lb__opt {
   display: flex;
   align-items: center;
@@ -2615,7 +2624,8 @@
 .r-grocery__item.is-done .r-grocery__name {
   color: var(--ink-muted);
   text-decoration: line-through;
-  text-decoration-color: var(--ink-soft);
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--ink);
 }
 .r-grocery__qty {
   font-size: 15px;
@@ -3056,23 +3066,32 @@ button.r-listrow {
 }
 
 .r-option {
+  position: relative;
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--space-12);
-  width: 100%;
+  width: calc(100% + 2 * var(--space-8));
   min-height: 64px;
-  padding: 0;
+  margin: 0 calc(-1 * var(--space-8));
+  padding: 0 var(--space-8);
   border: 0;
-  border-bottom: 1px solid var(--line);
+  border-radius: var(--radius-md);
   background-color: transparent;
   color: inherit;
   font-family: inherit;
   text-align: left;
   cursor: pointer;
 }
-.r-option.is-last {
-  border-bottom: 0;
+/* the divider sits above every row but the first, so a wash never touches it */
+.r-option + .r-option::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: var(--space-8);
+  left: var(--space-8);
+  height: 1px;
+  background: var(--line);
 }
 .r-option__name {
   display: block;
