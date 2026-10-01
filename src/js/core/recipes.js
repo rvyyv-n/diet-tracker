@@ -19,8 +19,7 @@
  * saving a logged extra into it (saveRecipe), building or editing one in the
  * recipe editor (createRecipe / updateRecipe / deleteRecipe), and inserting a
  * recipe back onto a day as a single extra. touchRecipe() records that last
- * one so allRecipes() floats the meals you actually repeat to the top — and so
- * the Weight tab can name your most-logged one (topLoggedRecipes).
+ * one so allRecipes() floats the meals you actually repeat to the top.
  *
  * Names dedupe case-insensitively (recipeKey): saving "Chai" when a "chai" is
  * already in the book updates that entry instead of adding a twin, and the
@@ -80,20 +79,6 @@ export function allRecipes() {
 /** One recipe by id, or null. */
 export function getRecipe(id) {
   return readList().find((r) => r.id === id) ?? null;
-}
-
-/**
- * The recipes logged at least `minCount` times, most-logged first (name as the
- * tiebreak). Drives the Weight tab's "most logged" line; returns [] when
- * nothing clears the bar, so the readout can simply not render.
- */
-export function topLoggedRecipes(minCount = 2) {
-  return readList()
-    .filter((r) => (r.useCount ?? 0) >= minCount)
-    .sort(
-      (a, b) =>
-        (b.useCount ?? 0) - (a.useCount ?? 0) || String(a.name).localeCompare(String(b.name)),
-    );
 }
 
 /**

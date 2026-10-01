@@ -60,21 +60,6 @@ passes 9 to 12 each get a fresh thread, in order, so the later audits read a
 smaller tree. One commit per target, plus a `pass N fix:` commit for what an
 audit finds.
 
-- [ ] **Pass 88 · `tidy`** (Sonnet 5.5, high effort) — step 0: remove what the release does not need.
-  - Find redundant files and dead code with a scan, not by eye: unreferenced
-    files in `src/`, `public/`, `scripts/` and `docs/`, unused exports and unused
-    dependencies (the `motion` package first: remove it only if nothing imports
-    it, and check that the motion work in `docs/roadmap.md` does not need it).
-  - Clear caches and build output that should not be tracked or lingering
-    (`dist/`, `node_modules/.vite`, Playwright and test-results folders, stray
-    `*.log` and temp files). Confirm `.gitignore` covers each one.
-  - Tidy organisation: files in the wrong folder, duplicated helpers, stale
-    comments, and the literal px props the review found. Keep `private/` out.
-  - Do not delete a doc, a script or a baseline without checking the references
-    first. `docs/roadmap-history.md` and `docs/changelog-archive.md` stay.
-  - Done when: `npm run check`, `test:offline` and `test:visual` pass with no
-    baseline change, and the commit body lists what was removed.
-
 #### Build pass 11 — Data and logic audit
 
 Model: Opus, high effort for `upgrade`, max effort for `core`. Targets: upgrade, core.

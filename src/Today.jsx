@@ -391,7 +391,7 @@ function WhatsNewCard({ onDismiss }) {
     <div className={`r-whatsnew-slot${state}`} onAnimationEnd={onEnd}>
       <div className="r-whatsnew-slot__clip">
         <section className="r-today__card" aria-label="What’s new in 3.0">
-          <Card padding="18px 18px 16px">
+          <Card padding="var(--space-18) var(--space-18) var(--space-16)">
             <h2 {...rise(0, "r-today__card-title")}>What&rsquo;s new in 3.0</h2>
             <ul className="r-whatsnew">
               {WHATS_NEW.map(([line, where], i) => (

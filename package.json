@@ -20,7 +20,6 @@
     "interact": "node scripts/interact.mjs"
   },
   "dependencies": {
-    "motion": "^13.2.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

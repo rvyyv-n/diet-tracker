@@ -370,6 +370,12 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   and sit inside their row's hover wash,
   and ingredient lists wrap only between foods. New tokens:
   `--dur-breath`, `--meal-share-fill`.
+- **pass 88 tidy:** removed what the release does not need: the unused
+  `CountUp` component and the `motion` package it alone imported, and dead
+  helpers (`groupLabel`, `emptyState`, `renderPreservingFocus`, `justOpened`,
+  `isGroceryChecked`, `topLoggedRecipes`, `formatWeightDelta`). The last two
+  literal px paddings in Today and Welcome now read a token. New token:
+  `--space-18`.
 
 ## Older releases
 

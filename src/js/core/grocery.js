@@ -59,11 +59,6 @@ export function ticksJustReset(onISO = todayISO()) {
   return raw.weekStart != null && raw.weekStart < monday && Object.keys(raw.checked).length > 0;
 }
 
-/** True if `key` is ticked for the current week. */
-export function isGroceryChecked(key, onISO = todayISO()) {
-  return Boolean(weekChecks(onISO)[key]);
-}
-
 /**
  * Flip one item's tick and persist, stamping this week's Monday as the anchor.
  * Returns whether the write landed.

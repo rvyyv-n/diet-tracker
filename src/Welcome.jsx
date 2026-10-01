@@ -677,7 +677,7 @@ function DoneScreen({ profile, onComplete, onEdit }) {
         title="You’re set up"
         intro={`Your plan starts on ${startLabel(start)}.`}
       />
-      <Card className="r-firstrun__target" padding="18px">
+      <Card className="r-firstrun__target" padding="var(--space-18)">
         <Eyebrow trailing={<span>{phase.when}</span>}>
           Phase {phase.id} · {phase.name}
         </Eyebrow>

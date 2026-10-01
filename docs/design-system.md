@@ -111,7 +111,7 @@ Display type carries no tracking; the export specifies none.
 
 ## Spacing, sizing, radii, elevation
 
-Spacing is a 4px grid: `--space-2 · 4 · 8 · 12 · 16 · 20 · 24 · 32 · 48`, plus
+Spacing is a 4px grid: `--space-2 · 4 · 8 · 12 · 16 · 18 · 20 · 24 · 32 · 48`, plus
 the app-layer `--space-96` (page-bottom clearance for the floating tab pill).
 `--gutter` is 20px.
 

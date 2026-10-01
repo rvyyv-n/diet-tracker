@@ -60,20 +60,6 @@ export function formatWeight(kg, unit = "kg", { withUnit = true } = {}) {
   return withUnit ? `${n.toFixed(1)} ${weightUnitLabel(unit)}` : n.toFixed(1);
 }
 
-/**
- * A signed kg *difference* as a display string. Stone weight changes are read
- * in pounds by convention, so this only ever uses kg or lb:
- *   formatWeightDelta(0.3, "kg")  -> "+0.30 kg"
- *   formatWeightDelta(-0.9, "st") -> "-2.0 lb"
- */
-export function formatWeightDelta(kgDelta, unit = "kg") {
-  const inLb = unit === "lb" || unit === "st";
-  const v = inLb ? kgToLb(kgDelta) : kgDelta;
-  const sign = v >= 0 ? "+" : "-";
-  const mag = Math.abs(v);
-  return inLb ? `${sign}${mag.toFixed(1)} lb` : `${sign}${mag.toFixed(2)} kg`;
-}
-
 /** The "roughly 25–300 kg" range, restated in `unit`, for a validation hint. */
 export function weightRangeText(unit = "kg") {
   if (unit === "lb") {
