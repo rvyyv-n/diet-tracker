@@ -39,7 +39,6 @@ JS; the native shells and the README keep their own copies by design.
 | `desktop/src-tauri/tauri.conf.json` | `"version": "X.Y.Z"`                                                                                                                   |
 | `desktop/src-tauri/Cargo.toml`      | `version = "X.Y.Z"`                                                                                                                    |
 | `README.md`                         | the `status:` line in the fenced block near the top — version **and** a short phrase naming what shipped; update `next:` if it changed |
-| `public/sw.js`                      | `CACHE_NAME` → `rise-v<N+1>`                                                                                                           |
 
 Verify nothing was missed:
 
@@ -53,11 +52,10 @@ old numbers.
 
 ### The `CACHE_NAME` rule
 
-Bump it on **every** release, and additionally any time a file in
-`PRECACHE_URLS` is added or changed. It does _not_ need bumping for JS/CSS
-changes alone — pass 45's Vite build emits hashed bundle filenames, so those
-invalidate themselves. If this release added a new static asset under
-`public/assets/`, add it to `PRECACHE_URLS` in the same edit.
+Nothing to bump. `vite.config.js` fills `rise-__BUILD__` in `public/sw.js`
+with a hash of the built files, so the name changes whenever any shipped file
+does. If this release added a new static asset under `public/assets/`, add it
+to `PRECACHE_URLS` in the same edit.
 
 ## Step 2 — the docs
 

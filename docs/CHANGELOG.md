@@ -178,8 +178,15 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   PNGs from the same geometry. Android and Windows rasterise `icon.svg` in
   CI, so they pick it up unchanged. The manifest and the Android window use
   the Paper canvas (`#F7F1E8`). The in-app wordmark ("Rıse" with the sun as
-  its dot) was already drawn by pass 65 and is unchanged. `CACHE_NAME` is
-  `rise-v41`. No new tokens.
+  its dot) was already drawn by pass 65 and is unchanged. The service worker's
+  `CACHE_NAME` is now `rise-<hash>`, filled in at build time from the built
+  files (`vite.config.js`), so it is never bumped by hand and the release
+  checklist loses a line. No new tokens.
+
+- **visual baselines:** the approved pictures in `e2e/snapshots` were the v2
+  screens, so `test:visual` failed on every screen. All 43 are retaken on
+  the v3.0 screens, Paper and Reel, light and dark, phone, desktop and 320px,
+  and the check is a live gate again.
 
 ## v2.3.0 — shipped
 

@@ -41,7 +41,7 @@ lands, `index.html` sets `data-look="paper"` statically and a pinned Dark works;
 | Body, numeric, caption     | Atkinson Next, 200–800      | Barlow Semi Condensed 500 / 600 / 700 | `atkinson-next`, `barlow-semi-condensed-500/600/700` |
 
 All woff2, in `public/assets/fonts/`, **precached by `sw.js`** (latin subset for
-Newsreader and Barlow). Adding or renaming one means bumping `CACHE_NAME`. The
+Newsreader and Barlow). Adding or renaming one means adding it to `PRECACHE_URLS`; `CACHE_NAME` follows the build by itself. The
 app must work with no network, so never reintroduce a font CDN. Mono is not a UI
 face; `--font-mono` is the platform stack for debug output only.
 

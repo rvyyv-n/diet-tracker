@@ -104,8 +104,10 @@ Model: Opus, high effort. Targets: sweep, readme. This is the cross-cutting audi
   - Does: every remaining sheet and confirm at phone and as 520px dialogs;
     320px nothing clips on every screen; body contrast at least 4.5:1; 44px
     targets; a status word beside every status dot; reduced motion; drives
-    `literals.test.js` to zero (only `theme.js` hex stays); sets `LOOKS` to both
-    and approves the visual baselines with `test:visual:update`.
+    `literals.test.js` to zero (only `theme.js` hex stays); re-approves any
+    baseline it moves with `test:visual:update`. The baselines for both Looks,
+    light and dark, were approved after pass 73, so `test:visual` is a live
+    gate until then.
   - Done when: `check`, `test:offline` and `test:visual` are green across Paper
     and Reel, light and dark.
 

@@ -15,12 +15,13 @@
  * first navigation asks for exactly that bundle (plus, later, whichever
  * screen chunk a route actually loads). What's still precached here is the
  * small set of files nothing ever "requests" as a page navigation would —
- * the shell's static, unhashed public/ assets. Bump CACHE_NAME whenever one of
- * *these* is added or changed so clients refetch; the bundle doesn't need
- * that treatment since a new build gets new hashes automatically.
+ * the shell's static, unhashed public/ assets. CACHE_NAME is filled in at
+ * build time (vite.config.js) with a hash of the whole build, so it changes
+ * whenever any shipped file does and clients refetch. Nothing to bump by hand;
+ * a new file under public/ only needs adding to PRECACHE_URLS.
  */
 
-const CACHE_NAME = "rise-v41";
+const CACHE_NAME = "rise-__BUILD__";
 
 const PRECACHE_URLS = [
   "./",
