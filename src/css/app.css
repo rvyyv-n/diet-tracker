@@ -1971,8 +1971,9 @@
 
 /* ------------------------------------------------------------ day total --- */
 
-/* Edge to edge: it pads its own text by the gutter. The sun's halo reaches
-   past both ends, so the sides clip while the top and bottom stay open. */
+/* Edge to edge: it pads its own text by the gutter. The sides clip while the
+   top and bottom stay open; the halo is kept far enough in that its visible
+   disc (about 55px from its centre) is never cut, only the clear ring. */
 .r-daytotal {
   overflow-x: clip;
   font-variant-numeric: tabular-nums;
@@ -2043,7 +2044,7 @@
 }
 .r-daytotal__halo {
   position: absolute;
-  left: calc(var(--r-x) - 60px);
+  left: clamp(-5px, calc(var(--r-x) - 60px), calc(100% - 115px));
   top: -25px;
   width: 120px;
   height: 120px;
@@ -4695,6 +4696,7 @@ a.r-button {
   border-top: 1px solid var(--line);
 }
 .r-meals__head {
+  border-radius: var(--radius-md);
   display: grid;
   grid-template-columns: 20px minmax(0, 1fr) auto 16px;
   align-items: center;
