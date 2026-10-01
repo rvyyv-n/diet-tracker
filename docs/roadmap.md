@@ -89,6 +89,7 @@ a fresh thread. The design refs are paths inside the design export
 | 5          | First run and identity | `firstrun` (72), `icons` (73) | Sonnet 5.5, high effort |
 | 6          | Audit and README       | `sweep` (74), `readme` (75)   | Opus, high effort       |
 | 7          | Motion                 | `motion` (76), `rail` (77)    | Sonnet 5.5, high effort |
+| 8          | Final screenshots      | `shots` (78)                  | Sonnet 5.5, high effort |
 
 Then a full `/code-review` over everything since `v2.3.0` (Opus), a phone
 and desktop test pass, and the release.
@@ -163,6 +164,22 @@ Model: Sonnet 5.5, high effort. Targets: motion, rail. This is animation, last, 
   - Done when: the rail opens on hover and keyboard focus at 1440 in both
     Looks, light and dark; nothing that stays visible moves as it opens; and
     touch devices still get the pinned nav.
+
+#### Build pass 8 — Final screenshots
+
+Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion and the
+rail have landed, so the pictures show the finished app.
+
+- [ ] **Pass 78 · `shots`** — final screenshots and the README that uses them.
+  - Reads: `scripts/shot.mjs`, the README, `e2e/snapshots`.
+  - Does: retakes the README screenshot row from the finished build (Today,
+    Weight, Plan, Recipes and Settings, phone and desktop, Paper and Reel,
+    light and dark); re-approves the visual baselines with
+    `test:visual:update` if motion or the rail moved any pixel; updates the
+    README images, alt text and any captions; checks the status line and every
+    link still hold.
+  - Done when: the README shows the shipped screens, `test:visual` is green,
+    and every image and link in the README resolves.
 
 Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
 `insight_copy_states_facts`). The collapsible desktop rail (pass 40b) is
