@@ -188,6 +188,23 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   the v3.0 screens, Paper and Reel, light and dark, phone, desktop and 320px,
   and the check is a live gate again.
 
+- **pass 72 fix — first run on the new design frames:** the setup form is
+  rebuilt on the v3.0 controls. New `StepHeader`, `Select`, `DateField` and
+  `FieldGroup` in `core.jsx` (one header for Steps 1 to 3 and Settings'
+  Edit profile). Step 1 has Name, Date of birth as three native selects,
+  Height and Current weight with unit toggles that carry the figure (cm and
+  ft/in; kg, lb and st), Target gain and a start-date field that opens the
+  calendar sheet. Continue is never disabled: it puts an error in plain words
+  under each field that needs one ("Enter a number, for example 58.5.") and
+  focuses the first. On desktop it is a centred 640px two-column form with the
+  wordmark at the top left. Step 3 is the summary card. The intro is the
+  wordmark, a horizon line, one line of copy and a hero Get started; a tap
+  anywhere continues, and it no longer moves on by itself. What's new sits
+  between the date strip and the day total with a line and where it lives
+  for each of four changes. The old imperative date dropdowns, the old
+  summary list and their CSS are gone. The intro and What's new entrances are
+  left to `motion`, with the timings recorded there. No new tokens.
+
 ## v2.3.0 — shipped
 
 *Status — released as `v2.3.0` on 2026-09-24.* Passes 57–62 and 48 built on

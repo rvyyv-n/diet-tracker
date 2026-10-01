@@ -188,14 +188,6 @@ export default function Today() {
     <div className="pane" data-screen="today" ref={paneRef}>
       <section className="r-today">
         <h1 className="sr-only">{day.date === todayISO() ? "Today" : longDate(day.date)}</h1>
-        {whatsNewSeen() ? null : (
-          <WhatsNewCard
-            onDismiss={() => {
-              markWhatsNewSeen();
-              bump((n) => n + 1);
-            }}
-          />
-        )}
         <div className="r-columns">
           <div className="r-today__main">
             <div className="r-today__strip">
@@ -210,6 +202,14 @@ export default function Today() {
                 onCalendar={openCalendar}
               />
             </div>
+            {whatsNewSeen() ? null : (
+              <WhatsNewCard
+                onDismiss={() => {
+                  markWhatsNewSeen();
+                  bump((n) => n + 1);
+                }}
+              />
+            )}
             <DayBanner day={day} editable={editable} goToDate={goToDate} />
             <TotalCard day={day} profile={profile} />
             <Blocks
@@ -337,24 +337,35 @@ function phaseLine(profile, day) {
  * A one-time card for a device upgrading into v3.0 — see core/whatsnew.js for
  * why a first-run setup never sees this. Dismiss is permanent; it names where
  * each change lives rather than describing it, in keeping with
- * insight_copy_states_facts.
+ * insight_copy_states_facts. It sits between the date strip and the day
+ * total, as in the first-run frames; its entrance and exit are the `motion`
+ * pass (76).
  */
+const WHATS_NEW = [
+  ["Two Looks, Paper and Reel", "Settings > Appearance"],
+  ["Light, dark, or follow your device", "Settings > Appearance"],
+  ["Every screen redrawn", "Today, Plan, Weight and Settings"],
+  ["Recipes", "The link at the foot of Plan"],
+];
+
 function WhatsNewCard({ onDismiss }) {
   return (
-    <div className="r-today__card">
-      <Card>
-        <p className="r-today__card-title">What&rsquo;s new in 3.0</p>
-        <ul className="whatsnew__list">
-          <li>Two Looks, Paper and Reel — Settings → Appearance.</li>
-          <li>Light, dark, or follow your device — Settings → Appearance.</li>
-          <li>Every screen redrawn: Today, Plan, Weight, Recipes and Settings.</li>
-          <li>Recipes — the link at the foot of Plan.</li>
+    <section className="r-today__card" aria-label="What’s new in 3.0">
+      <Card padding="18px 18px 16px">
+        <h2 className="r-today__card-title">What&rsquo;s new in 3.0</h2>
+        <ul className="r-whatsnew">
+          {WHATS_NEW.map(([line, where]) => (
+            <li key={line} className="r-whatsnew__item">
+              <span className="r-whatsnew__line">{line}</span>
+              <span className="r-whatsnew__where">{where}</span>
+            </li>
+          ))}
         </ul>
-        <Button variant="secondary" size="sm" onClick={onDismiss}>
+        <Button variant="secondary" fullWidth onClick={onDismiss}>
           Got it
         </Button>
       </Card>
-    </div>
+    </section>
   );
 }
 

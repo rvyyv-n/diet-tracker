@@ -1,240 +1,509 @@
 /**
- * Welcome.jsx — the first-run profile screen, converted from welcome.js.
+ * Welcome.jsx — first run and the profile form, rebuilt on the v3.0 controls
+ * from the first-run design frames.
  *
- * It collects the handful of figures the adjustment engine needs — height,
- * weight, date of birth, target rate, start date — and stores them locally
- * via profile.js. Nothing here is committed to the repo; it lives only in
- * this browser. App.jsx shows this screen until the profile is complete,
- * then hands over to the daily checklist; it stays reachable afterwards from
- * "Edit setup".
+ * First run is three steps: the figures (Step 1), an optional Look (Step 2)
+ * and a summary (Step 3). Editing the profile later from Settings is Step 1's
+ * form alone, with no step header. The figures are the handful the adjustment
+ * engine needs — date of birth, height, weight, target rate, start date —
+ * stored locally via profile.js. Nothing here leaves this browser.
  *
- * This screen doesn't fit the "rebuild everything from state on every
- * change" model the other converted screens use, because it never needed
- * one — the vanilla version only ever validated on submit, not on every
- * keystroke, and its four compound rows (birth date, height, weight, start
- * date) already manage their own internal state and DOM mutation (a unit
- * toggle swaps a control via `replaceChildren`, not a full-page rebuild).
- * So instead of state-driving the whole form, those four row builders are
- * ported unchanged from welcome.js and mounted once via `MountOnce` — built
- * the first time this component renders, left alone after that — and the
- * two plain fields (name, target rate) are ordinary uncontrolled inputs read
- * by ref at submit time, exactly as they were read via `.value` before.
- *
- * First run is three steps (pass 72): the figures, an optional Look, and the
- * summary. Three view states carry them: "form", "look" and "done". Editing
- * the profile later is the form alone, with no step header.
+ * The form is controlled React state. Height and weight each have a unit
+ * toggle that carries the figure across (cm and ft/in; kg, lb and st), and
+ * everything downstream still sees one heightCm and one startWeightKg. Continue
+ * is never disabled: pressing it validates and puts a plain-words error under
+ * each field that needs one, then moves focus to the first.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { loadProfile, saveProfile, isComplete, validate, ageYears } from "./js/core/profile.js";
 import { TARGET_RATE_KG_PER_WEEK } from "./js/core/plan.js";
-import { WEIGHT_UNITS, formatWeight, weightRangeText } from "./js/core/units.js";
-import { todayISO } from "./js/core/dates.js";
-import { el } from "./js/ui/dom.js";
-import { dateDropdowns } from "./js/ui/date-dropdowns.js";
-import { dateCalendar } from "./js/ui/date-calendar.js";
-import { weightInput } from "./js/ui/weight-input.js";
+import {
+  WEIGHT_UNITS,
+  kgToLb,
+  lbToKg,
+  kgToStLb,
+  stLbToKg,
+  weightRangeText,
+} from "./js/core/units.js";
+import { MONTH_NAMES, daysInMonth, todayISO } from "./js/core/dates.js";
 import { setLookPref, resolveLook, LOOKS } from "./js/core/theme.js";
-import { Button, Radio } from "./components/core.jsx";
+import {
+  Button,
+  Card,
+  DateField,
+  FieldGroup,
+  Radio,
+  Segmented,
+  Select,
+  StepHeader,
+  TextField,
+  Wordmark,
+} from "./components/core.jsx";
+import { CalendarGrid, Sheet } from "./components/surfaces.jsx";
+import { useWide } from "./components/useWide.js";
 
 const CM_PER_INCH = 2.54;
 
-const NAME_FIELD = { name: "name", label: "Name (optional)", type: "text", validated: false };
-const TARGET_FIELD = {
-  name: "targetRateKgPerWeek",
-  label: "Target gain (kg / week)",
-  type: "number",
-  inputmode: "decimal",
-  step: "0.05",
-  min: "0.05",
-  max: "1",
-  validated: true,
-  hint: `Aim for ${TARGET_RATE_KG_PER_WEEK.min}–${TARGET_RATE_KG_PER_WEEK.max} kg/week.`,
-};
+const HEIGHT_UNITS = [
+  { value: "cm", label: "cm" },
+  { value: "ftin", label: "ft/in" },
+];
+const WEIGHT_OPTIONS = WEIGHT_UNITS.map((u) => ({ value: u, label: u }));
 
-/** Mounts a plain DOM node, built once by the caller, into the React tree. */
-function MountOnce({ node }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    ref.current.replaceChildren(node);
-  }, [node]);
-  return <span style={{ display: "contents" }} ref={ref} />;
+/** Whole feet and inches for a height in cm; inches carry the rounding. */
+function cmToFtIn(cm) {
+  const total = Math.round(cm / CM_PER_INCH);
+  return { ft: Math.floor(total / 12), inch: total % 12 };
+}
+
+/** A decimal as typed ("58.5", ".5", "58,5"), or NaN for anything else ("58..5"). */
+function parseNumber(raw) {
+  const text = String(raw).trim().replace(",", ".");
+  return /^(\d+\.?\d*|\.\d+)$/.test(text) ? Number(text) : NaN;
+}
+
+const trim1 = (n) => String(Math.round(n * 10) / 10);
+
+/** "Thu 1 Oct 2026" from a local ISO date. */
+function startLabel(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const weekday = new Date(y, m - 1, d).toLocaleDateString("en-GB", { weekday: "short" });
+  return `${weekday} ${d} ${MONTH_NAMES[m - 1].slice(0, 3)} ${y}`;
+}
+
+/** The form's starting values from a stored profile; blank for a new one. */
+function initialForm(profile) {
+  const [by, bm, bd] = (profile.birthDate ?? "").split("-");
+  const hasHeight = profile.heightCm != null;
+  const ftin = hasHeight ? cmToFtIn(profile.heightCm) : { ft: "", inch: "" };
+  const weightUnit = WEIGHT_UNITS.includes(profile.weightUnit) ? profile.weightUnit : "kg";
+  const kg = profile.startWeightKg;
+  const stlb = kg != null ? kgToStLb(kg) : null;
+  return {
+    name: profile.name ?? "",
+    day: bd ? String(Number(bd)) : "",
+    month: bm ? String(Number(bm)) : "",
+    year: by ?? "",
+    heightUnit: profile.heightUnit === "ftin" ? "ftin" : "cm",
+    cm: hasHeight ? trim1(profile.heightCm) : "",
+    ft: hasHeight ? String(ftin.ft) : "",
+    inch: hasHeight ? String(ftin.inch) : "",
+    weightUnit,
+    weight: kg == null ? "" : trim1(weightUnit === "lb" ? kgToLb(kg) : kg),
+    st: stlb ? String(stlb.st) : "",
+    stLb: stlb ? trim1(stlb.lb) : "",
+    target: isComplete(profile) ? String(profile.targetRateKgPerWeek ?? "") : "",
+    startDate: profile.startDate || todayISO(),
+  };
 }
 
 /**
- * Render the profile screen. First run opens on the empty form then a
- * summary card; once a complete profile exists it opens on the summary.
- * Pass `edit` (the "Edit profile" path) to jump straight to the form,
- * retitle it, and return through `onComplete` on save without the summary
- * hop. Pass `undoReset` (a function) to show a one-line "restore data from
- * before the reset" affordance above the form. The storage-availability
- * check lives in App.jsx, ahead of this component.
+ * The Welcome flow. First run opens on the form, then the Look, then a
+ * summary; once a complete profile exists it opens on the summary. Pass `edit`
+ * (the "Edit profile" path) to show the form alone, retitled, and return
+ * through `onComplete` on save. Pass `undoReset` (a function) to show a
+ * one-line "restore data from before the reset" affordance above the form. The
+ * storage-availability check lives in App.jsx, ahead of this component.
  */
 export default function Welcome({ onComplete, edit = false, undoReset = null }) {
   const [data, setData] = useState(() => loadProfile());
   const [phase, setPhase] = useState(() => (isComplete(data) && !edit ? "done" : "form"));
 
+  let screen;
   if (phase === "done") {
-    return <DoneScreen profile={data} onComplete={onComplete} onEdit={() => setPhase("form")} />;
-  }
-  if (phase === "look") {
-    return <LookScreen onDone={() => setPhase("done")} />;
+    screen = <DoneScreen profile={data} onComplete={onComplete} onEdit={() => setPhase("form")} />;
+  } else if (phase === "look") {
+    screen = <LookScreen onDone={() => setPhase("done")} />;
+  } else {
+    screen = (
+      <FormScreen
+        profile={data}
+        editing={edit}
+        undoReset={undoReset}
+        onSaved={(next) => {
+          setData(next);
+          if (edit) {
+            // Editing is launched from Settings, so return there without the
+            // summary hop — the user has seen these numbers before.
+            onComplete();
+            return;
+          }
+          setPhase("look");
+        }}
+      />
+    );
   }
   return (
-    <FormScreen
-      profile={data}
-      editing={edit}
-      undoReset={undoReset}
-      onSaved={(next) => {
-        setData(next);
-        if (edit) {
-          // Editing is launched from Settings, so return there without the
-          // summary hop — the user has seen these numbers before.
-          onComplete();
-          return;
-        }
-        setPhase("look");
-      }}
-    />
+    <div className="r-firstrun">
+      {edit ? null : (
+        <div className="r-firstrun__brand">
+          <Wordmark variant="nav" size={26} />
+        </div>
+      )}
+      {screen}
+    </div>
   );
 }
 
-function collectSimple(field, inputRef, hintRef, next) {
-  const raw = inputRef.current.value.trim();
-  const value =
-    field.type === "number"
-      ? raw === ""
-        ? null
-        : Number(raw)
-      : raw || (field.name === "name" ? "" : null);
-  next[field.name] = value;
-  const err = field.validated ? validate(field.name, value) : null;
-  hintRef.current.textContent = err || field.hint || "";
-  hintRef.current.classList.toggle("field__hint--error", Boolean(err));
-  inputRef.current.classList.toggle("is-invalid", Boolean(err));
-  return err ? inputRef.current : null;
-}
-
 function FormScreen({ profile, editing, undoReset, onSaved }) {
-  const nameInputRef = useRef(null);
-  const nameHintRef = useRef(null);
-  const targetInputRef = useRef(null);
-  const targetHintRef = useRef(null);
-  const [errorNote, setErrorNote] = useState("");
+  const [form, setForm] = useState(() => initialForm(profile));
+  const [errors, setErrors] = useState({});
+  const [saveError, setSaveError] = useState("");
+  const [tries, setTries] = useState(0);
+  const [calendar, setCalendar] = useState(false);
+  const wide = useWide();
 
-  // Built once, on this component's first render — not rebuilt on every
-  // re-render the way Weight's/Today's imperative widgets are, since nothing
-  // here drives repeated re-renders (there's no bump/subscribe loop on this
-  // screen; it only ever renders again on its own state changes).
-  const [birthRow] = useState(() => buildBirthDateRow(profile));
-  const [heightRow] = useState(() => buildHeightRow(profile));
-  const [weightRow] = useState(() => buildWeightRow(profile));
-  const [startRow] = useState(() => buildStartDateRow(profile));
+  const set = (key) => (value) => setForm((f) => ({ ...f, [key]: value }));
+
+  // After a failed Continue, focus the first field that has an error.
+  useEffect(() => {
+    if (tries) document.querySelector('.r-firstrun [aria-invalid="true"]')?.focus();
+  }, [tries]);
+
+  /** The height in cm from the current fields, or NaN for a bad entry, null for blank. */
+  function readHeight(f) {
+    if (f.heightUnit === "cm") return f.cm.trim() === "" ? null : parseNumber(f.cm);
+    if (f.ft.trim() === "") return null;
+    const feet = parseNumber(f.ft);
+    const inches = f.inch.trim() === "" ? 0 : parseNumber(f.inch);
+    return Number.isNaN(feet) || Number.isNaN(inches)
+      ? NaN
+      : Math.round((feet * 12 + inches) * CM_PER_INCH);
+  }
+
+  /** The weight in kg from the current fields, or NaN for a bad entry, null for blank. */
+  function readWeight(f) {
+    if (f.weightUnit === "st") {
+      if (f.st.trim() === "") return null;
+      const st = parseNumber(f.st);
+      const lb = f.stLb.trim() === "" ? 0 : parseNumber(f.stLb);
+      return Number.isNaN(st) || Number.isNaN(lb) ? NaN : stLbToKg(st, lb);
+    }
+    if (f.weight.trim() === "") return null;
+    const n = parseNumber(f.weight);
+    if (Number.isNaN(n)) return NaN;
+    return f.weightUnit === "lb" ? lbToKg(n) : n;
+  }
+
+  function changeHeightUnit(unit) {
+    if (unit === form.heightUnit) return;
+    setForm((f) => {
+      const cm = readHeight(f);
+      if (cm == null || Number.isNaN(cm)) return { ...f, heightUnit: unit };
+      if (unit === "ftin") {
+        const { ft, inch } = cmToFtIn(cm);
+        return { ...f, heightUnit: unit, ft: String(ft), inch: String(inch) };
+      }
+      return { ...f, heightUnit: unit, cm: String(cm) };
+    });
+  }
+
+  function changeWeightUnit(unit) {
+    if (unit === form.weightUnit) return;
+    setForm((f) => {
+      const kg = readWeight(f);
+      if (kg == null || Number.isNaN(kg)) return { ...f, weightUnit: unit };
+      if (unit === "st") {
+        const { st, lb } = kgToStLb(kg);
+        return { ...f, weightUnit: unit, st: String(st), stLb: trim1(lb) };
+      }
+      return { ...f, weightUnit: unit, weight: trim1(unit === "lb" ? kgToLb(kg) : kg) };
+    });
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
     const next = { ...profile };
-    let firstBad = null;
+    const found = {};
 
-    firstBad = firstBad || collectSimple(NAME_FIELD, nameInputRef, nameHintRef, next);
-    firstBad = firstBad || birthRow.collect(next);
-    firstBad = firstBad || heightRow.collect(next);
-    firstBad = firstBad || weightRow.collect(next);
-    firstBad = firstBad || collectSimple(TARGET_FIELD, targetInputRef, targetHintRef, next);
-    firstBad = firstBad || startRow.collect(next);
+    next.name = form.name.trim();
 
-    if (firstBad) {
-      firstBad.focus();
+    const [y, m, d] = [Number(form.year), Number(form.month), Number(form.day)];
+    if (!y || !m || !d) {
+      found.dob = validate("birthDate", null);
+    } else if (d > daysInMonth(y, m)) {
+      found.dob = "That date looks wrong.";
+    } else {
+      const iso = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      found.dob = validate("birthDate", iso);
+      next.birthDate = iso;
+    }
+
+    const cm = readHeight(form);
+    if (cm == null) found.height = "Enter your height.";
+    else if (Number.isNaN(cm)) found.height = "Enter a number, for example 170.";
+    else if (validate("heightCm", cm)) {
+      found.height =
+        form.heightUnit === "cm"
+          ? validate("heightCm", cm)
+          : "Enter a height, roughly 3 ft 3 in to 8 ft 2 in.";
+    }
+    next.heightCm = cm == null || Number.isNaN(cm) ? null : cm;
+    next.heightUnit = form.heightUnit;
+
+    const kg = readWeight(form);
+    if (kg == null) found.weight = "Enter your weight.";
+    else if (Number.isNaN(kg)) found.weight = "Enter a number, for example 58.5.";
+    else if (validate("startWeightKg", kg)) {
+      found.weight = `Enter a weight, ${weightRangeText(form.weightUnit)}.`;
+    }
+    next.startWeightKg = kg == null || Number.isNaN(kg) ? null : kg;
+    next.weightUnit = form.weightUnit;
+
+    const rate = form.target.trim() === "" ? null : parseNumber(form.target);
+    if (rate == null) found.target = "Enter a rate, for example 0.30.";
+    else if (Number.isNaN(rate)) found.target = "Enter a number, for example 0.30.";
+    else if (validate("targetRateKgPerWeek", rate)) {
+      found.target = "Enter a rate above 0 and up to 1 kg per week, for example 0.30.";
+    }
+    next.targetRateKgPerWeek = rate == null || Number.isNaN(rate) ? null : rate;
+
+    next.startDate = form.startDate || todayISO();
+
+    const bad = Object.fromEntries(Object.entries(found).filter(([, v]) => v));
+    setErrors(bad);
+    setSaveError("");
+    if (Object.keys(bad).length) {
+      setTries((n) => n + 1);
       return;
     }
     if (!saveProfile(next)) {
-      setErrorNote("Could not save — storage may be full or blocked. Nothing was stored.");
+      setSaveError("Could not save — storage may be full or blocked. Nothing was stored.");
       return;
     }
     onSaved(next);
   }
 
+  const years = [];
+  for (let y = new Date().getFullYear() - 5; y >= new Date().getFullYear() - 120; y -= 1) {
+    years.push({ value: String(y), label: String(y) });
+  }
+  const days = Array.from({ length: 31 }, (_, i) => ({
+    value: String(i + 1),
+    label: String(i + 1),
+  }));
+  const months = MONTH_NAMES.map((name, i) => ({ value: String(i + 1), label: name }));
+
   return (
-    <section className="screen">
-      {editing ? null : <StepHead step={1} />}
-      <div className="screen-head screen-head--setup">
-        <h1 className="screen__title">{editing ? "Edit profile" : "Set up your plan"}</h1>
-        <p className="screen__intro">
-          The numbers the plan adjusts from. They stay on this device.
-        </p>
-      </div>
+    <section className="r-firstrun__body">
+      <StepHeader
+        step={editing ? undefined : 1}
+        title={editing ? "Edit profile" : "Set up your plan"}
+        intro="Everything stays on this device."
+      />
       {!editing && typeof undoReset === "function" ? (
-        <button className="backfill" type="button" onClick={undoReset}>
+        <button className="r-firstrun__restore" type="button" onClick={undoReset}>
           Reset by mistake? Restore the data from before it.
         </button>
       ) : null}
-      <form className="form" onSubmit={handleSubmit} noValidate>
-        <label className="field">
-          <span className="field__label">{NAME_FIELD.label}</span>
-          <span className="field__control">
-            <input
-              ref={nameInputRef}
-              className="field__input"
-              type="text"
-              defaultValue={profile.name ?? ""}
+      <form className="r-firstrun__form" onSubmit={handleSubmit} noValidate>
+        <TextField
+          label="Name (optional)"
+          value={form.name}
+          onChange={set("name")}
+          placeholder="Your name"
+          autoComplete="given-name"
+        />
+
+        <FieldGroup label="Date of birth" labelId="dob-label" error={errors.dob}>
+          <div className="r-firstrun__dob">
+            <Select
+              label="Day"
+              placeholder="Day"
+              value={form.day}
+              onChange={set("day")}
+              options={days}
+              invalid={Boolean(errors.dob)}
             />
-          </span>
-          <span ref={nameHintRef} className="field__hint" />
-        </label>
-        <MountOnce node={birthRow.node} />
-        <MountOnce node={heightRow.node} />
-        <MountOnce node={weightRow.node} />
-        <label className="field">
-          <span className="field__label">{TARGET_FIELD.label}</span>
-          <span className="field__control">
-            <input
-              ref={targetInputRef}
-              className="field__input"
-              type="number"
-              inputMode={TARGET_FIELD.inputmode}
-              step={TARGET_FIELD.step}
-              min={TARGET_FIELD.min}
-              max={TARGET_FIELD.max}
-              defaultValue={profile.targetRateKgPerWeek ?? ""}
+            <Select
+              label="Month"
+              placeholder="Month"
+              value={form.month}
+              onChange={set("month")}
+              options={months}
+              invalid={Boolean(errors.dob)}
             />
-          </span>
-          <span ref={targetHintRef} className="field__hint">
-            {TARGET_FIELD.hint}
-          </span>
-        </label>
-        <MountOnce node={startRow.node} />
-        {errorNote ? <p className="screen__intro field__hint--error">{errorNote}</p> : null}
-        <Button type="submit" fullWidth>
-          {editing ? "Save changes" : "Continue"}
-        </Button>
+            <Select
+              label="Year"
+              placeholder="Year"
+              value={form.year}
+              onChange={set("year")}
+              options={years}
+              invalid={Boolean(errors.dob)}
+            />
+          </div>
+        </FieldGroup>
+
+        <div className="r-firstrun__unit-row">
+          {form.heightUnit === "cm" ? (
+            <TextField
+              label="Height"
+              unit="cm"
+              value={form.cm}
+              onChange={set("cm")}
+              placeholder="e.g. 170"
+              inputMode="decimal"
+              error={errors.height}
+            />
+          ) : (
+            <div className="r-firstrun__pair">
+              <TextField
+                label="Height, feet"
+                unit="ft"
+                value={form.ft}
+                onChange={set("ft")}
+                placeholder="e.g. 5"
+                inputMode="numeric"
+                error={errors.height}
+              />
+              <TextField
+                label="Height, inches"
+                unit="in"
+                value={form.inch}
+                onChange={set("inch")}
+                placeholder="e.g. 7"
+                inputMode="numeric"
+              />
+            </div>
+          )}
+          <div className="r-firstrun__unit">
+            <Segmented
+              label="Height unit"
+              options={HEIGHT_UNITS}
+              value={form.heightUnit}
+              onChange={changeHeightUnit}
+            />
+          </div>
+        </div>
+
+        <div className="r-firstrun__unit-row">
+          {form.weightUnit === "st" ? (
+            <div className="r-firstrun__pair">
+              <TextField
+                label="Current weight, stone"
+                unit="st"
+                value={form.st}
+                onChange={set("st")}
+                placeholder="e.g. 9"
+                inputMode="numeric"
+                error={errors.weight}
+              />
+              <TextField
+                label="Current weight, pounds"
+                unit="lb"
+                value={form.stLb}
+                onChange={set("stLb")}
+                placeholder="e.g. 3"
+                inputMode="decimal"
+              />
+            </div>
+          ) : (
+            <TextField
+              label="Current weight"
+              unit={form.weightUnit}
+              value={form.weight}
+              onChange={set("weight")}
+              placeholder={form.weightUnit === "lb" ? "e.g. 129" : "e.g. 58.5"}
+              inputMode="decimal"
+              error={errors.weight}
+            />
+          )}
+          <div className="r-firstrun__unit">
+            <Segmented
+              label="Weight unit"
+              options={WEIGHT_OPTIONS}
+              value={form.weightUnit}
+              onChange={changeWeightUnit}
+            />
+          </div>
+        </div>
+
+        <TextField
+          label="Target gain"
+          unit="kg/week"
+          value={form.target}
+          onChange={set("target")}
+          placeholder="e.g. 0.30"
+          inputMode="decimal"
+          hint={`Aim for ${TARGET_RATE_KG_PER_WEEK.min} to ${TARGET_RATE_KG_PER_WEEK.max} kg/week.`}
+          error={errors.target}
+        />
+
+        <FieldGroup label="Plan start date" labelId="start-label" hint="Defaults to today.">
+          <DateField
+            labelId="start-label"
+            valueId="start-value"
+            value={startLabel(form.startDate)}
+            onClick={() => setCalendar(true)}
+          />
+        </FieldGroup>
+
+        {saveError ? (
+          <p className="r-firstrun__error" role="alert">
+            {saveError}
+          </p>
+        ) : null}
+        <div className="r-firstrun__actions">
+          <Button type="submit" fullWidth>
+            {editing ? "Save changes" : "Continue"}
+          </Button>
+        </div>
       </form>
+      {calendar ? (
+        <StartDateSheet
+          value={form.startDate}
+          dialog={wide}
+          onPick={set("startDate")}
+          onClose={() => setCalendar(false)}
+        />
+      ) : null}
     </section>
   );
 }
 
-/** The first-run header: "Step N of 3", an optional Skip, and three segments. */
-function StepHead({ step, optional = false, onSkip }) {
+/** The plan start date's calendar: any day, weeks from Monday. */
+function StartDateSheet({ value, dialog, onPick, onClose }) {
+  const [month, setMonth] = useState(() => value.slice(0, 7));
+  const [y, m] = month.split("-").map(Number);
+  const today = todayISO();
+  const lead = (new Date(y, m - 1, 1).getDay() + 6) % 7;
+
+  const days = Array.from({ length: daysInMonth(y, m) }, (_, i) => {
+    const n = i + 1;
+    const iso = `${month}-${String(n).padStart(2, "0")}`;
+    return {
+      n,
+      iso,
+      status: iso === today ? "today" : undefined,
+      selected: iso === value,
+      label: startLabel(iso),
+    };
+  });
+
+  const step = (delta) => {
+    const d = new Date(y, m - 1 + delta, 1);
+    setMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  };
+
   return (
-    <div className="r-steps">
-      <div className="r-steps__row">
-        <span className="r-steps__label">
-          Step {step} of 3{optional ? " · Optional" : ""}
-        </span>
-        {optional ? (
-          <button type="button" className="r-steps__skip" onClick={onSkip}>
-            Skip
-          </button>
-        ) : null}
-      </div>
-      <div className="r-steps__bar" aria-hidden="true">
-        {[1, 2, 3].map((n) => (
-          <span
-            key={n}
-            className={`r-steps__seg${n < step ? " is-done" : n === step ? " is-now" : ""}`}
-          />
-        ))}
-      </div>
-    </div>
+    <Sheet
+      title=""
+      label="Plan start date"
+      {...(dialog ? { variant: "dialog", onClose } : { onClose })}
+    >
+      <CalendarGrid
+        month={`${MONTH_NAMES[m - 1]} ${y}`}
+        leadingBlanks={lead}
+        days={days}
+        onPrev={() => step(-1)}
+        onNext={() => step(1)}
+        onPick={(n) => {
+          onPick(days[n - 1].iso);
+          onClose();
+        }}
+      />
+    </Sheet>
   );
 }
 
@@ -252,14 +521,14 @@ function LookScreen({ onDone }) {
   const theme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
 
   return (
-    <section className="screen">
-      <StepHead step={2} optional onSkip={onDone} />
-      <div className="screen-head screen-head--setup">
-        <h1 className="screen__title">Pick a Look</h1>
-        <p className="screen__intro">
-          Changes the type and texture, not what the app does. You can switch any time in Settings.
-        </p>
-      </div>
+    <section className="r-firstrun__body">
+      <StepHeader
+        step={2}
+        optional
+        onSkip={onDone}
+        title="Pick a Look"
+        intro="Changes the type and texture, not what the app does. You can switch any time in Settings."
+      />
       <div className="r-lookpick__preview" data-look={pick} data-theme={theme} aria-hidden="true">
         <div className="r-lookpick__eyebrow">
           <span>Phase 1 · Week 1</span>
@@ -305,35 +574,27 @@ function LookScreen({ onDone }) {
           </button>
         ))}
       </div>
-      <Button
-        fullWidth
-        onClick={() => {
-          setLookPref(pick);
-          onDone();
-        }}
-      >
-        Continue with {LOOK_PICKS[pick].name}
-      </Button>
+      <div className="r-firstrun__actions">
+        <Button
+          fullWidth
+          onClick={() => {
+            setLookPref(pick);
+            onDone();
+          }}
+        >
+          Continue with {LOOK_PICKS[pick].name}
+        </Button>
+      </div>
     </section>
   );
 }
 
 function heightSummary(profile) {
   if (profile.heightUnit === "ftin" && profile.heightCm != null) {
-    const totalInches = profile.heightCm / CM_PER_INCH;
-    const feet = Math.floor(totalInches / 12);
-    return `${feet}′ ${Math.round(totalInches - feet * 12)}″`;
+    const { ft, inch } = cmToFtIn(profile.heightCm);
+    return `${ft}′ ${inch}″`;
   }
   return `${profile.heightCm} cm`;
-}
-
-function SummaryRow({ label, value }) {
-  return (
-    <div className="summary__row">
-      <span className="summary__key">{label}</span>
-      <span className="summary__val">{value}</span>
-    </div>
-  );
 }
 
 /** Enter anywhere on the summary confirms it, matching the form's submit key. */
@@ -342,297 +603,48 @@ function DoneScreen({ profile, onComplete, onEdit }) {
 
   useEffect(() => {
     function onKey(e) {
-      if (e.key === "Enter") onComplete();
+      if (e.key === "Enter" && e.target === document.body) onComplete();
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onComplete]);
 
+  const rows = [
+    ["Height", heightSummary(profile)],
+    [
+      "Start weight",
+      profile.weightUnit === "st"
+        ? `${kgToStLb(profile.startWeightKg).st} st ${trim1(kgToStLb(profile.startWeightKg).lb)} lb`
+        : `${trim1(profile.weightUnit === "lb" ? kgToLb(profile.startWeightKg) : profile.startWeightKg)} ${profile.weightUnit === "lb" ? "lb" : "kg"}`,
+    ],
+    ...(age != null ? [["Age", `${age} years`]] : []),
+    ["Target", `+${Number(profile.targetRateKgPerWeek).toFixed(2)} kg/week`],
+    ["Start date", startLabel(profile.startDate || todayISO())],
+  ];
+
   return (
-    <section className="screen">
-      <StepHead step={3} />
-      <h1 className="screen__title">You’re set up</h1>
-      <p className="screen__intro">
-        Saved to this browser only. These are the figures the plan adjusts from.
-      </p>
-      <div className="card summary">
-        <SummaryRow label="Height" value={heightSummary(profile)} />
-        <SummaryRow
-          label="Start weight"
-          value={formatWeight(profile.startWeightKg, profile.weightUnit)}
-        />
-        {age != null ? <SummaryRow label="Age" value={`${age}`} /> : null}
-        <SummaryRow label="Target" value={`${profile.targetRateKgPerWeek} kg / wk`} />
-        <SummaryRow label="Start date" value={profile.startDate || todayISO()} />
+    <section className="r-firstrun__body">
+      <StepHeader step={3} title="You’re set up" intro="Check these before you start." />
+      <div className="r-firstrun__summary">
+        <Card padding="4px 18px">
+          <dl className="r-summary">
+            {rows.map(([label, value]) => (
+              <div key={label} className="r-summary__row">
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </Card>
       </div>
-      <div className="form">
+      <div className="r-firstrun__actions r-firstrun__actions--stack">
         <Button fullWidth onClick={onComplete}>
           Start tracking
         </Button>
-        <button className="btn btn--text" onClick={onEdit}>
+        <Button variant="text" fullWidth onClick={onEdit}>
           Edit details
-        </button>
+        </Button>
       </div>
     </section>
   );
-}
-
-// --- the four compound rows, ported unchanged from welcome.js --------------
-// Each returns { node, collect(next) }: node is a plain DOM subtree with its
-// own internal state (unit toggles etc.), mounted once via MountOnce above;
-// collect() reads its current value into `next` at submit time and returns
-// the element to focus if invalid, or null.
-
-/**
- * The height row: a cm field and a ft/in pair, with a segmented unit toggle.
- * Everything downstream still sees a single heightCm; the unit is a display
- * choice, remembered so re-editing shows the value the way it was entered.
- */
-function buildHeightRow(profile) {
-  let unit = profile.heightUnit === "ftin" ? "ftin" : "cm";
-
-  const cmInput = el("input", {
-    class: "field__input",
-    type: "number",
-    inputmode: "numeric",
-    min: "100",
-    max: "250",
-    step: "1",
-  });
-  const ftInput = el("input", {
-    class: "field__input",
-    type: "number",
-    inputmode: "numeric",
-    min: "3",
-    max: "8",
-    step: "1",
-  });
-  const inInput = el("input", {
-    class: "field__input",
-    type: "number",
-    inputmode: "numeric",
-    min: "0",
-    max: "11",
-    step: "1",
-  });
-
-  if (profile.heightCm != null) {
-    if (unit === "ftin") setFtInFromCm(profile.heightCm);
-    else cmInput.value = profile.heightCm;
-  }
-
-  function setFtInFromCm(cm) {
-    const totalInches = cm / CM_PER_INCH;
-    const feet = Math.floor(totalInches / 12);
-    ftInput.value = String(feet);
-    inInput.value = String(Math.round(totalInches - feet * 12));
-  }
-  function setCmFromFtIn() {
-    if (ftInput.value.trim() === "") return;
-    const feet = Number(ftInput.value) || 0;
-    const inches = inInput.value.trim() === "" ? 0 : Number(inInput.value) || 0;
-    cmInput.value = String(Math.round((feet * 12 + inches) * CM_PER_INCH));
-  }
-
-  const cmControl = el("div", { class: "field__control" }, cmInput);
-  const ftinControl = el(
-    "div",
-    { class: "height-ftin" },
-    el("div", { class: "field__control" }, ftInput),
-    el("span", { class: "height-ftin__unit" }, "ft"),
-    el("div", { class: "field__control" }, inInput),
-    el("span", { class: "height-ftin__unit" }, "in"),
-  );
-  const hint = el("span", { class: "field__hint" });
-
-  const segCm = el("button", { class: "seg__btn", type: "button" }, "cm");
-  const segFt = el("button", { class: "seg__btn", type: "button" }, "ft / in");
-
-  function applyUnit() {
-    const ftin = unit === "ftin";
-    cmControl.hidden = ftin;
-    ftinControl.hidden = !ftin;
-    segCm.classList.toggle("is-on", !ftin);
-    segFt.classList.toggle("is-on", ftin);
-    segCm.setAttribute("aria-pressed", String(!ftin));
-    segFt.setAttribute("aria-pressed", String(ftin));
-  }
-  segCm.addEventListener("click", () => {
-    if (unit === "cm") return;
-    setCmFromFtIn();
-    unit = "cm";
-    applyUnit();
-    cmInput.focus();
-  });
-  segFt.addEventListener("click", () => {
-    if (unit === "ftin") return;
-    if (cmInput.value.trim() !== "") setFtInFromCm(Number(cmInput.value));
-    unit = "ftin";
-    applyUnit();
-    ftInput.focus();
-  });
-  applyUnit();
-
-  const node = el(
-    "div",
-    { class: "field" },
-    el(
-      "div",
-      { class: "field__labelrow" },
-      el("span", { class: "field__label" }, "Height"),
-      el("div", { class: "seg", role: "group", "aria-label": "Height unit" }, segCm, segFt),
-    ),
-    cmControl,
-    ftinControl,
-    hint,
-  );
-
-  function collect(next) {
-    let cm = null;
-    let focusEl = cmInput;
-    if (unit === "cm") {
-      const raw = cmInput.value.trim();
-      cm = raw === "" ? null : Number(raw);
-    } else {
-      const ftRaw = ftInput.value.trim();
-      focusEl = ftRaw === "" ? ftInput : inInput;
-      if (ftRaw !== "") {
-        const feet = Number(ftRaw) || 0;
-        const inches = inInput.value.trim() === "" ? 0 : Number(inInput.value) || 0;
-        cm = Math.round((feet * 12 + inches) * CM_PER_INCH);
-      }
-    }
-    next.heightCm = cm;
-    next.heightUnit = unit;
-
-    const err = validate("heightCm", cm);
-    hint.textContent = err || "";
-    hint.classList.toggle("field__hint--error", Boolean(err));
-    cmInput.classList.toggle("is-invalid", Boolean(err) && unit === "cm");
-    ftInput.classList.toggle("is-invalid", Boolean(err) && unit === "ftin");
-    inInput.classList.toggle("is-invalid", Boolean(err) && unit === "ftin");
-    return err ? focusEl : null;
-  }
-
-  return { node, collect };
-}
-
-/**
- * Current weight: a kg / lb / st segmented toggle over the shared weightInput
- * control. Like the height row, everything downstream still sees a single
- * startWeightKg; the unit is a display choice, remembered on the profile so
- * re-editing and the Weight tab show the value the way it was entered. Stone
- * switches the control to a stone + pounds pair.
- */
-function buildWeightRow(profile) {
-  let unit = WEIGHT_UNITS.includes(profile.weightUnit) ? profile.weightUnit : "kg";
-  let control = weightInput({ unit, kg: profile.startWeightKg });
-
-  const holder = el("div", {}, control.node);
-  const hint = el("span", { class: "field__hint" });
-
-  const segs = WEIGHT_UNITS.map((u) => el("button", { class: "seg__btn", type: "button" }, u));
-  function paintSegs() {
-    segs.forEach((b, i) => {
-      const on = WEIGHT_UNITS[i] === unit;
-      b.classList.toggle("is-on", on);
-      b.setAttribute("aria-pressed", String(on));
-    });
-  }
-  segs.forEach((b, i) => {
-    b.addEventListener("click", () => {
-      const next = WEIGHT_UNITS[i];
-      if (next === unit) return;
-      const carried = control.getKg(); // carry the figure across the unit change
-      unit = next;
-      control = weightInput({ unit, kg: Number.isFinite(carried) ? carried : null });
-      holder.replaceChildren(control.node);
-      paintSegs();
-      control.inputs[0].focus();
-    });
-  });
-  paintSegs();
-
-  const node = el(
-    "div",
-    { class: "field" },
-    el(
-      "div",
-      { class: "field__labelrow" },
-      el("span", { class: "field__label" }, "Current weight"),
-      el("div", { class: "seg", role: "group", "aria-label": "Weight unit" }, ...segs),
-    ),
-    holder,
-    hint,
-  );
-
-  function collect(next) {
-    const kg = control.getKg();
-    next.startWeightKg = kg == null || Number.isNaN(kg) ? null : kg;
-    next.weightUnit = unit;
-
-    const err = validate("startWeightKg", next.startWeightKg);
-    hint.textContent = err ? `Enter a weight, ${weightRangeText(unit)}.` : "";
-    hint.classList.toggle("field__hint--error", Boolean(err));
-    control.setInvalid(Boolean(err));
-    return err ? control.focusEl : null;
-  }
-
-  return { node, collect };
-}
-
-/**
- * Date of birth — day / month / year dropdowns. Stays empty until all three
- * are chosen, so the required-field check still fires on an untouched form.
- * The year range covers the ages profile.validate accepts (5–120).
- */
-function buildBirthDateRow(profile) {
-  const thisYear = new Date().getFullYear();
-  const picker = dateDropdowns({
-    value: profile.birthDate ?? null,
-    yearFrom: thisYear - 120,
-    yearTo: thisYear - 5,
-  });
-  const hint = el("span", { class: "field__hint" });
-  const node = el(
-    "div",
-    { class: "field" },
-    el("span", { class: "field__label" }, "Date of birth"),
-    picker.node,
-    hint,
-  );
-
-  function collect(next) {
-    const iso = picker.get();
-    next.birthDate = iso;
-    const err = validate("birthDate", iso);
-    hint.textContent = err || "";
-    hint.classList.toggle("field__hint--error", Boolean(err));
-    picker.node.classList.toggle("is-invalid", Boolean(err));
-    return err ? picker.node.querySelector("button") : null;
-  }
-
-  return { node, collect };
-}
-
-/**
- * Plan start date — a calendar popover seeded with today. It always holds a
- * value, so there is nothing to validate.
- */
-function buildStartDateRow(profile) {
-  const cal = dateCalendar({ value: profile.startDate || todayISO() });
-  const node = el(
-    "div",
-    { class: "field" },
-    el("span", { class: "field__label" }, "Plan start date"),
-    cal.node,
-    el("span", { class: "field__hint" }, "Defaults to today."),
-  );
-
-  function collect(next) {
-    next.startDate = cal.get() || todayISO();
-    return null;
-  }
-
-  return { node, collect };
 }

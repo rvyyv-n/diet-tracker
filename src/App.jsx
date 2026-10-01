@@ -145,6 +145,11 @@ export default function App() {
   // storage-off notice have no nav and keep the plain centred column.
   useEffect(() => {
     mountRef.current.classList.toggle("app-shell--tabbed", view.kind === "shell");
+    // The setup and intro screens lay themselves out; the narrow column is theirs to widen.
+    mountRef.current.classList.toggle(
+      "app-shell--setup",
+      view.kind === "welcome" || view.kind === "intro",
+    );
   }, [view.kind]);
 
   if (view.kind === "storage-off") return <StorageOff />;

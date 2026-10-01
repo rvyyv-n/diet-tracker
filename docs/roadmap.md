@@ -103,7 +103,10 @@ Model: Opus, high effort. Targets: sweep, readme. This is the cross-cutting audi
   - Reads: the Verify list in the design README, `guidelines/sizing.html`.
   - Does: every remaining sheet and confirm at phone and as 520px dialogs;
     320px nothing clips on every screen; body contrast at least 4.5:1; 44px
-    targets; a status word beside every status dot; reduced motion; drives
+    targets (the first-run handoff flags the Segmented segments at 40px, small
+    buttons at 40px and the DotStrip dots under 44px); Segmented's unselected
+    label on Reel light is 4.40:1 and needs 4.5:1; a status word beside every
+    status dot; reduced motion; drives
     `literals.test.js` to zero (only `theme.js` hex stays); re-approves any
     baseline it moves with `test:visual:update`. The baselines for both Looks,
     light and dark, were approved after pass 73, so `test:visual` is a live
@@ -123,12 +126,19 @@ Model: Opus, high effort. Targets: sweep, readme. This is the cross-cutting audi
 Model: Sonnet 5.5, high effort. Targets: motion, rail. This is animation, last, then the one undesigned surface. Switch to Opus only if the choreography needs planning.
 
 - [ ] **Pass 76 · `motion`** — animation, last.
-  - Reads: `guidelines/motion.html`, the motion notes in `product-rules.md`.
+  - Reads: `guidelines/motion.html`, the motion notes in `product-rules.md`,
+    and the two motion tables in
+    `private/design/first-run-handoff/rise-3-first-run/rise-3-first-run-handoff.md`
+    (the intro and the What's new card, sections 1 and 4).
   - Does: daily interactions at 90 to 260ms on `cubic-bezier(.22,1,.36,1)`,
     press scale .97, tick pop and sun settle on the spring curve, sun travel
     520ms, the theme cross-fade, the slow theatrical moments for intro, first
     run and What's new only; a test that animations use the duration tokens and
-    never their own milliseconds; reduced motion zeroes every duration.
+    never their own milliseconds; reduced motion zeroes every duration. The
+    intro (about 1.4 s) needs the `Wordmark` dot split into its own element so
+    the sun can rise and settle into the ı; What's new grows and fades in
+    (about 1.1 s) and leaves on Got it with press .97, no toast and no Undo.
+    The layouts are already built (pass 72 fix).
   - Done when: nothing animates that the design doesn't describe, and reduced
     motion is fully still.
 

@@ -220,6 +220,114 @@ export function TextField({
   );
 }
 
+/**
+ * A labelled group for a control that is not a TextField: the label above, the
+ * control (or controls) in the middle, then a hint or an error in words. The
+ * error replaces the hint and turns danger, as TextField's does.
+ */
+export function FieldGroup({ label, labelId, hint, error, children, role = "group" }) {
+  return (
+    <div role={role} aria-labelledby={labelId} className={cx("r-field", error && "is-error")}>
+      <span id={labelId} className="r-field__label">
+        {label}
+      </span>
+      {children}
+      {error || hint ? <span className="r-field__note">{error || hint}</span> : null}
+    </div>
+  );
+}
+
+/**
+ * A native select drawn on the TextField box: 48px, the field radius, a chevron
+ * on the right. `value` "" is the unselected state and reads in the muted ink.
+ * `label` names it for assistive tech (it has no visible label of its own; a
+ * FieldGroup supplies that).
+ */
+export function Select({ label, value, onChange, options, placeholder, invalid, ...rest }) {
+  return (
+    <span className="r-select">
+      <select
+        className={cx("r-select__control", value === "" && "is-empty")}
+        aria-label={label}
+        aria-invalid={invalid ? true : undefined}
+        value={value}
+        onChange={(e) => onChange?.(e.target.value)}
+        {...rest}
+      >
+        <option value="" disabled hidden>
+          {placeholder}
+        </option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+      <span className="r-select__chevron" aria-hidden="true">
+        <Icon name="chevronRight" size={16} />
+      </span>
+    </span>
+  );
+}
+
+/** A field-styled button that opens a picker: the value on the left, an action word on the right. */
+export function DateField({ labelId, valueId, value, actionLabel = "Calendar", onClick, invalid }) {
+  return (
+    <button
+      type="button"
+      className="r-datefield"
+      aria-labelledby={`${labelId} ${valueId}`}
+      aria-invalid={invalid ? true : undefined}
+      onClick={onClick}
+    >
+      <span id={valueId}>{value}</span>
+      <span className="r-datefield__action">{actionLabel}</span>
+    </button>
+  );
+}
+
+/**
+ * The first-run header: "Step N of 3", a three-segment bar (done is ink, the
+ * current step is the accent, the rest are the line), the title and one line
+ * under it. `optional` adds the word to the eyebrow and `onSkip` a Skip button.
+ * Without a `step` it is just the title and the line, for editing the profile.
+ */
+export function StepHeader({ step, total = 3, optional, onSkip, title, intro }) {
+  return (
+    <header className="r-stephead">
+      {step == null ? null : (
+        <>
+          <div className="r-stephead__row">
+            <Eyebrow>
+              Step {step} of {total}
+              {optional ? " · Optional" : ""}
+            </Eyebrow>
+            {onSkip ? (
+              <button type="button" className="r-stephead__skip" onClick={onSkip}>
+                Skip
+              </button>
+            ) : null}
+          </div>
+          <div className="r-stephead__bar" aria-hidden="true">
+            {Array.from({ length: total }, (_, i) => (
+              <span
+                key={i}
+                className={cx(
+                  "r-stephead__seg",
+                  i + 1 < step && "is-done",
+                  i + 1 === step && "is-now",
+                )}
+              />
+            ))}
+          </div>
+        </>
+      )}
+      <h1 className="r-stephead__title">{title}</h1>
+      {intro ? <p className="r-stephead__intro">{intro}</p> : null}
+    </header>
+  );
+}
+
 /** Surface container: raised (default), outlined, sunken, or danger for confirms. */
 export function Card({ variant = "raised", padding, children, className, as: Tag = "div" }) {
   return (

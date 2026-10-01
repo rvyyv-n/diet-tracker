@@ -408,33 +408,6 @@
   box-shadow: var(--focus-ring);
 }
 
-/* ------------------------------------------------------------- summary ---
-   Key / value list used on the "you're set up" card. Numbers are mono.      */
-
-.summary {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-12);
-}
-
-.summary__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-16);
-}
-
-.summary__key {
-  font: var(--text-body-sm);
-  color: var(--ink-muted);
-}
-
-.summary__val {
-  font: var(--text-metric-sm);
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
-
 /* ------------------------------------------------------- intake status ---
    The deliberate weight-gain inversion (tokens.css / docs/design-system.md):
    "low" is the failure state, so it is the one that turns red.               */
@@ -460,19 +433,6 @@
   flex-direction: column;
   gap: var(--space-4);
   margin-bottom: var(--space-12);
-}
-
-/* the one-time v2 "what's new" card: its list needs the usual <ul> reset
-   (see pass 37/38's note on this) */
-.whatsnew__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  font: var(--text-body-sm);
-  color: var(--text-body);
 }
 
 .block-row__tick {
@@ -633,21 +593,6 @@
   display: inline-flex;
   align-items: center;
   color: var(--ink-muted);
-}
-
-/* the three DOB dropdowns on one row: day | month (wider) | year */
-.date-dmy {
-  display: flex;
-  gap: var(--space-8);
-}
-.date-dmy .lb {
-  flex: 1 1 0;
-}
-.date-dmy .lb:nth-child(2) {
-  flex-grow: 1.5;
-}
-.date-dmy.is-invalid .lb__trigger {
-  box-shadow: inset 0 0 0 1.5px var(--danger);
 }
 
 /* floating panels ---------------------------------------------------- */
@@ -859,63 +804,66 @@
 }
 
 /* ------------------------------------------------------------- intro ---
-   The first-run splash (pass 11). Full-screen, shown once ahead of the
-   welcome form. It fades in, and fades out on dismiss; the blanket
-   reduced-motion rule in tokens.css disables both, and intro.js also
-   skips the fade-out wait in that case. */
+   The first-run splash, full screen and shown once ahead of Step 1: the
+   wordmark, a horizon line, one line of copy, and the hero button at the foot.
+   Layout only; the entrance animation is the motion pass.                    */
 
-.intro {
+.r-intro {
   position: fixed;
   inset: 0;
   z-index: 100;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: var(--space-32);
-  background: var(--bg-canvas);
+  background-color: var(--bg-canvas);
+  background-image: var(--texture);
+  color: var(--ink);
   cursor: pointer;
 }
-
-.intro__card {
+.r-intro__main {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-12);
-  max-width: 32ch;
+  justify-content: center;
+  width: 100%;
+  padding: calc(44px + env(safe-area-inset-top)) var(--gutter) 120px;
+  box-sizing: border-box;
   text-align: center;
 }
-
-.intro__mark {
-  display: flex;
-  color: var(--ink);
+.r-intro__mark {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
 }
-
-.intro__line {
-  font-size: var(--type-body);
-  line-height: 1.45;
-  color: var(--ink-muted);
+.r-intro__horizon {
+  align-self: stretch;
+  height: 1.5px;
+  margin: 40px calc(-1 * var(--gutter)) var(--space-32);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--horizon) 12%,
+    var(--horizon) 88%,
+    transparent
+  );
 }
-
-.intro__skip {
-  margin-top: var(--space-16);
+.r-intro__line {
+  max-width: 290px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-style: var(--display-style);
+  font-size: var(--type-display-md);
+  line-height: 1.25;
 }
-
-@keyframes intro-in {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.intro--in {
-  animation: intro-in 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.intro--out {
-  opacity: 0;
-  transition: opacity 0.24s var(--ease-out);
+.r-intro__cta {
+  position: absolute;
+  right: var(--gutter);
+  bottom: calc(36px + env(safe-area-inset-bottom));
+  left: var(--gutter);
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 /* ============================================================================
@@ -3019,14 +2967,38 @@ button.r-listrow {
   margin: var(--space-16) var(--gutter) 0;
 }
 .r-today__card-title {
-  margin-bottom: var(--space-8);
+  margin: 0;
   font-family: var(--font-display);
   font-weight: var(--display-weight);
+  font-style: var(--display-style);
   font-size: var(--type-display-md);
-  line-height: 1.1;
+  line-height: 1.15;
+}
+.r-whatsnew {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.r-whatsnew__item {
+  padding: 10px 0;
+}
+.r-whatsnew__item + .r-whatsnew__item {
+  border-top: 1px solid var(--line);
+}
+.r-whatsnew__line {
+  display: block;
+  font-size: var(--type-body);
+  font-weight: 700;
+  line-height: 22px;
+}
+.r-whatsnew__where {
+  display: block;
+  font-size: var(--type-small);
+  line-height: 19px;
+  color: var(--ink-muted);
 }
 .r-today__card .r-button {
-  margin-top: 14px;
+  margin-top: var(--space-12);
 }
 .r-today__total {
   margin-top: 22px;
@@ -5105,60 +5077,8 @@ button.r-listrow:active,
 }
 
 /* ------------------------------------------------------- first run (72) ---
-   The step header, and step 2's Look picker: a live preview that reads the
+   Step 2's Look picker: a live preview that reads the
    chosen Look through a nested data-look, then one radio card per Look.      */
-
-.r-steps {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-  margin-bottom: var(--space-16);
-}
-.r-steps__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-}
-.r-steps__label {
-  font-size: var(--eyebrow-size);
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: var(--eyebrow-transform);
-  color: var(--eyebrow-ink);
-}
-.r-steps__skip {
-  min-height: 44px;
-  padding: 0 var(--space-4);
-  border: 0;
-  background: none;
-  font: inherit;
-  font-size: var(--type-body);
-  font-weight: 700;
-  color: var(--accent-text);
-  cursor: pointer;
-}
-.r-steps__skip:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-  border-radius: var(--radius-sm);
-}
-.r-steps__bar {
-  display: flex;
-  gap: 6px;
-}
-.r-steps__seg {
-  flex: 1;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--line-strong);
-}
-.r-steps__seg.is-done {
-  background: var(--ink);
-}
-.r-steps__seg.is-now {
-  background: var(--accent);
-}
 
 .r-lookpick__preview {
   margin-top: var(--space-16);
@@ -5339,5 +5259,296 @@ button.r-listrow:active,
 @media (max-width: 340px) {
   .r-lookpick__options {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------------------------------------- first-run controls and layout ---
+   StepHeader, Select and DateField (core.jsx), and the first-run column. The
+   select and the date button share the TextField box, so they read as one
+   family. The phone is one column on the 20px gutter; from 720px the column is
+   640px wide with the form in two, and the wordmark sits at the top left.    */
+
+.r-stephead__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+.r-stephead__skip {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 0;
+  background: none;
+  color: var(--accent-text);
+  font: inherit;
+  font-size: var(--type-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+.r-stephead__skip:focus-visible {
+  outline: none;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--focus-ring);
+}
+.r-stephead__bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+.r-stephead__seg {
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--line-strong);
+}
+.r-stephead__seg.is-done {
+  background: var(--ink);
+}
+.r-stephead__seg.is-now {
+  background: var(--accent);
+}
+.r-stephead__title {
+  margin: 16px 0 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-style: var(--display-style);
+  font-size: var(--type-display-lg);
+  line-height: 1.1;
+}
+.r-stephead__intro {
+  margin: 6px 0 0;
+  font-size: var(--type-body);
+  line-height: 22px;
+  color: var(--ink-muted);
+}
+
+.r-select {
+  position: relative;
+  display: block;
+}
+.r-select__control,
+.r-datefield {
+  appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--control-h);
+  margin: 0;
+  border: 0;
+  border-radius: var(--radius-field);
+  background: var(--bg-canvas);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--type-body);
+  font-variant-numeric: tabular-nums;
+}
+.r-select__control {
+  padding: 0 36px 0 var(--space-16);
+  cursor: pointer;
+}
+.r-select__control.is-empty {
+  color: var(--ink-muted);
+}
+.r-select__control option {
+  color: var(--ink);
+}
+.r-select__chevron {
+  position: absolute;
+  top: 0;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  height: var(--control-h);
+  color: var(--ink-muted);
+  pointer-events: none;
+  transform: rotate(90deg);
+}
+.r-datefield {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  padding: 0 var(--space-16);
+  text-align: left;
+  cursor: pointer;
+}
+.r-datefield__action {
+  font-size: 15px;
+  color: var(--ink-muted);
+}
+.r-select__control:focus-visible,
+.r-datefield:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1.5px var(--line-strong),
+    var(--focus-ring);
+}
+.r-field.is-error .r-select__control,
+.r-field.is-error .r-datefield,
+.r-select__control[aria-invalid="true"] {
+  box-shadow: inset 0 0 0 1.5px var(--danger);
+}
+.r-field.is-error .r-select__control:focus-visible {
+  box-shadow:
+    inset 0 0 0 1.5px var(--danger),
+    var(--focus-ring);
+}
+
+.app-shell--setup {
+  max-width: none;
+}
+.r-firstrun {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: var(--space-4);
+}
+.r-firstrun__brand {
+  display: none;
+}
+.r-firstrun__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.r-firstrun__form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: var(--space-16);
+  line-height: 18px;
+}
+.r-firstrun__dob {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) 100px;
+  gap: var(--space-8);
+}
+.r-firstrun__unit-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 156px;
+  gap: 10px;
+  align-items: start;
+}
+.r-firstrun__unit {
+  width: 156px;
+  margin-top: 24px;
+}
+.r-firstrun__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-8);
+}
+.r-firstrun__actions {
+  margin-top: auto;
+  padding-top: var(--space-24);
+}
+.r-firstrun__actions--stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.r-firstrun__error {
+  margin: 0;
+  font-size: 14px;
+  color: var(--danger);
+}
+.r-firstrun__restore {
+  align-self: flex-start;
+  min-height: 44px;
+  margin-top: var(--space-8);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent-text);
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+.r-firstrun__summary {
+  margin-top: 28px;
+}
+.r-summary {
+  margin: 0;
+}
+.r-summary__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  min-height: 56px;
+}
+.r-summary__row + .r-summary__row {
+  border-top: 1px solid var(--line);
+}
+.r-summary dt {
+  font-size: var(--type-body);
+  color: var(--ink-muted);
+}
+.r-summary dd {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+@media (max-width: 340px) {
+  .r-firstrun__unit-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .r-firstrun__unit {
+    margin-top: 0;
+  }
+  .r-firstrun__dob {
+    grid-template-columns: 64px minmax(0, 1fr) 84px;
+  }
+  .r-firstrun__dob .r-select__control {
+    padding: 0 28px 0 12px;
+  }
+  .r-firstrun__dob .r-select__chevron {
+    right: 10px;
+  }
+}
+
+@media (min-width: 720px) {
+  .r-firstrun {
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+  }
+  .r-firstrun__brand {
+    position: fixed;
+    top: 40px;
+    left: 48px;
+    display: block;
+  }
+  .r-firstrun__body {
+    flex: none;
+    width: 640px;
+    max-width: 100%;
+  }
+  .r-firstrun__form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 20px;
+    align-items: start;
+    margin-top: var(--space-32);
+  }
+  .r-firstrun__dob {
+    grid-template-columns: 80px minmax(0, 1fr) 96px;
+  }
+  .r-firstrun__actions {
+    grid-column: 1 / -1;
+    justify-self: end;
+    width: 240px;
+    margin-top: 0;
+    padding-top: var(--space-8);
+  }
+  .r-firstrun__error {
+    grid-column: 1 / -1;
   }
 }
