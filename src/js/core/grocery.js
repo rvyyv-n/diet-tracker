@@ -48,6 +48,17 @@ export function weekChecks(onISO = todayISO()) {
   return raw.weekStart === monday ? raw.checked : {};
 }
 
+/**
+ * True on a Monday when ticks from an earlier week were just cleared by the
+ * rollover — the fact Plan states once, and only that day.
+ */
+export function ticksJustReset(onISO = todayISO()) {
+  const monday = startOfWeekISO(onISO);
+  if (onISO !== monday) return false;
+  const raw = readRaw();
+  return raw.weekStart != null && raw.weekStart < monday && Object.keys(raw.checked).length > 0;
+}
+
 /** True if `key` is ticked for the current week. */
 export function isGroceryChecked(key, onISO = todayISO()) {
   return Boolean(weekChecks(onISO)[key]);

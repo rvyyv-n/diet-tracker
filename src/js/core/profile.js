@@ -30,6 +30,8 @@ export const DEFAULT_PROFILE = {
   addOns: [], //   1 -> 2 with the weeks, never to 3 (user-only)
   //                         add-on blocks currently enabled ("A1".."A3"); seeded
   //                         from the phase default, then the engine adjusts it
+  phaseChange: null, // { from, to, on } — the last time the phase moved (pass 72
+  //                       fix); Plan shows a notice until the next Monday.
   dismissedSuggestion: null, // { ruleId, date } — hushes that rule for ~a week,
   //                            set on Dismiss and after Apply (see today.js)
   introSeen: false, // the first-run splash has been shown once (pass 11).

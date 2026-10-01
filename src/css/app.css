@@ -2722,6 +2722,13 @@
 .r-banner--backfill {
   box-shadow: inset 0 0 0 1.5px var(--line-strong);
 }
+.r-banner--info {
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+  padding-right: 14px;
+}
+.r-banner--info .r-banner__icon {
+  color: var(--ink-muted);
+}
 .r-banner--storage {
   box-shadow: inset 0 0 0 1.5px var(--danger);
 }
@@ -3766,6 +3773,12 @@ button.r-listrow {
   font-size: var(--type-body);
   color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
+}
+.r-plan__notices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin: var(--space-16) var(--gutter) 0;
 }
 .r-plan .r-columns {
   gap: 28px;

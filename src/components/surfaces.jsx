@@ -93,7 +93,8 @@ export function Toast({ message, actionLabel = "Undo", onUndo, placement = "phon
 /**
  * An inline notice under the header: `closed` (a view-only past day),
  * `backfill` (yesterday unfinished — gold dot, neutral edge), `storage` (a
- * failed write). Never red for a missed block.
+ * failed write), `info` (a plain fact, outlined, no action). Never red for a
+ * missed block.
  */
 export function Banner({ kind, title, sub, action, onAction }) {
   return (
@@ -101,6 +102,7 @@ export function Banner({ kind, title, sub, action, onAction }) {
       {kind === "closed" ? <Icon name="lock" size={20} className="r-banner__icon" /> : null}
       {kind === "backfill" ? <span className="r-banner__dot" aria-hidden="true" /> : null}
       {kind === "storage" ? <Icon name="warn" size={20} className="r-banner__icon" /> : null}
+      {kind === "info" ? <Icon name="info" size={20} className="r-banner__icon" /> : null}
       <span className="r-banner__text">
         <b>{title}</b>
         {sub ? <span className="r-banner__sub">{sub}</span> : null}

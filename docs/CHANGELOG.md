@@ -114,6 +114,14 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   grocery, ladder and Plan group styles are gone. `scaleGroceryQty` is
   unchanged. No new tokens.
 
+- **pass 69 fix — Plan's two notices:** the profile gains `phaseChange`
+  (`{ from, to, on }`), written when the calendar moves the phase. In that
+  week Plan shows "Quantities went up with Phase N." and marks only the
+  quantities the change moved in accent text; both end on the next Monday.
+  On a Monday after a ticked week a second notice says the ticks cleared
+  themselves (`ticksJustReset`, derived, nothing stored). `Banner` gains an
+  `info` kind: outlined, an info icon, no action. No new tokens.
+
 - **pass 70 — Settings and the Look picker:** Settings is rebuilt on the
   surface components. It opens with the record counts, the title and the
   profile card (an initial, the name, phase · height · rate). Appearance

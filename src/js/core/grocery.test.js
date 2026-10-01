@@ -5,6 +5,7 @@ import {
   toggleGrocery,
   clearGroceryChecks,
   restoreGroceryChecks,
+  ticksJustReset,
 } from "./grocery.js";
 
 const MON = "2026-09-28";
@@ -30,5 +31,16 @@ describe("grocery ticks", () => {
     toggleGrocery(groceryKey("Pantry", "Oats"), MON);
     expect(Object.keys(weekChecks(WED))).toHaveLength(1);
     expect(weekChecks(NEXT_MON)).toEqual({});
+  });
+
+  it("says the ticks reset only on the Monday after a ticked week", () => {
+    expect(ticksJustReset(MON)).toBe(false); // nothing stored yet
+    toggleGrocery(groceryKey("Pantry", "Oats"), WED);
+    expect(ticksJustReset(WED)).toBe(false);
+    expect(ticksJustReset("2026-10-04")).toBe(false); // Sunday, same week
+    expect(ticksJustReset(NEXT_MON)).toBe(true);
+    expect(ticksJustReset("2026-10-06")).toBe(false); // Tuesday
+    toggleGrocery(groceryKey("Pantry", "Oats"), NEXT_MON);
+    expect(ticksJustReset(NEXT_MON)).toBe(false); // ticking again clears the fact
   });
 });

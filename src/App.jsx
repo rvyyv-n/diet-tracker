@@ -105,7 +105,12 @@ function syncPhase(profile) {
     phaseId === profile.currentPhaseId &&
     addOns.length === (profile.addOns ?? []).length &&
     addOns.every((id, i) => id === profile.addOns[i]);
-  if (!unchanged) saveProfile({ ...profile, currentPhaseId: phaseId, addOns });
+  if (unchanged) return;
+  const moved = phaseId !== profile.currentPhaseId;
+  const phaseChange = moved
+    ? { from: profile.currentPhaseId, to: phaseId, on: todayISO() }
+    : profile.phaseChange;
+  saveProfile({ ...profile, currentPhaseId: phaseId, addOns, phaseChange });
 }
 
 /** What to show, computed fresh each time — the React stand-in for route(). */

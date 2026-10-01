@@ -8,8 +8,10 @@
  * column (the aisles in two columns), the ladder and the Recipes link in the
  * 340px support column.
  *
- * Groceries scale from the Phase 2 baseline with `scaleGroceryQty`, and a
- * quantity that differs from the baseline shows in accent text. Ticks live in
+ * Groceries scale from the Phase 2 baseline with `scaleGroceryQty`. In the
+ * week a phase change lands (profile.phaseChange), a quantity it moved shows
+ * in accent text under a one-line notice; each Monday, after ticks cleared
+ * themselves, a second notice says so. Ticks live in
  * core/grocery.js, keyed by aisle and name, so they carry over a phase change
  * untouched and clear themselves each Monday. Clear keeps a copy for the
  * toast's Undo.
@@ -29,11 +31,12 @@ import {
   toggleGrocery,
   clearGroceryChecks,
   restoreGroceryChecks,
+  ticksJustReset,
 } from "./js/core/grocery.js";
 import { publish, subscribe } from "./js/core/broadcast.js";
 import { NUM } from "./components/shared.jsx";
 import { Eyebrow, Icon, SectionHeading } from "./components/core.jsx";
-import { Toast } from "./components/surfaces.jsx";
+import { Banner, Toast } from "./components/surfaces.jsx";
 import { GroceryList, PhaseLadder } from "./components/tracking.jsx";
 import { shortDate } from "./LogFood.jsx";
 
@@ -84,7 +87,10 @@ export default function Plan({ onNavigate }) {
   const today = todayISO();
   const week = planWeek(profile.startDate || today, today);
   const checks = weekChecks();
-  const aisles = groceryAisles(phaseId, checks);
+  // A phase change counts until the Monday after it; the accent quantities and
+  // the notice both end with that week.
+  const change = recentPhaseChange(profile, phaseId, today);
+  const aisles = groceryAisles(phaseId, checks, change?.from);
   const total = aisles.reduce((n, a) => n + a.items.length, 0);
   const done = aisles.reduce((n, a) => n + a.items.filter((it) => it.done).length, 0);
   const nextMonday = addDays(startOfWeekISO(today), 7);
@@ -92,7 +98,7 @@ export default function Plan({ onNavigate }) {
   function tick(ai, ii) {
     const sec = GROCERY_LIST[ai];
     toggleGrocery(groceryKey(sec.section, sec.items[ii].name));
-    const after = groceryAisles(phaseId, weekChecks());
+    const after = groceryAisles(phaseId, weekChecks(), change?.from);
     const ticked = after.reduce((n, a) => n + a.items.filter((it) => it.done).length, 0);
     announce(`${ticked} of ${total} ticked.`);
     bump((n) => n + 1);
@@ -130,6 +136,24 @@ export default function Plan({ onNavigate }) {
             {NUM.format(phase.kcal)} kcal · {phase.proteinG} g protein a day
           </p>
         </header>
+        {change || ticksJustReset(today) ? (
+          <div className="r-plan__notices">
+            {change ? (
+              <Banner
+                kind="info"
+                title={`Quantities ${change.up ? "went up" : "changed"} with Phase ${phaseId}.`}
+                sub="Anything you already ticked stays ticked."
+              />
+            ) : null}
+            {ticksJustReset(today) ? (
+              <Banner
+                kind="info"
+                title="New week, new list."
+                sub="Last week's ticks cleared themselves overnight."
+              />
+            ) : null}
+          </div>
+        ) : null}
         <div className="r-columns">
           <div className="r-plan__main">
             <SectionHeading
@@ -183,12 +207,25 @@ export default function Plan({ onNavigate }) {
 // --- groceries ----------------------------------------------------------
 
 /**
- * The list as the component wants it: aisles of `{ name, qty, done, changed }`,
- * quantities scaled to `phaseId`. `changed` marks a quantity that differs from
- * the Phase 2 baseline, which is what a phase change does to it. Only items
- * the plan still names are counted, so a renamed entry can't inflate the total.
+ * The phase change to tell the user about, or null: the profile's record when
+ * it landed this week (Monday to Sunday) and still describes the current phase.
+ * `up` says whether the target rose, which is what the notice's wording follows.
  */
-function groceryAisles(phaseId, checks) {
+function recentPhaseChange(profile, phaseId, today) {
+  const c = profile.phaseChange;
+  if (!c || c.to !== phaseId || typeof c.on !== "string") return null;
+  if (startOfWeekISO(c.on) !== startOfWeekISO(today)) return null;
+  return { from: c.from, up: phaseTarget(c.to).kcal > phaseTarget(c.from).kcal };
+}
+
+/**
+ * The list as the component wants it: aisles of `{ name, qty, done, changed }`,
+ * quantities scaled to `phaseId`. `changed` marks a quantity that moved with
+ * the phase change (`fromPhaseId`, the phase it left), and only that week; with
+ * no recent change nothing is marked. Only items the plan still names are
+ * counted, so a renamed entry can't inflate the total.
+ */
+function groceryAisles(phaseId, checks, fromPhaseId) {
   return GROCERY_LIST.map((sec) => ({
     name: sec.section,
     icon: AISLE_ICON[sec.section],
@@ -198,7 +235,7 @@ function groceryAisles(phaseId, checks) {
         name: item.name,
         qty: qty == null ? "" : item.unit ? `${qty} ${item.unit}` : String(qty),
         done: Boolean(checks[groceryKey(sec.section, item.name)]),
-        changed: qty != null && qty !== item.qty,
+        changed: fromPhaseId != null && qty != null && qty !== scaleGroceryQty(item, fromPhaseId),
       };
     }),
   }));
