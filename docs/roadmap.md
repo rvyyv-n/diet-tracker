@@ -158,8 +158,12 @@ rail have landed, so the pictures show the finished app.
     `test:visual:update` if motion or the rail moved any pixel; updates the
     README images, alt text and any captions; checks the status line and every
     link still hold.
+  - Also: runs the Android and Windows CI builds once on `release-3.0` and
+    checks the new `icon.svg` rasterises cleanly for the launcher icons and the
+    Tauri icon set (pass 73 only checked the SVG and PNGs in Chrome).
   - Done when: the README shows the shipped screens, `test:visual` is green,
-    and every image and link in the README resolves.
+    every image and link in the README resolves, and both CI icon builds
+    succeed.
 
 Decided with the design: Shake keeps its "Most skipped" tag (a fact, per
 `insight_copy_states_facts`). The collapsible desktop rail (pass 40b) is
