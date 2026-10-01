@@ -59,7 +59,7 @@ Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion has landed
       something it missed, add that check to `scripts/interact.mjs`. A phone
       test of touch behaviour is still by hand.
   - Also: pass 93 (the owner's pre-release mark-up) changed Today, Weight,
-    Recipes and Settings, so the baselines differ until this re-approval.
+    Recipes and Settings; their pictures were re-approved in that pass.
     Add the Today sun slider (drag and arrow keys) and the About sun to the
     checks, and try the slider by touch on the phone.
 
