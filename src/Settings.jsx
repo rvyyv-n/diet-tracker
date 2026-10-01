@@ -384,8 +384,10 @@ export default function Settings({ onEditSetup, onReset }) {
               />
             ) : null}
           </Section>
+          <Section label="About" icon="info" className="r-settings__sec--about">
+            <AboutBlock />
+          </Section>
         </div>
-        <AboutBlock />
       </section>
     </div>
   );

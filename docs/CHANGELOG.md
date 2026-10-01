@@ -288,6 +288,17 @@ Built on `release-3.0` in build passes; the design handoff is the spec.
   at the right, as on Step 1, and at 320px the Day select no longer clips.
   No new tokens.
 
+- **pass 82 — spacing and rounded row washes:** Settings' list rows have
+  12px above and below, so a two-line hint (Export data) no longer meets the
+  card's edge, and the group has 4px more at the top and bottom. The hover
+  and press wash on Settings rows and grocery items is a rounded tile that
+  reaches 8px past the text, with the separator drawn inside it, as the
+  meal rows were in pass 76. About is a section of its own after Data (in the
+  right column on desktop) instead of floating under both columns. The Meals
+  card on Recipes has room above its first row and below its last bar, and
+  20px sides on desktop. The recipe book's intro line no longer tucks up
+  under the New recipe button. New icon `info`; no new tokens.
+
 ## Older releases
 
 v2.3.0 and earlier are in `docs/changelog-archive.md`. Add new release sections above this heading.

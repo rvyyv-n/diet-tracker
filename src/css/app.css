@@ -2535,11 +2535,8 @@
   grid-template-columns: 24px minmax(0, 1fr) auto;
   align-items: center;
   column-gap: 14px;
-  width: 100%;
   min-height: 52px;
-  padding: 0;
   border: 0;
-  border-top: 1px solid var(--line);
   background-color: transparent;
   color: inherit;
   font-family: inherit;
@@ -2919,28 +2916,47 @@
 /* ------------------------------------------------------ list group, rows --- */
 
 .r-listgroup {
-  padding: 0 var(--space-16);
+  padding: var(--space-4) var(--space-16);
   border-radius: var(--radius-card);
   background: var(--bg-raised);
   box-shadow: var(--shadow-card);
+}
+/* Rows and grocery items reach 8px past their column, so the hover and press
+   wash is a rounded tile with room round the text; the separator is drawn
+   inside that, so it still lines up with the column. */
+.r-listrow,
+.r-grocery__item {
+  position: relative;
+  width: calc(100% + 2 * var(--space-8));
+  margin: 0 calc(-1 * var(--space-8));
+  padding: 0 var(--space-8);
+  border-radius: var(--radius-md);
+}
+.r-listrow::before,
+.r-grocery__item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: var(--space-8);
+  left: var(--space-8);
+  height: 1px;
+  background: var(--line);
 }
 .r-listrow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
-  width: 100%;
   min-height: 60px;
-  padding: 0;
+  padding-block: var(--space-12);
   border: 0;
-  border-top: 1px solid var(--line);
   background-color: transparent;
   color: inherit;
   font-family: inherit;
   text-align: left;
 }
-.r-listrow.is-first {
-  border-top: 0;
+.r-listrow.is-first::before {
+  display: none;
 }
 .r-listrow.has-icon {
   grid-template-columns: var(--icon-tile) minmax(0, 1fr) auto;
@@ -4462,8 +4478,6 @@ a.r-button {
 
 /* About: quiet, at the foot */
 .r-about {
-  margin-top: var(--space-32);
-  padding: 0 var(--gutter);
   font-size: var(--type-small);
   line-height: 1.5;
   color: var(--ink-muted);
@@ -4590,9 +4604,6 @@ a.r-button {
   .r-appearance__text {
     display: block;
   }
-  .r-about {
-    padding: 0;
-  }
 }
 
 /* -------------------------------------------------- recipes (pass 71) ---
@@ -4717,7 +4728,7 @@ a.r-button {
 
 /* meals: a disclosure per block */
 .r-meals {
-  padding: 0 var(--space-16);
+  padding: var(--space-4) var(--space-16) var(--space-8);
 }
 .r-meals__meal + .r-meals__meal {
   border-top: 1px solid var(--line);
@@ -5041,7 +5052,7 @@ a.r-button {
     display: none;
   }
   .r-rbook__intro {
-    margin: -6px 0 var(--space-12);
+    margin: var(--space-8) 0 var(--space-12);
   }
   .r-rbook__row {
     grid-template-columns: minmax(0, 1fr) auto auto auto;
@@ -5055,7 +5066,7 @@ a.r-button {
     text-align: right;
   }
   .r-meals {
-    padding: 0 18px;
+    padding: var(--space-4) var(--space-20) var(--space-8);
   }
   .r-meals__head {
     grid-template-columns: minmax(0, 1fr) auto 16px;
