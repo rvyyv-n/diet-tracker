@@ -499,6 +499,8 @@ const EXTRA_DESC = {
 };
 
 function Blocks({ day, editable, onTick, setSheet, commit }) {
+  // The due card turns into a row when it is ticked; that new row pops its check once.
+  const [popId, setPopId] = useState(null);
   const wide = useWide();
   const live = day.date === todayISO() && editable;
   const now = live ? nowHHMM() : null;
@@ -575,7 +577,10 @@ function Blocks({ day, editable, onTick, setSheet, commit }) {
           kcal={value.kcal}
           protein={Math.round(value.proteinG)}
           swappable={Boolean(block.rotation)}
-          onTick={() => onTick(block.id)}
+          onTick={() => {
+            setPopId(block.id);
+            onTick(block.id);
+          }}
           onSwap={() => setSheet({ swap: block.id })}
         />,
       );
@@ -604,6 +609,8 @@ function Blocks({ day, editable, onTick, setSheet, commit }) {
         kcal={value.kcal}
         protein={Math.round(value.proteinG)}
         state={state}
+        popIn={popId === block.id}
+        onPopEnd={() => setPopId(null)}
         tag={
           bonus
             ? "bonus"

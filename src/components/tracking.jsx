@@ -123,6 +123,8 @@ export function BlockRow({
   kcal,
   protein,
   state = "idle",
+  popIn = false,
+  onPopEnd,
   tag,
   tagEmphasis,
   link,
@@ -131,8 +133,15 @@ export function BlockRow({
   onLink,
 }) {
   const done = state === "done" || state === "closedDone";
-  // A tap that ticks the block pops the check in; rows that load done stay still.
-  const [pop, setPop] = useState(false);
+  // The check pops in when this row goes from open to done on screen, or when
+  // `popIn` says it mounts just ticked (the due card turns into this row).
+  // Rows that open done, and a past day that replaces Today's rows, stay still.
+  const [prevState, setPrevState] = useState(state);
+  const [pop, setPop] = useState(popIn);
+  if (state !== prevState) {
+    setPrevState(state);
+    setPop(state === "done" && (prevState === "idle" || prevState === "receded"));
+  }
   return (
     <div className={`r-blockrow r-blockrow--${state === "closedDone" ? "closed-done" : state}`}>
       <span className="r-blockrow__time">
@@ -144,15 +153,12 @@ export function BlockRow({
         className="r-blockrow__mark"
         aria-label={state === "off" ? `${name}, off plan` : name}
         aria-pressed={state === "off" ? undefined : done}
-        onClick={(e) => {
-          setPop(!done);
-          onToggle?.(e);
-        }}
+        onClick={onToggle}
         disabled={!onToggle}
       >
         <span className="r-blockrow__dot">
           {done ? (
-            <span className={cx("r-blockrow__check", pop && "is-pop")}>
+            <span className={cx("r-blockrow__check", pop && "is-pop")} onAnimationEnd={onPopEnd}>
               <Icon name="check" size={14} />
             </span>
           ) : null}
