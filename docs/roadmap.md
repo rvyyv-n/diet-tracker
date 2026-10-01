@@ -25,10 +25,10 @@ a fresh thread. The design refs are paths inside the design export
 | Build pass | Name                 | Targets (pass numbers)     | Model                      |
 | ---------- | -------------------- | -------------------------- | -------------------------- |
 | 8          | Final screenshots    | `shots` (78)               | Sonnet 5.5, high effort    |
-| 9          | Cleanup              | `tidy` (88)                | Sonnet 5.5, high effort    |
-| 10         | Data and logic audit | `upgrade`, `core` (89, 90) | Opus, high then max effort |
-| 11         | Security audit       | `secure` (91)              | Opus, high effort          |
-| 12         | Accessibility        | `a11y` (92)                | Sonnet 5.5, high effort    |
+| 10         | Cleanup              | `tidy` (88)                | Sonnet 5.5, high effort    |
+| 11         | Data and logic audit | `upgrade`, `core` (89, 90) | Opus, high then max effort |
+| 12         | Security audit       | `secure` (91)              | Opus, high effort          |
+| 13         | Accessibility        | `a11y` (92)                | Sonnet 5.5, high effort    |
 
 Then a phone and desktop test pass, and the release.
 
@@ -59,7 +59,7 @@ Model: Sonnet 5.5, high effort. Target: shots. Runs last, once motion has landed
       something it missed, add that check to `scripts/interact.mjs`. A phone
       test of touch behaviour is still by hand.
 
-#### Build pass 9 — Cleanup
+#### Build pass 10 — Cleanup
 
 Model: Sonnet 5.5, high effort. Target: tidy. Runs after build pass 8 and the
 interaction check, and starts the pre-release hardening that replaces the full
@@ -84,7 +84,7 @@ audit finds.
   - Done when: `npm run check`, `test:offline` and `test:visual` pass with no
     baseline change, and the commit body lists what was removed.
 
-#### Build pass 10 — Data and logic audit
+#### Build pass 11 — Data and logic audit
 
 Model: Opus, high effort for `upgrade`, max effort for `core`. Targets: upgrade, core.
 
@@ -98,7 +98,7 @@ Model: Opus, high effort for `upgrade`, max effort for `core`. Targets: upgrade,
       Sheet focus trap and popover Escape handling from pass 78 review. Look
       for wrong numbers, off-by-one days, time-zone and clock edge cases.
 
-#### Build pass 11 — Security audit
+#### Build pass 12 — Security audit
 
 Model: Opus, high effort. Target: secure.
 
@@ -106,7 +106,7 @@ Model: Opus, high effort. Target: secure.
       worker; say so in the commit, because it deploys by hand), the update check
       and the push subscription, and the rule that no diet data leaves the device.
 
-#### Build pass 12 — Accessibility
+#### Build pass 13 — Accessibility
 
 Model: Sonnet 5.5, high effort. Target: a11y.
 
