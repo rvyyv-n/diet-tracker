@@ -9,7 +9,7 @@
 Set your meals once. Each day, tick what you ate.<br />
 Weigh in once a week, and see whether the plan is working.
 
-[**Try it**](https://rvyyv-n.github.io/diet-tracker/) · [Download](https://github.com/rvyyv-n/diet-tracker/releases/latest) · [Roadmap](docs/roadmap.md) · [Changelog](docs/CHANGELOG.md)
+[**Website**](https://getrise.pages.dev) · [Try it](https://rvyyv-n.github.io/diet-tracker/) · [Download](https://github.com/rvyyv-n/diet-tracker/releases/latest) · [Roadmap](docs/roadmap.md) · [Changelog](docs/CHANGELOG.md)
 
 [![Test](https://github.com/rvyyv-n/diet-tracker/actions/workflows/test.yml/badge.svg)](https://github.com/rvyyv-n/diet-tracker/actions/workflows/test.yml)
 [![Pages](https://github.com/rvyyv-n/diet-tracker/actions/workflows/pages.yml/badge.svg)](https://github.com/rvyyv-n/diet-tracker/actions/workflows/pages.yml)
