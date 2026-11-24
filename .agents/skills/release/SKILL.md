@@ -106,9 +106,9 @@ gh run list --limit 5                     # pages, android and desktop all green
 gh release view vX.Y.Z --json assets      # APK + Windows installer both attached
 ```
 
-Then confirm the live URL serves the new version — with the Playwright MCP,
-open <https://rvyyv-n.github.io/diet-tracker/>, hard-reload past the service
-worker, and check Settings → About reports X.Y.Z.
+Then confirm the live URL serves the new version — using T3's `preview_*`
+tools (or the Playwright CLI), open <https://rvyyv-n.github.io/diet-tracker/>,
+hard-reload past the service worker, and check Settings → About reports X.Y.Z.
 
 Report honestly: if a workflow failed or an asset is missing, say so with the
 run output rather than calling the release done.

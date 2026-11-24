@@ -1,14 +1,14 @@
-# CLAUDE.md — Rise
+# AGENTS.md — Rise
 
-Project brief for any Claude session working on Rise. It is tracked, so
-cloud sessions have it; keep personal details out of it.
+Project brief for any session working on Rise. It is tracked, so cloud sessions
+have it; keep personal details out of it.
 
 ## What Rise is
 
 A local-first diet tracker and planner. The plan is fixed in advance as meal
 **blocks**, and the only daily action is ticking the ones you ate. Calories and
 protein come from the blocks, and no ingredient is ever logged. A weekly
-weigh-in feeds a four-week rolling average, and an engine *suggests* plan
+weigh-in feeds a four-week rolling average, and an engine _suggests_ plan
 adjustments, never applies them.
 
 It ships as a PWA on GitHub Pages, an Android APK (Kotlin shell), and a
@@ -18,6 +18,9 @@ Everything lives in the browser's storage.
 ## Running it
 
 - Node **24** (what CI uses). `npm install`, then `npm run dev`.
+- `npm ci` installs from the lockfile (CI and fresh worktrees). `npm test`
+  runs the unit tests (vitest). There is no `audit` script here; `rise-site`
+  has one.
 - `npm run build` produces `dist/`, and `npm run preview` serves it.
 - `dev-seed.html` (tracked, demo data only) writes four weeks of demo data
   into localStorage. Open it through the dev server.
@@ -31,7 +34,7 @@ Everything lives in the browser's storage.
   check is the one allowed) or a bundled font 404s. `npm run test:visual`
   compares screens with the approved pictures in `e2e/snapshots` (taken on
   Windows with installed Chrome, local only). `npm run test:visual:update`
-  approves a deliberate change. Both need `dev-seed.html`.
+  approves a deliberate change. Both Playwright suites need `dev-seed.html`.
 - `npm run interact` is the interaction check: hover washes, focus changes,
   clipping, panels leaving the window and Escape, by measurement, with only
   failures printed. It needs the dev server. Run it before a release review,
@@ -43,6 +46,7 @@ Everything lives in the browser's storage.
 ## Where things live
 
 ```
+.agents/skills/ repo skills (build-pass, check-screen, release)
 src/*.jsx       one React component per screen (Today, Weight, Plan…)
 src/js/core/    storage, plan, day, weights, trend, adjustment. Pure, no DOM
 src/js/ui/      small shared controls (popover, listbox, pickers, icons)
@@ -59,9 +63,9 @@ docs/           roadmap, decisions, CHANGELOG (+ archive), design-system, plan-s
 Rise is a solo project (rvyyv-n). There are no other contributors, no PRs and
 no review gate.
 
-- Work goes straight onto the active `release-X.Y` branch (currently
-  `release-3.0`). `main` and `v*` tags are locked by rulesets and only move at
-  release time.
+- v3.0 is shipped on `main`. Ongoing release batches go onto their active
+  `release-X.Y` branch; `main` and `v*` tags are locked by rulesets and only
+  move at release time.
 - Anything `docs/roadmap.md` marks as an open decision or "do not build without
   a decision" is a **stop-and-ask**, even under time pressure. Ask a short
   question with options. Don't decide it yourself.
@@ -70,13 +74,13 @@ no review gate.
 
 ## Standing rules
 
-- **Tokens: reuse first, add freely.** Existing tokens come from the Claude
-  Design export (`docs/design-system.md`, implemented in `src/css/tokens.css`).
-  For new UI (a new tab, a new element) create whatever tokens it needs
-  without asking. Put them in `tokens.css`, add a line to `design-system.md`,
-  and name them in the commit. No hard-coded literals (`literals.test.js`
-  enforces it). Read the "Deliberate departures" table before "fixing" an
-  existing value to match the export.
+- **Tokens: reuse first, add freely.** Existing tokens come from the design
+  export (`docs/design-system.md`, implemented in `src/css/tokens.css`). For
+  new UI (a new tab, a new element) create whatever tokens it needs without
+  asking. Put them in `tokens.css`, add a line to `design-system.md`, and name
+  them in the commit. No hard-coded literals (`literals.test.js` enforces it).
+  Read the "Deliberate departures" table before "fixing" an existing value to
+  match the export.
 - **Never nag.** A missed block is a number, not a guilt trip. No streaks, no
   gamified praise, no "you're behind" nudges. Insight copy states facts, never
   verdicts.
@@ -90,12 +94,13 @@ no review gate.
 - **Screenshots are the last resort.** Every image stays in context for the
   rest of the session. Prove a change with page text (`"text":true` in
   `scripts/shot.mjs`) or an `eval` of a computed style, size or position
-  first. Take a screenshot only when the question is how something looks
-  (a new or restyled screen, spacing, colour) and numbers can't answer it.
-  Then make one grid (`node scripts/shot.mjs '<json>'`, or the `check-screen`
-  skill) at about 800px wide, and don't read the same image twice. Many
-  separate shots are fine for the README and other deliberate artwork. Dev
-  server: `npm run dev -- --port 5199`.
+  first, or inspect live pages with T3's `preview_*` tools. Take a screenshot
+  only when the question is how something looks (a new or restyled screen,
+  spacing, colour) and numbers can't answer it. Then make one grid
+  (`node scripts/shot.mjs '<json>'`, or the `check-screen` skill) at about
+  800px wide, and don't read the same image twice. Many separate shots are
+  fine for the README and other deliberate artwork. Dev server:
+  `npm run dev -- --port 5199`.
 - **Batch the work.** Every turn re-reads the whole context, so fewer turns
   cost less. Group related edits into one call, verify once when the target
   is done, and fix a finished pass in one `pass N fix:` commit.
@@ -103,13 +108,14 @@ no review gate.
   proposing anything. Skip it for a scoped build-pass target. Don't
   re-propose a "Not doing" item without a new reason.
 
-## Build passes (v3.0)
+## Build passes
 
-The v3.0 rebuild is seven build passes in `docs/roadmap.md`, each a group of
-numbered passes (from 63). When the user names one, such as "build pass 1",
-"foundation", "next build pass", or a single target like "tokens" or "pass 65",
-invoke the `build-pass` skill and follow it. The roadmap entry is the spec,
-each target is one commit, and each build pass lists the model to use.
+Active roadmap passes live in `docs/roadmap.md` (v3.0 is shipped on `main`).
+When the user names a build pass, milestone, "next build pass", or a single
+target, follow the `build-pass` skill in `.agents/skills/build-pass/SKILL.md`.
+The roadmap entry is the spec and each target is one commit. Run large passes
+in a worktree using a free port (not 5199), and never leave a dev server or
+watcher running at the end of a turn.
 
 ## Docs
 
@@ -125,25 +131,26 @@ each target is one commit, and each build pass lists the model to use.
 A major number marks a redesign, a minor number a batch of passes. Never
 invent a number; ask which one this is.
 
-Work lands on `release-X.Y`. Before release, run a full `/code-review` over
-everything since the last tag, then test on phone and desktop. Then use the
-`release` skill to fast-forward `main`, tag and publish. Publishing a Release
-builds the APK and installer.
+Work lands on `release-X.Y`. Before release, run a full code review over
+everything since the last tag, then test on phone and desktop (using T3's
+`preview_*` tools and the Playwright suites). Then follow the `release` skill
+in `.agents/skills/release/SKILL.md` to fast-forward `main`, tag and publish.
+Publishing a Release builds the APK and installer.
 
 ## Commit rubric
 
 **Subject line**, lowercase prefix, plain words, no trailing period, about 72
 characters or fewer:
 
-| Kind | Form |
-|---|---|
-| a roadmap pass | `pass 57: <what it does>` |
-| a large pass in parts | `pass 57 step 2: <what this step does>` |
+| Kind                     | Form                                       |
+| ------------------------ | ------------------------------------------ |
+| a roadmap pass           | `pass 57: <what it does>`                  |
+| a large pass in parts    | `pass 57 step 2: <what this step does>`    |
 | a fix to a finished pass | `pass 57 fix: <what was wrong, now right>` |
-| review cleanups | `pass 57 review: <what was tidied>` |
-| docs only | `docs: …` / `roadmap: …` |
-| housekeeping | `chore: …` |
-| urgent live-site fix | `hotfix: …` |
+| review cleanups          | `pass 57 review: <what was tidied>`        |
+| docs only                | `docs: …` / `roadmap: …`                   |
+| housekeeping             | `chore: …`                                 |
+| urgent live-site fix     | `hotfix: …`                                |
 
 Examples from history:
 `pass 53: web push reminders, client side`,
@@ -163,6 +170,7 @@ and why, wrapped at about 72 columns:
 a pass grows past that, split it into `step` commits that each build.
 
 **Rules**:
+
 - No `Co-Authored-By`, "Generated with" or other attribution lines, and no
   mention of the assistant in messages or added lines. The hook enforces it.
 - The next free pass number is the highest in `CHANGELOG.md` and
